@@ -1,4 +1,4 @@
-# EMBED Agent Context
+# embed-mcp
 
 Ask useful questions about the Emory Breast Imaging Dataset (EMBED) through CLI or MCP before
 turning tables into cohorts.
@@ -43,7 +43,7 @@ the lightweight catalog, Python API, and CLI directly from GitHub:
 
 ```bash
 uv tool install \
-  'embedv2-agent-context @ git+https://github.com/beatrice-b-m/embed-agent-context.git'
+  'embedv2-agent-context @ git+https://github.com/beatrice-b-m/embed-mcp.git'
 ```
 
 Add only the optional interfaces you need:
@@ -51,19 +51,19 @@ Add only the optional interfaces you need:
 ```bash
 # Read-only stdio MCP server.
 uv tool install \
-  'embedv2-agent-context[mcp] @ git+https://github.com/beatrice-b-m/embed-agent-context.git'
+  'embedv2-agent-context[mcp] @ git+https://github.com/beatrice-b-m/embed-mcp.git'
 
 # Local catalog curation web viewer.
 uv tool install \
   --with \
-  'embedv2-agent-context-curator @ git+https://github.com/beatrice-b-m/embed-agent-context.git#subdirectory=packages/curator' \
-  'embedv2-agent-context @ git+https://github.com/beatrice-b-m/embed-agent-context.git'
+  'embedv2-agent-context-curator @ git+https://github.com/beatrice-b-m/embed-mcp.git#subdirectory=packages/curator' \
+  'embedv2-agent-context @ git+https://github.com/beatrice-b-m/embed-mcp.git'
 
 # Both optional interfaces.
 uv tool install \
   --with \
-  'embedv2-agent-context-curator @ git+https://github.com/beatrice-b-m/embed-agent-context.git#subdirectory=packages/curator' \
-  'embedv2-agent-context[mcp] @ git+https://github.com/beatrice-b-m/embed-agent-context.git'
+  'embedv2-agent-context-curator @ git+https://github.com/beatrice-b-m/embed-mcp.git#subdirectory=packages/curator' \
+  'embedv2-agent-context[mcp] @ git+https://github.com/beatrice-b-m/embed-mcp.git'
 ```
 
 These commands create an isolated environment and install commands into uv's
@@ -97,7 +97,7 @@ commit:
 
 ```bash
 uv tool install \
-  'embedv2-agent-context @ git+https://github.com/beatrice-b-m/embed-agent-context.git@REV'
+  'embedv2-agent-context @ git+https://github.com/beatrice-b-m/embed-mcp.git@REV'
 ```
 
 Add `[mcp]` after `embedv2-agent-context` when needed. A curator installation
@@ -106,8 +106,8 @@ must install both projects from the same revision:
 ```bash
 uv tool install \
   --with \
-  'embedv2-agent-context-curator @ git+https://github.com/beatrice-b-m/embed-agent-context.git@REV#subdirectory=packages/curator' \
-  'embedv2-agent-context @ git+https://github.com/beatrice-b-m/embed-agent-context.git@REV'
+  'embedv2-agent-context-curator @ git+https://github.com/beatrice-b-m/embed-mcp.git@REV#subdirectory=packages/curator' \
+  'embedv2-agent-context @ git+https://github.com/beatrice-b-m/embed-mcp.git@REV'
 ```
 
 Add the root package's `mcp` extra to the final argument when both optional
@@ -317,7 +317,7 @@ and simpler stable path:
 ```bash
 codex mcp add embed_context_internal -- \
   embed-context-mcp \
-  --catalog /absolute/path/to/embed-agent-context/catalog/internal-v2-catalog-set.json
+  --catalog /absolute/path/to/embed-mcp/catalog/internal-v2-catalog-set.json
 ```
 
 You may register `embed_context_open` and `embed_context_internal` at the same

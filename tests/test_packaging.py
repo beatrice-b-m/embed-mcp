@@ -53,7 +53,7 @@ class PackagingContractTests(unittest.TestCase):
         self.assertEqual(
             project["urls"]["Documentation"],
             "https://github.com/beatrice-b-m/"
-            "embed-agent-context#readme",
+            "embed-mcp#readme",
         )
         self.assertEqual(
             project["urls"]["EMBED Documentation"],

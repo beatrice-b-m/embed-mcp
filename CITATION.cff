@@ -1,12 +1,12 @@
 cff-version: 1.2.0
 message: "If you use this software, please cite it using these metadata."
-title: "EMBED Agent Context"
+title: "embed-mcp"
 authors:
   - family-names: "Brown-Mulry"
     given-names: "Beatrice"
 version: 0.10.0
-repository-code: "https://github.com/beatrice-b-m/embed-agent-context"
-url: "https://github.com/beatrice-b-m/embed-agent-context"
+repository-code: "https://github.com/beatrice-b-m/embed-mcp"
+url: "https://github.com/beatrice-b-m/embed-mcp"
 abstract: >-
   A machine-queryable clinical-semantic catalog for the
   Emory Breast Imaging Dataset.

@@ -1,8 +1,8 @@
-# EMBED Agent Context Curator
+# embed-mcp Curator
 
 This companion distribution supplies the optional loopback-only catalog
 curation viewer for
-[EMBED Agent Context](https://github.com/beatrice-b-m/embed-agent-context).
+[embed-mcp](https://github.com/beatrice-b-m/embed-mcp).
 It is versioned in lockstep with the core distribution and is normally
 installed through the core package's `curator` extra:
 

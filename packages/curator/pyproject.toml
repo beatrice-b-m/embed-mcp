@@ -1,7 +1,7 @@
 [project]
 name = "embedv2-agent-context-curator"
 version = "0.10.0"
-description = "Optional local curation viewer for EMBED Agent Context"
+description = "Optional local curation viewer for embed-mcp"
 readme = "README.md"
 license-files = ["LICENSE"]
 authors = [
@@ -24,9 +24,9 @@ classifiers = [
 ]
 
 [project.urls]
-Repository = "https://github.com/beatrice-b-m/embed-agent-context"
-Issues = "https://github.com/beatrice-b-m/embed-agent-context/issues"
-Documentation = "https://github.com/beatrice-b-m/embed-agent-context#readme"
+Repository = "https://github.com/beatrice-b-m/embed-mcp"
+Issues = "https://github.com/beatrice-b-m/embed-mcp/issues"
+Documentation = "https://github.com/beatrice-b-m/embed-mcp#readme"
 
 [build-system]
 requires = ["hatchling>=1.27"]
