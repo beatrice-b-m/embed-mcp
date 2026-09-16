@@ -152,7 +152,10 @@ class CatalogSetSchemaTests(unittest.TestCase):
         binding = internal_profile["profile_binding"]
         self.assertEqual(
             [table["table"] for table in binding["tables"]],
-            ["magview_all_cohorts_PACS_v2_anon", "metadata_all_cohorts_v1c"],
+            [
+                "magview_all_cohorts_PACS_v2_anon", "metadata_all_cohorts_v1c",
+                "HormoneHist_anon", "ProcedureHist_anon", "CancerHist_anon",
+            ],
         )
         tables = {table["table"]: table for table in binding["tables"]}
         self.assertEqual(
@@ -224,9 +227,9 @@ class CatalogSetSchemaTests(unittest.TestCase):
         history_binding_coverage = internal_profile["contributions"][
             "coverage"
         ]["coverage.internal-v2.patient-history-physical-binding"]
-        self.assertEqual(history_binding_coverage["status"], "not_cataloged")
+        self.assertEqual(history_binding_coverage["status"], "supported")
         self.assertIn(
-            "complete column inventories, physical types, and schema nullability",
+            "complete physical inventories",
             history_binding_coverage["summary"],
         )
         self.assertIn(
@@ -281,6 +284,7 @@ class CatalogSetSchemaTests(unittest.TestCase):
         )
         feature_by_column = {
             item["column"]: item for item in binding["feature_bindings"]
+            if item["table"] == "magview_all_cohorts_PACS_v2_anon"
         }
         side_meanings = {
             item["representation"]: item

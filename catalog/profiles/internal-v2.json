@@ -314,6 +314,106 @@
         "Confirms that these are reported or previously documented history records rather than current-exam procedures, verified procedure-associated pathology, or finding-level attribution.",
         "Does not establish exhaustive represented vocabularies, physical schemas, row identity, a deduplication rule, the duration unit, timing-field precedence, result provenance, or acc_anon sentinel behavior."
       ]
+    },
+    "internal-v2.hormone-history-topology-packet": {
+      "title": "Reviewed internal hormone-history topology packet",
+      "kind": "supporting_internal",
+      "scope": "profile_specific",
+      "locator_kind": "logical_artifact",
+      "locator": "hormone-hist-packet.json",
+      "version_scope": "Internal history representation in HormoneHist_anon.csv, supplied for the internal-v2 working profile; no public-release applicability is established.",
+      "profiles": [
+        "internal-v2"
+      ],
+      "notes": [
+        "Reviewed topology export: selected column names and pandas dtypes, tested grouping dependencies, feature placements, categorical levels, and author-selected census paths.",
+        "Missing values were retained as levels; topology omits counts, frequencies, and association strengths, and ordering does not indicate prevalence.",
+        "Observed dependencies describe the evaluated input and supplied keys only; they do not establish clinical identity, temporal stability, cross-table coverage, or schema nullability.",
+        "Only count-free representation conclusions and reconciled controlled values are retained; packets, ages, calendar values, durations, identifiers, and source text are not copied into the catalog."
+      ]
+    },
+    "internal-v2.procedure-history-topology-packet": {
+      "title": "Reviewed internal procedure-history topology packet",
+      "kind": "supporting_internal",
+      "scope": "profile_specific",
+      "locator_kind": "logical_artifact",
+      "locator": "procedure-hist-packet.json",
+      "version_scope": "Internal history representation in ProcedureHist_anon.csv, supplied for the internal-v2 working profile; no public-release applicability is established.",
+      "profiles": [
+        "internal-v2"
+      ],
+      "notes": [
+        "Reviewed topology export: selected column names and pandas dtypes, tested grouping dependencies, feature placements, categorical levels, and author-selected census paths.",
+        "Missing values were retained as levels; topology omits counts, frequencies, and association strengths, and ordering does not indicate prevalence.",
+        "Observed dependencies describe the evaluated input and supplied keys only; they do not establish clinical identity, temporal stability, cross-table coverage, or schema nullability.",
+        "Only count-free representation conclusions and reconciled controlled values are retained; packets, ages, calendar values, durations, identifiers, and source text are not copied into the catalog."
+      ]
+    },
+    "internal-v2.cancer-history-topology-packet": {
+      "title": "Reviewed internal cancer-history topology packet",
+      "kind": "supporting_internal",
+      "scope": "profile_specific",
+      "locator_kind": "logical_artifact",
+      "locator": "cancer-hist-packet.json",
+      "version_scope": "Internal history representation in CancerHist_anon.csv, supplied for the internal-v2 working profile; no public-release applicability is established.",
+      "profiles": [
+        "internal-v2"
+      ],
+      "notes": [
+        "Reviewed topology export: selected column names and pandas dtypes, tested grouping dependencies, feature placements, categorical levels, and author-selected census paths.",
+        "Missing values were retained as levels; topology omits counts, frequencies, and association strengths, and ordering does not indicate prevalence.",
+        "Observed dependencies describe the evaluated input and supplied keys only; they do not establish clinical identity, temporal stability, cross-table coverage, or schema nullability.",
+        "Only count-free representation conclusions and reconciled controlled values are retained; packets, ages, calendar values, durations, identifiers, and source text are not copied into the catalog."
+      ]
+    },
+    "internal-v2.history-inventory-maintainer-confirmation": {
+      "title": "Internal history table inventory clarification",
+      "kind": "maintainer_confirmed",
+      "scope": "profile_specific",
+      "locator_kind": "logical_artifact",
+      "locator": "maintainer-confirmed:history-packet-inventories",
+      "version_scope": "Column completeness of the reviewed HormoneHist, ProcedureHist, and CancerHist packets.",
+      "profiles": [
+        "internal-v2"
+      ],
+      "notes": [
+        "Each packet includes every source-table column except comment, a messy free-text field present on all three tables.",
+        "This establishes inventory completeness, not a source-declared dtype or nullability contract; no comment content was inspected."
+      ]
+    },
+    "internal-v2.cancer-history-maintainer-clarification": {
+      "title": "CancerHist subject and relationship clarification",
+      "kind": "maintainer_confirmed",
+      "scope": "profile_specific",
+      "locator_kind": "logical_artifact",
+      "locator": "maintainer-confirmed:cancer-history-subject",
+      "version_scope": "Internal CancerHist representation in the internal-v2 working profile.",
+      "profiles": [
+        "internal-v2"
+      ],
+      "notes": [
+        "patient is a self-versus-relative flag: 1 denotes the patient and 0 denotes a relative.",
+        "rel is a relationship category rather than a unique relative identifier and is populated only for patient=0; a relative entry can still have blank rel.",
+        "No BRCA1 or BRCA2 code mappings have been found."
+      ]
+    },
+    "internal-v2.cancer-history-draft-dictionaries": {
+      "title": "Provisional CancerHist internal dictionary reconciliation",
+      "kind": "supporting_internal",
+      "scope": "profile_specific",
+      "locator_kind": "logical_artifact",
+      "locator": "maintainer-supplied:cancer-history-work-in-progress-dictionaries",
+      "version_scope": "Internal CancerHist representation in the internal-v2 working profile.",
+      "profiles": [
+        "internal-v2"
+      ],
+      "notes": [
+        "Maintainer-supplied work-in-progress type and cancercode interpretation assembled from internal dictionaries, accompanied by a broader pathology-code comparison dictionary.",
+        "The type labels B (breast) and O (other) and named code meanings remain provisional; the supplied draft is not final code confirmation.",
+        "The breast-history meanings of B, blank, DCG, DCS, and XX remain explicitly uncertain, including the candidate generic breast-cancer interpretation of B despite the broader comparison dictionary.",
+        "Repeated enum member names are treated as separate source code entries: ID and IDC, and ANM and MDN, are preserved. The snippet is source material and is not executed.",
+        "UNKNOWN is a draft software enum fallback, not an observed or governed source code."
+      ]
     }
   },
   "contexts": {
@@ -1363,7 +1463,16 @@
         "internal-v2.procedure_history.breast_procedure_code",
         "internal-v2.procedure_history.reported_result"
       ],
-      "related_tables": [],
+      "related_tables": [
+        {
+          "profile": "internal-v2",
+          "table": "HormoneHist_anon"
+        },
+        {
+          "profile": "internal-v2",
+          "table": "ProcedureHist_anon"
+        }
+      ],
       "related_relationships": [],
       "claims": [
         {
@@ -1416,21 +1525,298 @@
         },
         {
           "id": "history-identity-and-physical-scope",
-          "statement": "The supported history semantics do not establish a stable history-entry identifier, a semantic deduplication rule, or a complete physical schema for either source table.",
+          "statement": "Complete physical inventories and supported mappings are now cataloged from reviewed packets plus maintainer clarification, but no stable history-entry identifier or semantic deduplication rule is established.",
           "status": "unresolved",
           "sources": [
-            "internal-v2.patient-history-maintainer-confirmation"
+            "internal-v2.patient-history-maintainer-confirmation",
+            "internal-v2.hormone-history-topology-packet",
+            "internal-v2.procedure-history-topology-packet",
+            "internal-v2.history-inventory-maintainer-confirmation"
           ],
           "caveats": [
             "Repeated entries may be separate reports, corrections, or duplicates.",
-            "HormoneHist and ProcHist remain intentionally absent from the physical profile binding until complete columns, types, and schema nullability are available."
+            "The tested patient and exam groupings do not determine the history attributes."
           ]
         }
       ],
       "workflow_steps": [],
       "caveats": [
-        "The controlled code meanings are supported, but vocabulary completeness is unknown without source artifacts.",
-        "This context supplies semantic coverage only and does not imply that either table is physically queryable through the current profile binding."
+        "The controlled code meanings remain supported, while packet-observed category discrepancies and composite result semantics are separately unresolved.",
+        "Vocabulary completeness remains unknown; an unobserved documented code is not invalidated."
+      ]
+    },
+    "internal-v2.history-topology-context": {
+      "title": "Internal history packet representation review",
+      "kind": "data_representation",
+      "scope": "profile_specific",
+      "profiles": [
+        "internal-v2"
+      ],
+      "summary": "Reviewed topology packets and the complete-inventory clarification support history table inventories and existing HormoneHist and ProcHist mappings, while preserving unresolved row identity, conditional code discrepancies, and time semantics.",
+      "domains": [
+        "identity",
+        "procedure",
+        "technical",
+        "temporal",
+        "workflow"
+      ],
+      "search_terms": [
+        "HormoneHist",
+        "ProcHist",
+        "ProcedureHist_anon",
+        "history topology",
+        "history grain",
+        "ORAL TAXOL category discrepancy",
+        "FA,SF historical result"
+      ],
+      "related_concepts": [
+        "internal-v2.hormone_history.exposure_category",
+        "internal-v2.hormone_history.hormone_code",
+        "internal-v2.hormone_history.therapy_code",
+        "internal-v2.hormone_history.contraceptive_code",
+        "internal-v2.hormone_history.continuous_status",
+        "internal-v2.hormone_history.current_status",
+        "internal-v2.hormone_history.reported_duration",
+        "internal-v2.hormone_history.reported_start_age",
+        "internal-v2.hormone_history.reported_start_month",
+        "internal-v2.hormone_history.reported_start_year",
+        "internal-v2.hormone_history.reported_end_age",
+        "internal-v2.hormone_history.reported_end_month",
+        "internal-v2.hormone_history.reported_end_year",
+        "internal-v2.hormone_history.comment",
+        "internal-v2.procedure_history.procedure_category",
+        "internal-v2.procedure_history.gynecological_procedure_code",
+        "internal-v2.procedure_history.breast_procedure_code",
+        "internal-v2.procedure_history.reported_result",
+        "internal-v2.procedure_history.reported_breast_side"
+      ],
+      "related_tables": [
+        {
+          "profile": "internal-v2",
+          "table": "HormoneHist_anon"
+        },
+        {
+          "profile": "internal-v2",
+          "table": "ProcedureHist_anon"
+        },
+        {
+          "profile": "internal-v2",
+          "table": "CancerHist_anon"
+        }
+      ],
+      "related_relationships": [],
+      "claims": [
+        {
+          "id": "physical-inventories",
+          "statement": "The packet columns plus the maintainer-confirmed comment field form the complete column inventories of HormoneHist_anon, ProcedureHist_anon, and CancerHist_anon. Packet str is cataloged as string and int64 as int64; comment is assessed as string from its free-text description. Every column is conservatively nullable because pandas dtypes and observed levels do not declare source-schema nullability.",
+          "status": "reconciled",
+          "sources": [
+            "internal-v2.hormone-history-topology-packet",
+            "internal-v2.procedure-history-topology-packet",
+            "internal-v2.cancer-history-topology-packet",
+            "internal-v2.history-inventory-maintainer-confirmation"
+          ],
+          "caveats": []
+        },
+        {
+          "id": "tested-groupings",
+          "statement": "In each reviewed packet, the tested PATIENT (empi_anon) grouping is coarser than EXAM (acc_anon), and empi_anon is constant within acc_anon. HormoneHist and ProcHist history attributes vary within the tested patient and exam groupings, except the blank HormoneHist side field. Neither grouping identifies a history row.",
+          "status": "reconciled",
+          "sources": [
+            "internal-v2.hormone-history-topology-packet",
+            "internal-v2.procedure-history-topology-packet",
+            "internal-v2.cancer-history-topology-packet"
+          ],
+          "caveats": [
+            "The graph describes only tested groupings; unplaced features can belong to an untested or unresolved finer entry grain.",
+            "Within-table dependency does not verify cross-table matches, sentinel meanings, or a durable clinical history-entry identifier."
+          ]
+        },
+        {
+          "id": "hormone-blank-side",
+          "statement": "HormoneHist side is represented by a blank string in the reviewed vocabulary. Its placement at PATIENT reflects constancy of that blank representation, not a patient-level laterality feature.",
+          "status": "reconciled",
+          "sources": [
+            "internal-v2.hormone-history-topology-packet"
+          ],
+          "caveats": [
+            "No breast-side feature or side identity is mapped from this occurrence."
+          ]
+        },
+        {
+          "id": "hormone-category-discrepancies",
+          "statement": "After comparing the padded source tokens with the existing category-specific dictionaries, the packet represents ORAL under H and T and TAXOL under H. Their meanings in those category occurrences remain unresolved; the supported ORAL contraceptive and TAXOL therapy meanings do not establish these additional occurrences.",
+          "status": "unresolved",
+          "sources": [
+            "internal-v2.hormone-history-topology-packet",
+            "internal-v2.patient-history-maintainer-confirmation"
+          ],
+          "caveats": [
+            "The observed H/C and O/C paths support retaining separate category-dependent meanings for C.",
+            "A documented code absent from this packet is not invalidated, and vocabulary completeness remains unknown.",
+            "No recategorization or cross-category fallback is supplied."
+          ]
+        },
+        {
+          "id": "hormone-status-representation",
+          "statement": "HormoneHist current and continuous have Y, N, and blank string representations in the packet. Their reported-status concepts remain applicable, but the packet alone does not establish a blank-as-N rule or exact interval endpoints.",
+          "status": "reconciled",
+          "sources": [
+            "internal-v2.hormone-history-topology-packet",
+            "internal-v2.patient-history-maintainer-confirmation"
+          ],
+          "caveats": []
+        },
+        {
+          "id": "procedure-category-reconciliation",
+          "statement": "The ProcHist type/pcode census agrees with the existing breast (B) and gynecological (G) procedure-code dictionaries after comparing padded source tokens. This supports the conditional mappings without establishing clinical verification of the reported procedure.",
+          "status": "reconciled",
+          "sources": [
+            "internal-v2.procedure-history-topology-packet",
+            "internal-v2.patient-history-maintainer-confirmation"
+          ],
+          "caveats": []
+        },
+        {
+          "id": "procedure-result-representation",
+          "statement": "ProcHist result includes a blank string and the comma-bearing token FA,SF alongside supported individual result tokens. The meaning of the combined occurrence and its delimiter, order, and repetition semantics remain unresolved for this table.",
+          "status": "unresolved",
+          "sources": [
+            "internal-v2.procedure-history-topology-packet",
+            "internal-v2.patient-history-maintainer-confirmation"
+          ],
+          "caveats": [
+            "Do not import MagView comma-splitting behavior into ProcHist without occurrence-specific evidence.",
+            "Blank is not the literal NONE code and is not established as a negative result or equivalent governed missing state."
+          ]
+        },
+        {
+          "id": "procedure-time-candidates",
+          "statement": "ProcHist physically represents age, pdatealt, month, and year as strings. Their historical-event interpretation, parsing, relationship to one another, and exact-date support remain unresolved.",
+          "status": "unresolved",
+          "sources": [
+            "internal-v2.procedure-history-topology-packet"
+          ],
+          "caveats": [
+            "Column names and observed temporal-looking values do not establish an event date or a reconciliation rule.",
+            "No ages, calendar values, or candidate dates are retained as catalog values."
+          ]
+        }
+      ],
+      "workflow_steps": [],
+      "caveats": [
+        "Topology is observation evidence for the supplied input, not a clinical entity model or an analysis policy."
+      ]
+    },
+    "internal-v2.cancer-history-context": {
+      "title": "Internal CancerHist representation and unresolved semantics",
+      "kind": "data_representation",
+      "scope": "profile_specific",
+      "profiles": [
+        "internal-v2"
+      ],
+      "summary": "CancerHist distinguishes patient versus relative history with a confirmed subject flag and relationship-category field. Cancer code meanings remain provisional, BRCA encodings unresolved, and the tested relative grouping is not person or event identity.",
+      "domains": [
+        "identity",
+        "procedure",
+        "technical",
+        "temporal",
+        "workflow"
+      ],
+      "search_terms": [
+        "CancerHist",
+        "CancerHist_anon",
+        "cancer history",
+        "family history",
+        "relative identity",
+        "patient rel",
+        "BRCA1 BRCA2 history"
+      ],
+      "related_concepts": [
+        "internal-v2.cancer_history.subject_category",
+        "internal-v2.cancer_history.relative_relationship_code",
+        "internal-v2.cancer_history.history_category",
+        "internal-v2.cancer_history.breast_code",
+        "internal-v2.cancer_history.other_code"
+      ],
+      "related_tables": [
+        {
+          "profile": "internal-v2",
+          "table": "CancerHist_anon"
+        }
+      ],
+      "related_relationships": [],
+      "claims": [
+        {
+          "id": "relative-grouping-not-identity",
+          "statement": "The packet tests (acc_anon, patient, rel) under the label RELATIVE, finer than EXAM. The remaining history attributes, including curr_age, brca1, and brca2, vary within that grouping; the tuple is not a unique row key and does not establish one identifiable relative.",
+          "status": "reconciled",
+          "sources": [
+            "internal-v2.cancer-history-topology-packet"
+          ],
+          "caveats": [
+            "Author-selected key labels are not independent clinical identity evidence.",
+            "No longitudinal relative identity, event identity, or deduplication rule follows from this grouping."
+          ]
+        },
+        {
+          "id": "conditional-code-structure",
+          "statement": "CancerHist census paths show type-dependent cancercode branches and patient-dependent rel branches. The self-versus-relative distinction is maintainer-confirmed, while type and cancer-code meanings are provisional and do not establish verified cancer diagnoses.",
+          "status": "unresolved",
+          "sources": [
+            "internal-v2.cancer-history-topology-packet",
+            "internal-v2.cancer-history-maintainer-clarification",
+            "internal-v2.cancer-history-draft-dictionaries"
+          ],
+          "caveats": [
+            "Do not transfer diagnosis dictionaries from MagView or ProcHist merely because code strings match.",
+            "The packet does not establish that every entry is malignant, nor that an absent history entry is cancer absence."
+          ]
+        },
+        {
+          "id": "clinical-and-temporal-meaning",
+          "statement": "CancerHist premen, bilat, side, brca1, brca2, and its age and calendar fields need source-specific meaning and timing review. BRCA mappings have not been found; numeric-looking tokens must not be decoded as positive, negative, or untested.",
+          "status": "unresolved",
+          "sources": [
+            "internal-v2.cancer-history-topology-packet",
+            "internal-v2.cancer-history-maintainer-clarification"
+          ],
+          "caveats": [
+            "A field varying within the tested relative grouping cannot be promoted to a stable person attribute on that evidence.",
+            "Neither current age nor an associated accession establishes the time a history record became available."
+          ]
+        },
+        {
+          "id": "subject-and-relationship",
+          "statement": "CancerHist patient=1 denotes history about the patient and patient=0 denotes history about a relative. rel is a relationship category populated only when patient=0, not a unique relative identifier.",
+          "status": "verified",
+          "sources": [
+            "internal-v2.cancer-history-maintainer-clarification"
+          ],
+          "caveats": [
+            "The observed relative branch also includes blank rel; patient=0 does not require a populated relationship category.",
+            "Relative history must not be attributed as the imaging patient's own diagnosis or genetic result."
+          ]
+        },
+        {
+          "id": "provisional-code-meanings",
+          "statement": "The supplied draft interprets type B as breast and O as other, with category-specific cancercode meanings. These are provisional internal-dictionary interpretations, not final verified meanings for every CancerHist occurrence.",
+          "status": "unverified",
+          "sources": [
+            "internal-v2.cancer-history-draft-dictionaries",
+            "internal-v2.cancer-history-topology-packet"
+          ],
+          "caveats": [
+            "B, blank, DCG, DCS, and XX in the breast branch remain unresolved; no generic cancer meaning is assigned to blank.",
+            "Candidate breast codes include atypia, papilloma, radial scar, and other findings, so a breast-history category is not a malignant-diagnosis assertion.",
+            "No pathology severity, outcome label, date, or preferred aggregation is derived from these candidate meanings.",
+            "ID and IDC and ANM and MDN remain separately addressable source tokens even where candidate meanings agree."
+          ]
+        }
+      ],
+      "workflow_steps": [],
+      "caveats": [
+        "Topology is observation evidence for the supplied input, not a clinical entity model or an analysis policy."
       ]
     }
   },
@@ -1786,11 +2172,13 @@
       "completeness": "unknown",
       "parsing": "atomic",
       "evidence": [
-        "maintainer_confirmed"
+        "maintainer_confirmed",
+        "observed_source_values"
       ],
       "caveats": [
         "These meanings apply only when exposure category is H.",
-        "The confirmed codes are not asserted to exhaust every represented source value."
+        "The confirmed codes are not asserted to exhaust every represented source value.",
+        "The reviewed topology packet also represents ORAL under H and T and TAXOL under H; these category occurrences have unresolved meanings and are not assigned meanings from another category."
       ],
       "codes": {
         "C": "Estrogen and progesterone; combined hormone-replacement therapy",
@@ -1810,11 +2198,13 @@
       "completeness": "unknown",
       "parsing": "atomic",
       "evidence": [
-        "maintainer_confirmed"
+        "maintainer_confirmed",
+        "observed_source_values"
       ],
       "caveats": [
         "These meanings apply only when exposure category is T.",
-        "The confirmed codes are not asserted to exhaust every represented source value."
+        "The confirmed codes are not asserted to exhaust every represented source value.",
+        "The reviewed topology packet also represents ORAL under H and T and TAXOL under H; these category occurrences have unresolved meanings and are not assigned meanings from another category."
       ],
       "codes": {
         "CH": "Chemotherapy",
@@ -1850,7 +2240,8 @@
       "completeness": "unknown",
       "parsing": "atomic",
       "evidence": [
-        "maintainer_confirmed"
+        "maintainer_confirmed",
+        "observed_source_values"
       ],
       "caveats": [
         "The category determines which procedure-code vocabulary applies.",
@@ -1866,7 +2257,8 @@
       "completeness": "unknown",
       "parsing": "atomic",
       "evidence": [
-        "maintainer_confirmed"
+        "maintainer_confirmed",
+        "observed_source_values"
       ],
       "caveats": [
         "These meanings apply only when procedure category is G.",
@@ -1884,7 +2276,8 @@
       "completeness": "unknown",
       "parsing": "atomic",
       "evidence": [
-        "maintainer_confirmed"
+        "maintainer_confirmed",
+        "observed_source_values"
       ],
       "caveats": [
         "These meanings apply only when procedure category is B.",
@@ -1911,13 +2304,15 @@
     "internal-v2.vocabulary.procedure_history.result": {
       "label": "Reported historical-procedure result codes",
       "completeness": "unknown",
-      "parsing": "atomic",
+      "parsing": "comma_composed_undocumented",
       "evidence": [
-        "maintainer_confirmed"
+        "maintainer_confirmed",
+        "observed_source_values"
       ],
       "caveats": [
         "The codes mix broad assessments, specific malignant diagnoses, high-risk lesions, and benign histologies or conditions; they do not form one pathology-severity scale.",
-        "A matching clinical label does not make a history result equivalent to verified procedure-associated pathology."
+        "A matching clinical label does not make a history result equivalent to verified procedure-associated pathology.",
+        "FA,SF is observed as a combined token, but delimiter, ordering, and repetition semantics are unresolved for ProcHist; the individual code meanings do not authorize splitting this occurrence. Blank is not established as equivalent to NONE."
       ],
       "codes": {
         "ADH": "Atypical ductal hyperplasia",
@@ -4534,6 +4929,133 @@
         "1.0": "value occurring with rows where neither source laterality attribute is represented; intended meaning not established",
         "2.0": "value occurring with rows for which no derived final image laterality is represented; intended meaning not established"
       }
+    },
+    "internal-v2.vocabulary.cancer_history.subject_category": {
+      "label": "Cancer-history subject flag",
+      "completeness": "unknown",
+      "parsing": "atomic",
+      "evidence": [
+        "maintainer_confirmed",
+        "observed_source_values"
+      ],
+      "caveats": [
+        "This is a subject flag, not a patient or relative identifier."
+      ],
+      "codes": {
+        "0": "Relative",
+        "1": "Patient"
+      }
+    },
+    "internal-v2.vocabulary.cancer_history.history_category": {
+      "label": "Provisional cancer-history category labels",
+      "completeness": "unknown",
+      "parsing": "atomic",
+      "evidence": [
+        "observed_source_values",
+        "inference"
+      ],
+      "caveats": [
+        "Candidate meanings from a work-in-progress internal-dictionary reconciliation; not final verified CancerHist code definitions.",
+        "Meaning is category-specific; no severity or malignancy rule follows from category membership."
+      ],
+      "codes": {
+        "B": "Breast history (provisional)",
+        "O": "Other history (provisional)"
+      }
+    },
+    "internal-v2.vocabulary.cancer_history.breast_code": {
+      "label": "Provisional breast-history code meanings",
+      "completeness": "unknown",
+      "parsing": "atomic",
+      "evidence": [
+        "observed_source_values",
+        "inference"
+      ],
+      "caveats": [
+        "Candidate meanings from a work-in-progress internal-dictionary reconciliation; not final verified CancerHist code definitions.",
+        "Meaning is category-specific; no severity or malignancy rule follows from category membership.",
+        "Applies only under type B. B, blank, DCG, DCS, and XX have no assigned meaning; a broader pathology dictionary does not resolve their CancerHist occurrences."
+      ],
+      "codes": {
+        "I": "Invasive mammary carcinoma",
+        "DC": "Ductal carcinoma in situ",
+        "DCL": "Ductal carcinoma in situ, low grade",
+        "DCH": "Ductal carcinoma in situ, high grade",
+        "DCC": "Ductal carcinoma in situ with comedonecrosis",
+        "IDC": "Invasive ductal carcinoma",
+        "ID": "Invasive ductal carcinoma",
+        "INC": "Inflammatory carcinoma",
+        "ADH": "Atypical ductal hyperplasia",
+        "II": "Invasive and in-situ carcinoma",
+        "IL": "Invasive lobular carcinoma",
+        "LS": "Lobular carcinoma in situ",
+        "RS": "Radial scar",
+        "BVI": "Blood vessel invasion",
+        "MIM": "Metastasis to intramammary lymph node",
+        "MDN": "Metastasis to axillary node",
+        "PA": "Papilloma",
+        "SQ": "Squamous carcinoma",
+        "AS": "Angiosarcoma",
+        "PD": "Paget disease",
+        "LY": "Lymphoma",
+        "ADE": "Adenocarcinoma",
+        "PT": "Phyllodes tumor",
+        "PTM": "Malignant phyllodes tumor",
+        "CI": "Intraductal comedocarcinoma",
+        "ADC": "Adenoid cystic carcinoma",
+        "ALH": "Atypical lobular hyperplasia",
+        "CC": "Colloid or mucinous carcinoma",
+        "MB": "Metastasis to breast",
+        "ANM": "Metastasis to axillary node",
+        "IPC": "Invasive papillary carcinoma",
+        "ICP": "Intracystic papillary carcinoma",
+        "CS": "Carcinosarcoma",
+        "TC": "Tubular carcinoma",
+        "CM": "Carcinoma in males",
+        "CCH": "Carcinoma in children",
+        "CEB": "Carcinoma in ectopic breast",
+        "CMT": "Carcinoma with metaplasia",
+        "MC": "Medullary carcinoma"
+      }
+    },
+    "internal-v2.vocabulary.cancer_history.other_code": {
+      "label": "Provisional other-history code meanings",
+      "completeness": "unknown",
+      "parsing": "atomic",
+      "evidence": [
+        "observed_source_values",
+        "inference"
+      ],
+      "caveats": [
+        "Candidate meanings from a work-in-progress internal-dictionary reconciliation; not final verified CancerHist code definitions.",
+        "Meaning is category-specific; no severity or malignancy rule follows from category membership.",
+        "Applies only under type O; code O is provisionally ovarian cancer here, distinct from the type O category."
+      ],
+      "codes": {
+        "BLAD": "Bladder cancer",
+        "BONE": "Bone cancer",
+        "BRAIN": "Brain cancer",
+        "CERV": "Cervical cancer",
+        "COLON": "Colon cancer",
+        "G": "Endometrial cancer",
+        "GI": "Gastrointestinal cancer",
+        "HODG": "Hodgkin disease",
+        "KID": "Kidney cancer",
+        "LEUK": "Leukemia",
+        "LIVER": "Liver cancer",
+        "LUNG": "Lung cancer",
+        "LYM": "Lymphoma",
+        "MEL": "Melanoma",
+        "O": "Ovarian cancer",
+        "OTHER": "Other cancer",
+        "PAN": "Pancreatic cancer",
+        "THY": "Thyroid cancer",
+        "UTER": "Uterine cancer",
+        "VULV": "Vulvar cancer",
+        "PROS": "Prostate cancer",
+        "SKIN": "Skin cancer",
+        "STOM": "Stomach cancer"
+      }
     }
   },
   "profile_binding": {
@@ -6830,6 +7352,456 @@
             ]
           }
         ]
+      },
+      {
+        "id": "internal-v2.binding.feature.hormone-history.identity.patient_identifier.empi-anon",
+        "table": "HormoneHist_anon",
+        "column": "empi_anon",
+        "concept": "identity.patient_identifier",
+        "status": "direct",
+        "occurrence_interpretations": [
+          {
+            "representation": "represented identifier",
+            "meaning": "Established patient namespace for the history owner",
+            "status": "verified",
+            "claim_refs": [
+              "internal-v2.patient-history-context#patient-and-accession-context"
+            ],
+            "caveats": [
+              "Candidate accession sentinel behavior and cross-table match coverage remain unresolved."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "internal-v2.binding.feature.hormone-history.exam.accession_identifier.acc-anon",
+        "table": "HormoneHist_anon",
+        "column": "acc_anon",
+        "concept": "exam.accession_identifier",
+        "status": "direct",
+        "occurrence_interpretations": [
+          {
+            "representation": "represented identifier",
+            "meaning": "Associated imaging-accession recording context, not the historical event accession or date",
+            "status": "verified",
+            "claim_refs": [
+              "internal-v2.patient-history-context#patient-and-accession-context"
+            ],
+            "caveats": [
+              "Candidate accession sentinel behavior and cross-table match coverage remain unresolved."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "internal-v2.binding.feature.procedure-history.identity.patient_identifier.empi-anon",
+        "table": "ProcedureHist_anon",
+        "column": "empi_anon",
+        "concept": "identity.patient_identifier",
+        "status": "direct",
+        "occurrence_interpretations": [
+          {
+            "representation": "represented identifier",
+            "meaning": "Established patient namespace for the history owner",
+            "status": "verified",
+            "claim_refs": [
+              "internal-v2.patient-history-context#patient-and-accession-context"
+            ],
+            "caveats": [
+              "Candidate accession sentinel behavior and cross-table match coverage remain unresolved."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "internal-v2.binding.feature.procedure-history.exam.accession_identifier.acc-anon",
+        "table": "ProcedureHist_anon",
+        "column": "acc_anon",
+        "concept": "exam.accession_identifier",
+        "status": "direct",
+        "occurrence_interpretations": [
+          {
+            "representation": "represented identifier",
+            "meaning": "Associated imaging-accession recording context, not the historical event accession or date",
+            "status": "verified",
+            "claim_refs": [
+              "internal-v2.patient-history-context#patient-and-accession-context"
+            ],
+            "caveats": [
+              "Candidate accession sentinel behavior and cross-table match coverage remain unresolved."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "internal-v2.binding.feature.hormone-history.internal-v2.hormone_history.exposure_category.type",
+        "table": "HormoneHist_anon",
+        "column": "type",
+        "concept": "internal-v2.hormone_history.exposure_category",
+        "status": "direct"
+      },
+      {
+        "id": "internal-v2.binding.feature.hormone-history.internal-v2.hormone_history.continuous_status.continuous",
+        "table": "HormoneHist_anon",
+        "column": "continuous",
+        "concept": "internal-v2.hormone_history.continuous_status",
+        "status": "direct",
+        "occurrence_interpretations": [
+          {
+            "representation": "Y, N, or blank string",
+            "meaning": "Observed reported-status encodings; blank-to-negative equivalence is not established",
+            "status": "reconciled",
+            "claim_refs": [
+              "internal-v2.history-topology-context#hormone-status-representation"
+            ],
+            "caveats": [
+              "No exact interval endpoint is supplied."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "internal-v2.binding.feature.hormone-history.internal-v2.hormone_history.current_status.current",
+        "table": "HormoneHist_anon",
+        "column": "current",
+        "concept": "internal-v2.hormone_history.current_status",
+        "status": "direct",
+        "occurrence_interpretations": [
+          {
+            "representation": "Y, N, or blank string",
+            "meaning": "Observed reported-status encodings; blank-to-negative equivalence is not established",
+            "status": "reconciled",
+            "claim_refs": [
+              "internal-v2.history-topology-context#hormone-status-representation"
+            ],
+            "caveats": [
+              "No exact interval endpoint is supplied."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "internal-v2.binding.feature.hormone-history.internal-v2.hormone_history.reported_duration.duration",
+        "table": "HormoneHist_anon",
+        "column": "duration",
+        "concept": "internal-v2.hormone_history.reported_duration",
+        "status": "direct",
+        "notes": [
+          "Packet int64 is a physical parse type, not evidence for duration units or zero-as-missing semantics."
+        ]
+      },
+      {
+        "id": "internal-v2.binding.feature.hormone-history.internal-v2.hormone_history.reported_start_age.first-age",
+        "table": "HormoneHist_anon",
+        "column": "first_age",
+        "concept": "internal-v2.hormone_history.reported_start_age",
+        "status": "direct",
+        "notes": [
+          "The physical field remains string despite numeric temporal meaning; no exact-date construction, sentinel rule, or precedence is supplied."
+        ]
+      },
+      {
+        "id": "internal-v2.binding.feature.hormone-history.internal-v2.hormone_history.reported_end_age.last-age",
+        "table": "HormoneHist_anon",
+        "column": "last_age",
+        "concept": "internal-v2.hormone_history.reported_end_age",
+        "status": "direct",
+        "notes": [
+          "The physical field remains string despite numeric temporal meaning; no exact-date construction, sentinel rule, or precedence is supplied."
+        ]
+      },
+      {
+        "id": "internal-v2.binding.feature.hormone-history.internal-v2.hormone_history.reported_start_month.mfirst",
+        "table": "HormoneHist_anon",
+        "column": "mfirst",
+        "concept": "internal-v2.hormone_history.reported_start_month",
+        "status": "direct",
+        "notes": [
+          "The physical field remains string despite numeric temporal meaning; no exact-date construction, sentinel rule, or precedence is supplied."
+        ]
+      },
+      {
+        "id": "internal-v2.binding.feature.hormone-history.internal-v2.hormone_history.reported_start_year.yfirst",
+        "table": "HormoneHist_anon",
+        "column": "yfirst",
+        "concept": "internal-v2.hormone_history.reported_start_year",
+        "status": "direct",
+        "notes": [
+          "The physical field remains string despite numeric temporal meaning; no exact-date construction, sentinel rule, or precedence is supplied."
+        ]
+      },
+      {
+        "id": "internal-v2.binding.feature.hormone-history.internal-v2.hormone_history.reported_end_month.mlast",
+        "table": "HormoneHist_anon",
+        "column": "mlast",
+        "concept": "internal-v2.hormone_history.reported_end_month",
+        "status": "direct",
+        "notes": [
+          "The physical field remains string despite numeric temporal meaning; no exact-date construction, sentinel rule, or precedence is supplied."
+        ]
+      },
+      {
+        "id": "internal-v2.binding.feature.hormone-history.internal-v2.hormone_history.reported_end_year.ylast",
+        "table": "HormoneHist_anon",
+        "column": "ylast",
+        "concept": "internal-v2.hormone_history.reported_end_year",
+        "status": "direct",
+        "notes": [
+          "The physical field remains string despite numeric temporal meaning; no exact-date construction, sentinel rule, or precedence is supplied."
+        ]
+      },
+      {
+        "id": "internal-v2.binding.feature.hormone-history.internal-v2.hormone_history.comment.comment",
+        "table": "HormoneHist_anon",
+        "column": "comment",
+        "concept": "internal-v2.hormone_history.comment",
+        "status": "direct"
+      },
+      {
+        "id": "internal-v2.binding.feature.hormone-history.internal-v2.hormone_history.hormone_code.code",
+        "table": "HormoneHist_anon",
+        "column": "code",
+        "concept": "internal-v2.hormone_history.hormone_code",
+        "status": "conditional",
+        "qualifiers": {
+          "category_column": "type",
+          "category_value": "H"
+        },
+        "occurrence_interpretations": [
+          {
+            "representation": "ORAL or TAXOL under H",
+            "meaning": "Observed category/code combinations outside the supported occurrence-specific dictionary; meanings remain unresolved",
+            "status": "unresolved",
+            "claim_refs": [
+              "internal-v2.history-topology-context#hormone-category-discrepancies"
+            ],
+            "caveats": []
+          }
+        ]
+      },
+      {
+        "id": "internal-v2.binding.feature.hormone-history.internal-v2.hormone_history.therapy_code.code",
+        "table": "HormoneHist_anon",
+        "column": "code",
+        "concept": "internal-v2.hormone_history.therapy_code",
+        "status": "conditional",
+        "qualifiers": {
+          "category_column": "type",
+          "category_value": "T"
+        },
+        "occurrence_interpretations": [
+          {
+            "representation": "ORAL under T",
+            "meaning": "Observed category/code combinations outside the supported occurrence-specific dictionary; meanings remain unresolved",
+            "status": "unresolved",
+            "claim_refs": [
+              "internal-v2.history-topology-context#hormone-category-discrepancies"
+            ],
+            "caveats": []
+          }
+        ]
+      },
+      {
+        "id": "internal-v2.binding.feature.hormone-history.internal-v2.hormone_history.contraceptive_code.code",
+        "table": "HormoneHist_anon",
+        "column": "code",
+        "concept": "internal-v2.hormone_history.contraceptive_code",
+        "status": "conditional",
+        "qualifiers": {
+          "category_column": "type",
+          "category_value": "O"
+        }
+      },
+      {
+        "id": "internal-v2.binding.feature.procedure-history.internal-v2.procedure_history.procedure_category.type",
+        "table": "ProcedureHist_anon",
+        "column": "type",
+        "concept": "internal-v2.procedure_history.procedure_category",
+        "status": "direct"
+      },
+      {
+        "id": "internal-v2.binding.feature.procedure-history.internal-v2.procedure_history.gynecological_procedure_code.pcode",
+        "table": "ProcedureHist_anon",
+        "column": "pcode",
+        "concept": "internal-v2.procedure_history.gynecological_procedure_code",
+        "status": "conditional",
+        "qualifiers": {
+          "category_column": "type",
+          "category_value": "G"
+        },
+        "occurrence_interpretations": [
+          {
+            "representation": "category-specific padded procedure token",
+            "meaning": "Existing reviewed code meaning applies within the represented procedure category",
+            "status": "reconciled",
+            "claim_refs": [
+              "internal-v2.history-topology-context#procedure-category-reconciliation"
+            ],
+            "caveats": []
+          }
+        ]
+      },
+      {
+        "id": "internal-v2.binding.feature.procedure-history.internal-v2.procedure_history.breast_procedure_code.pcode",
+        "table": "ProcedureHist_anon",
+        "column": "pcode",
+        "concept": "internal-v2.procedure_history.breast_procedure_code",
+        "status": "conditional",
+        "qualifiers": {
+          "category_column": "type",
+          "category_value": "B"
+        },
+        "occurrence_interpretations": [
+          {
+            "representation": "category-specific padded procedure token",
+            "meaning": "Existing reviewed code meaning applies within the represented procedure category",
+            "status": "reconciled",
+            "claim_refs": [
+              "internal-v2.history-topology-context#procedure-category-reconciliation"
+            ],
+            "caveats": []
+          }
+        ]
+      },
+      {
+        "id": "internal-v2.binding.feature.procedure-history.internal-v2.procedure_history.reported_breast_side.side",
+        "table": "ProcedureHist_anon",
+        "column": "side",
+        "concept": "internal-v2.procedure_history.reported_breast_side",
+        "status": "conditional",
+        "qualifiers": {
+          "category_column": "type",
+          "category_value": "B"
+        }
+      },
+      {
+        "id": "internal-v2.binding.feature.procedure-history.internal-v2.procedure_history.reported_result.result",
+        "table": "ProcedureHist_anon",
+        "column": "result",
+        "concept": "internal-v2.procedure_history.reported_result",
+        "status": "direct",
+        "occurrence_interpretations": [
+          {
+            "representation": "FA,SF",
+            "meaning": "Comma-bearing historical result with unresolved composition semantics",
+            "status": "unresolved",
+            "claim_refs": [
+              "internal-v2.history-topology-context#procedure-result-representation"
+            ],
+            "caveats": []
+          },
+          {
+            "representation": "blank string",
+            "meaning": "Unspecified source representation; equivalence to NONE or a negative result is not established",
+            "status": "unresolved",
+            "claim_refs": [
+              "internal-v2.history-topology-context#procedure-result-representation"
+            ],
+            "caveats": []
+          }
+        ]
+      },
+      {
+        "id": "internal-v2.binding.feature.cancer-history.subject_category",
+        "table": "CancerHist_anon",
+        "column": "patient",
+        "concept": "internal-v2.cancer_history.subject_category",
+        "status": "direct",
+        "occurrence_interpretations": [
+          {
+            "representation": "represented category-specific source token",
+            "meaning": "1 denotes the patient; 0 denotes a relative, not a relative identifier",
+            "status": "verified",
+            "claim_refs": [
+              "internal-v2.cancer-history-context#subject-and-relationship"
+            ],
+            "caveats": []
+          }
+        ]
+      },
+      {
+        "id": "internal-v2.binding.feature.cancer-history.relative_relationship_code",
+        "table": "CancerHist_anon",
+        "column": "rel",
+        "concept": "internal-v2.cancer_history.relative_relationship_code",
+        "status": "conditional",
+        "qualifiers": {
+          "subject_column": "patient",
+          "subject_value": 0
+        },
+        "occurrence_interpretations": [
+          {
+            "representation": "represented category-specific source token",
+            "meaning": "Relationship category for a relative; not unique person identity",
+            "status": "verified",
+            "claim_refs": [
+              "internal-v2.cancer-history-context#subject-and-relationship"
+            ],
+            "caveats": []
+          }
+        ]
+      },
+      {
+        "id": "internal-v2.binding.feature.cancer-history.history_category",
+        "table": "CancerHist_anon",
+        "column": "type",
+        "concept": "internal-v2.cancer_history.history_category",
+        "status": "unresolved",
+        "occurrence_interpretations": [
+          {
+            "representation": "represented category-specific source token",
+            "meaning": "B and O have provisional breast and other history interpretations; blank remains unspecified",
+            "status": "unverified",
+            "claim_refs": [
+              "internal-v2.cancer-history-context#provisional-code-meanings"
+            ],
+            "caveats": []
+          }
+        ]
+      },
+      {
+        "id": "internal-v2.binding.feature.cancer-history.breast_code",
+        "table": "CancerHist_anon",
+        "column": "cancercode",
+        "concept": "internal-v2.cancer_history.breast_code",
+        "status": "unresolved",
+        "qualifiers": {
+          "category_column": "type",
+          "category_value": "B"
+        },
+        "occurrence_interpretations": [
+          {
+            "representation": "represented category-specific source token",
+            "meaning": "Candidate meaning from a work-in-progress internal dictionary, conditional on the source type category",
+            "status": "unverified",
+            "claim_refs": [
+              "internal-v2.cancer-history-context#provisional-code-meanings"
+            ],
+            "caveats": []
+          }
+        ]
+      },
+      {
+        "id": "internal-v2.binding.feature.cancer-history.other_code",
+        "table": "CancerHist_anon",
+        "column": "cancercode",
+        "concept": "internal-v2.cancer_history.other_code",
+        "status": "unresolved",
+        "qualifiers": {
+          "category_column": "type",
+          "category_value": "O"
+        },
+        "occurrence_interpretations": [
+          {
+            "representation": "represented category-specific source token",
+            "meaning": "Candidate meaning from a work-in-progress internal dictionary, conditional on the source type category",
+            "status": "unverified",
+            "claim_refs": [
+              "internal-v2.cancer-history-context#provisional-code-meanings"
+            ],
+            "caveats": []
+          }
+        ]
       }
     ],
     "object_bindings": [
@@ -7339,6 +8311,176 @@
           "ImageLateralityFinal is the reliable attribute for the breast represented by the image; it is not automatically the imaging-finding or procedure side.",
           "Only left and right are represented; a missing derived laterality is not bilateral and prevents a side projection for that row.",
           "No side identity is declared because the derived laterality is not always resolved."
+        ]
+      },
+      {
+        "id": "internal-v2.patient.hormone-history",
+        "object": "patient",
+        "table": "HormoneHist_anon",
+        "columns": [
+          "empi_anon"
+        ],
+        "completeness": "partial",
+        "authority": "reference",
+        "derivation": "projected",
+        "claim_refs": [
+          "internal-v2.patient-history-context#patient-and-accession-context",
+          "internal-v2.history-topology-context#tested-groupings"
+        ],
+        "caveats": [
+          "This is a repeated contextual projection; no history-entry or historical-event identity is asserted."
+        ]
+      },
+      {
+        "id": "internal-v2.imaging_exam.hormone-history",
+        "object": "imaging_exam",
+        "table": "HormoneHist_anon",
+        "columns": [
+          "acc_anon"
+        ],
+        "completeness": "partial",
+        "authority": "reference",
+        "derivation": "projected",
+        "claim_refs": [
+          "internal-v2.patient-history-context#patient-and-accession-context",
+          "internal-v2.history-topology-context#tested-groupings"
+        ],
+        "caveats": [
+          "This is a repeated contextual projection; no history-entry or historical-event identity is asserted."
+        ]
+      },
+      {
+        "id": "internal-v2.hormone-history.entry",
+        "object": "internal-v2.hormone_history_entry",
+        "table": "HormoneHist_anon",
+        "columns": [
+          "type",
+          "code",
+          "side",
+          "first_age",
+          "last_age",
+          "continuous",
+          "current",
+          "duration",
+          "mfirst",
+          "yfirst",
+          "mlast",
+          "ylast",
+          "empi_anon",
+          "acc_anon",
+          "comment"
+        ],
+        "completeness": "partial",
+        "authority": "reference",
+        "derivation": "source",
+        "claim_refs": [
+          "internal-v2.patient-history-context#reported-history-not-current-care",
+          "internal-v2.history-topology-context#physical-inventories",
+          "internal-v2.history-topology-context#tested-groupings"
+        ],
+        "caveats": [
+          "The table carries reported history; no instance identity, event uniqueness, or deduplication rule is established.",
+          "Complete physical inventory does not imply complete clinical capture or that every column has a supported semantic mapping."
+        ]
+      },
+      {
+        "id": "internal-v2.patient.procedure-history",
+        "object": "patient",
+        "table": "ProcedureHist_anon",
+        "columns": [
+          "empi_anon"
+        ],
+        "completeness": "partial",
+        "authority": "reference",
+        "derivation": "projected",
+        "claim_refs": [
+          "internal-v2.patient-history-context#patient-and-accession-context",
+          "internal-v2.history-topology-context#tested-groupings"
+        ],
+        "caveats": [
+          "This is a repeated contextual projection; no history-entry or historical-event identity is asserted."
+        ]
+      },
+      {
+        "id": "internal-v2.imaging_exam.procedure-history",
+        "object": "imaging_exam",
+        "table": "ProcedureHist_anon",
+        "columns": [
+          "acc_anon"
+        ],
+        "completeness": "partial",
+        "authority": "reference",
+        "derivation": "projected",
+        "claim_refs": [
+          "internal-v2.patient-history-context#patient-and-accession-context",
+          "internal-v2.history-topology-context#tested-groupings"
+        ],
+        "caveats": [
+          "This is a repeated contextual projection; no history-entry or historical-event identity is asserted."
+        ]
+      },
+      {
+        "id": "internal-v2.procedure-history.entry",
+        "object": "internal-v2.procedure_history_entry",
+        "table": "ProcedureHist_anon",
+        "columns": [
+          "type",
+          "pcode",
+          "side",
+          "age",
+          "pdatealt",
+          "month",
+          "year",
+          "result",
+          "empi_anon",
+          "acc_anon",
+          "comment"
+        ],
+        "completeness": "partial",
+        "authority": "reference",
+        "derivation": "source",
+        "claim_refs": [
+          "internal-v2.patient-history-context#reported-history-not-current-care",
+          "internal-v2.history-topology-context#physical-inventories",
+          "internal-v2.history-topology-context#tested-groupings"
+        ],
+        "caveats": [
+          "The table carries reported history; no instance identity, event uniqueness, or deduplication rule is established.",
+          "Complete physical inventory does not imply complete clinical capture or that every column has a supported semantic mapping."
+        ]
+      },
+      {
+        "id": "internal-v2.cancer-history.entry",
+        "object": "internal-v2.cancer_history_entry",
+        "table": "CancerHist_anon",
+        "columns": [
+          "empi_anon",
+          "acc_anon",
+          "patient",
+          "rel",
+          "type",
+          "cancercode",
+          "premen",
+          "bilat",
+          "side",
+          "month",
+          "year",
+          "diag_age",
+          "curr_age",
+          "brca1",
+          "brca2",
+          "comment"
+        ],
+        "completeness": "partial",
+        "authority": "reference",
+        "derivation": "source",
+        "claim_refs": [
+          "internal-v2.cancer-history-context#subject-and-relationship",
+          "internal-v2.cancer-history-context#relative-grouping-not-identity"
+        ],
+        "caveats": [
+          "No instance identity or relative-person object is asserted.",
+          "The row may concern a relative rather than the patient; code and time interpretation remains qualified."
         ]
       }
     ],
@@ -9153,6 +10295,381 @@
           "DICOM PatientAge is top-coded to 89, PatientSex is unchanged, and sensitive non-identifier/non-date attributes were dropped during anonymization.",
           "Detailed DICOM acquisition, dose, detector, collimator, geometry, windowing, and icon-image attributes retain standard DICOM element semantics but remain inventoried without dedicated catalogue concepts or mappings."
         ]
+      },
+      {
+        "id": "internal-v2.binding.table.hormone-history",
+        "table": "HormoneHist_anon",
+        "grain": "one source history record; clinical-entry identity and rows per historical event remain unresolved",
+        "columns": [
+          {
+            "name": "type",
+            "physical_type": "string",
+            "nullable": true
+          },
+          {
+            "name": "code",
+            "physical_type": "string",
+            "nullable": true
+          },
+          {
+            "name": "side",
+            "physical_type": "string",
+            "nullable": true
+          },
+          {
+            "name": "first_age",
+            "physical_type": "string",
+            "nullable": true
+          },
+          {
+            "name": "last_age",
+            "physical_type": "string",
+            "nullable": true
+          },
+          {
+            "name": "continuous",
+            "physical_type": "string",
+            "nullable": true
+          },
+          {
+            "name": "current",
+            "physical_type": "string",
+            "nullable": true
+          },
+          {
+            "name": "duration",
+            "physical_type": "int64",
+            "nullable": true
+          },
+          {
+            "name": "mfirst",
+            "physical_type": "string",
+            "nullable": true
+          },
+          {
+            "name": "yfirst",
+            "physical_type": "string",
+            "nullable": true
+          },
+          {
+            "name": "mlast",
+            "physical_type": "string",
+            "nullable": true
+          },
+          {
+            "name": "ylast",
+            "physical_type": "string",
+            "nullable": true
+          },
+          {
+            "name": "empi_anon",
+            "physical_type": "int64",
+            "nullable": true
+          },
+          {
+            "name": "acc_anon",
+            "physical_type": "int64",
+            "nullable": true
+          },
+          {
+            "name": "comment",
+            "physical_type": "string",
+            "nullable": true
+          }
+        ],
+        "keys": [
+          {
+            "id": "internal-v2.hormone-history.patient-grouping",
+            "columns": [
+              "empi_anon"
+            ],
+            "kind": "technical",
+            "uniqueness": "not_unique",
+            "completeness": "unknown",
+            "evidence": [
+              "observed_source_values"
+            ],
+            "caveats": [
+              "A tested grouping with varying attributes, not a unique history-row or clinical-entry identity; missing values were retained as levels.",
+              "No completeness, sentinel, or longitudinal history-identity assertion follows from the topology export."
+            ]
+          },
+          {
+            "id": "internal-v2.hormone-history.exam-grouping",
+            "columns": [
+              "acc_anon"
+            ],
+            "kind": "technical",
+            "uniqueness": "not_unique",
+            "completeness": "unknown",
+            "evidence": [
+              "observed_source_values"
+            ],
+            "caveats": [
+              "A tested grouping with varying attributes, not a unique history-row or clinical-entry identity; missing values were retained as levels.",
+              "No completeness, sentinel, or longitudinal history-identity assertion follows from the topology export."
+            ]
+          }
+        ],
+        "caveats": [
+          "Inventory provenance: internal-v2.hormone-history-topology-packet and internal-v2.history-inventory-maintainer-confirmation; the packet omits only the maintainer-confirmed free-text comment column.",
+          "Physical types are packet-reported pandas parse types, with str represented as string; comment is assessed as string from maintainer description rather than packet observation.",
+          "No embedded schema or nullability contract is supplied; every column is conservatively nullable, independently of observed missingness.",
+          "Text padding and blank strings are physical representations, not global missing-value or normalization rules.",
+          "The packet tests groupings only and does not establish unique row identity, deduplication, or cross-table match coverage.",
+          "The delimited-text artifact is outside the footer-only Parquet verifier; no clinical source rows or free text are included in the catalog."
+        ]
+      },
+      {
+        "id": "internal-v2.binding.table.procedure-history",
+        "table": "ProcedureHist_anon",
+        "grain": "one source history record; clinical-entry identity and rows per historical event remain unresolved",
+        "columns": [
+          {
+            "name": "type",
+            "physical_type": "string",
+            "nullable": true
+          },
+          {
+            "name": "pcode",
+            "physical_type": "string",
+            "nullable": true
+          },
+          {
+            "name": "side",
+            "physical_type": "string",
+            "nullable": true
+          },
+          {
+            "name": "age",
+            "physical_type": "string",
+            "nullable": true
+          },
+          {
+            "name": "pdatealt",
+            "physical_type": "string",
+            "nullable": true
+          },
+          {
+            "name": "month",
+            "physical_type": "string",
+            "nullable": true
+          },
+          {
+            "name": "year",
+            "physical_type": "string",
+            "nullable": true
+          },
+          {
+            "name": "result",
+            "physical_type": "string",
+            "nullable": true
+          },
+          {
+            "name": "empi_anon",
+            "physical_type": "int64",
+            "nullable": true
+          },
+          {
+            "name": "acc_anon",
+            "physical_type": "int64",
+            "nullable": true
+          },
+          {
+            "name": "comment",
+            "physical_type": "string",
+            "nullable": true
+          }
+        ],
+        "keys": [
+          {
+            "id": "internal-v2.procedure-history.patient-grouping",
+            "columns": [
+              "empi_anon"
+            ],
+            "kind": "technical",
+            "uniqueness": "not_unique",
+            "completeness": "unknown",
+            "evidence": [
+              "observed_source_values"
+            ],
+            "caveats": [
+              "A tested grouping with varying attributes, not a unique history-row or clinical-entry identity; missing values were retained as levels.",
+              "No completeness, sentinel, or longitudinal history-identity assertion follows from the topology export."
+            ]
+          },
+          {
+            "id": "internal-v2.procedure-history.exam-grouping",
+            "columns": [
+              "acc_anon"
+            ],
+            "kind": "technical",
+            "uniqueness": "not_unique",
+            "completeness": "unknown",
+            "evidence": [
+              "observed_source_values"
+            ],
+            "caveats": [
+              "A tested grouping with varying attributes, not a unique history-row or clinical-entry identity; missing values were retained as levels.",
+              "No completeness, sentinel, or longitudinal history-identity assertion follows from the topology export."
+            ]
+          }
+        ],
+        "caveats": [
+          "Inventory provenance: internal-v2.procedure-history-topology-packet and internal-v2.history-inventory-maintainer-confirmation; the packet omits only the maintainer-confirmed free-text comment column.",
+          "Physical types are packet-reported pandas parse types, with str represented as string; comment is assessed as string from maintainer description rather than packet observation.",
+          "No embedded schema or nullability contract is supplied; every column is conservatively nullable, independently of observed missingness.",
+          "Text padding and blank strings are physical representations, not global missing-value or normalization rules.",
+          "The packet tests groupings only and does not establish unique row identity, deduplication, or cross-table match coverage.",
+          "The delimited-text artifact is outside the footer-only Parquet verifier; no clinical source rows or free text are included in the catalog."
+        ]
+      },
+      {
+        "id": "internal-v2.binding.table.cancer-history",
+        "table": "CancerHist_anon",
+        "grain": "one source history record; clinical-entry identity and rows per historical event remain unresolved",
+        "columns": [
+          {
+            "name": "empi_anon",
+            "physical_type": "int64",
+            "nullable": true
+          },
+          {
+            "name": "acc_anon",
+            "physical_type": "int64",
+            "nullable": true
+          },
+          {
+            "name": "patient",
+            "physical_type": "int64",
+            "nullable": true
+          },
+          {
+            "name": "rel",
+            "physical_type": "string",
+            "nullable": true
+          },
+          {
+            "name": "type",
+            "physical_type": "string",
+            "nullable": true
+          },
+          {
+            "name": "cancercode",
+            "physical_type": "string",
+            "nullable": true
+          },
+          {
+            "name": "premen",
+            "physical_type": "string",
+            "nullable": true
+          },
+          {
+            "name": "bilat",
+            "physical_type": "string",
+            "nullable": true
+          },
+          {
+            "name": "side",
+            "physical_type": "string",
+            "nullable": true
+          },
+          {
+            "name": "month",
+            "physical_type": "string",
+            "nullable": true
+          },
+          {
+            "name": "year",
+            "physical_type": "string",
+            "nullable": true
+          },
+          {
+            "name": "diag_age",
+            "physical_type": "string",
+            "nullable": true
+          },
+          {
+            "name": "curr_age",
+            "physical_type": "string",
+            "nullable": true
+          },
+          {
+            "name": "brca1",
+            "physical_type": "string",
+            "nullable": true
+          },
+          {
+            "name": "brca2",
+            "physical_type": "string",
+            "nullable": true
+          },
+          {
+            "name": "comment",
+            "physical_type": "string",
+            "nullable": true
+          }
+        ],
+        "keys": [
+          {
+            "id": "internal-v2.cancer-history.patient-grouping",
+            "columns": [
+              "empi_anon"
+            ],
+            "kind": "technical",
+            "uniqueness": "not_unique",
+            "completeness": "unknown",
+            "evidence": [
+              "observed_source_values"
+            ],
+            "caveats": [
+              "A tested grouping with varying attributes, not a unique history-row or clinical-entry identity; missing values were retained as levels.",
+              "No completeness, sentinel, or longitudinal history-identity assertion follows from the topology export."
+            ]
+          },
+          {
+            "id": "internal-v2.cancer-history.exam-grouping",
+            "columns": [
+              "acc_anon"
+            ],
+            "kind": "technical",
+            "uniqueness": "not_unique",
+            "completeness": "unknown",
+            "evidence": [
+              "observed_source_values"
+            ],
+            "caveats": [
+              "A tested grouping with varying attributes, not a unique history-row or clinical-entry identity; missing values were retained as levels.",
+              "No completeness, sentinel, or longitudinal history-identity assertion follows from the topology export."
+            ]
+          },
+          {
+            "id": "internal-v2.cancer-history.relative-grouping",
+            "columns": [
+              "acc_anon",
+              "patient",
+              "rel"
+            ],
+            "kind": "technical",
+            "uniqueness": "not_unique",
+            "completeness": "unknown",
+            "evidence": [
+              "observed_source_values"
+            ],
+            "caveats": [
+              "A tested grouping with varying attributes, not a unique history-row or clinical-entry identity; missing values were retained as levels.",
+              "No completeness, sentinel, or longitudinal history-identity assertion follows from the topology export."
+            ]
+          }
+        ],
+        "caveats": [
+          "Inventory provenance: internal-v2.cancer-history-topology-packet and internal-v2.history-inventory-maintainer-confirmation; the packet omits only the maintainer-confirmed free-text comment column.",
+          "Physical types are packet-reported pandas parse types, with str represented as string; comment is assessed as string from maintainer description rather than packet observation.",
+          "No embedded schema or nullability contract is supplied; every column is conservatively nullable, independently of observed missingness.",
+          "Text padding and blank strings are physical representations, not global missing-value or normalization rules.",
+          "The packet tests groupings only and does not establish unique row identity, deduplication, or cross-table match coverage.",
+          "The delimited-text artifact is outside the footer-only Parquet verifier; no clinical source rows or free text are included in the catalog."
+        ]
       }
     ],
     "relationship_bindings": [
@@ -10012,6 +11529,178 @@
           "internal-v2.roi-context#roi-identity-and-provenance",
           "internal-v2.roi-context#roi-cross-image-correspondence-absent"
         ]
+      },
+      {
+        "id": "internal-v2.binding.relationship.patient-hormone-history",
+        "kind": "reference",
+        "source": {
+          "table": "magview_all_cohorts_PACS_v2_anon",
+          "columns": [
+            "empi_anon"
+          ],
+          "completeness": "required"
+        },
+        "target": {
+          "table": "HormoneHist_anon",
+          "columns": [
+            "empi_anon"
+          ]
+        },
+        "cardinality": {
+          "targets_per_source": "zero_or_more",
+          "sources_per_target": "zero_or_more"
+        },
+        "evidence": [
+          "maintainer_confirmed",
+          "inference"
+        ],
+        "caveats": [
+          "Descriptive route through established identifier namespaces; cross-table match coverage was not tested by these packets.",
+          "Physical rows repeat both endpoints; physical multiplicity is distinct from clinical ownership.",
+          "A valid accession is recording context rather than the historical event or exact recording time."
+        ],
+        "join_hazards": [
+          "Repeated wide clinical rows and history entries can multiply associations; no deduplication or aggregation policy is supplied.",
+          "Patient-only association spans recording exams and must not imply exam-specific event attribution.",
+          "Cross-patient accession associations are invalid; candidate accession sentinel behavior remains unresolved."
+        ],
+        "semantic_relationships": [
+          "internal-v2.clinical.patient-hormone-history"
+        ],
+        "claim_refs": [
+          "internal-v2.patient-history-context#patient-and-accession-context",
+          "internal-v2.history-topology-context#tested-groupings"
+        ]
+      },
+      {
+        "id": "internal-v2.binding.relationship.exam-hormone-history",
+        "kind": "reference",
+        "source": {
+          "table": "magview_all_cohorts_PACS_v2_anon",
+          "columns": [
+            "empi_anon",
+            "acc_anon"
+          ],
+          "completeness": "required"
+        },
+        "target": {
+          "table": "HormoneHist_anon",
+          "columns": [
+            "empi_anon",
+            "acc_anon"
+          ]
+        },
+        "cardinality": {
+          "targets_per_source": "zero_or_more",
+          "sources_per_target": "zero_or_more"
+        },
+        "evidence": [
+          "maintainer_confirmed",
+          "inference"
+        ],
+        "caveats": [
+          "Descriptive route through established identifier namespaces; cross-table match coverage was not tested by these packets.",
+          "Physical rows repeat both endpoints; physical multiplicity is distinct from clinical ownership.",
+          "A valid accession is recording context rather than the historical event or exact recording time."
+        ],
+        "join_hazards": [
+          "Repeated wide clinical rows and history entries can multiply associations; no deduplication or aggregation policy is supplied.",
+          "Patient-only association spans recording exams and must not imply exam-specific event attribution.",
+          "Cross-patient accession associations are invalid; candidate accession sentinel behavior remains unresolved."
+        ],
+        "semantic_relationships": [
+          "internal-v2.clinical.exam-hormone-history-recording-context"
+        ],
+        "claim_refs": [
+          "internal-v2.patient-history-context#patient-and-accession-context",
+          "internal-v2.history-topology-context#tested-groupings"
+        ]
+      },
+      {
+        "id": "internal-v2.binding.relationship.patient-procedure-history",
+        "kind": "reference",
+        "source": {
+          "table": "magview_all_cohorts_PACS_v2_anon",
+          "columns": [
+            "empi_anon"
+          ],
+          "completeness": "required"
+        },
+        "target": {
+          "table": "ProcedureHist_anon",
+          "columns": [
+            "empi_anon"
+          ]
+        },
+        "cardinality": {
+          "targets_per_source": "zero_or_more",
+          "sources_per_target": "zero_or_more"
+        },
+        "evidence": [
+          "maintainer_confirmed",
+          "inference"
+        ],
+        "caveats": [
+          "Descriptive route through established identifier namespaces; cross-table match coverage was not tested by these packets.",
+          "Physical rows repeat both endpoints; physical multiplicity is distinct from clinical ownership.",
+          "A valid accession is recording context rather than the historical event or exact recording time."
+        ],
+        "join_hazards": [
+          "Repeated wide clinical rows and history entries can multiply associations; no deduplication or aggregation policy is supplied.",
+          "Patient-only association spans recording exams and must not imply exam-specific event attribution.",
+          "Cross-patient accession associations are invalid; candidate accession sentinel behavior remains unresolved."
+        ],
+        "semantic_relationships": [
+          "internal-v2.clinical.patient-procedure-history"
+        ],
+        "claim_refs": [
+          "internal-v2.patient-history-context#patient-and-accession-context",
+          "internal-v2.history-topology-context#tested-groupings"
+        ]
+      },
+      {
+        "id": "internal-v2.binding.relationship.exam-procedure-history",
+        "kind": "reference",
+        "source": {
+          "table": "magview_all_cohorts_PACS_v2_anon",
+          "columns": [
+            "empi_anon",
+            "acc_anon"
+          ],
+          "completeness": "required"
+        },
+        "target": {
+          "table": "ProcedureHist_anon",
+          "columns": [
+            "empi_anon",
+            "acc_anon"
+          ]
+        },
+        "cardinality": {
+          "targets_per_source": "zero_or_more",
+          "sources_per_target": "zero_or_more"
+        },
+        "evidence": [
+          "maintainer_confirmed",
+          "inference"
+        ],
+        "caveats": [
+          "Descriptive route through established identifier namespaces; cross-table match coverage was not tested by these packets.",
+          "Physical rows repeat both endpoints; physical multiplicity is distinct from clinical ownership.",
+          "A valid accession is recording context rather than the historical event or exact recording time."
+        ],
+        "join_hazards": [
+          "Repeated wide clinical rows and history entries can multiply associations; no deduplication or aggregation policy is supplied.",
+          "Patient-only association spans recording exams and must not imply exam-specific event attribution.",
+          "Cross-patient accession associations are invalid; candidate accession sentinel behavior remains unresolved."
+        ],
+        "semantic_relationships": [
+          "internal-v2.clinical.exam-procedure-history-recording-context"
+        ],
+        "claim_refs": [
+          "internal-v2.patient-history-context#patient-and-accession-context",
+          "internal-v2.history-topology-context#tested-groupings"
+        ]
       }
     ],
     "relationship_binding_paths": []
@@ -10146,6 +11835,32 @@
           "No globally unique or durable specimen identity is established.",
           "A putative specimen representation may repeat across physical rows and is not equivalent to one pathology descriptor slot."
         ]
+      },
+      "internal-v2.cancer_history_entry": {
+        "label": "Reported patient or relative cancer-history entry",
+        "definition": "One represented cancer-history report concerning either the patient or a reported relative, with subject category distinct from the patient whose history record is organized.",
+        "grain": "one represented history entry, without established unique person or event identity",
+        "domains": [
+          "identity",
+          "pathology",
+          "risk",
+          "workflow"
+        ],
+        "search_terms": [
+          "CancerHist",
+          "family cancer history",
+          "personal cancer history",
+          "relative history"
+        ],
+        "claim_refs": [
+          "internal-v2.cancer-history-context#subject-and-relationship",
+          "internal-v2.cancer-history-context#relative-grouping-not-identity",
+          "internal-v2.cancer-history-context#provisional-code-meanings"
+        ],
+        "caveats": [
+          "Reported history is not verified current pathology; candidate code meanings span malignant and nonmalignant findings.",
+          "The relative grouping is not a unique person identifier and no longitudinal relative identity is established."
+        ]
       }
     },
     "concepts": {
@@ -10153,13 +11868,29 @@
         "label": "Reported exposure-history category",
         "definition": "Category identifying a reported hormone, therapy, or contraceptive history entry.",
         "feature_kind": "coded",
-        "domains": ["procedure", "workflow"],
-        "search_terms": ["HormoneHist type", "hormone history category", "therapy history category", "contraceptive history category"],
-        "caveats": ["The category selects the applicable category-specific code meaning."],
-        "evidence": ["maintainer_confirmed"],
-        "objects": ["internal-v2.hormone_history_entry"],
+        "domains": [
+          "procedure",
+          "workflow"
+        ],
+        "search_terms": [
+          "HormoneHist type",
+          "hormone history category",
+          "therapy history category",
+          "contraceptive history category"
+        ],
+        "caveats": [
+          "The category selects the applicable category-specific code meaning."
+        ],
+        "evidence": [
+          "maintainer_confirmed"
+        ],
+        "objects": [
+          "internal-v2.hormone_history_entry"
+        ],
         "vocabulary": "internal-v2.vocabulary.hormone_history.exposure_category",
-        "claim_refs": ["internal-v2.patient-history-context#reported-history-not-current-care"],
+        "claim_refs": [
+          "internal-v2.patient-history-context#reported-history-not-current-care"
+        ],
         "missing_states": [],
         "temporal_semantics": [],
         "aggregations": []
@@ -10168,13 +11899,30 @@
         "label": "Reported hormone-history code",
         "definition": "Hormone or hormone-regimen code for an exposure-history entry whose category is hormone.",
         "feature_kind": "coded",
-        "domains": ["procedure"],
-        "search_terms": ["HormoneHist hormone code", "estrogen history", "progesterone history", "tamoxifen history", "raloxifene history"],
-        "caveats": ["This meaning is conditional on exposure category H."],
-        "evidence": ["maintainer_confirmed"],
-        "objects": ["internal-v2.hormone_history_entry"],
+        "domains": [
+          "procedure"
+        ],
+        "search_terms": [
+          "HormoneHist hormone code",
+          "estrogen history",
+          "progesterone history",
+          "tamoxifen history",
+          "raloxifene history"
+        ],
+        "caveats": [
+          "This meaning is conditional on exposure category H."
+        ],
+        "evidence": [
+          "maintainer_confirmed"
+        ],
+        "objects": [
+          "internal-v2.hormone_history_entry"
+        ],
         "vocabulary": "internal-v2.vocabulary.hormone_history.hormone",
-        "claim_refs": ["internal-v2.patient-history-context#reported-history-not-current-care"],
+        "claim_refs": [
+          "internal-v2.patient-history-context#reported-history-not-current-care",
+          "internal-v2.history-topology-context#hormone-category-discrepancies"
+        ],
         "missing_states": [],
         "temporal_semantics": [],
         "aggregations": []
@@ -10183,13 +11931,30 @@
         "label": "Reported therapy-history code",
         "definition": "Treatment code for an exposure-history entry whose category is therapy.",
         "feature_kind": "coded",
-        "domains": ["procedure"],
-        "search_terms": ["HormoneHist therapy code", "chemotherapy history", "radiation therapy history", "endocrine therapy history", "Taxol history"],
-        "caveats": ["This meaning is conditional on exposure category T."],
-        "evidence": ["maintainer_confirmed"],
-        "objects": ["internal-v2.hormone_history_entry"],
+        "domains": [
+          "procedure"
+        ],
+        "search_terms": [
+          "HormoneHist therapy code",
+          "chemotherapy history",
+          "radiation therapy history",
+          "endocrine therapy history",
+          "Taxol history"
+        ],
+        "caveats": [
+          "This meaning is conditional on exposure category T."
+        ],
+        "evidence": [
+          "maintainer_confirmed"
+        ],
+        "objects": [
+          "internal-v2.hormone_history_entry"
+        ],
         "vocabulary": "internal-v2.vocabulary.hormone_history.therapy",
-        "claim_refs": ["internal-v2.patient-history-context#reported-history-not-current-care"],
+        "claim_refs": [
+          "internal-v2.patient-history-context#reported-history-not-current-care",
+          "internal-v2.history-topology-context#hormone-category-discrepancies"
+        ],
         "missing_states": [],
         "temporal_semantics": [],
         "aggregations": []
@@ -10198,13 +11963,27 @@
         "label": "Reported contraceptive-history code",
         "definition": "Contraceptive code for an exposure-history entry whose category is contraceptive.",
         "feature_kind": "coded",
-        "domains": ["procedure"],
-        "search_terms": ["HormoneHist contraceptive code", "oral contraceptive history", "birth control history"],
-        "caveats": ["This meaning is conditional on exposure category O; code C therefore means combined oral contraceptive here rather than combined hormone-replacement therapy."],
-        "evidence": ["maintainer_confirmed"],
-        "objects": ["internal-v2.hormone_history_entry"],
+        "domains": [
+          "procedure"
+        ],
+        "search_terms": [
+          "HormoneHist contraceptive code",
+          "oral contraceptive history",
+          "birth control history"
+        ],
+        "caveats": [
+          "This meaning is conditional on exposure category O; code C therefore means combined oral contraceptive here rather than combined hormone-replacement therapy."
+        ],
+        "evidence": [
+          "maintainer_confirmed"
+        ],
+        "objects": [
+          "internal-v2.hormone_history_entry"
+        ],
         "vocabulary": "internal-v2.vocabulary.hormone_history.contraceptive",
-        "claim_refs": ["internal-v2.patient-history-context#reported-history-not-current-care"],
+        "claim_refs": [
+          "internal-v2.patient-history-context#reported-history-not-current-care"
+        ],
         "missing_states": [],
         "temporal_semantics": [],
         "aggregations": []
@@ -10213,12 +11992,27 @@
         "label": "Reported continuous-exposure status",
         "definition": "Reported indication of whether the historical exposure was continuous.",
         "feature_kind": "flag",
-        "domains": ["procedure", "temporal"],
-        "search_terms": ["continuous hormone use", "continuous therapy", "HormoneHist continuous"],
-        "caveats": ["No precedence or consistency rule with duration, current status, or interval fields is established."],
-        "evidence": ["maintainer_confirmed"],
-        "objects": ["internal-v2.hormone_history_entry"],
-        "claim_refs": ["internal-v2.patient-history-context#hormone-history-timing"],
+        "domains": [
+          "procedure",
+          "temporal"
+        ],
+        "search_terms": [
+          "continuous hormone use",
+          "continuous therapy",
+          "HormoneHist continuous"
+        ],
+        "caveats": [
+          "No precedence or consistency rule with duration, current status, or interval fields is established."
+        ],
+        "evidence": [
+          "maintainer_confirmed"
+        ],
+        "objects": [
+          "internal-v2.hormone_history_entry"
+        ],
+        "claim_refs": [
+          "internal-v2.patient-history-context#hormone-history-timing"
+        ],
         "missing_states": [],
         "temporal_semantics": [],
         "aggregations": []
@@ -10227,12 +12021,29 @@
         "label": "Reported current-exposure status",
         "definition": "Reported indication of whether the exposure was current in its recording context.",
         "feature_kind": "flag",
-        "domains": ["procedure", "temporal", "workflow"],
-        "search_terms": ["current hormone use", "current therapy", "current contraceptive", "HormoneHist current"],
-        "caveats": ["Current is relative to the history record's recording context, whose exact documentation time is unsupported."],
-        "evidence": ["maintainer_confirmed"],
-        "objects": ["internal-v2.hormone_history_entry"],
-        "claim_refs": ["internal-v2.patient-history-context#hormone-history-timing"],
+        "domains": [
+          "procedure",
+          "temporal",
+          "workflow"
+        ],
+        "search_terms": [
+          "current hormone use",
+          "current therapy",
+          "current contraceptive",
+          "HormoneHist current"
+        ],
+        "caveats": [
+          "Current is relative to the history record's recording context, whose exact documentation time is unsupported."
+        ],
+        "evidence": [
+          "maintainer_confirmed"
+        ],
+        "objects": [
+          "internal-v2.hormone_history_entry"
+        ],
+        "claim_refs": [
+          "internal-v2.patient-history-context#hormone-history-timing"
+        ],
         "missing_states": [],
         "temporal_semantics": [],
         "aggregations": []
@@ -10241,12 +12052,28 @@
         "label": "Reported exposure duration",
         "definition": "Reported duration value for a historical exposure, with no established unit.",
         "feature_kind": "numeric",
-        "domains": ["procedure", "temporal"],
-        "search_terms": ["HormoneHist duration", "hormone duration", "therapy duration", "contraceptive duration"],
-        "caveats": ["Do not interpret the value as days, months, or years; no consistency rule with interval fields is established."],
-        "evidence": ["maintainer_confirmed"],
-        "objects": ["internal-v2.hormone_history_entry"],
-        "claim_refs": ["internal-v2.patient-history-context#hormone-history-timing"],
+        "domains": [
+          "procedure",
+          "temporal"
+        ],
+        "search_terms": [
+          "HormoneHist duration",
+          "hormone duration",
+          "therapy duration",
+          "contraceptive duration"
+        ],
+        "caveats": [
+          "Do not interpret the value as days, months, or years; no consistency rule with interval fields is established."
+        ],
+        "evidence": [
+          "maintainer_confirmed"
+        ],
+        "objects": [
+          "internal-v2.hormone_history_entry"
+        ],
+        "claim_refs": [
+          "internal-v2.patient-history-context#hormone-history-timing"
+        ],
         "missing_states": [],
         "temporal_semantics": [],
         "aggregations": []
@@ -10255,96 +12082,210 @@
         "label": "Reported exposure-start age",
         "definition": "Reported patient age when the historical exposure began.",
         "feature_kind": "numeric",
-        "domains": ["demographics", "procedure", "temporal"],
-        "search_terms": ["HormoneHist first_age", "age started hormone", "exposure start age"],
-        "caveats": ["The age is a reported temporal representation and is not subordinate to or preferred over partial calendar components."],
-        "evidence": ["maintainer_confirmed"],
-        "objects": ["internal-v2.hormone_history_entry"],
-        "claim_refs": ["internal-v2.patient-history-context#hormone-history-timing"],
+        "domains": [
+          "demographics",
+          "procedure",
+          "temporal"
+        ],
+        "search_terms": [
+          "HormoneHist first_age",
+          "age started hormone",
+          "exposure start age"
+        ],
+        "caveats": [
+          "The age is a reported temporal representation and is not subordinate to or preferred over partial calendar components."
+        ],
+        "evidence": [
+          "maintainer_confirmed"
+        ],
+        "objects": [
+          "internal-v2.hormone_history_entry"
+        ],
+        "claim_refs": [
+          "internal-v2.patient-history-context#hormone-history-timing"
+        ],
         "missing_states": [],
-        "temporal_semantics": ["internal-v2.time.reported-exposure-start"],
+        "temporal_semantics": [
+          "internal-v2.time.reported-exposure-start"
+        ],
         "aggregations": []
       },
       "internal-v2.hormone_history.reported_start_month": {
         "label": "Reported exposure-start month",
         "definition": "Reported calendar month component for the beginning of a historical exposure.",
         "feature_kind": "numeric",
-        "domains": ["procedure", "temporal"],
-        "search_terms": ["HormoneHist mfirst", "exposure start month"],
-        "caveats": ["A month component is not an exact date and has no established precedence over reported start age."],
-        "evidence": ["maintainer_confirmed"],
-        "objects": ["internal-v2.hormone_history_entry"],
-        "claim_refs": ["internal-v2.patient-history-context#hormone-history-timing"],
+        "domains": [
+          "procedure",
+          "temporal"
+        ],
+        "search_terms": [
+          "HormoneHist mfirst",
+          "exposure start month"
+        ],
+        "caveats": [
+          "A month component is not an exact date and has no established precedence over reported start age."
+        ],
+        "evidence": [
+          "maintainer_confirmed"
+        ],
+        "objects": [
+          "internal-v2.hormone_history_entry"
+        ],
+        "claim_refs": [
+          "internal-v2.patient-history-context#hormone-history-timing"
+        ],
         "missing_states": [],
-        "temporal_semantics": ["internal-v2.time.reported-exposure-start"],
+        "temporal_semantics": [
+          "internal-v2.time.reported-exposure-start"
+        ],
         "aggregations": []
       },
       "internal-v2.hormone_history.reported_start_year": {
         "label": "Reported exposure-start year",
         "definition": "Reported calendar year component for the beginning of a historical exposure.",
         "feature_kind": "numeric",
-        "domains": ["procedure", "temporal"],
-        "search_terms": ["HormoneHist yfirst", "exposure start year"],
-        "caveats": ["A year component is not an exact date and has no established precedence over reported start age."],
-        "evidence": ["maintainer_confirmed"],
-        "objects": ["internal-v2.hormone_history_entry"],
-        "claim_refs": ["internal-v2.patient-history-context#hormone-history-timing"],
+        "domains": [
+          "procedure",
+          "temporal"
+        ],
+        "search_terms": [
+          "HormoneHist yfirst",
+          "exposure start year"
+        ],
+        "caveats": [
+          "A year component is not an exact date and has no established precedence over reported start age."
+        ],
+        "evidence": [
+          "maintainer_confirmed"
+        ],
+        "objects": [
+          "internal-v2.hormone_history_entry"
+        ],
+        "claim_refs": [
+          "internal-v2.patient-history-context#hormone-history-timing"
+        ],
         "missing_states": [],
-        "temporal_semantics": ["internal-v2.time.reported-exposure-start"],
+        "temporal_semantics": [
+          "internal-v2.time.reported-exposure-start"
+        ],
         "aggregations": []
       },
       "internal-v2.hormone_history.reported_end_age": {
         "label": "Reported exposure-end age",
         "definition": "Reported patient age when the historical exposure ended.",
         "feature_kind": "numeric",
-        "domains": ["demographics", "procedure", "temporal"],
-        "search_terms": ["HormoneHist last_age", "age stopped hormone", "exposure end age"],
-        "caveats": ["The age is a reported temporal representation and is not subordinate to or preferred over partial calendar components."],
-        "evidence": ["maintainer_confirmed"],
-        "objects": ["internal-v2.hormone_history_entry"],
-        "claim_refs": ["internal-v2.patient-history-context#hormone-history-timing"],
+        "domains": [
+          "demographics",
+          "procedure",
+          "temporal"
+        ],
+        "search_terms": [
+          "HormoneHist last_age",
+          "age stopped hormone",
+          "exposure end age"
+        ],
+        "caveats": [
+          "The age is a reported temporal representation and is not subordinate to or preferred over partial calendar components."
+        ],
+        "evidence": [
+          "maintainer_confirmed"
+        ],
+        "objects": [
+          "internal-v2.hormone_history_entry"
+        ],
+        "claim_refs": [
+          "internal-v2.patient-history-context#hormone-history-timing"
+        ],
         "missing_states": [],
-        "temporal_semantics": ["internal-v2.time.reported-exposure-end"],
+        "temporal_semantics": [
+          "internal-v2.time.reported-exposure-end"
+        ],
         "aggregations": []
       },
       "internal-v2.hormone_history.reported_end_month": {
         "label": "Reported exposure-end month",
         "definition": "Reported calendar month component for the end of a historical exposure.",
         "feature_kind": "numeric",
-        "domains": ["procedure", "temporal"],
-        "search_terms": ["HormoneHist mlast", "exposure end month"],
-        "caveats": ["A month component is not an exact date and has no established precedence over reported end age."],
-        "evidence": ["maintainer_confirmed"],
-        "objects": ["internal-v2.hormone_history_entry"],
-        "claim_refs": ["internal-v2.patient-history-context#hormone-history-timing"],
+        "domains": [
+          "procedure",
+          "temporal"
+        ],
+        "search_terms": [
+          "HormoneHist mlast",
+          "exposure end month"
+        ],
+        "caveats": [
+          "A month component is not an exact date and has no established precedence over reported end age."
+        ],
+        "evidence": [
+          "maintainer_confirmed"
+        ],
+        "objects": [
+          "internal-v2.hormone_history_entry"
+        ],
+        "claim_refs": [
+          "internal-v2.patient-history-context#hormone-history-timing"
+        ],
         "missing_states": [],
-        "temporal_semantics": ["internal-v2.time.reported-exposure-end"],
+        "temporal_semantics": [
+          "internal-v2.time.reported-exposure-end"
+        ],
         "aggregations": []
       },
       "internal-v2.hormone_history.reported_end_year": {
         "label": "Reported exposure-end year",
         "definition": "Reported calendar year component for the end of a historical exposure.",
         "feature_kind": "numeric",
-        "domains": ["procedure", "temporal"],
-        "search_terms": ["HormoneHist ylast", "exposure end year"],
-        "caveats": ["A year component is not an exact date and has no established precedence over reported end age."],
-        "evidence": ["maintainer_confirmed"],
-        "objects": ["internal-v2.hormone_history_entry"],
-        "claim_refs": ["internal-v2.patient-history-context#hormone-history-timing"],
+        "domains": [
+          "procedure",
+          "temporal"
+        ],
+        "search_terms": [
+          "HormoneHist ylast",
+          "exposure end year"
+        ],
+        "caveats": [
+          "A year component is not an exact date and has no established precedence over reported end age."
+        ],
+        "evidence": [
+          "maintainer_confirmed"
+        ],
+        "objects": [
+          "internal-v2.hormone_history_entry"
+        ],
+        "claim_refs": [
+          "internal-v2.patient-history-context#hormone-history-timing"
+        ],
         "missing_states": [],
-        "temporal_semantics": ["internal-v2.time.reported-exposure-end"],
+        "temporal_semantics": [
+          "internal-v2.time.reported-exposure-end"
+        ],
         "aggregations": []
       },
       "internal-v2.hormone_history.comment": {
         "label": "Reported exposure-history comment",
         "definition": "Free-text information recorded with a hormone, therapy, or contraceptive history entry.",
         "feature_kind": "text",
-        "domains": ["procedure", "workflow"],
-        "search_terms": ["HormoneHist comment", "hormone history free text"],
-        "caveats": ["The catalogue describes the field but contains and exposes no source text."],
-        "evidence": ["maintainer_confirmed"],
-        "objects": ["internal-v2.hormone_history_entry"],
-        "claim_refs": ["internal-v2.patient-history-context#reported-history-not-current-care"],
+        "domains": [
+          "procedure",
+          "workflow"
+        ],
+        "search_terms": [
+          "HormoneHist comment",
+          "hormone history free text"
+        ],
+        "caveats": [
+          "The catalogue describes the field but contains and exposes no source text."
+        ],
+        "evidence": [
+          "maintainer_confirmed"
+        ],
+        "objects": [
+          "internal-v2.hormone_history_entry"
+        ],
+        "claim_refs": [
+          "internal-v2.patient-history-context#reported-history-not-current-care"
+        ],
         "missing_states": [],
         "temporal_semantics": [],
         "aggregations": []
@@ -10353,13 +12294,28 @@
         "label": "Reported procedure-history category",
         "definition": "Category identifying a reported prior gynecological or breast procedure.",
         "feature_kind": "coded",
-        "domains": ["procedure"],
-        "search_terms": ["ProcHist type", "procedure history category", "gynecological procedure history", "breast procedure history"],
-        "caveats": ["The category selects the applicable category-specific procedure-code meaning."],
-        "evidence": ["maintainer_confirmed"],
-        "objects": ["internal-v2.procedure_history_entry"],
+        "domains": [
+          "procedure"
+        ],
+        "search_terms": [
+          "ProcHist type",
+          "procedure history category",
+          "gynecological procedure history",
+          "breast procedure history"
+        ],
+        "caveats": [
+          "The category selects the applicable category-specific procedure-code meaning."
+        ],
+        "evidence": [
+          "maintainer_confirmed"
+        ],
+        "objects": [
+          "internal-v2.procedure_history_entry"
+        ],
         "vocabulary": "internal-v2.vocabulary.procedure_history.procedure_category",
-        "claim_refs": ["internal-v2.patient-history-context#reported-history-not-current-care"],
+        "claim_refs": [
+          "internal-v2.patient-history-context#reported-history-not-current-care"
+        ],
         "missing_states": [],
         "temporal_semantics": [],
         "aggregations": []
@@ -10368,13 +12324,28 @@
         "label": "Reported gynecological-procedure history code",
         "definition": "Gynecological procedure code for a prior-procedure history entry whose category is gynecological.",
         "feature_kind": "coded",
-        "domains": ["procedure"],
-        "search_terms": ["ProcHist gynecological code", "hysterectomy history", "oophorectomy history", "ovary removed"],
-        "caveats": ["This meaning is conditional on procedure category G; breast laterality does not apply."],
-        "evidence": ["maintainer_confirmed"],
-        "objects": ["internal-v2.procedure_history_entry"],
+        "domains": [
+          "procedure"
+        ],
+        "search_terms": [
+          "ProcHist gynecological code",
+          "hysterectomy history",
+          "oophorectomy history",
+          "ovary removed"
+        ],
+        "caveats": [
+          "This meaning is conditional on procedure category G; breast laterality does not apply."
+        ],
+        "evidence": [
+          "maintainer_confirmed"
+        ],
+        "objects": [
+          "internal-v2.procedure_history_entry"
+        ],
         "vocabulary": "internal-v2.vocabulary.procedure_history.gynecological_procedure",
-        "claim_refs": ["internal-v2.patient-history-context#reported-history-not-current-care"],
+        "claim_refs": [
+          "internal-v2.patient-history-context#reported-history-not-current-care"
+        ],
         "missing_states": [],
         "temporal_semantics": [],
         "aggregations": []
@@ -10383,13 +12354,29 @@
         "label": "Reported breast-procedure history code",
         "definition": "Breast procedure code for a prior-procedure history entry whose category is breast.",
         "feature_kind": "coded",
-        "domains": ["procedure"],
-        "search_terms": ["ProcHist breast code", "prior core biopsy", "prior lumpectomy", "prior mastectomy", "breast reconstruction history"],
-        "caveats": ["This meaning is conditional on procedure category B and does not establish a current-exam procedure."],
-        "evidence": ["maintainer_confirmed"],
-        "objects": ["internal-v2.procedure_history_entry"],
+        "domains": [
+          "procedure"
+        ],
+        "search_terms": [
+          "ProcHist breast code",
+          "prior core biopsy",
+          "prior lumpectomy",
+          "prior mastectomy",
+          "breast reconstruction history"
+        ],
+        "caveats": [
+          "This meaning is conditional on procedure category B and does not establish a current-exam procedure."
+        ],
+        "evidence": [
+          "maintainer_confirmed"
+        ],
+        "objects": [
+          "internal-v2.procedure_history_entry"
+        ],
         "vocabulary": "internal-v2.vocabulary.procedure_history.breast_procedure",
-        "claim_refs": ["internal-v2.patient-history-context#reported-history-not-current-care"],
+        "claim_refs": [
+          "internal-v2.patient-history-context#reported-history-not-current-care"
+        ],
         "missing_states": [],
         "temporal_semantics": [],
         "aggregations": []
@@ -10398,19 +12385,40 @@
         "label": "Reported historical-procedure result",
         "definition": "Reported result carried by a prior-procedure history entry, spanning broad assessments, diagnoses, high-risk lesions, and benign histologies or conditions.",
         "feature_kind": "coded",
-        "domains": ["pathology", "procedure", "workflow"],
-        "search_terms": ["ProcHist result", "historical biopsy result", "prior pathology result", "historical benign result", "historical malignant result"],
-        "caveats": ["This is not uniformly a verified pathology diagnosis or severity and is not automatically attributable to the represented procedure subtype or a current finding."],
-        "evidence": ["maintainer_confirmed"],
-        "objects": ["internal-v2.procedure_history_entry"],
+        "domains": [
+          "pathology",
+          "procedure",
+          "workflow"
+        ],
+        "search_terms": [
+          "ProcHist result",
+          "historical biopsy result",
+          "prior pathology result",
+          "historical benign result",
+          "historical malignant result"
+        ],
+        "caveats": [
+          "This is not uniformly a verified pathology diagnosis or severity and is not automatically attributable to the represented procedure subtype or a current finding."
+        ],
+        "evidence": [
+          "maintainer_confirmed"
+        ],
+        "objects": [
+          "internal-v2.procedure_history_entry"
+        ],
         "vocabulary": "internal-v2.vocabulary.procedure_history.result",
-        "claim_refs": ["internal-v2.patient-history-context#procedure-history-result"],
+        "claim_refs": [
+          "internal-v2.patient-history-context#procedure-history-result",
+          "internal-v2.history-topology-context#procedure-result-representation"
+        ],
         "missing_states": [
           {
             "id": "no-reported-result",
             "representation": "NONE",
             "meaning": "No result was reported for the history entry; this is not a negative pathology result.",
-            "claim_refs": ["internal-v2.patient-history-context#procedure-history-result"],
+            "claim_refs": [
+              "internal-v2.patient-history-context#procedure-history-result"
+            ],
             "caveats": []
           }
         ],
@@ -10421,19 +12429,36 @@
         "label": "Reported historical breast-procedure side",
         "definition": "Reported breast laterality for a prior breast-procedure history entry.",
         "feature_kind": "coded",
-        "domains": ["breast_side", "procedure"],
-        "search_terms": ["ProcHist side", "prior procedure laterality", "historical breast side"],
-        "caveats": ["The concept is breast-specific and should not be forced onto gynecological procedure entries."],
-        "evidence": ["maintainer_confirmed"],
-        "objects": ["internal-v2.procedure_history_entry"],
+        "domains": [
+          "breast_side",
+          "procedure"
+        ],
+        "search_terms": [
+          "ProcHist side",
+          "prior procedure laterality",
+          "historical breast side"
+        ],
+        "caveats": [
+          "The concept is breast-specific and should not be forced onto gynecological procedure entries."
+        ],
+        "evidence": [
+          "maintainer_confirmed"
+        ],
+        "objects": [
+          "internal-v2.procedure_history_entry"
+        ],
         "vocabulary": "internal-v2.vocabulary.procedure_history.breast_side",
-        "claim_refs": ["internal-v2.patient-history-context#reported-history-not-current-care"],
+        "claim_refs": [
+          "internal-v2.patient-history-context#reported-history-not-current-care"
+        ],
         "missing_states": [
           {
             "id": "unspecified-or-unknown",
             "representation": "blank",
             "meaning": "Breast laterality is unspecified or unknown; blank is expected for a gynecological procedure and does not by itself make the entry malformed.",
-            "claim_refs": ["internal-v2.patient-history-context#reported-history-not-current-care"],
+            "claim_refs": [
+              "internal-v2.patient-history-context#reported-history-not-current-care"
+            ],
             "caveats": []
           }
         ],
@@ -13256,6 +15281,151 @@
         "missing_states": [],
         "temporal_semantics": [],
         "aggregations": []
+      },
+      "internal-v2.cancer_history.subject_category": {
+        "label": "Cancer-history patient or relative subject",
+        "definition": "Whether the history entry concerns the patient or a reported relative.",
+        "feature_kind": "flag",
+        "domains": [
+          "identity",
+          "pathology",
+          "workflow"
+        ],
+        "search_terms": [
+          "CancerHist subject_category",
+          "Cancer-history patient or relative subject"
+        ],
+        "caveats": [],
+        "evidence": [
+          "maintainer_confirmed"
+        ],
+        "objects": [
+          "internal-v2.cancer_history_entry"
+        ],
+        "claim_refs": [
+          "internal-v2.cancer-history-context#subject-and-relationship"
+        ],
+        "missing_states": [],
+        "temporal_semantics": [],
+        "aggregations": [],
+        "vocabulary": "internal-v2.vocabulary.cancer_history.subject_category"
+      },
+      "internal-v2.cancer_history.relative_relationship_code": {
+        "label": "Reported relative relationship category",
+        "definition": "Relationship category for a relative-subject history entry; not a unique relative identifier.",
+        "feature_kind": "coded",
+        "domains": [
+          "identity",
+          "pathology",
+          "workflow"
+        ],
+        "search_terms": [
+          "CancerHist relative_relationship_code",
+          "Reported relative relationship category"
+        ],
+        "caveats": [
+          "Individual relationship-code expansions are unresolved; blank can occur on a relative entry."
+        ],
+        "evidence": [
+          "maintainer_confirmed"
+        ],
+        "objects": [
+          "internal-v2.cancer_history_entry"
+        ],
+        "claim_refs": [
+          "internal-v2.cancer-history-context#subject-and-relationship",
+          "internal-v2.cancer-history-context#relative-grouping-not-identity"
+        ],
+        "missing_states": [],
+        "temporal_semantics": [],
+        "aggregations": []
+      },
+      "internal-v2.cancer_history.history_category": {
+        "label": "Provisional cancer-history category",
+        "definition": "Source category with provisional breast or other history interpretation.",
+        "feature_kind": "coded",
+        "domains": [
+          "identity",
+          "pathology",
+          "workflow"
+        ],
+        "search_terms": [
+          "CancerHist history_category",
+          "Provisional cancer-history category"
+        ],
+        "caveats": [],
+        "evidence": [
+          "observed_source_values",
+          "inference"
+        ],
+        "objects": [
+          "internal-v2.cancer_history_entry"
+        ],
+        "claim_refs": [
+          "internal-v2.cancer-history-context#provisional-code-meanings"
+        ],
+        "missing_states": [],
+        "temporal_semantics": [],
+        "aggregations": [],
+        "vocabulary": "internal-v2.vocabulary.cancer_history.history_category"
+      },
+      "internal-v2.cancer_history.breast_code": {
+        "label": "Provisional breast-history code",
+        "definition": "Category-dependent history code provisionally interpreted using the supplied breast-code dictionary.",
+        "feature_kind": "coded",
+        "domains": [
+          "identity",
+          "pathology",
+          "workflow"
+        ],
+        "search_terms": [
+          "CancerHist breast_code",
+          "Provisional breast-history code"
+        ],
+        "caveats": [],
+        "evidence": [
+          "observed_source_values",
+          "inference"
+        ],
+        "objects": [
+          "internal-v2.cancer_history_entry"
+        ],
+        "claim_refs": [
+          "internal-v2.cancer-history-context#provisional-code-meanings"
+        ],
+        "missing_states": [],
+        "temporal_semantics": [],
+        "aggregations": [],
+        "vocabulary": "internal-v2.vocabulary.cancer_history.breast_code"
+      },
+      "internal-v2.cancer_history.other_code": {
+        "label": "Provisional other-history code",
+        "definition": "Category-dependent history code provisionally interpreted using the supplied other-code dictionary.",
+        "feature_kind": "coded",
+        "domains": [
+          "identity",
+          "pathology",
+          "workflow"
+        ],
+        "search_terms": [
+          "CancerHist other_code",
+          "Provisional other-history code"
+        ],
+        "caveats": [],
+        "evidence": [
+          "observed_source_values",
+          "inference"
+        ],
+        "objects": [
+          "internal-v2.cancer_history_entry"
+        ],
+        "claim_refs": [
+          "internal-v2.cancer-history-context#provisional-code-meanings"
+        ],
+        "missing_states": [],
+        "temporal_semantics": [],
+        "aggregations": [],
+        "vocabulary": "internal-v2.vocabulary.cancer_history.other_code"
       }
     },
     "semantic_relationships": {
@@ -13278,10 +15448,22 @@
         ],
         "temporal_qualification": "The relationship is longitudinal patient ownership and does not date the exposure.",
         "temporal_semantics": [],
-        "domains": ["identity", "procedure", "temporal"],
-        "search_terms": ["patient hormone history", "patient therapy history", "patient contraceptive history"],
-        "claim_refs": ["internal-v2.patient-history-context#patient-and-accession-context"],
-        "caveats": ["Repeated reports must not be silently treated as either distinct exposures or duplicates."]
+        "domains": [
+          "identity",
+          "procedure",
+          "temporal"
+        ],
+        "search_terms": [
+          "patient hormone history",
+          "patient therapy history",
+          "patient contraceptive history"
+        ],
+        "claim_refs": [
+          "internal-v2.patient-history-context#patient-and-accession-context"
+        ],
+        "caveats": [
+          "Repeated reports must not be silently treated as either distinct exposures or duplicates."
+        ]
       },
       "internal-v2.clinical.patient-procedure-history": {
         "label": "Patient has reported prior-procedure history entry",
@@ -13302,10 +15484,22 @@
         ],
         "temporal_qualification": "The relationship is longitudinal patient ownership and does not date the historical procedure.",
         "temporal_semantics": [],
-        "domains": ["identity", "procedure", "temporal"],
-        "search_terms": ["patient procedure history", "patient breast surgery history", "patient gynecological history"],
-        "claim_refs": ["internal-v2.patient-history-context#patient-and-accession-context"],
-        "caveats": ["Repeated reports must not be silently treated as either distinct procedures or duplicates."]
+        "domains": [
+          "identity",
+          "procedure",
+          "temporal"
+        ],
+        "search_terms": [
+          "patient procedure history",
+          "patient breast surgery history",
+          "patient gynecological history"
+        ],
+        "claim_refs": [
+          "internal-v2.patient-history-context#patient-and-accession-context"
+        ],
+        "caveats": [
+          "Repeated reports must not be silently treated as either distinct procedures or duplicates."
+        ]
       },
       "internal-v2.clinical.exam-hormone-history-recording-context": {
         "label": "Imaging exam provides hormone-history recording context",
@@ -13327,10 +15521,23 @@
         ],
         "temporal_qualification": "The exam event date is contextual and must not be substituted for exposure start, exposure end, or exact history-documentation time.",
         "temporal_semantics": [],
-        "domains": ["exam", "procedure", "temporal", "workflow"],
-        "search_terms": ["HormoneHist accession", "hormone history recording context", "history collection exam"],
-        "claim_refs": ["internal-v2.patient-history-context#patient-and-accession-context"],
-        "caveats": ["No physical relationship binding is supplied until the complete table schema is cataloged."]
+        "domains": [
+          "exam",
+          "procedure",
+          "temporal",
+          "workflow"
+        ],
+        "search_terms": [
+          "HormoneHist accession",
+          "hormone history recording context",
+          "history collection exam"
+        ],
+        "claim_refs": [
+          "internal-v2.patient-history-context#patient-and-accession-context"
+        ],
+        "caveats": [
+          "Physical routes are descriptive and do not establish cross-table match coverage or historical event attribution."
+        ]
       },
       "internal-v2.clinical.exam-procedure-history-recording-context": {
         "label": "Imaging exam provides procedure-history recording context",
@@ -13352,10 +15559,23 @@
         ],
         "temporal_qualification": "The exam event date is contextual and must not be substituted for historical procedure time or exact history-documentation time.",
         "temporal_semantics": [],
-        "domains": ["exam", "procedure", "temporal", "workflow"],
-        "search_terms": ["ProcHist accession", "procedure history recording context", "history collection exam"],
-        "claim_refs": ["internal-v2.patient-history-context#patient-and-accession-context"],
-        "caveats": ["No physical relationship binding is supplied until the complete table schema is cataloged."]
+        "domains": [
+          "exam",
+          "procedure",
+          "temporal",
+          "workflow"
+        ],
+        "search_terms": [
+          "ProcHist accession",
+          "procedure history recording context",
+          "history collection exam"
+        ],
+        "claim_refs": [
+          "internal-v2.patient-history-context#patient-and-accession-context"
+        ],
+        "caveats": [
+          "Physical routes are descriptive and do not establish cross-table match coverage or historical event attribution."
+        ]
       },
       "clinical.image-region-of-interest": {
         "availability": {
@@ -13621,17 +15841,47 @@
         "category": "interpretation_limit",
         "priority": "high",
         "scope": "profile_specific",
-        "profiles": ["internal-v2"],
-        "objects": ["internal-v2.hormone_history_entry", "internal-v2.procedure_history_entry", "imaging_finding", "procedure", "pathology_diagnosis"],
-        "concepts": ["internal-v2.procedure_history.reported_result"],
-        "semantic_relationships": ["internal-v2.clinical.patient-hormone-history", "internal-v2.clinical.patient-procedure-history"],
+        "profiles": [
+          "internal-v2"
+        ],
+        "objects": [
+          "internal-v2.hormone_history_entry",
+          "internal-v2.procedure_history_entry",
+          "imaging_finding",
+          "procedure",
+          "pathology_diagnosis"
+        ],
+        "concepts": [
+          "internal-v2.procedure_history.reported_result"
+        ],
+        "semantic_relationships": [
+          "internal-v2.clinical.patient-hormone-history",
+          "internal-v2.clinical.patient-procedure-history"
+        ],
         "temporal_semantics": [],
         "aggregations": [],
-        "coverage": ["coverage.internal-v2.patient-history-row-identity"],
-        "domains": ["imaging", "pathology", "procedure", "workflow"],
-        "search_terms": ["historical result verified pathology", "prior biopsy current finding", "merge ProcHist pathology", "patient history attribution"],
-        "claim_refs": ["internal-v2.patient-history-context#reported-history-not-current-care", "internal-v2.patient-history-context#procedure-history-result"],
-        "caveats": ["NONE means no reported historical result and must not be normalized to negative pathology."]
+        "coverage": [
+          "coverage.internal-v2.patient-history-row-identity"
+        ],
+        "domains": [
+          "imaging",
+          "pathology",
+          "procedure",
+          "workflow"
+        ],
+        "search_terms": [
+          "historical result verified pathology",
+          "prior biopsy current finding",
+          "merge ProcHist pathology",
+          "patient history attribution"
+        ],
+        "claim_refs": [
+          "internal-v2.patient-history-context#reported-history-not-current-care",
+          "internal-v2.patient-history-context#procedure-history-result"
+        ],
+        "caveats": [
+          "NONE means no reported historical result and must not be normalized to negative pathology."
+        ]
       },
       "internal-v2.guardrail.history-accession-is-recording-context": {
         "title": "History accession is recording context, not historical event time",
@@ -13640,17 +15890,46 @@
         "category": "prohibition",
         "priority": "high",
         "scope": "profile_specific",
-        "profiles": ["internal-v2"],
-        "objects": ["imaging_exam", "internal-v2.hormone_history_entry", "internal-v2.procedure_history_entry"],
+        "profiles": [
+          "internal-v2"
+        ],
+        "objects": [
+          "imaging_exam",
+          "internal-v2.hormone_history_entry",
+          "internal-v2.procedure_history_entry"
+        ],
         "concepts": [],
-        "semantic_relationships": ["internal-v2.clinical.exam-hormone-history-recording-context", "internal-v2.clinical.exam-procedure-history-recording-context"],
-        "temporal_semantics": ["internal-v2.time.reported-exposure-start", "internal-v2.time.reported-exposure-end"],
+        "semantic_relationships": [
+          "internal-v2.clinical.exam-hormone-history-recording-context",
+          "internal-v2.clinical.exam-procedure-history-recording-context"
+        ],
+        "temporal_semantics": [
+          "internal-v2.time.reported-exposure-start",
+          "internal-v2.time.reported-exposure-end"
+        ],
         "aggregations": [],
-        "coverage": ["coverage.internal-v2.history-recording-time", "coverage.internal-v2.historical-procedure-event-time"],
-        "domains": ["exam", "procedure", "temporal", "workflow"],
-        "search_terms": ["HormoneHist accession date", "ProcHist procedure date", "history recording time", "historical event accession"],
-        "claim_refs": ["internal-v2.patient-history-context#patient-and-accession-context"],
-        "caveats": ["Candidate sentinel value 999 remains uninterpreted and must not be treated as a valid accession or a governed missing sentinel without further evidence."]
+        "coverage": [
+          "coverage.internal-v2.history-recording-time",
+          "coverage.internal-v2.historical-procedure-event-time"
+        ],
+        "domains": [
+          "exam",
+          "procedure",
+          "temporal",
+          "workflow"
+        ],
+        "search_terms": [
+          "HormoneHist accession date",
+          "ProcHist procedure date",
+          "history recording time",
+          "historical event accession"
+        ],
+        "claim_refs": [
+          "internal-v2.patient-history-context#patient-and-accession-context"
+        ],
+        "caveats": [
+          "Candidate sentinel value 999 remains uninterpreted and must not be treated as a valid accession or a governed missing sentinel without further evidence."
+        ]
       },
       "internal-v2.guardrail.hormone-history-timing-needs-explicit-reconciliation": {
         "title": "Hormone-history timing fields have no supplied reconciliation rule",
@@ -13659,17 +15938,47 @@
         "category": "analyst_choice",
         "priority": "high",
         "scope": "profile_specific",
-        "profiles": ["internal-v2"],
-        "objects": ["internal-v2.hormone_history_entry"],
-        "concepts": ["internal-v2.hormone_history.continuous_status", "internal-v2.hormone_history.current_status", "internal-v2.hormone_history.reported_duration", "internal-v2.hormone_history.reported_start_age", "internal-v2.hormone_history.reported_start_month", "internal-v2.hormone_history.reported_start_year", "internal-v2.hormone_history.reported_end_age", "internal-v2.hormone_history.reported_end_month", "internal-v2.hormone_history.reported_end_year"],
+        "profiles": [
+          "internal-v2"
+        ],
+        "objects": [
+          "internal-v2.hormone_history_entry"
+        ],
+        "concepts": [
+          "internal-v2.hormone_history.continuous_status",
+          "internal-v2.hormone_history.current_status",
+          "internal-v2.hormone_history.reported_duration",
+          "internal-v2.hormone_history.reported_start_age",
+          "internal-v2.hormone_history.reported_start_month",
+          "internal-v2.hormone_history.reported_start_year",
+          "internal-v2.hormone_history.reported_end_age",
+          "internal-v2.hormone_history.reported_end_month",
+          "internal-v2.hormone_history.reported_end_year"
+        ],
         "semantic_relationships": [],
-        "temporal_semantics": ["internal-v2.time.reported-exposure-start", "internal-v2.time.reported-exposure-end"],
+        "temporal_semantics": [
+          "internal-v2.time.reported-exposure-start",
+          "internal-v2.time.reported-exposure-end"
+        ],
         "aggregations": [],
         "coverage": [],
-        "domains": ["procedure", "temporal", "workflow"],
-        "search_terms": ["HormoneHist timing conflict", "hormone duration unit", "partial hormone dates", "current continuous disagreement"],
-        "claim_refs": ["internal-v2.patient-history-context#hormone-history-timing"],
-        "caveats": ["Any downstream reconciliation must be declared for the task and must preserve the distinction between reported age and partial calendar components."]
+        "domains": [
+          "procedure",
+          "temporal",
+          "workflow"
+        ],
+        "search_terms": [
+          "HormoneHist timing conflict",
+          "hormone duration unit",
+          "partial hormone dates",
+          "current continuous disagreement"
+        ],
+        "claim_refs": [
+          "internal-v2.patient-history-context#hormone-history-timing"
+        ],
+        "caveats": [
+          "Any downstream reconciliation must be declared for the task and must preserve the distinction between reported age and partial calendar components."
+        ]
       },
       "internal-v2.guardrail.absent-image-metadata-is-not-image-absence": {
         "availability": {
@@ -13810,6 +16119,53 @@
         "caveats": [
           "The supported clipping behavior is recovery for residual defects; it does not redefine out-of-bounds values as an intended source representation."
         ]
+      },
+      "internal-v2.guardrail.cancer-history-subject-and-evidence": {
+        "title": "Cancer history needs subject and evidence qualification",
+        "statement": "Keep patient and relative history distinct; do not treat a relationship category as a unique person or a provisional history code as verified current pathology. Do not decode BRCA tokens without a reviewed mapping.",
+        "rationale": "The subject flag distinguishes self from relative history; the tested relative tuple is not unique, supplied cancer dictionaries are provisional, and BRCA mappings are unavailable.",
+        "category": "interpretation_limit",
+        "priority": "high",
+        "scope": "profile_specific",
+        "profiles": [
+          "internal-v2"
+        ],
+        "objects": [
+          "internal-v2.cancer_history_entry"
+        ],
+        "concepts": [
+          "internal-v2.cancer_history.subject_category",
+          "internal-v2.cancer_history.relative_relationship_code",
+          "internal-v2.cancer_history.history_category",
+          "internal-v2.cancer_history.breast_code",
+          "internal-v2.cancer_history.other_code"
+        ],
+        "semantic_relationships": [],
+        "temporal_semantics": [],
+        "aggregations": [],
+        "coverage": [
+          "coverage.internal-v2.cancer-history-semantics"
+        ],
+        "domains": [
+          "identity",
+          "pathology",
+          "risk",
+          "workflow"
+        ],
+        "search_terms": [
+          "CancerHist family history",
+          "BRCA1 BRCA2 unknown codes",
+          "relative cancer patient diagnosis"
+        ],
+        "claim_refs": [
+          "internal-v2.cancer-history-context#subject-and-relationship",
+          "internal-v2.cancer-history-context#relative-grouping-not-identity",
+          "internal-v2.cancer-history-context#provisional-code-meanings",
+          "internal-v2.cancer-history-context#clinical-and-temporal-meaning"
+        ],
+        "caveats": [
+          "Blank is not generic cancer or a negative result; code lists do not establish complete history capture."
+        ]
       }
     },
     "coverage": {
@@ -13818,60 +16174,139 @@
         "subject": "internal-v2.patient-history-context",
         "status": "supported",
         "scope": "profile_specific",
-        "profiles": ["internal-v2"],
+        "profiles": [
+          "internal-v2"
+        ],
         "summary": "Internal V2 supplies governed semantic objects, concepts, conditional code meanings, relationships, and interpretation limits for HormoneHist and ProcHist.",
-        "domains": ["identity", "pathology", "procedure", "temporal", "workflow"],
-        "search_terms": ["HormoneHist semantics", "ProcHist semantics", "patient history vocabulary", "internal patient history"],
-        "claim_refs": ["internal-v2.patient-history-context#reported-history-not-current-care", "internal-v2.patient-history-context#procedure-history-result"],
-        "caveats": ["The confirmed code meanings are supported, while vocabulary completeness remains unknown without source artifacts."]
+        "domains": [
+          "identity",
+          "pathology",
+          "procedure",
+          "temporal",
+          "workflow"
+        ],
+        "search_terms": [
+          "HormoneHist semantics",
+          "ProcHist semantics",
+          "patient history vocabulary",
+          "internal patient history"
+        ],
+        "claim_refs": [
+          "internal-v2.patient-history-context#reported-history-not-current-care",
+          "internal-v2.patient-history-context#procedure-history-result"
+        ],
+        "caveats": [
+          "Confirmed meanings remain supported; topology-observed category exceptions and composite results do not establish additional clinical meanings or exhaustive vocabularies."
+        ]
       },
       "coverage.internal-v2.patient-history-row-identity": {
         "subject_kind": "topic",
         "subject": "internal-v2.patient-history-context",
         "status": "unresolved",
         "scope": "profile_specific",
-        "profiles": ["internal-v2"],
+        "profiles": [
+          "internal-v2"
+        ],
         "summary": "No stable HormoneHist or ProcHist row identifier, clinical-entry identity, or semantic deduplication rule is established.",
-        "domains": ["identity", "procedure", "workflow"],
-        "search_terms": ["HormoneHist row key", "ProcHist duplicate", "patient history identity", "history deduplication"],
-        "claim_refs": ["internal-v2.patient-history-context#history-identity-and-physical-scope"],
-        "caveats": ["Repeated rows may represent distinct reports, corrections, or duplicates and must not be silently collapsed."]
+        "domains": [
+          "identity",
+          "procedure",
+          "workflow"
+        ],
+        "search_terms": [
+          "HormoneHist row key",
+          "ProcHist duplicate",
+          "patient history identity",
+          "history deduplication"
+        ],
+        "claim_refs": [
+          "internal-v2.patient-history-context#history-identity-and-physical-scope",
+          "internal-v2.history-topology-context#tested-groupings"
+        ],
+        "caveats": [
+          "Repeated rows may represent distinct reports, corrections, or duplicates and must not be silently collapsed."
+        ]
       },
       "coverage.internal-v2.patient-history-physical-binding": {
         "subject_kind": "topic",
         "subject": "internal-v2.patient-history-context",
-        "status": "not_cataloged",
+        "status": "supported",
         "scope": "profile_specific",
-        "profiles": ["internal-v2"],
-        "summary": "HormoneHist and ProcHist are not present in the internal-V2 physical profile binding because complete column inventories, physical types, and schema nullability are unavailable.",
-        "domains": ["procedure", "technical", "workflow"],
-        "search_terms": ["HormoneHist table", "ProcHist table", "patient history columns", "patient history physical binding"],
-        "claim_refs": ["internal-v2.patient-history-context#history-identity-and-physical-scope"],
-        "caveats": ["The current profile binding continues to contain only magview_all_cohorts_PACS_v2_anon and metadata_all_cohorts_v1c.", "Do not infer physical types, nullability, additional columns, or executable joins from the semantic records."]
+        "profiles": [
+          "internal-v2"
+        ],
+        "summary": "HormoneHist_anon and ProcedureHist_anon have complete physical inventories from reviewed packet columns plus the confirmed comment field, and bindings for supported history semantics.",
+        "domains": [
+          "procedure",
+          "technical",
+          "workflow"
+        ],
+        "search_terms": [
+          "HormoneHist table",
+          "ProcHist table",
+          "patient history columns",
+          "patient history physical binding"
+        ],
+        "claim_refs": [
+          "internal-v2.history-topology-context#physical-inventories"
+        ],
+        "caveats": [
+          "Packet dtypes are parse observations, comment is assessed as text, and all columns are conservatively nullable.",
+          "Unresolved ProcHist time candidates and HormoneHist side remain inventoried without clinical mappings."
+        ]
       },
       "coverage.internal-v2.history-recording-time": {
         "subject_kind": "topic",
         "subject": "internal-v2.patient-history-context",
         "status": "unsupported",
         "scope": "profile_specific",
-        "profiles": ["internal-v2"],
+        "profiles": [
+          "internal-v2"
+        ],
         "summary": "No exact HormoneHist or ProcHist documentation or collection timestamp is supported.",
-        "domains": ["exam", "temporal", "workflow"],
-        "search_terms": ["history recording date", "HormoneHist collection time", "ProcHist documentation time"],
-        "claim_refs": ["internal-v2.patient-history-context#patient-and-accession-context"],
-        "caveats": ["The associated imaging exam date is context and must not be silently substituted as exact history-recording time."]
+        "domains": [
+          "exam",
+          "temporal",
+          "workflow"
+        ],
+        "search_terms": [
+          "history recording date",
+          "HormoneHist collection time",
+          "ProcHist documentation time"
+        ],
+        "claim_refs": [
+          "internal-v2.patient-history-context#patient-and-accession-context"
+        ],
+        "caveats": [
+          "The associated imaging exam date is context and must not be silently substituted as exact history-recording time."
+        ]
       },
       "coverage.internal-v2.historical-procedure-event-time": {
         "subject_kind": "clinical_object",
         "subject": "internal-v2.procedure_history_entry",
-        "status": "unsupported",
+        "status": "unresolved",
         "scope": "profile_specific",
-        "profiles": ["internal-v2"],
-        "summary": "No supported event date is represented for the historical procedure entry.",
-        "domains": ["procedure", "temporal"],
-        "search_terms": ["ProcHist procedure date", "prior biopsy date", "historical surgery time"],
-        "claim_refs": ["internal-v2.patient-history-context#patient-and-accession-context"],
-        "caveats": ["Do not substitute the associated imaging accession date or a current procedure date."]
+        "profiles": [
+          "internal-v2"
+        ],
+        "summary": "ProcHist age, pdatealt, month, and year are inventoried as strings, but their historical-event interpretation and exact-date support remain unresolved.",
+        "domains": [
+          "procedure",
+          "temporal"
+        ],
+        "search_terms": [
+          "ProcHist procedure date",
+          "prior biopsy date",
+          "historical surgery time"
+        ],
+        "claim_refs": [
+          "internal-v2.patient-history-context#patient-and-accession-context",
+          "internal-v2.history-topology-context#procedure-time-candidates"
+        ],
+        "caveats": [
+          "Do not substitute the associated imaging accession date or a current procedure date.",
+          "No supported exact historical-procedure timestamp or date reconstruction is supplied."
+        ]
       },
       "coverage.internal-v2.specimen-collection-time": {
         "availability": {
@@ -14287,6 +16722,68 @@
         "caveats": [
           "An unmapped parsed DICOM column is not semantically unknowable: it can be mapped using the standard element meaning when a dedicated catalogue concept is needed.",
           "Pipeline-derived fields require separate evidence, and anonymization of DICOM time-of-day attributes remains unknown."
+        ]
+      },
+      "coverage.internal-v2.cancer-history-physical-inventory": {
+        "subject_kind": "topic",
+        "subject": "internal-v2.cancer-history-context",
+        "status": "supported",
+        "scope": "profile_specific",
+        "profiles": [
+          "internal-v2"
+        ],
+        "summary": "CancerHist_anon has a complete physical column inventory, including the confirmed free-text comment field, with conservative nullable parse types.",
+        "domains": [
+          "identity",
+          "pathology",
+          "technical",
+          "temporal"
+        ],
+        "search_terms": [
+          "CancerHist",
+          "cancer history",
+          "family history",
+          "relative identity",
+          "BRCA history"
+        ],
+        "claim_refs": [
+          "internal-v2.history-topology-context#physical-inventories"
+        ],
+        "caveats": [
+          "A physical inventory does not establish verified cancer, genetic-test results, complete clinical capture, or a unique relative identifier."
+        ]
+      },
+      "coverage.internal-v2.cancer-history-semantics": {
+        "subject_kind": "topic",
+        "subject": "internal-v2.cancer-history-context",
+        "status": "unresolved",
+        "scope": "profile_specific",
+        "profiles": [
+          "internal-v2"
+        ],
+        "summary": "CancerHist subject flag and relationship-category roles are supported, while cancer-code interpretations are provisional and BRCA meanings, relative identity, and timing remain unresolved.",
+        "domains": [
+          "identity",
+          "pathology",
+          "technical",
+          "temporal"
+        ],
+        "search_terms": [
+          "CancerHist",
+          "cancer history",
+          "family history",
+          "relative identity",
+          "BRCA history"
+        ],
+        "claim_refs": [
+          "internal-v2.cancer-history-context#relative-grouping-not-identity",
+          "internal-v2.cancer-history-context#conditional-code-structure",
+          "internal-v2.cancer-history-context#clinical-and-temporal-meaning",
+          "internal-v2.cancer-history-context#subject-and-relationship",
+          "internal-v2.cancer-history-context#provisional-code-meanings"
+        ],
+        "caveats": [
+          "A physical inventory does not establish verified cancer, genetic-test results, complete clinical capture, or a unique relative identifier."
         ]
       }
     }

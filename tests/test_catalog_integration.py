@@ -66,7 +66,10 @@ class ClinicalSemanticCatalogAcceptanceTests(unittest.TestCase):
         binding = internal.profile_bindings["internal-v2"]
         self.assertEqual(
             {table.table for table in binding.tables},
-            {"magview_all_cohorts_PACS_v2_anon", "metadata_all_cohorts_v1c"},
+            {
+                "magview_all_cohorts_PACS_v2_anon", "metadata_all_cohorts_v1c",
+                "HormoneHist_anon", "ProcedureHist_anon", "CancerHist_anon",
+            },
         )
         expected_bound_objects = {
             "patient",
@@ -224,7 +227,7 @@ class ClinicalSemanticCatalogAcceptanceTests(unittest.TestCase):
                     endpoints,
                 )
 
-    def test_internal_v2_models_reported_patient_history_without_binding_it(
+    def test_internal_v2_binds_reported_patient_history_without_row_identity(
         self,
     ) -> None:
         internal = load_catalog(INTERNAL_MANIFEST_PATH)
@@ -238,13 +241,17 @@ class ClinicalSemanticCatalogAcceptanceTests(unittest.TestCase):
         binding = internal.profile_bindings["internal-v2"]
         self.assertEqual(
             {table.table for table in binding.tables},
-            {"magview_all_cohorts_PACS_v2_anon", "metadata_all_cohorts_v1c"},
+            {
+                "magview_all_cohorts_PACS_v2_anon", "metadata_all_cohorts_v1c",
+                "HormoneHist_anon", "ProcedureHist_anon", "CancerHist_anon",
+            },
         )
-        self.assertTrue(
-            history_objects.isdisjoint(
-                item.object for item in binding.object_bindings
-            )
+        self.assertLessEqual(
+            history_objects, {item.object for item in binding.object_bindings}
         )
+        for item in binding.object_bindings:
+            if item.object in history_objects:
+                self.assertIsNone(item.instance_identity)
 
         hormone_codes = dict(
             internal.vocabularies[
@@ -380,7 +387,7 @@ class ClinicalSemanticCatalogAcceptanceTests(unittest.TestCase):
             internal.coverage[
                 "coverage.internal-v2.patient-history-physical-binding"
             ].status,
-            "not_cataloged",
+            "supported",
         )
         self.assertEqual(
             internal.coverage[
@@ -392,7 +399,7 @@ class ClinicalSemanticCatalogAcceptanceTests(unittest.TestCase):
             internal.coverage[
                 "coverage.internal-v2.historical-procedure-event-time"
             ].status,
-            "unsupported",
+            "unresolved",
         )
         self.assertIn(
             "internal-v2.guardrail.patient-history-is-not-verified-current-care",
@@ -444,6 +451,117 @@ class ClinicalSemanticCatalogAcceptanceTests(unittest.TestCase):
                     expected,
                     {item["identifier"] for item in result["matches"]},
                 )
+
+    def test_history_inventories_preserve_parse_types_and_unresolved_grain(self) -> None:
+        internal = load_catalog(INTERNAL_MANIFEST_PATH)
+        binding = internal.profile_bindings["internal-v2"]
+        inventories = {
+            "HormoneHist_anon": {
+                "type", "code", "side", "first_age", "last_age", "continuous",
+                "current", "duration", "mfirst", "yfirst", "mlast", "ylast",
+                "empi_anon", "acc_anon", "comment",
+            },
+            "ProcedureHist_anon": {
+                "type", "pcode", "side", "age", "pdatealt", "month", "year",
+                "result", "empi_anon", "acc_anon", "comment",
+            },
+            "CancerHist_anon": {
+                "empi_anon", "acc_anon", "patient", "rel", "type", "cancercode",
+                "premen", "bilat", "side", "month", "year", "diag_age",
+                "curr_age", "brca1", "brca2", "comment",
+            },
+        }
+        for table in binding.tables:
+            if table.table not in inventories:
+                continue
+            with self.subTest(table=table.table):
+                self.assertEqual({col.name for col in table.columns}, inventories[table.table])
+                for col in table.columns:
+                    self.assertTrue(col.nullable)
+                    self.assertEqual(
+                        col.physical_type,
+                        "int64" if col.name in {"empi_anon", "acc_anon", "duration", "patient"} else "string",
+                    )
+                for key in table.keys:
+                    self.assertEqual(key.uniqueness, "not_unique")
+                    self.assertEqual(key.completeness, "unknown")
+                    self.assertIn("observed_source_values", key.evidence)
+        mappings = {(m.table, m.column) for m in binding.feature_bindings}
+        self.assertNotIn(("HormoneHist_anon", "side"), mappings)
+        for col in ("age", "pdatealt", "month", "year"):
+            self.assertNotIn(("ProcedureHist_anon", col), mappings)
+        for col in ("brca1", "brca2", "diag_age", "curr_age", "month", "year"):
+            self.assertNotIn(("CancerHist_anon", col), mappings)
+        for obj in binding.object_bindings:
+            if obj.table in inventories:
+                self.assertIsNone(obj.instance_identity)
+
+    def test_history_occurrences_do_not_borrow_other_category_or_table_rules(self) -> None:
+        internal = load_catalog(INTERNAL_MANIFEST_PATH)
+        for name in ("hormone", "therapy"):
+            feature = internal.get_feature(
+                f"internal-v2.hormone_history.{name}_code",
+                include_codes=True, profile="internal-v2",
+            )
+            self.assertNotIn("ORAL", feature["vocabulary"]["codes"])
+            self.assertIn(
+                "internal-v2.history-topology-context#hormone-category-discrepancies",
+                {item["id"] for item in feature["constraints"]["unresolved_claims"]},
+            )
+        hormone = internal.vocabularies["internal-v2.vocabulary.hormone_history.hormone"]
+        self.assertNotIn("TAXOL", dict(hormone.codes))
+        procedure = internal.get_feature(
+            "internal-v2.procedure_history.reported_result",
+            include_codes=True, profile="internal-v2",
+        )
+        self.assertEqual(procedure["vocabulary"]["parsing"], "comma_composed_undocumented")
+        self.assertNotIn("FA,SF", procedure["vocabulary"]["codes"])
+        self.assertIn("NONE", procedure["vocabulary"]["codes"])
+        self.assertIn(
+            "internal-v2.history-topology-context#procedure-result-representation",
+            {item["id"] for item in procedure["constraints"]["unresolved_claims"]},
+        )
+
+    def test_cancer_history_separates_confirmed_subject_from_provisional_codes(self) -> None:
+        internal = load_catalog(INTERNAL_MANIFEST_PATH)
+        self.assertNotIn("internal-v2.cancer_history_entry", self.catalog.clinical_objects)
+        subject = internal.get_feature(
+            "internal-v2.cancer_history.subject_category", include_codes=True,
+            profile="internal-v2",
+        )
+        self.assertEqual(subject["vocabulary"]["codes"], {"0": "Relative", "1": "Patient"})
+        self.assertIn(
+            "internal-v2.cancer-history-context#subject-and-relationship",
+            {item["id"] for item in subject["constraints"]["supported_facts"]},
+        )
+        breast = internal.get_feature(
+            "internal-v2.cancer_history.breast_code", include_codes=True,
+            profile="internal-v2",
+        )
+        codes = breast["vocabulary"]["codes"]
+        self.assertEqual(codes["ID"], codes["IDC"])
+        self.assertEqual(codes["ANM"], codes["MDN"])
+        self.assertTrue({"B", "", "DCG", "DCS", "XX", "UNKNOWN"}.isdisjoint(codes))
+        self.assertIn(
+            ("internal-v2.cancer-history-context#provisional-code-meanings", "unverified"),
+            {(item["id"], item["status"]) for item in breast["constraints"]["unresolved_claims"]},
+        )
+        self.assertFalse(breast["constraints"]["supported_facts"])
+        cancer_mappings = [
+            m for m in internal.profile_bindings["internal-v2"].feature_bindings
+            if m.table == "CancerHist_anon"
+        ]
+        for mapping in cancer_mappings:
+            if mapping.column in {"type", "cancercode"}:
+                self.assertEqual(mapping.status, "unresolved")
+            if mapping.column == "rel":
+                self.assertEqual(mapping.status, "conditional")
+                self.assertEqual(dict(mapping.qualifiers)["subject_value"], 0)
+        result = internal.discover("CancerHist relative identity BRCA", profile="internal-v2", limit=15)
+        self.assertIn(
+            "internal-v2.guardrail.cancer-history-subject-and-evidence",
+            {item["identifier"] for item in result["matches"]},
+        )
 
     def test_internal_v2_binds_v1c_image_metadata_and_roi_collections(
         self,

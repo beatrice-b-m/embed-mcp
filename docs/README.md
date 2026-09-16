@@ -70,6 +70,7 @@ executable analysis recipes:
 
 - [Manual review batches](manual-review-batches.md)
 - [Open-v2 linkage review](open-v2-linkage-review.md)
+- [Internal history topology packet review](history-topology-review.md)
 
 The ignored `reference_files/` directory is optional maintainer material.
 In an authorized environment it may support narrowly scoped investigation of a

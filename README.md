@@ -436,19 +436,25 @@ mappings, and absent curated Open V2 aggregates are not projected onto the
 internal table. Load `internal-v2` explicitly; it is not part of the public
 default manifest.
 
-Internal V2 also contributes semantic-only coverage for the separate
-`HormoneHist` and `ProcHist` patient-history surfaces. These records describe
-reported hormone, treatment, contraceptive, gynecological-procedure, and
-breast-procedure history, including their category-dependent code meanings and
-partial exposure timing. Their `acc_anon` is an imaging-accession recording
-context, not the accession or date of the historical event, and historical
-results are not verified current pathology. The two tables are intentionally
-absent from the physical binding until complete schemas, types, and nullability
-are available; row identity, deduplication, duration units, exact recording
-time, and historical procedure time remain unresolved or unsupported as
-recorded in the catalog.
+Internal V2 also inventories `HormoneHist_anon`, `ProcedureHist_anon` (the
+`ProcHist` surface), and `CancerHist_anon`. Reviewed topology packets supply
+pandas parse types and observed grouping/code structure; maintainer confirmation
+supplies the omitted free-text `comment` column on every table. All columns are
+conservatively nullable, and no source text is included. HormoneHist and ProcHist
+reuse the reviewed patient-history meanings and category-dependent bindings.
+Their accession is recording context, not historical event time, and their
+tested patient/exam groupings do not identify history entries.
 
-The same profile also binds a second physical table, `metadata_all_cohorts_v1c`,
+CancerHist distinguishes patient history (`patient=1`) from relative history
+(`patient=0`); `rel` is a relationship category, not a unique relative ID.
+Cancer-code interpretations from the supplied draft dictionaries remain
+provisional; BRCA codes, timing, and relative identity remain unresolved.
+The review also records HormoneHist category/code discrepancies and ProcHist's
+unresolved `FA,SF` composition. See the
+[history packet review](docs/history-topology-review.md) for the evidence,
+supported mappings, and remaining gaps.
+
+The same profile also binds the image-metadata table, `metadata_all_cohorts_v1c`,
 whose rows describe one extracted breast-imaging DICOM image instance each. It
 carries the `image` object, co-located patient, exam, and image-derived
 breast-side projections, DICOM-derived attributes, pipeline-derived

@@ -27,11 +27,19 @@ versioned in lockstep with the core distribution.
 - `catalog/profiles/internal-v2.json` is the non-default working internal
   profile. It covers the wide MagView clinical table; its procedure-level
   representation is supported and its specimen-level reliability and identity
-  remain unresolved. It contributes semantic-only `HormoneHist` and `ProcHist`
-  patient-history meaning, including category-dependent codes and partial
-  exposure timing; history accessions are recording context, historical results
-  are not verified current pathology, and the tables remain physically unbound
-  until complete schemas are available. It also covers the internal V1c
+  remain unresolved. It inventories `HormoneHist_anon`, `ProcedureHist_anon`
+  (the `ProcHist` surface), and `CancerHist_anon` from reviewed topology packets
+  plus confirmed free-text `comment` columns. Types are assessed parse types and all columns
+  are conservatively nullable. Hormone/procedure history accessions are
+  recording context, historical results are not verified current pathology,
+  and patient/exam groupings are not history-entry identities. CancerHist
+  `patient` distinguishes self (1) from relative (0); `rel` is a relationship
+  category, not a relative ID, and may be blank for a relative. Cancer-code
+  dictionaries remain provisional; BRCA encodings and temporal meanings are
+  unresolved. Preserve HormoneHist category/code discrepancies and ProcHist's
+  undocumented `FA,SF` composition; do not import other-table parsing rules.
+  See `docs/history-topology-review.md` for the evidence boundary.
+  It also covers the internal V1c
   image-metadata table with
   image, co-located patient/exam/side,
   DICOM-attribute, modality, enrichment, and serialized region-of-interest

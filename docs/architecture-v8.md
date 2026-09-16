@@ -53,19 +53,25 @@ remain unresolved. Profile-owned specimen, staging, biomarker,
 nodal, registry-reference, and source-workflow semantics remain available only
 to `internal-v2`.
 
-The profile also contributes semantic-only patient-history meaning for
-`HormoneHist` and `ProcHist`. Separate history-entry objects prevent reported
-prior exposures, procedures, and mixed-level historical results from being
-collapsed into current procedure or verified pathology objects. Patient
-ownership reuses the confirmed longitudinal identity, while a valid accession
-is modeled only as optional recording context. Category-specific vocabularies
-disambiguate reused source tokens, and partial exposure timing is represented
-without constructing exact dates or choosing a precedence rule. Complete table
-schemas are unavailable, so the physical binding remains unchanged and coverage
-records the missing schemas, row identity, deduplication, exact recording time,
-and historical procedure event time explicitly.
+The profile binds reported-history objects to `HormoneHist_anon`,
+`ProcedureHist_anon`, and `CancerHist_anon`. Complete physical inventories come
+from reviewed topology packets plus maintainer confirmation of the omitted
+`comment` field; pandas types remain assessed parse types and nullability is
+conservative. The history objects preserve reported-entry meaning rather than
+equating rows with unique exposures, procedures, relatives, or verified pathology.
+Patient and exam routes for HormoneHist and ProcHist describe ownership and
+recording context without claiming cross-table coverage. CancerHist subject and
+relationship-category semantics are confirmed, while draft category/code
+mappings remain unresolved with unverified occurrence interpretations.
 
-The same profile adds a second, independent physical schema:
+Observed grouping and census evidence enters scoped claims, key candidates,
+occurrence interpretations, and coverage using the existing schema. No packet
+loader or empirical-data runtime is introduced. The tested relative grouping is
+not a person identity, a constant blank HormoneHist side is not a patient-side
+feature, and observed ProcHist `FA,SF` does not authorize delimiter splitting.
+See [history packet review](history-topology-review.md) for reconciliation.
+
+The same profile also supplies the independent image-metadata schema:
 the internal V1c `metadata_all_cohorts_v1c` image-metadata table at one row per
 extracted DICOM image instance. It binds the `image` object, the profile's
 `region_of_interest` object, co-located patient, exam, and image-derived

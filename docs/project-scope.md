@@ -41,13 +41,19 @@ image-derived side, DICOM-attribute, modality, enrichment, and serialized
 region-of-interest representations; the clinical surface is internal V2 while
 the paired image metadata is the most recent internal V1c artifact, covers
 every EMBEDv1 exam and patient, and is narrower than clinical V2.
-The profile additionally contributes semantic-only `HormoneHist` and
-`ProcHist` patient-history objects, category-dependent vocabularies, partial
-exposure-time meanings, relationships, guardrails, and coverage. A valid
-history accession is recording context rather than historical event time, and
-reported procedure results are not verified current pathology. Those tables
-remain outside the physical binding because complete schemas, types, and
-nullability are unavailable.
+The profile additionally inventories `HormoneHist_anon`, `ProcedureHist_anon`
+(the `ProcHist` surface), and `CancerHist_anon` from reviewed topology packets
+plus confirmation that each omitted only its free-text `comment` field. Packet
+pandas types are parse observations, comment is assessed as text, and schema
+nullability is conservatively nullable. Supported HormoneHist and ProcHist
+semantics bind to these inventories without declaring unique history-entry
+identity. Their accessions are recording context, not historical event time.
+CancerHist has a confirmed self/relative subject flag and relationship-category
+role; its draft cancer dictionaries remain provisional, and BRCA encodings,
+relative identity, and timing remain unresolved. Observed constancy, key labels,
+and code co-occurrence do not independently establish clinical ownership,
+identity, or meaning. See [history packet review](history-topology-review.md).
+
 `catalog/catalog-set.json` selects bundled defaults.
 Together they must
 remain:
@@ -122,7 +128,7 @@ profile-scoped specimen, staging, biomarker, nodal, and source-workflow
 meaning, but specimen-level fields remain an unreliable, unresolved surface
 that current internal operations should not depend on.
 
-Internal-v2 adds a second physical table, the internal V1c
+Internal-v2 also binds the internal V1c
 image-metadata extraction, at one row per extracted DICOM image instance. It
 binds the image object, co-located patient, exam, and image-derived breast-side
 projections, and a cross-table accession route for the exam-to-image

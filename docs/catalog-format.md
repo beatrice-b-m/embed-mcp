@@ -13,9 +13,10 @@ catalog-set manifest (schema 1)
 
 The public manifest selects `catalog/semantic/catalog.json` and the `open-v2`
 profile. `internal-v2` is bundled as a non-default working profile; its binding
-covers the wide internal MagView clinical table and the internal V1c
-image-metadata table. All schemas use JSON Schema
-Draft 2020-12 and close authored objects with `additionalProperties: false`.
+covers the wide internal MagView clinical table, internal V1c
+image metadata, and the hormone, procedure, and cancer history tables. All
+schemas use JSON Schema Draft 2020-12 and close authored objects with
+`additionalProperties: false`.
 
 Schema v8 has no legacy input mode. A schema-v6 monolith, semantic schema 7,
 profile schema 1, extension schema 1, wrong discriminator, or unknown version
@@ -102,16 +103,24 @@ meaning, supported procedure representation, categorical normalization,
 invalid pathology-severity value `6`, and a technical cancer-registry
 reference.
 
-Its semantic-only patient-history contribution models `HormoneHist` and
-`ProcHist` as reported history owned by the longitudinal patient and optionally
-associated with an imaging-accession recording context. Category-specific
-vocabularies keep reused tokens such as `C` unambiguous, partial age/month/year
-fields retain reported exposure-start and exposure-end meaning, and guardrails
-prevent historical entries or results from being treated as current procedures,
-finding attribution, or verified pathology. Coverage explicitly records that
-physical bindings, row identity, deduplication, exact recording time, and
-historical procedure event time are unavailable; neither table is invented from
-the semantic scaffold.
+Its patient-history contributions bind `HormoneHist_anon`, `ProcedureHist_anon`
+(the `ProcHist` surface), and `CancerHist_anon`. Packet columns plus the confirmed
+free-text `comment` field form complete inventories. `str` becomes `string` and
+`int64` remains `int64`; comment is assessed as text from maintainer description,
+and every column is conservatively nullable. These are parse assessments, not
+source-declared schema constraints.
+
+HormoneHist and ProcHist use category-specific mappings, patient ownership, and
+imaging-accession recording context without unique history-entry identity.
+Occurrence interpretations preserve unresolved category/code combinations and
+the ProcHist composite result `FA,SF`; its vocabulary uses
+`comma_composed_undocumented`. CancerHist maps the confirmed self/relative flag
+and conditional relationship-category role. Its provisional type/cancercode
+interpretations use `unresolved` mappings with category qualifiers and
+`unverified` occurrence claims. BRCA and temporal fields remain inventoried
+without clinical mappings. The existing schema supports this distinction;
+neither parser behavior nor public response shapes change. See
+[history packet review](history-topology-review.md).
 
 Its image-metadata binding adds the `metadata_all_cohorts_v1c` table at
 one row per extracted DICOM image instance. That table carries the `image`

@@ -45,7 +45,7 @@ that specimen surface. Profile-owned staging, biomarker, nodal, and
 source-workflow semantics do not become portable merely because they share the
 wide table.
 
-Internal-v2 also binds a second physical table: the internal V1c image-metadata
+Internal-v2 also binds the internal V1c image-metadata
 extraction, at one row per extracted DICOM image instance. It carries the image
 object together with co-located patient, exam, and image-derived breast-side
 projections, and it distinguishes source DICOM modality, the source DICOM
@@ -93,6 +93,16 @@ row is outside V1c coverage and is never an exam without images. An inner
 accession join discards those exams silently. Secondary captures and screen
 saves were excluded except ROI_SS and ROI_SSC annotation images retained solely
 for ROI extraction.
+
+Internal-v2 additionally binds separate hormone, procedure, and cancer history
+tables. These represent reported history entries, not uniquely identified
+historical events or verified current pathology. Hormone/procedure history
+accessions are imaging-exam recording context. CancerHist distinguishes self
+from relative history; its relationship category does not identify a unique
+relative. Cancer-code meanings remain provisional, BRCA encodings are unknown,
+and tested grouping dependencies do not establish clinical identity. See the
+[history packet review](history-topology-review.md) for representation details
+and remaining temporal and attribution limits.
 
 An object does not imply a dedicated table. In open-v2, procedure, pathology
 observation, diagnosis, and report-date fields can be co-located on a
