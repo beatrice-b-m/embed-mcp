@@ -223,6 +223,20 @@ observation. The claim's source and profile scope carry the release boundary;
 the evidence value is intentionally neutral across internal V1c, internal V2,
 and public representations.
 
+For maintainer-reviewed structural packets, the optional
+[Fieldwork topology workflow](docs/fieldwork-topology-review.md) supplies a
+separate operator-run script. Its dependencies are not added to the core package.
+Run its synthetic acceptance checks without clinical data:
+
+```bash
+uv run --no-project --python 3.13 \
+  --with "$HOME/AgentFiles/projects/fieldwork" --with 'pyarrow==20.0.0' \
+  python -m unittest tests.test_clinical_topology -v
+```
+
+The normal test suite runs its dependency-free plan checks and skips optional
+packet execution checks when Fieldwork or its dataframe dependencies are absent.
+
 For an exact footer-only comparison, maintainers may run:
 
 ```bash

@@ -72,6 +72,11 @@ executable analysis recipes:
 - [Open-v2 linkage review](open-v2-linkage-review.md)
 - [Internal history topology packet review](history-topology-review.md)
 
+For a new, operator-run structural investigation, see the
+[Fieldwork topology review plan](fieldwork-topology-review.md). It prepares
+topology-only packets for maintainer review before sharing; it is not completed
+source evidence or a catalog interpretation policy.
+
 The ignored `reference_files/` directory is optional maintainer material.
 In an authorized environment it may support narrowly scoped investigation of a
 specific catalog question, including reconciliation of represented categorical
