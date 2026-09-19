@@ -237,6 +237,17 @@ uv run --no-project --python 3.13 \
 The normal test suite runs its dependency-free plan checks and skips optional
 packet execution checks when Fieldwork or its dataframe dependencies are absent.
 
+The [approved MagView round-one review](docs/magview-fieldwork-round1-review.md)
+also supplies a separate, question-specific custom topology helper. Its
+synthetic acceptance checks need neither Fieldwork nor clinical data:
+
+```bash
+python3 tests/test_magview_topology_followups.py -v
+```
+
+Only the maintainer runs that helper against the explicitly selected clinical
+input. Every output remains pending manual review before agent access.
+
 For an exact footer-only comparison, maintainers may run:
 
 ```bash

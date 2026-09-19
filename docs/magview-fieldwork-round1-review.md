@@ -2,7 +2,7 @@
 
 This review uses only the manually approved JSON packet in
 `reference_files/magview-fieldwork-round1`, repository documentation, and
-`catalog/profiles/internal-v2.json`. No clinical dataset, source rows, raw
+[the current internal V2 catalog](../catalog/profiles/internal-v2.json). No clinical dataset, source rows, raw
 Fieldwork results, or other investigation outputs were read. No catalog
 semantics are changed. Packet links below are local, ignored evidence and will
 not resolve in a fresh clone.
@@ -154,3 +154,70 @@ date semantics is supported by topology alone. Those require applicable
 definitions, extraction provenance, and maintainer confirmation, not simply
 more exact dependencies. No counts, prevalence, distributions, cohort rules,
 preferred aggregation, or diagnosis-date policy are inferred here.
+
+**Prepared local helper.**
+[review_magview_topology_followups.py](../scripts/review_magview_topology_followups.py)
+implements fixed, question-specific structural probes. Its output is a custom
+topology JSON schema, explicitly labeled **not native Fieldwork output**; it
+does not guess an uninspected Fieldwork API. The CLI requires `--detail topology`
+and the Python export functions require `detail="topology"`; no other detail
+mode is supported. It exports only fixed schema labels, settings, qualitative
+states, and existence booleans. This still reveals qualitative empirical
+structure and requires manual review.
+
+The helper projects only the chosen columns from an explicitly supplied Parquet
+file. It does not discover files, read other tables, export source paths or
+values, or alter the source. A new output directory is required; inside this
+checkout it must be under ignored `reference_files/`. Completion leaves
+`review_required=true` and `manual_review_status="pending"`. Review both
+`manifest.json` and `topology.json` locally before approving those specific
+files for agent access. On failure, the manifest remains incomplete and errors
+are redacted; do not treat a partial packet as completed evidence. Group keys
+remain in local process memory during computation, so projection/streaming is
+not a hard memory limit or a privacy guarantee.
+
+Run the initial severity question locally, substituting the intended clinical
+input and choosing a new output directory:
+
+```bash
+uv run --no-project --python 3.13 --with 'pyarrow==20.0.0' \
+  python scripts/review_magview_topology_followups.py \
+  --input /absolute/path/to/clinical-v2.parquet \
+  --output reference_files/magview-followup-severity \
+  --question severity-presence --detail topology
+```
+
+Use the same command prefix with a different new output directory and the
+question arguments below. Do not run every possibility as a new profiling pass;
+select the priority question being resolved. Paired comparisons must use the
+same unchanged input and target policy; the manifests intentionally omit source
+paths/fingerprints and cannot independently prove that the delivery was unchanged.
+
+| Question | Arguments after input/output/detail | What is compared |
+| --- | --- | --- |
+| Exam link constancy | `--question exam-constancy --target linkedaccession_anon --missingness complete-case` | Complete `E` and represented link targets; repeated evaluated support reported separately. |
+| Missing-target sensitivity | Same constancy question with `--missingness missing-as-category` | Same complete key requirement, now including native target null as a distinct diagnostic category. |
+| Finding side | `--question finding-side-diagnostic` | Native missing-as-category versus a temporary null-to-`B` target copy; neither modifies keys, `bside`, nor source values. |
+| Physical association repetition | `--question finding-procedure` | Complete `F`, complete `P`, and jointly complete `F∪P` are explicitly separate populations; both tuple directions use the joint population. |
+| Procedure/pathology variation | `--question procedure-joint-constancy --target path_severity --missingness complete-case` | Group by `P`, require complete `F∪P`. |
+| Does finding context resolve it? | `--question association-constancy --target path_severity --missingness complete-case` | Group by `F∪P`, with the identical eligibility and target policy as the preceding run. Repeat this pair for a single implicated target such as `pdate_anon`, `path1`, `technique`, or `node_pos`. |
+| Native row presence | `--question availability --left path1 --right path_severity --unit row` | Both presence directions and co-presence for the named pair. |
+| Entity presence | Same pair with `--unit exam --entity-presence any`, then separate `all`; repeat with `--unit finding` | Complete entity keys only. `any` may combine fields from different rows; `all` means every represented row, not complete clinical capture. |
+| Cross-block or MRI presence | Availability with `--left biopsy_flag --right procdate_anon`, `--left mfocus --right mshape`, or `--left mdelayed.1 --right mdelayed` | Each pair is a separate row/entity question with explicit unit and reduction. Flag values are not interpreted. |
+| Patient MRI exactness | `--question patient-constancy --target msize --missingness complete-case` (or target `msym`) | Complete `U` and one non-null target; no zero recoding. |
+| Procedure specimen-number support | `--question procedure-constancy --target specnum --missingness complete-case` | Complete `P`; constancy and repeated support only. |
+| Existing physical specimen locator | `--question specimen-locator-repetition` | Exactly the catalog's complete physical candidate listed above; no clinical specimen identity claim. |
+
+An `undefined` state takes precedence over false existence flags when its
+eligible population is empty. Repeated evaluated support is only an existence
+indicator, not a strength measure. On changed deliveries, verify the
+accession-to-patient invariant before interpreting tuple multiplicity: a
+cross-patient accession association is invalid and cannot be retained as a
+valid clinical link.
+
+The helper's acceptance checks use only fabricated fixtures and a mocked Parquet
+reader; they do not require Fieldwork, PyArrow, or EMBED data:
+
+```bash
+python3 tests/test_magview_topology_followups.py -v
+```
