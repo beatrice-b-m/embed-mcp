@@ -6,6 +6,12 @@ investigation has already been performed. The agent prepares questions and code;
 the maintainer runs the analysis locally, reviews the outputs, and supplies only
 approved topology packets. Dataset rows and quantitative results stay local.
 
+The separately recorded
+[approved round-one review](magview-fieldwork-round1-review.md) assesses the
+`magview-fieldwork-round1` packet against the current internal profile and
+prioritizes follow-up questions. It does not change catalog semantics or
+authorize the agent to read subsequent outputs before manual review.
+
 ## Assessment
 
 Fieldwork is suitable for this workflow. Its dataframe analyses discover

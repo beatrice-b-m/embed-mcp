@@ -71,6 +71,7 @@ executable analysis recipes:
 - [Manual review batches](manual-review-batches.md)
 - [Open-v2 linkage review](open-v2-linkage-review.md)
 - [Internal history topology packet review](history-topology-review.md)
+- [Internal V2 MagView round-one topology review](magview-fieldwork-round1-review.md)
 
 For a new, operator-run structural investigation, see the
 [Fieldwork topology review plan](fieldwork-topology-review.md). It prepares
