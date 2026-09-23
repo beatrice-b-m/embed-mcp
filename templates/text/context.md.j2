@@ -14,11 +14,11 @@ Claims
       caveat: {{ t }}
 {% endfor %}{% endfor %}
 {% for g in claim.links | default([]) %}
-      {{ g.name }}: {% for l in g.links %}{{ ref(l.id) }}{{ ", " if not loop.last }}{% endfor %}
+      {{ g.name }}: {% for l in g.links %}{{ m.link(l) }}{{ ", " if not loop.last }}{% endfor %}
 
 {% endfor %}
 {% for g in claim.backlinks | default([]) %}
-      {{ g.name | replace("_", " ") }}: {% for l in g.links %}{{ ref(l.id) }}{{ ", " if not loop.last }}{% endfor %}
+      {{ g.name | replace("_", " ") }}: {% for l in g.links %}{{ m.link(l) }}{{ ", " if not loop.last }}{% endfor %}
 
 {% endfor %}
 {% endfor %}

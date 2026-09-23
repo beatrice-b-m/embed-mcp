@@ -14,15 +14,16 @@ Shape (keys with no content are left out):
                    text: str | texts: [str]              free text
                    value: str, meaning: str              one controlled value
                    choices: [{value, meaning}]           several controlled values
+                   (on nested entries the meaning is in the legend instead)
                    flag: bool | map: {key: text}
                    fields: [...]                         a nested record
     sections   [{name, entries: [view]}]  nested entries, each with `key`;
                a summarized entry has `summary: true` and only its listed fields and links
     links, backlinks   [{name, links: [{id, kind, label?, local?, facts?, qualifiers?, note?}]}]
                `local` marks a link to an entry of the same document
-    legend     {"<link>.<qualifier>" or "<kind>.<fact>": {value: meaning}}
-               meanings of the controlled values in qualifiers and facts,
-               given once instead of on every link
+    legend     {"<link>.<qualifier>", "<kind>.<fact>", or "<entry kind>.<field>": {value: meaning}}
+               meanings of the controlled values in link qualifiers, link facts,
+               and nested entries' fields, given once instead of on every repeat
 
 Keys avoid Python dict method names such as `values` and `items`, which Jinja
 would resolve to the method instead.
@@ -100,7 +101,9 @@ class _Builder:
                 entries = [self.node(child) for child in self.catalog.entries_of(node.address) if child.path[-2] == name]
                 sections.append({"name": name, "entries": entries})
             else:
-                fields.append(self.field(spec, node.data[name]))
+                # Entries repeat (a context's claims, a table's keys), so their
+                # value meanings go to the legend instead of onto each entry.
+                fields.append(self.field(spec, node.data[name], legend_key=None if top else f"{node.kind}.{name}"))
         outgoing = [link for link in self.catalog.outgoing(node.address) if link.spec.qualifier_of is None]
         if summary is not None:
             outgoing = [link for link in outgoing if link.spec.field in summary]
@@ -110,11 +113,18 @@ class _Builder:
         result["backlinks"] = [] if summary is not None else self.groups(self.catalog.incoming(node.address), node, outgoing=False)
         return {key: value for key, value in result.items() if value not in ([], {}, None)}
 
-    def field(self, spec: FieldSpec, value: Any) -> dict[str, Any]:
+    def field(self, spec: FieldSpec, value: Any, legend_key: str | None = None) -> dict[str, Any]:
         result: dict[str, Any] = {"name": spec.name}
         if spec.type == "value":
             meanings = self.catalog.model.values[spec.of]
-            if spec.many:
+            if legend_key is not None:
+                for v in value if spec.many else [value]:
+                    self.remember(legend_key, spec.of, v)
+                if spec.many:
+                    result["choices"] = [{"value": v} for v in value]
+                else:
+                    result["value"] = value
+            elif spec.many:
                 result["choices"] = [{"value": v, "meaning": meanings.get(v)} for v in value]
             else:
                 result.update(value=value, meaning=meanings.get(value))
@@ -123,7 +133,11 @@ class _Builder:
         elif spec.type == "map":
             result["map"] = dict(value)
         elif spec.type == "record":
-            result["fields"] = [self.field(child, value[name]) for name, child in spec.fields.items() if name in value]
+            result["fields"] = [
+                self.field(child, value[name], None if legend_key is None else f"{legend_key}.{name}")
+                for name, child in spec.fields.items()
+                if name in value
+            ]
         elif spec.many:
             result["texts"] = list(value)
         else:

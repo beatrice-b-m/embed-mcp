@@ -156,3 +156,39 @@ class CatalogTestCase(unittest.TestCase):
             if finding.file.name == file and finding.line == line and finding.severity == severity and text in finding.message:
                 return
         self.fail(f"no {severity} at {file}:{line} containing {text!r}; findings: {self.messages(catalog)}")
+
+
+# Keys whose values text output may leave out: the view's locators (file,
+# line, module ID), link kinds, field and group names that text shows as
+# layout, and the markers `local` and `summary`. An entry's own ID may be
+# shown as its key. Every other value, including each meaning in the
+# legend, must appear in the text.
+TEXT_MAY_OMIT = frozenset({"file", "line", "module", "kind", "name", "local", "summary"})
+
+
+def facts_missing_from_text(data, text: str) -> list[tuple[str, str]]:
+    """The (path, value) pairs of a view or result that its text leaves out.
+
+    Comparison ignores case, whitespace, and underscores, which templates
+    may lay out as spaces."""
+
+    def norm(value: str) -> str:
+        return " ".join(value.replace("_", " ").lower().split())
+
+    rendered = norm(text)
+    missing = []
+
+    def walk(value, path: str) -> None:
+        if isinstance(value, dict):
+            for key, child in value.items():
+                if key in TEXT_MAY_OMIT or (key == "id" and ("key" in value or value.get("local"))):
+                    continue
+                walk(child, f"{path}.{key}")
+        elif isinstance(value, list):
+            for child in value:
+                walk(child, f"{path}[]")
+        elif isinstance(value, str) and norm(value) not in rendered:
+            missing.append((path, value))
+
+    walk(data, "")
+    return missing

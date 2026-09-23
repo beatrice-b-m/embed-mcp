@@ -9,7 +9,7 @@
 {% set links = {} %}
 {% for g in entry.links | default([]) %}{% set _ = links.update({g.name: g.links}) %}{% endfor %}
 {% if section.name == "keys" %}
-  {{ entry.key }}: {% for l in links.get("columns", []) %}{{ l.label }}{{ ", " if not loop.last }}{% endfor %}{% for f in entry.fields | default([]) if f.value is defined %} · {{ f.name | replace("_", " ") }} {{ f.value }}{% endfor %}
+  {{ entry.key }}: {% for l in links.get("columns", []) %}{{ l.label }}{{ ", " if not loop.last }}{% endfor %}{% for f in entry.fields | default([]) if f.texts is not defined %} · {{ f.name | replace("_", " ") }} {{ m.inline(f) }}{% endfor %}
 
 {% for f in entry.fields | default([]) if f.texts is defined %}{% for t in f.texts %}
       {{ t }}

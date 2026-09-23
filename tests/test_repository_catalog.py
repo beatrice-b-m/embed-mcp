@@ -15,11 +15,13 @@ import jsonschema
 from ruamel.yaml import YAML
 
 from embed_context.catalog import load_catalog
-from embed_context.render import render
+from embed_context.query import Searcher, load_query_config, read
+from embed_context.render import render, render_named
 from embed_context.schema import build_schema
 from embed_context.view import view
 
-from tests.helpers import REPOSITORY
+from tests.helpers import REPOSITORY, facts_missing_from_text
+from tests.test_retrieval import CASES
 
 
 class RepositoryCatalogTests(unittest.TestCase):
@@ -35,6 +37,20 @@ class RepositoryCatalogTests(unittest.TestCase):
             with self.subTest(address=address):
                 render(REPOSITORY, view(self.catalog, address))
                 json.dumps(view(self.catalog, address))
+
+    def test_text_carries_every_fact_of_its_view(self):
+        # Text is the default output (D6.2), so templates may lay facts out
+        # but not drop them; JSON must never be needed to learn a fact.
+        config = load_query_config(self.catalog)
+        for address in self.catalog.nodes:
+            data = read(self.catalog, address, config)
+            with self.subTest(address=address):
+                self.assertEqual(facts_missing_from_text(data, render(REPOSITORY, data)), [])
+        searcher = Searcher(self.catalog, config)
+        for name, case in CASES.items():
+            data = searcher.search(case["query"])
+            with self.subTest(search=name):
+                self.assertEqual(facts_missing_from_text(data, render_named(REPOSITORY, "_search", data)), [])
 
     def test_review_pages_link_only_to_pages_that_exist(self):
         import os

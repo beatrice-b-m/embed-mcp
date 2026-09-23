@@ -46,6 +46,18 @@ class ViewTests(CatalogTestCase):
         fields = {f["name"]: f for f in view(self.load(), "n2")["fields"]}
         self.assertEqual(fields["status"], {"name": "status", "value": "closed", "meaning": "Finished."})
 
+    def test_entry_value_meanings_are_given_once_in_the_legend(self):
+        self.write("model/kinds.yaml", (self.root / "model/kinds.yaml").read_text().replace(
+            "item:\n  entry: true\n  fields:\n    label: {type: text, required: true}\n",
+            "item:\n  entry: true\n  fields:\n    label: {type: text, required: true}\n    state: {type: value, of: statuses}\n",
+        ))
+        self.write("catalog/base/n3.yaml", "kind: note\nlabel: Third\nstatus: open\nitems:\n  x: {label: X, state: closed}\n  y: {label: Y, state: closed}\n")
+        data = view(self.load(), "n3")
+        entry = data["sections"][0]["entries"][0]
+        self.assertEqual([f for f in entry["fields"] if f["name"] == "state"], [{"name": "state", "value": "closed"}])
+        self.assertEqual(data["legend"], {"item.state": {"closed": "Finished."}})
+        self.assertEqual(view(self.load(), "n3#x")["fields"][0], {"name": "state", "value": "closed", "meaning": "Finished."})
+
     def test_views_never_inline_linked_documents(self):
         link = view(self.load(), "n1")["links"][0]["links"][0]
         self.assertEqual(set(link), {"id", "kind", "label"})

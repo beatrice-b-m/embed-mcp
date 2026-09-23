@@ -284,7 +284,9 @@ class Searcher:
         for link in self.catalog.incoming(node.address):
             if link.spec.backlink in self.config.result_links:
                 source = self.catalog.nodes[link.source]
-                item: dict[str, Any] = {"id": source.address, "kind": source.kind, "label": source.label}
+                item: dict[str, Any] = {"id": source.address, "kind": source.kind}
+                if source.label != source.address:  # as in views, unlabeled documents are known by their ID
+                    item["label"] = source.label
                 facts, used = facts_for(self.catalog, source, options)
                 if facts:
                     item["facts"] = facts

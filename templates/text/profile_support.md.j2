@@ -20,11 +20,19 @@
   caveat: {{ t }}
 {% endfor %}{% endfor %}
 {% for g in d.links | default([]) if g.name == part ~ "_cites" %}
-  cites: {% for l in g.links %}{{ ref(l.id) }}{% if l.facts is defined %} ({{ l.facts.status }}){% endif %}{{ ", " if not loop.last }}{% endfor %}
-
+{% for l in g.links %}
+  cites: {{ m.link(l) }}
+{% endfor %}
 {% endfor %}
 {% endif %}
 {% endfor %}
+{% set shown = [] %}
+{% for part in ["evidence", "representation"] %}{% for suffix in ["_status", "_summary", "_caveats"] %}{% set _ = shown.append(part ~ suffix) %}{% endfor %}{% endfor %}
+{% set rest = d.fields | rejectattr("name", "in", shown) | list %}
+{% if rest %}
+
+{{ m.fields(rest) }}
+{%- endif %}
 {% endblock %}
 {% block links %}
 {{ m.links_and_backlinks(d, skip=["subject", "evidence_cites", "representation_cites"]) }}

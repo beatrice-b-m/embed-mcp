@@ -16,9 +16,13 @@ No results.
 {% if r.summary is defined %}
    {{ r.summary }}
 {% endif %}
+{% if r.matched is defined %}
+   matched: {{ r.matched | join(", ") }}
+{% endif %}
 {% for group in r.links | default([]) %}
-   {{ group.name | replace("_", " ") }}: {% for link in group.links %}{{ ref(link.id) }}{% if link.facts is defined %} ({% for name, value in link.facts.items() %}{{ value }}{{ ", " if not loop.last }}{% endfor %}){% endif %}{{ ", " if not loop.last }}{% endfor %}
-
+{% for link in group.links %}
+   {{ group.name | replace("_", " ") }}: {{ m.link(link) }}
+{% endfor %}
 {% endfor %}
 {% endfor %}
 {% if d.total > d.results | length %}

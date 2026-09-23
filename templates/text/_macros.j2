@@ -19,12 +19,12 @@
 {% macro fields(items, indent="") %}
 {% for f in items %}
 {% if f.value is defined %}
-{{ indent }}{{ f.name }}: {{ f.value }}{% if f.meaning %} — {{ f.meaning }}{% endif %}
+{{ indent }}{{ f.name }}: {{ f.value }}{% if f.meaning is defined and f.meaning %} — {{ f.meaning }}{% endif %}
 
 {% elif f.choices is defined %}
 {{ indent }}{{ f.name }}:
 {% for c in f.choices %}
-{{ indent }}  - {{ c.value }}{% if c.meaning %} — {{ c.meaning }}{% endif %}
+{{ indent }}  - {{ c.value }}{% if c.meaning is defined and c.meaning %} — {{ c.meaning }}{% endif %}
 
 {% endfor %}
 {% elif f.map is defined %}
@@ -33,7 +33,8 @@
 {{ indent }}  {{ "%-6s" | format(key) }} {{ value }}
 {% endfor %}
 {% elif f.fields is defined %}
-{{ indent }}{{ f.name }}: {{ inline(f) }}
+{{ indent }}{{ f.name }}:
+{{ fields(f.fields, indent ~ "  ") -}}
 {% elif f.texts is defined %}
 {{ indent }}{{ f.name }}:
 {% for t in f.texts %}
