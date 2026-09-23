@@ -1,5 +1,13 @@
 # Repository guidelines for agents
 
+> **`rebuild` branch.** This branch rebuilds the catalog and engine from the
+> ground up. `temp-docs/rebuild-contract.md` governs work here and takes
+> precedence over the rest of this file wherever they differ. The previous
+> implementation was removed from this branch and still runs from `main`,
+> which is the parity oracle. Its catalog JSON is kept under
+> `legacy/catalog/` as migration input. The rest of this file, the README,
+> and `docs/` still describe `main` until slice 7 rewrites them.
+
 ## Start here
 
 Read these in order before changing behavior or catalog meaning:

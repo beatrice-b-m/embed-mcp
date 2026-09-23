@@ -1,1 +1,0 @@
-"""Bundled curator browser assets."""
