@@ -1,8 +1,9 @@
 # Catalog rebuild contract
 
-> **Status:** Draft. Slice 1 (encoding) decisions are recorded; the slice
-> closes when the prototype passes its exit criteria (section 4.9). Last
-> updated 2026-09-23.
+> **Status:** Draft. The slice 1 (encoding) prototype is built on the
+> `rebuild` branch and awaits maintainer review against its exit criteria
+> (section 4.9); see section 4.10 for what it established. Last updated
+> 2026-09-23.
 >
 > From the start of the slice 1 prototype, this document is maintained on the
 > `rebuild` branch together with the work it describes. The copy on `main`
@@ -181,7 +182,7 @@ The catalog is a graph of documents, in the spirit of an Obsidian vault. It is
 stored as plain YAML files; Obsidian is an analogy for the form factor, not a
 tool dependency (D1.1). It has three text layers:
 
-1. **Model** (`catalog/model/`). Declares the document kinds and their fields
+1. **Model** (`model/`). Declares the document kinds and their fields
    (`kinds.yaml`), the link types between kinds (`links.yaml`), and the
    controlled values, each with a one-line meaning (`values.yaml`). This is
    the only definition of structure. The engine reads it; nothing restates
@@ -193,11 +194,11 @@ tool dependency (D1.1). It has three text layers:
    its links into CLI and MCP text.
 
 ```text
+model/
+  kinds.yaml                 # document kinds and their fields
+  links.yaml                 # link types: owning field, allowed targets, backlink name
+  values.yaml                # controlled values, each with a one-line meaning
 catalog/
-  model/
-    kinds.yaml               # document kinds and their fields
-    links.yaml               # link types: owning field, allowed targets, backlink name
-    values.yaml              # controlled values, each with a one-line meaning
   semantic/                  # module: portable clinical meaning
     module.yaml
     objects/imaging_interpretation.yaml
@@ -206,11 +207,11 @@ catalog/
     relationships/clinical.interpretation-procedure.yaml
     guardrails/guardrail.assessment-not-pathology.yaml
     contexts/clinical.screening-diagnostic-pathway.yaml
-    topics/imaging.yaml
+    topics/topic.imaging.yaml
     patterns/worst-severity-per-exam.yaml
   open-v2/                   # module: EMBED Open Data V2 profile
     module.yaml
-    tables/imaging_findings_anon.yaml
+    tables/open-v2.imaging_findings_anon.yaml
     vocabularies/open-v2.imaging.assessment.yaml
   internal-v2/               # module: internal EMBED V2 profile
     module.yaml
@@ -419,8 +420,11 @@ These rendered views are generated on demand and never committed.
   - `new KIND ID` scaffolds a file from the model.
   - `rename OLD NEW` rewrites an ID and every link to it, preserving
     comments.
-- Because IDs are unique whole tokens and never embedded in other IDs, a
-  project-wide find-and-replace is also a safe rename.
+- A project-wide find-and-replace is a safe rename only once no ID contains
+  another ID. The prototype showed that migrated vocabulary IDs such as
+  `open-v2.imaging.assessment` contain feature IDs, so replacing
+  `imaging.assessment` also rewrote them (section 4.10). Until slice 2 fixes
+  those IDs, `rename` is the safe route.
 
 **D1.14 Formatting conventions. Proposed.**
 
@@ -428,6 +432,10 @@ These rendered views are generated on demand and never committed.
 - Lists keep their authored order, and the order is meaningful only where
   the model marks a field `ordered`.
 - Indentation is two spaces.
+- The one-line `{...}` form is for short values only. Inside it a comma ends
+  a value, so prose containing a comma silently splits into an extra key.
+  The prototype hit this in its own model file; the loader rejects the
+  resulting empty key. Anything with prose uses block style.
 - A formatter may normalize key order, but it never rewrites prose.
 
 **D1.15 Dependencies. Proposed.**
@@ -479,7 +487,7 @@ dependency. `jsonschema` is dropped because the model is the schema.
   | `table.columns[].maps` (with mapping status) | feature | columns |
   | `guardrail.applies_to` | object, feature, relationship, column, concept | guardrails |
   | `pattern.uses` | feature, concept, aggregation, table, column | patterns |
-  | `<any>.claims` | claim (`context#claim`) | cited by |
+  | `<any>.cites` | claim (`context#claim`) | cited_by |
   | `claim.sources` | source | supports |
 
 **D1.18 Reads return one document plus its links, never inlined neighbors. Proposed.**
@@ -576,14 +584,50 @@ reconsidered after slice 5. The existing curator stays on `main` until cutover.
   that links to a profile's tables or columns lives in that profile's
   module.
 
+**D1.24 The rebuild branch starts without the previous implementation. Accepted.**
+
+- The maintainer approved removing the previous Python package, tests,
+  curator companion, scripts, CI workflow, lockfile, and project metadata
+  from the `rebuild` branch (2026-09-23).
+- The previous system keeps running from `main`, which remains the parity
+  oracle.
+- Its catalog JSON and schemas are kept under `legacy/catalog/` as frozen
+  migration input for slice 3, and are removed at cutover.
+- The branch's `AGENTS.md` carries a banner saying that this contract
+  governs the branch.
+
+**D1.25 The three layers are three top-level directories. Proposed.**
+
+`model/`, `catalog/`, and `templates/` sit side by side at the repository
+root. This keeps the model outside the module tree, so that every file under
+`catalog/` is a document and one editor-schema glob (`catalog/**/*.yaml`)
+covers them all.
+
+**D1.26 Naming conventions established by the prototype. Proposed.**
+
+- `kind` is reserved for a document's kind. Fields that the current catalog
+  called `kind` get specific names: `relationship_type`, `context_type`,
+  `source_type`, and `key_type`.
+- `module` is the reserved kind of every `module.yaml` file.
+- Topic IDs are prefixed `topic.`. IDs are global, and the current domain
+  `procedure` would otherwise collide with the clinical object `procedure`.
+- The link that cites claims is `cites`, because a context's nested `claims`
+  field holds the claims themselves.
+- `#key` refers to an entry in the same document. Link types marked `local`
+  (a key's columns, a workflow step's claims) take bare entry keys. An entry
+  nested inside another entry is addressed as `document#entry/sub-entry`,
+  for example `internal-v2.magview_all_cohorts_pacs_v2_anon#asses/s`.
+
 ### 4.5 Illustrative neighborhood
 
-These examples show real current records re-encoded, plus two hypothetical
-documents for the new kinds. Field names and link types are illustrative;
+The prototype on the `rebuild` branch (section 4.10) supersedes these
+sketches: its files under `model/`, `catalog/`, and `templates/` are the
+working versions. The examples below show real current records re-encoded,
+plus two hypothetical documents for the new kinds. Field names and link types are illustrative;
 slice 2 fixes them. Documents marked *hypothetical* are format examples, not
 catalog content, and must not be migrated as written.
 
-`catalog/model/kinds.yaml` (excerpt):
+`model/kinds.yaml` (excerpt):
 
 ```yaml
 feature:
@@ -603,7 +647,7 @@ concept:
     search_terms: {type: text, many: true}
 ```
 
-`catalog/model/links.yaml` (excerpt):
+`model/links.yaml` (excerpt):
 
 ```yaml
 broader:
@@ -629,7 +673,7 @@ related:
   backlink: related
 ```
 
-`catalog/model/values.yaml` (excerpt):
+`model/values.yaml` (excerpt):
 
 ```yaml
 feature_value_types:
@@ -649,7 +693,7 @@ kind: feature
 label: Imaging assessment
 definition: BI-RADS assessment code.
 value_type: coded
-topics: [imaging]
+topics: [topic.imaging]
 objects: [imaging_interpretation]
 search_terms: [imaging assessment, birads, bi-rads]
 caveats:
@@ -669,7 +713,7 @@ statement: Do not substitute an imaging assessment or recommendation for a tissu
 rationale: >-
   Assessment guides next clinical actions;
   pathology observations and diagnoses are distinct downstream objects.
-topics: [imaging, pathology, workflow]
+topics: [topic.imaging, topic.pathology, topic.workflow]
 applies_to:
   - imaging_interpretation
   - pathology_diagnosis
@@ -678,7 +722,7 @@ applies_to:
   - pathology.severity
   - clinical.interpretation-procedure
   - clinical.pathology-observation-diagnosis
-claims: [clinical.screening-diagnostic-pathway#assessment-guides-next-step]
+cites: [clinical.screening-diagnostic-pathway#assessment-guides-next-step]
 ```
 
 The current record's caveat, "The catalog describes representation and does
@@ -908,6 +952,96 @@ Slice 1 is complete when:
    VS Code.
 4. Every S1 decision is Accepted, revised, or Superseded here.
 
+### 4.10 Prototype status
+
+Built on the `rebuild` branch on 2026-09-23. To try it from the worktree:
+
+```bash
+uv sync --locked
+```
+
+```bash
+uv run --locked embed-context check
+```
+
+```bash
+uv run --locked embed-context show imaging.assessment
+```
+
+```bash
+uv run --locked python -m unittest discover -v
+```
+
+Contents:
+
+- `model/`: 21 kinds (every provisional document kind plus 6 entry kinds),
+  24 link types, and 24 value sets.
+- `catalog/`: 33 documents and 3 module files.
+  - The documents hold 31 addressable entries and 107 links.
+  - Everything checks with no findings.
+- `templates/text/`: the default template, shared macros, and one
+  per-kind template (`feature.md.j2`).
+- `embed_context/`: YAML reader, model reader, loader and checker, view
+  builder, renderer, editor-schema generator, and CLI (`check`, `show`,
+  `schema`).
+- `tests/`: 46 tests. Engine tests use a small fixture model. The
+  repository tests check only whole-catalog properties: no findings, every
+  node renders, and the schema accepts every file. Nothing mirrors catalog
+  wording or counts.
+- `.vscode/`: settings mapping `catalog/**/*.yaml` to the generated schema,
+  and a recommendation for the YAML extension.
+
+What the prototype established:
+
+- **Every worked edit behaves as intended.** They were run against scratch
+  copies of the catalog. A wrong or misspelled link, a link written from its
+  backlink side, a mistyped controlled value, a cycle, and a portable
+  document linking into a profile each produced a file:line error that
+  names the field, and suggests the fix where there is a near match.
+  Removing a link, inserting a topic layer, and adding a controlled value
+  each took one edit, and the backlinks followed.
+- **Find-and-replace rename is not yet safe (D1.13).** Replacing
+  `imaging.assessment` also rewrote the vocabulary IDs that contain it.
+  `check` caught the broken links. Slice 2 must give vocabularies (and any
+  other derived-looking IDs) IDs that do not contain another ID, and
+  `rename` is needed before migration.
+- **Typed fields preserve the replaced sentences.** `null_meaning`,
+  `completeness`, and `parsing` render their meanings from `values.yaml`,
+  so the information in the removed caveats still reaches the reader,
+  stated once.
+- **The editor schema lists each link type's target IDs once.** It is 78 KB
+  for the prototype. It was validated with `jsonschema` using editor-style
+  YAML typing (every document accepted; wrong values, unknown fields, and
+  unknown IDs rejected). It has not yet been tried inside VS Code itself.
+- **Module selection.** `check` and `show` load every module by default;
+  `--module` restricts the set to a module and what it requires. The
+  default public module set is decided in slice 4 or 7.
+
+Prototype content choices for the maintainer to review:
+
+- `topic.mammography` links `broader: [topic.imaging]`. This is a new
+  organizational link, added to demonstrate hub nesting; delete it if it is
+  unwanted.
+- Removed caveats and where their information now lives:
+  - the features' null-semantics caveats: each vocabulary's `null_meaning`;
+  - "legend not exhaustive": `completeness: unknown`;
+  - the recommendation vocabulary's "preserve the source string" caveat: the
+    meaning of `parsing: comma_composed_undocumented`;
+  - the guardrail's "does not prescribe care": a notice in
+    `catalog/semantic/module.yaml`.
+- Every value meaning in `values.yaml` is draft wording for slice 2 review.
+- `profile_support` documents have no label, so they display by ID. Slice 2
+  decides.
+- Links to documents outside the slice are recorded as `# Prototype:`
+  comments where they would appear.
+
+Not built yet, by plan:
+
+- the `new`, `rename`, and `render` commands;
+- search and discovery (slice 4);
+- MCP (slice 6);
+- packaging of the data directories (slice 7).
+
 ## Change log
 
 - 2026-09-23: Created. Rebuild-wide contract, slice plan, and slice 1
@@ -938,3 +1072,11 @@ Slice 1 is complete when:
 - 2026-09-23: Corrected D1.23. Patterns may link to specific tables and
   columns; the restriction is only on executable code. A pattern's links
   decide which module it lives in.
+- 2026-09-23: Built the slice 1 prototype on `rebuild` (section 4.10).
+  - Removed the previous implementation from the branch with maintainer
+    approval (D1.24).
+  - Moved `model/` and `templates/` beside `catalog/` (D1.25).
+  - Recorded the naming conventions the prototype needed (D1.26).
+  - Added the flow-style rule to D1.14.
+  - Corrected D1.13: find-and-replace is not yet a safe rename.
+  - Renamed the citation link type to `cites` in D1.17.
