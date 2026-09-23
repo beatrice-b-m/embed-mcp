@@ -108,8 +108,8 @@ must read and edit it, rather than modifying the existing code.
   required or canonical definitions.
 - **Patterns are conceptual, not code (D1.23).** A pattern describes
   conceptual handling, feature cleaning, or aggregation in prose steps or
-  pseudocode. It contains no executable code and names no concrete tables or
-  columns; it links to portable features, concepts, and aggregations instead.
+  pseudocode. It contains no executable code. It may link to features,
+  concepts, and aggregations, and to specific tables and columns.
 
 ### Scope changes from the current system
 
@@ -478,7 +478,7 @@ dependency. `jsonschema` is dropped because the model is the schema.
   | `relationship.source`, `relationship.target` | clinical object | relationships |
   | `table.columns[].maps` (with mapping status) | feature | columns |
   | `guardrail.applies_to` | object, feature, relationship, column, concept | guardrails |
-  | `pattern.uses` | feature, concept, aggregation (never tables or columns, D1.23) | patterns |
+  | `pattern.uses` | feature, concept, aggregation, table, column | patterns |
   | `<any>.claims` | claim (`context#claim`) | cited by |
   | `claim.sources` | source | supports |
 
@@ -567,10 +567,14 @@ reconsidered after slice 5. The existing curator stays on `main` until cutover.
 
 - A pattern holds prose steps or pseudocode focused on conceptual handling,
   feature cleaning, or aggregation.
-- It never includes executable code or concrete table or column names. It
-  links to portable features, concepts, and aggregations (D1.17).
-- This keeps patterns valid across dataset versions and avoids implying a
-  canonical implementation.
+- It never includes executable code, which would tie it to one dataset
+  version and imply a canonical implementation.
+- It may link to features, concepts, and aggregations, and to specific tables
+  and columns (D1.17).
+- The module scope rule (D1.3) decides where a pattern lives. A pattern that
+  links only to portable documents lives in the semantic module. A pattern
+  that links to a profile's tables or columns lives in that profile's
+  module.
 
 ### 4.5 Illustrative neighborhood
 
@@ -710,9 +714,9 @@ limits:
   - Presented as an option; it is not a canonical outcome definition.
 ```
 
-The pattern links only to portable documents, so it lives in the semantic
-module. A pattern that holds only for one profile lives in that profile's
-module, and it still names no tables or columns.
+This pattern links only to portable documents, so it lives in the semantic
+module. A pattern that links to, say, `open-v2` columns lives in the `open-v2`
+module (D1.23).
 
 `catalog/open-v2/vocabularies/open-v2.imaging.assessment.yaml`:
 
@@ -931,3 +935,6 @@ Slice 1 is complete when:
   - Moved the example pattern to the semantic module.
 - 2026-09-23: Renamed the distribution to `embed-context` (D1.22). The
   contract moves to the `rebuild` branch from the slice 1 prototype onward.
+- 2026-09-23: Corrected D1.23. Patterns may link to specific tables and
+  columns; the restriction is only on executable code. A pattern's links
+  decide which module it lives in.
