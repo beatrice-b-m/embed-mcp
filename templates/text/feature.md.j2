@@ -1,0 +1,22 @@
+{#- Features lead with where each profile represents them, since that is
+    what an analyst usually needs next. -#}
+{% extends "text/_default.md.j2" %}
+{% block links %}
+{% set columns = d.backlinks | selectattr("name", "equalto", "columns") | list %}
+{% if columns %}
+
+Represented by
+{{ m.link_groups(columns) }}
+{%- endif %}
+{% if d.links %}
+
+Links
+{{ m.link_groups(d.links) }}
+{%- endif %}
+{% set others = d.backlinks | rejectattr("name", "equalto", "columns") | list %}
+{% if others %}
+
+Backlinks
+{{ m.link_groups(others) }}
+{%- endif %}
+{% endblock %}

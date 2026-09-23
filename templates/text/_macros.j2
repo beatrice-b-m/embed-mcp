@@ -1,0 +1,71 @@
+{#- Shared formatting for text views.
+
+    Each macro receives part of a view built by embed_context/view.py:
+      fields     name, type, many, and one of: text (a list), choices
+                 (value and meaning), pairs (key and value), fields (nested)
+      entries    name, description, nodes (each node is itself a view)
+      links      name, links (id, kind, label, and optional note / qualifiers)
+
+    Keys avoid Python dict method names such as `values` and `items`,
+    which Jinja would resolve to the method instead.
+-#}
+
+{% macro fields(items, indent="") %}
+{% for f in items %}
+{% if f.type == "value" and f.many %}
+{{ indent }}{{ f.name }}:
+{% for v in f.choices %}
+{{ indent }}  - {{ v.value }}{% if v.meaning %} — {{ v.meaning }}{% endif %}
+
+{% endfor %}
+{% elif f.type == "value" %}
+{{ indent }}{{ f.name }}: {{ f.choices[0].value }}{% if f.choices[0].meaning %} — {{ f.choices[0].meaning }}{% endif %}
+
+{% elif f.type == "map" %}
+{{ indent }}{{ f.name }}:
+{% for item in f.pairs %}
+{{ indent }}  {{ "%-6s"|format(item.key) }} {{ item.value }}
+{% endfor %}
+{% elif f.type == "record" %}
+{{ indent }}{{ f.name }}:
+{{ fields(f.fields, indent ~ "  ") }}
+{%- elif f.many %}
+{{ indent }}{{ f.name }}:
+{% for v in f.text %}
+{{ indent }}  - {{ v }}
+{% endfor %}
+{% else %}
+{{ indent }}{{ f.name }}: {{ f.text[0] }}
+{% endif %}
+{% endfor %}
+{% endmacro %}
+
+{% macro link_groups(groups, indent="  ") %}
+{% for group in groups %}
+{% for item in group.links %}
+{{ indent }}{{ "%-16s"|format(group.name if loop.first else "") }} {{ item.id }} — {{ item.label }}
+{%- if item.qualifiers is defined %}{% for q in item.qualifiers %} · {{ q.value }}{% endfor %}{% endif %}
+{%- if item.note is defined %} · {{ item.note }}{% endif %}
+
+{% endfor %}
+{% endfor %}
+{% endmacro %}
+
+{% macro entries(groups, indent="") %}
+{% for group in groups %}
+
+{{ indent }}{{ group.name }}:
+{% for item in group.nodes %}
+{{ indent }}  [{{ item.id.split("#")[-1] }}]
+{{ fields(item.fields, indent ~ "    ") }}
+{%- if item.links %}
+{{ link_groups(item.links, indent ~ "    ") }}
+{%- endif %}
+{% if item.backlinks %}
+{{ indent }}    backlinks:
+{{ link_groups(item.backlinks, indent ~ "      ") }}
+{%- endif %}
+{{ entries(item.entries, indent ~ "    ") }}
+{%- endfor %}
+{% endfor %}
+{% endmacro %}
