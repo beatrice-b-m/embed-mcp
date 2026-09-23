@@ -35,8 +35,8 @@ controlled values, and link IDs as you type.
 - `catalog/` holds the documents and is the source of truth for catalog
   content. `catalog/semantic/` is portable meaning; `catalog/internal-v2/` and
   `catalog/open-v2/` are the profiles.
-- `model/` holds the structure (`kinds.yaml`, `links.yaml`, `values.yaml`),
-  search and read tuning (`query.yaml`), and the shared operations
+- `model/` holds the structure (`kinds.yaml`, `links.yaml`, `values.yaml`,
+  and the cross-document rules in `rules.yaml`), search and read tuning (`query.yaml`), and the shared operations
   (`operations.yaml`).
 - `templates/text/` holds the output layout.
 - `embed_context/` is the engine. It contains no catalog content.
@@ -103,6 +103,7 @@ Focused tests while iterating:
 | Area | Tests |
 |---|---|
 | Loading and checking | `tests.test_check`, `tests.test_yamlio`, `tests.test_yamlout` |
+| Cross-document rules | `tests.test_rules` |
 | Rename | `tests.test_rename` |
 | Views and templates | `tests.test_view` |
 | Search, read, and code | `tests.test_query`, `tests.test_retrieval` |

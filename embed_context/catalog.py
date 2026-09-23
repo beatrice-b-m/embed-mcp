@@ -162,6 +162,9 @@ def load_catalog(root: Path, modules: list[str] | None = None) -> Catalog:
     model = load_model(root / "model")
     catalog = Catalog(root=root, model=model)
     _Loader(catalog).load(modules)
+    from .rules import check_rules  # rules.py builds on this module
+
+    check_rules(catalog)
     catalog.findings.sort(key=lambda f: (str(f.file), f.line, f.severity))
     return catalog
 

@@ -35,6 +35,7 @@ these goals:
 |---|---|
 | `yamlio.py` | Reads the restricted YAML subset: strings only, with line numbers |
 | `model.py` | Reads `model/kinds.yaml`, `links.yaml`, and `values.yaml` |
+| `rules.py` | Cross-document rules, named in `model/rules.yaml` |
 | `catalog.py` | Loads modules and documents, resolves links, computes backlinks, and checks everything against the model; finds the catalog root |
 | `view.py` | Builds the view of one document or entry |
 | `query.py` | Search, read, and code lookup, tuned by `model/query.yaml` |
@@ -179,12 +180,18 @@ The engine keeps only rules the model cannot express:
   it requires. The rule is generic but depends on module loading order.
 - **Owning-side links, acyclic chains, and symmetric links**, which span
   documents.
+- **Cross-document rules** (`embed_context/rules.py`) compare facts that live in
+  different documents: a join's column lists pair up with matching physical
+  types; its cardinality is backed by unique keys on the tables it joins; its
+  source completeness agrees with its cardinality and with keys on the same
+  columns; hierarchy joins form no cycle; consecutive joins in a join path meet
+  at the same table; and two keys on the same columns agree.
+  `model/rules.yaml` names every kind, field, link type, and value the rules
+  read, and is checked against the model, so the engine names none of them.
+  These are the join checks 0.10 enforced.
 
-Two further cross-document rules were accepted but are not yet implemented
-(see [open items](#open-items)): a table key's declared uniqueness must agree
-with the cardinality of the relationships that use it, and consecutive joins in
-a join path must share a table. A rule that encodes specific catalog content,
-rather than structure, is not allowed.
+A rule that encodes specific catalog content, rather than structure, is not
+allowed.
 
 ## Renaming
 
@@ -253,20 +260,17 @@ decisions that shape it:
 
 These are known and deliberately left for later:
 
-1. **Unimplemented cross-document rules.** Key uniqueness against relationship
-   cardinality, and join-path adjacency (see
-   [What stays in code](#what-stays-in-code)).
-2. **Drafted value wording.** The meanings in `model/values.yaml` and the
+1. **Drafted value wording.** The meanings in `model/values.yaml` and the
    descriptions of the mapping qualifiers in `model/links.yaml` were drafted
    from field names, examples, and documentation, and await maintainer review.
-3. **Release evidence on portable features.** Semantic features carry
+2. **Release evidence on portable features.** Semantic features carry
    release-tied `evidence` values such as `release_schema` and
    `release_legend`. Moving them onto profile mappings would require knowing
    which profile each came from.
-4. **Column references in qualifiers.** `category_column`, `subject_column`,
+3. **Column references in qualifiers.** `category_column`, `subject_column`,
    and `composite_with` name another column as text, so `check` does not verify
    them. They could become local link qualifiers.
-5. **Source verification scripts.** 0.10's Parquet footer verifier
+4. **Source verification scripts.** 0.10's Parquet footer verifier
    (`scripts/validate_source_profile.py`) and fieldwork topology runners
    were removed with the old implementation and remain in git history at the
    `v0.10.0` tag; they read the old catalog format.

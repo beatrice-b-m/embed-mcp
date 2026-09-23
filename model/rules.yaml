@@ -1,0 +1,57 @@
+# Cross-document rules that `check` enforces beyond kinds.yaml and links.yaml.
+#
+# The rules compare facts that live in different documents, such as a join's
+# claimed cardinality and the keys declared on the tables it joins. Their
+# logic is in embed_context/rules.py; this file names the kinds, fields, link
+# types, and values they read, so the engine names none of them. Every name is
+# checked against the model when the catalog loads. Remove a section to turn
+# its rules off.
+
+# The rules on physical joins between tables:
+#   - the source and target column lists have the same length;
+#   - paired columns have the same physical type;
+#   - a join claiming at least one target per source requires every source row
+#     to have the join columns;
+#   - a join claiming at most one target per source joins to a unique key of
+#     the target table, and likewise for at most one source per target;
+#   - a join's source completeness does not contradict the completeness
+#     declared by a key on the same columns;
+#   - hierarchy joins between tables form no cycle.
+joins:
+  kind: join
+  source_columns: source_columns          # link types to columns
+  target_columns: target_columns
+  cardinality: cardinality                # record field
+  targets_per_source: targets_per_source  # its two directions
+  sources_per_target: sources_per_target
+  at_most_one: [exactly_one, zero_or_one]
+  at_least_one: [exactly_one, one_or_more]
+  source_completeness: source_completeness
+  required: required                      # the source completeness value meaning every row
+  # A join's source completeness (left) contradicts a key on the same columns
+  # that declares this completeness (right).
+  contradicts:
+    required: incomplete
+    optional: complete
+  hierarchy_field: join_type
+  hierarchy_value: hierarchy
+
+# Candidate keys, which the join rules compare against; two keys on the same
+# columns may not disagree.
+keys:
+  kind: key
+  columns: key_columns                    # link type to columns
+  uniqueness: uniqueness
+  unique: unique
+  completeness: completeness
+  agree: [key_type, uniqueness, completeness]
+
+# Columns: the field holding a column's physical type.
+columns:
+  kind: column
+  type: type
+
+# Join paths: consecutive joins meet at the same table.
+paths:
+  kind: join_path
+  joins: path_joins                       # link type, in traversal order

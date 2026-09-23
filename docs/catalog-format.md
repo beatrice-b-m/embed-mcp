@@ -8,7 +8,7 @@ the engine reads them and produces output, see [Architecture](architecture.md).
 
 | Directory | Holds | Edited when |
 |---|---|---|
-| `model/` | The structure: document kinds and their fields (`kinds.yaml`), link types (`links.yaml`), controlled values (`values.yaml`), search and read tuning (`query.yaml`), and the shared operations (`operations.yaml`) | A new kind, field, link type, value, or operation is needed |
+| `model/` | The structure: document kinds and their fields (`kinds.yaml`), link types (`links.yaml`), controlled values (`values.yaml`), cross-document rules (`rules.yaml`), search and read tuning (`query.yaml`), and the shared operations (`operations.yaml`) | A new kind, field, link type, value, or operation is needed |
 | `catalog/` | The documents, one directory per module | Catalog content changes |
 | `templates/` | The Jinja templates that lay out text output | Output layout changes |
 
@@ -232,8 +232,9 @@ catalog/semantic/features/imaging.assessment.yaml:10: error: objects: unknown ID
 It enforces the model: required fields and field types, controlled values,
 link targets that exist and have an allowed kind, entries that resolve, links
 written only from their owning side, acyclic link chains, file names that are
-valid IDs, and the module scope rule. A few cross-document rules that the
-model cannot express are named rules in the engine (see
+valid IDs, and the module scope rule. It also runs the cross-document rules on
+joins, keys, and join paths that `model/rules.yaml` configures, for example
+that a join claiming at most one target per source joins to a unique key (see
 [Architecture](architecture.md#what-stays-in-code)).
 
 Findings are errors, which stop the catalog from loading cleanly, or warnings,

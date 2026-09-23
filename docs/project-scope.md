@@ -43,7 +43,8 @@ tables. `model/` defines the documents' structure.
 
 Together they must remain:
 
-- loadable by `embed-context check` with no findings;
+- loadable by `embed-context check` with no findings, including the
+  cross-document rules on joins, keys, and join paths;
 - readable and editable in a text editor without an agent or database;
 - clinically normalized independently of physical storage;
 - explicit about evidence, profile support, missing states, uncertainty,
