@@ -7,7 +7,7 @@
 #            whenever both appear
 #
 # The open-v2 cases are the legacy discovery regressions, ported with their
-# windows unchanged and their IDs mapped through migration/id-map.json.
+# windows unchanged and their IDs mapped through docs/legacy-id-map.json.
 # Editing the catalog or model/query.yaml may reorder results; when a case
 # fails, check whether the new order is still what an analyst needs before
 # changing the case.
