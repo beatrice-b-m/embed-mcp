@@ -19,6 +19,7 @@ objects: [image]
 missing_states:
   absent-attribute:
     representation: null or absent value
+    represented_values: ["null"]
     meaning: >-
       The source makes no Burned In Annotation declaration; sufficient identifying annotation
       may or may not be present

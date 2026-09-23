@@ -18,6 +18,7 @@ cites:
 missing_states:
   missing-locator:
     representation: null or blank value
+    represented_values: ["null", ""]
     meaning: >-
       The de-identified image file and its exported SOP Instance UID representation are
       unavailable, likely because anonymization failed before the file could be saved

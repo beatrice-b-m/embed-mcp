@@ -126,6 +126,7 @@ columns:
     interpretations:
       ORAL or TAXOL under H:
         representation: ORAL or TAXOL under H
+        represented_values: [ORAL, TAXOL]
         meaning: >-
           Observed category/code combinations outside the supported occurrence-specific
           dictionary; meanings remain unresolved
@@ -135,6 +136,7 @@ columns:
         feature: internal-v2.hormone_history.hormone_code
       ORAL under T:
         representation: ORAL under T
+        represented_values: [ORAL]
         meaning: >-
           Observed category/code combinations outside the supported occurrence-specific
           dictionary; meanings remain unresolved
@@ -173,6 +175,7 @@ columns:
     interpretations:
       "Y, N, or blank string":
         representation: Y, N, or blank string
+        represented_values: [Y, N, ""]
         meaning: >-
           Observed reported-status encodings; blank-to-negative equivalence is not established
         status: reconciled
@@ -187,6 +190,7 @@ columns:
     interpretations:
       "Y, N, or blank string":
         representation: Y, N, or blank string
+        represented_values: [Y, N, ""]
         meaning: >-
           Observed reported-status encodings; blank-to-negative equivalence is not established
         status: reconciled
