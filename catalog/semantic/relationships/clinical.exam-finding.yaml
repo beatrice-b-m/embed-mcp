@@ -1,0 +1,20 @@
+kind: relationship
+label: Exam records imaging finding
+relationship_type: hierarchy
+definition: An imaging finding is recorded for an exam accession.
+source_object: imaging_exam
+target_object: imaging_finding
+cardinality:
+  targets_per_source: zero_or_more
+  sources_per_target: exactly_one
+optionality:
+  source: optional
+  target: required
+attribution_limitations:
+  - Synthetic negative findings and non-unique tuples complicate row identity.
+temporal_qualification: The finding is documented in the exam context.
+# Prototype: the temporal link to time.exam-event is outside this slice.
+topics: [topic.exam, topic.imaging]
+search_terms: [exam findings, accession finding]
+caveats:
+  - Absence of a finding row is not a universal negative interpretation.

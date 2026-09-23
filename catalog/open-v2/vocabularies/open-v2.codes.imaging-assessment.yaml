@@ -1,7 +1,7 @@
 kind: vocabulary
 label: BI-RADS assessment codes
 completeness: unknown
-null_meaning: undocumented
+null_meaning: [undocumented]
 parsing: atomic
 evidence: [release_legend]
 codes:

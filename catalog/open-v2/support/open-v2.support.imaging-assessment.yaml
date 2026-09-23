@@ -1,6 +1,8 @@
 kind: profile_support
 subject: imaging.assessment
-status: supported
-cites:
+evidence_status: supported
+evidence_cites:
   - open-v2.assessment-recommendation-context#assessment-codes
   - open-v2.assessment-recommendation-context#separate-fields
+# The former summary "Open V2 evidence qualifies this portable semantic
+# record." repeated the status and was dropped.

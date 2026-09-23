@@ -39,7 +39,45 @@ keys:
     caveats:
       - The clinical identity can occupy repeated rows while procedure, pathology, or descriptor fields differ.
       - A reserved negative finding number and data-quality conflicts prevent unconditional physical-row uniqueness.
-# Prototype: an excerpt of 4 of the table's 152 columns, in physical order.
+objects:
+  # Prototype: excerpt; the table represents further objects.
+  imaging_exam:
+    object: imaging_exam
+    columns: [acc_anon]
+    completeness: complete
+    authority: preferred
+    derivation: projected
+    identity_columns: [acc_anon]
+    identity_scope: Release-scoped imaging accession within the internal MagView source.
+    rows_per_instance: one_or_more
+    longitudinal_identity: false
+    # Prototype: cites internal-v2.magview-representation-context claims,
+    # which are outside this slice.
+    caveats:
+      - Exam attributes should agree across repeated rows; conflicts are data-quality errors without a supplied repair rule.
+  imaging_finding:
+    object: imaging_finding
+    columns: [acc_anon, side, numfind]
+    completeness: partial
+    authority: preferred
+    derivation: projected
+    identity_columns: [acc_anon, numfind]
+    identity_scope: >-
+      Ordinary clinical finding identity within one imaging accession;
+      side is an attribute rather than an identity component.
+    rows_per_instance: one_or_more
+    longitudinal_identity: false
+    reserved_exceptions:
+      synthetic-contralateral-negative:
+        column: numfind
+        representation: "-9"
+        meaning: Synthetic contralateral BI-RADS 1 negative finding added by the EMBED extraction.
+        caveats:
+          - It is not an originally documented source finding.
+    caveats:
+      - The locator can repeat across procedure, pathology, specimen, or differing descriptor rows.
+      - Finding identity is accession scoped and does not persist longitudinally.
+# Prototype: an excerpt of 5 of the table's 152 columns, in physical order.
 columns:
   empi_anon:
     type: int64
@@ -47,6 +85,10 @@ columns:
   acc_anon:
     type: int64
     nullable: true
+  side:
+    type: string
+    nullable: true
+    # Prototype: maps to breast.side (role: finding), which is outside this slice.
   numfind:
     type: int8
     nullable: true
@@ -54,10 +96,10 @@ columns:
     type: string
     nullable: true
     maps:
-      - {id: imaging.assessment, mapping: direct}
-    vocabulary: internal-v2.imaging.assessment
+      - {id: imaging.assessment, mapping: direct, vocabulary: internal-v2.codes.imaging-assessment}
     interpretations:
-      s:
+      lowercase-s:
+        representation: s
         meaning: Suspicious after supported uppercase and surrounding-whitespace normalization
         status: reconciled
         cites: [internal-v2.magview-coded-values-context#code-normalization]

@@ -38,14 +38,12 @@ columns:
     type: string
     nullable: true
     maps:
-      - {id: imaging.assessment, mapping: direct}
-    vocabulary: open-v2.imaging.assessment
+      - {id: imaging.assessment, mapping: direct, vocabulary: open-v2.codes.imaging-assessment}
   recc:
     type: string
     nullable: true
     maps:
-      - {id: imaging.recommendation, mapping: direct}
-    vocabulary: open-v2.imaging.recommendation
+      - {id: imaging.recommendation, mapping: direct, vocabulary: open-v2.codes.imaging-recommendation}
   __index_level_0__:
     type: int64
     nullable: true

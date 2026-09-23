@@ -1,7 +1,7 @@
 kind: vocabulary
 label: Imaging recommendation codes
 completeness: unknown
-null_meaning: undocumented
+null_meaning: [undocumented]
 parsing: comma_composed_undocumented
 evidence: [release_legend]
 codes:
