@@ -1,0 +1,119 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Install uv and Python
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          enable-cache: true
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install locked dependencies
+        run: uv sync --locked --all-extras
+
+      - name: Run the complete test suite
+        run: uv run --locked python -m unittest discover -v
+
+      - name: Check the catalog
+        run: uv run --locked embed-context check --no-schema
+
+      - name: Run the MCP tests with only the mcp extra
+        run: >-
+          uv run --locked --no-dev --extra mcp python -m unittest
+          tests.test_mcp_server -v
+
+  package:
+    name: Build and install the wheel
+    needs: test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Install uv and Python
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          enable-cache: true
+          python-version: "3.13"
+
+      - name: Build release artifacts
+        run: uv build
+
+      - name: Check the wheel's contents
+        run: |
+          wheels=(dist/embed_context-*.whl)
+          if [ "${#wheels[@]}" -ne 1 ]; then
+            echo "expected exactly one wheel, found ${#wheels[@]}" >&2
+            exit 1
+          fi
+          python3 - "${wheels[0]}" <<'PY'
+          import sys, zipfile
+          names = zipfile.ZipFile(sys.argv[1]).namelist()
+          for required in ("embed_context/_data/model/kinds.yaml",
+                           "embed_context/_data/model/operations.yaml",
+                           "embed_context/_data/catalog/semantic/module.yaml",
+                           "embed_context/_data/templates/text/_default.md.j2"):
+              assert required in names, f"missing {required}"
+          stray = [n for n in names if n.split("/")[0] in ("legacy", "migration", "tests", "temp-docs")]
+          assert not stray, f"unexpected files: {stray[:5]}"
+          PY
+
+      - name: Verify the base install outside the checkout
+        working-directory: ${{ runner.temp }}
+        env:
+          UV_TOOL_DIR: ${{ runner.temp }}/base-tools
+          UV_TOOL_BIN_DIR: ${{ runner.temp }}/base-bin
+        run: |
+          wheel=$(echo "${GITHUB_WORKSPACE}"/dist/embed_context-*.whl)
+          uv tool install "${wheel}"
+          bin="${UV_TOOL_BIN_DIR}/embed-context"
+          "${bin}" --version
+          "${bin}" check
+          "${bin}" read imaging.assessment | grep -q "## Imaging assessment"
+          "${bin}" search "prior cancer" --format json | python3 -c "import json, sys; assert json.load(sys.stdin)['results']"
+          if "${bin}" render 2>render-error.log; then
+            echo "render unexpectedly wrote into the installed package" >&2
+            exit 1
+          fi
+          grep -q "needs a checkout" render-error.log
+          if "${bin}" serve </dev/null 2>serve-error.log; then
+            echo "serve unexpectedly started without the mcp extra" >&2
+            exit 1
+          fi
+          grep -q "optional \`mcp\` dependency" serve-error.log
+
+      - name: Verify the mcp install outside the checkout
+        working-directory: ${{ runner.temp }}
+        env:
+          UV_TOOL_DIR: ${{ runner.temp }}/mcp-tools
+          UV_TOOL_BIN_DIR: ${{ runner.temp }}/mcp-bin
+        run: |
+          wheel=$(echo "${GITHUB_WORKSPACE}"/dist/embed_context-*.whl)
+          uv tool install "embed-context[mcp] @ ${wheel}"
+          request='{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","capabilities":{},"clientInfo":{"name":"ci","version":"0"}}}'
+          echo "${request}" | "${UV_TOOL_BIN_DIR}/embed-context" serve >initialize.json
+          python3 -c "import json; result = json.loads(open('initialize.json').readline())['result']; assert 'tools' in result['capabilities']; assert result['instructions']"

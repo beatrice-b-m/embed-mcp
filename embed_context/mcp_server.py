@@ -20,9 +20,9 @@ protocol.
 from __future__ import annotations
 
 import sys
-from importlib.metadata import PackageNotFoundError, version
 from typing import Any
 
+from . import package_version
 from .operations import ArgumentError, Operation, Session, Surface, call, choices, instructions
 from .query import QueryError
 from .view import UnknownID
@@ -89,7 +89,7 @@ def build_server(session: Session) -> Any:
 
     return Server(
         SERVER_NAME,
-        version=_version(),
+        version=package_version(),
         instructions=instructions(session, surface),
         on_list_tools=list_tools,
         on_call_tool=call_tool,
@@ -119,10 +119,3 @@ def serve(session: Session) -> int:
 
 def _error(types: Any, message: str) -> Any:
     return types.CallToolResult(content=[types.TextContent(text=message)], is_error=True)
-
-
-def _version() -> str:
-    try:
-        return version("embed-context")
-    except PackageNotFoundError:
-        return "0+unknown"

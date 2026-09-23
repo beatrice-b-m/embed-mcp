@@ -17,6 +17,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from . import package_version
 from .catalog import Catalog, find_root, is_bundled, load_catalog
 from .operations import ArgumentError, Interface, Session, Surface, call, choices, load_interface
 from .pages import DEFAULT_PATH as PAGES_PATH
@@ -122,6 +123,7 @@ def _parser(catalog: Catalog, interface: Interface, session: Session | None) -> 
         epilog=epilog,
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
+    parser.add_argument("--version", action="version", version=f"embed-context {package_version()}")
     _global_options(parser)
     commands = parser.add_subparsers(dest="command", required=True)
 
