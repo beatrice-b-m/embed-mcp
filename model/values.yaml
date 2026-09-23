@@ -2,8 +2,8 @@
 # Adding a value is one line here; the checker, templates, and editor schema
 # read this file directly.
 #
-# Prototype wording (slice 1): these meanings were drafted from the current
-# documentation and need maintainer review in slice 2.
+# Meanings were drafted from the current documentation during the rebuild
+# (slices 1 and 2) and are awaiting maintainer review.
 
 module_types:
   semantic: Portable clinical meaning shared by every profile.
@@ -108,7 +108,7 @@ mapping_statuses:
   unresolved: Whether the column records the feature is not established.
 
 vocabulary_completeness:
-  unknown: Whether the code list is exhaustive is not stated.
+  unknown: The code list is not stated to be exhaustive.
   open: Codes outside the list are known to occur.
   closed: The code list is exhaustive.
 
@@ -120,6 +120,11 @@ vocabulary_parsing:
 
 null_meanings:
   undocumented: What a null or blank value means is not documented and must not be inferred from the code meanings.
+  occurrence_specific: Null and blank meanings are specific to each physical occurrence.
+
+legend_roles:
+  release_legend: The code list follows this release's own legend.
+  comparison_legend: The Open V2 legend is a comparison source and is not assumed exhaustive for internal V2.
 
 key_types:
   natural: Built from clinically meaningful columns.
@@ -135,12 +140,49 @@ key_completeness:
   incomplete: Some rows lack a key column.
   unknown: Not established.
 
-support_statuses:
-  supported: The profile's evidence supports the document.
-  unsupported: The profile does not represent the document.
-  unresolved: Whether the profile supports the document is not established.
-  interpretation_limit: The profile supports the document with stated limits.
-  not_cataloged: The profile may represent the document, but the catalog does not describe it yet.
+object_completeness:
+  complete: Every occurrence of the object is represented.
+  partial: Only some occurrences of the object are represented.
+  unknown: Not established.
+
+object_authority:
+  preferred: The preferred representation of the object in this profile.
+  reference: A reference to the object whose authoritative representation is elsewhere.
+  alternative: An alternative representation of the object.
+  unspecified: Authority is not established.
+
+object_derivation:
+  source: Recorded as the source system represents it.
+  projected: Projected from a wider source representation.
+  derived: Computed from other represented values.
+  unknown: Not established.
+
+rows_per_instance:
+  exactly_one: Each object instance occupies exactly one row.
+  one_or_more: An object instance may occupy several rows.
+  unknown: Not established.
+
+join_types:
+  hierarchy: The target is contained in or belongs to the source.
+  reference: The source refers to the target.
+  projection: One table projects columns of another.
+
+endpoint_completeness:
+  required: Every source row has the join columns.
+  optional: Some source rows lack the join columns.
+  unknown: Not established.
+
+evidence_statuses:
+  supported: The profile's evidence supports the portable meaning.
+  unsupported: The profile's evidence does not support the portable meaning.
+  unresolved: Whether the profile's evidence supports the meaning is not established.
+  interpretation_limit: The profile's evidence supports the meaning with stated limits.
+
+representation_statuses:
+  supported: The profile represents the subject in usable columns.
+  unsupported: The profile does not represent the subject.
+  unresolved: Whether the profile represents the subject is not established.
+  not_cataloged: The profile may represent the subject, but the catalog does not describe it yet.
 
 pattern_statuses:
   example: One way the lab has handled the data; not a canonical definition.

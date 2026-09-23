@@ -26,6 +26,7 @@ class FieldSpec:
     description: str | None = None
     entry_kind: str | None = None
     fields: dict[str, "FieldSpec"] = field(default_factory=dict)
+    link: "LinkSpec | None" = None  # set for link-valued qualifiers
 
 
 @dataclass(frozen=True)
@@ -72,8 +73,16 @@ class Model:
         return {link.field: link for link in self.links.values() if link.owned_by(spec)}
 
     def links_into(self, kind: str) -> list[LinkSpec]:
-        """Link types that may point at the given kind."""
-        return [link for link in self.links.values() if link.allows_target(kind)]
+        """Link types, including link-valued qualifiers, that may point at the given kind."""
+        return [link for link in self.all_links if link.allows_target(kind)]
+
+    @property
+    def all_links(self) -> list[LinkSpec]:
+        """Every link type, plus the link-valued qualifiers declared on them."""
+        result = list(self.links.values())
+        for link in self.links.values():
+            result.extend(q.link for q in link.qualifiers.values() if q.link is not None)
+        return result
 
     @property
     def document_kinds(self) -> list[str]:
@@ -127,7 +136,8 @@ def _parse_field(doc: YamlDocument, name: str, raw: Any, path: tuple, values: di
     _known_keys(doc, raw, path, {"type", "of", "many", "required", "description", "entry_kind", "fields"})
     kind = raw.get("type")
     if kind not in FIELD_TYPES:
-        raise _error(doc, path, f"field type must be one of: {', '.join(FIELD_TYPES)}")
+        hint = "; `type: link` is only for link qualifiers in links.yaml" if kind == "link" else ""
+        raise _error(doc, path, f"field type must be one of: {', '.join(FIELD_TYPES)}{hint}")
     of = raw.get("of")
     if kind == "value" and of not in values:
         raise _error(doc, path, f"`of:` must name a value set in values.yaml, not `{of}`")
@@ -159,7 +169,7 @@ def _parse_links(doc: YamlDocument, kinds: dict[str, KindSpec], values: dict[str
         if "backlink" not in body:
             raise _error(doc, path, "every link type needs a `backlink:` name")
         qualifiers = {
-            q: _parse_field(doc, q, spec, (*path, "qualifiers", q), values)
+            q: _parse_qualifier(doc, name, owners, q, spec, (*path, "qualifiers", q), kinds, values)
             for q, spec in _mapping(doc, body.get("qualifiers", {}), (*path, "qualifiers")).items()
         }
         links[name] = LinkSpec(
@@ -177,6 +187,41 @@ def _parse_links(doc: YamlDocument, kinds: dict[str, KindSpec], values: dict[str
             qualifiers=qualifiers,
         )
     return links
+
+
+def _parse_qualifier(
+    doc: YamlDocument,
+    link_name: str,
+    owners: tuple[str, ...] | str,
+    name: str,
+    raw: Any,
+    path: tuple,
+    kinds: dict[str, KindSpec],
+    values: dict[str, dict[str, str]],
+) -> FieldSpec:
+    """A qualifier is a field, or with `type: link` a single link of its own."""
+    raw = _mapping(doc, raw, path)
+    if raw.get("type") != "link":
+        return _parse_field(doc, name, raw, path, values)
+    _known_keys(doc, raw, path, {"type", "targets", "backlink", "required", "description"})
+    if "backlink" not in raw:
+        raise _error(doc, path, "a link qualifier needs a `backlink:` name")
+    link = LinkSpec(
+        name=f"{link_name}.{name}",
+        field=name,
+        owners=owners,
+        targets=_kind_list(doc, raw.get("targets"), (*path, "targets"), kinds),
+        backlink=raw["backlink"],
+        many=False,
+        description=raw.get("description"),
+    )
+    return FieldSpec(
+        name=name,
+        type="link",
+        required=_flag(doc, raw, "required", path),
+        description=raw.get("description"),
+        link=link,
+    )
 
 
 def _check_field_clashes(kinds: dict[str, KindSpec], links: dict[str, LinkSpec], doc: YamlDocument) -> None:

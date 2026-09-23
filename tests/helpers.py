@@ -78,6 +78,10 @@ rates:
   backlink: rated_by
   qualifiers:
     score: {type: value, of: statuses, required: true}
+    via:
+      type: link
+      targets: [topic]
+      backlink: rated_via
 """
 
 FIXTURE_VALUES = """

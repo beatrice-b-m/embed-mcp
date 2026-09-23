@@ -27,7 +27,7 @@ def build_schema(catalog: Catalog) -> dict[str, Any]:
     definitions: dict[str, Any] = {}
     for name, kind in model.kinds.items():
         definitions[name] = _kind_schema(catalog, kind)
-    for link in model.links.values():
+    for link in model.all_links:
         if link.local:
             continue
         nodes = [node for node in catalog.nodes.values() if link.allows_target(node.kind)]
@@ -89,6 +89,8 @@ def _kind_schema(catalog: Catalog, kind: KindSpec) -> dict[str, Any]:
 
 
 def _field_schema(catalog: Catalog, spec: FieldSpec) -> dict[str, Any]:
+    if spec.link is not None:
+        return {"$ref": f"#/definitions/{_targets_ref(spec.link)}", "description": spec.description or ""}
     if spec.type == "value":
         meanings = catalog.model.values[spec.of]
         single = _enum(list(meanings), list(meanings.values()))

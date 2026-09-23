@@ -19,8 +19,8 @@
 # spec that contains prose in block style instead: inside `{...}`, a comma
 # ends the value.
 #
-# Prototype (slice 1): fields follow the current catalog closely; slice 2
-# finalizes names and records each change in the parity ledger.
+# `kind` is reserved for a document's kind, and `module` is the kind of every
+# module.yaml file.
 
 module:
   description: The module.yaml file at the top of a module directory.
@@ -37,6 +37,8 @@ module:
       many: true
       description: Module-wide statements shown once, instead of repeated on every document.
 
+# Semantic kinds ------------------------------------------------------------
+
 topic:
   description: An optional hub document that other documents link to for browsing and filtering.
   fields:
@@ -52,6 +54,32 @@ clinical_object:
       type: text
       required: true
       description: What one occurrence of the object is.
+    search_terms: {type: text, many: true}
+    caveats: {type: text, many: true}
+
+relationship:
+  description: A typed clinical relationship between two clinical objects.
+  fields:
+    label: {type: text, required: true}
+    relationship_type: {type: value, of: relationship_types, required: true}
+    definition:
+      type: text
+      required: true
+      description: How the source and target objects are related.
+    cardinality:
+      type: record
+      required: true
+      fields:
+        targets_per_source: {type: value, of: cardinalities, required: true}
+        sources_per_target: {type: value, of: cardinalities, required: true}
+    optionality:
+      type: record
+      required: true
+      fields:
+        source: {type: value, of: optionalities, required: true}
+        target: {type: value, of: optionalities, required: true}
+    attribution_limitations: {type: text, many: true}
+    temporal_qualification: {type: text}
     search_terms: {type: text, many: true}
     caveats: {type: text, many: true}
 
@@ -75,7 +103,7 @@ feature:
     missing_states:
       type: record
       entry_kind: missing_state
-      description: Documented meanings of missing representations.
+      description: Documented meanings of missing representations, keyed by a short name.
 
 missing_state:
   description: A documented meaning of one missing representation of a feature.
@@ -83,29 +111,6 @@ missing_state:
   fields:
     representation: {type: text, required: true}
     meaning: {type: text, required: true}
-    caveats: {type: text, many: true}
-
-relationship:
-  description: A typed clinical relationship between two clinical objects.
-  fields:
-    label: {type: text, required: true}
-    relationship_type: {type: value, of: relationship_types, required: true}
-    definition: {type: text, required: true}
-    cardinality:
-      type: record
-      required: true
-      fields:
-        targets_per_source: {type: value, of: cardinalities, required: true}
-        sources_per_target: {type: value, of: cardinalities, required: true}
-    optionality:
-      type: record
-      required: true
-      fields:
-        source: {type: value, of: optionalities, required: true}
-        target: {type: value, of: optionalities, required: true}
-    attribution_limitations: {type: text, many: true}
-    temporal_qualification: {type: text}
-    search_terms: {type: text, many: true}
     caveats: {type: text, many: true}
 
 temporal:
@@ -122,7 +127,10 @@ aggregation:
   fields:
     label: {type: text, required: true}
     aggregation_status: {type: value, of: aggregation_statuses, required: true}
-    definition: {type: text, required: true}
+    definition:
+      type: text
+      required: true
+      description: The aggregation method.
     ordering: {type: text}
     search_terms: {type: text, many: true}
     caveats: {type: text, many: true}
@@ -135,7 +143,10 @@ guardrail:
     priority: {type: value, of: guardrail_priorities, required: true}
     statement: {type: text, required: true}
     rationale: {type: text}
-    scope: {type: value, of: scopes}
+    scope:
+      type: value
+      of: scopes
+      description: Only for semantic-module guardrails; a profile's guardrails are scoped by their module.
     search_terms: {type: text, many: true}
     caveats: {type: text, many: true}
 
@@ -156,7 +167,10 @@ context:
   fields:
     label: {type: text, required: true}
     context_type: {type: value, of: context_types, required: true}
-    scope: {type: value, of: scopes}
+    scope:
+      type: value
+      of: scopes
+      description: Only for semantic-module contexts; a profile's contexts are scoped by their module.
     definition: {type: text, required: true}
     search_terms: {type: text, many: true}
     claims: {type: record, entry_kind: claim}
@@ -185,7 +199,10 @@ source:
   fields:
     label: {type: text, required: true}
     source_type: {type: value, of: source_types, required: true}
-    scope: {type: value, of: scopes}
+    scope:
+      type: value
+      of: scopes
+      description: Only for semantic-module sources; a profile's sources are scoped by their module.
     locator_type: {type: value, of: locator_types, required: true}
     locator: {type: text, required: true}
     version_scope:
@@ -194,8 +211,10 @@ source:
       description: What the source covers.
     notes: {type: text, many: true}
 
+# Profile kinds -------------------------------------------------------------
+
 table:
-  description: One physical table of one profile, with its columns, keys, and column mappings.
+  description: One physical table of one profile, with its columns, keys, column mappings, and represented objects.
   fields:
     label:
       type: text
@@ -207,6 +226,10 @@ table:
       description: What one row represents.
     caveats: {type: text, many: true}
     keys: {type: record, entry_kind: key}
+    objects:
+      type: record
+      entry_kind: object_binding
+      description: Clinical objects this table represents, keyed by the object's ID.
     columns:
       type: record
       entry_kind: column
@@ -223,6 +246,34 @@ key:
     evidence: {type: value, of: evidence_kinds, many: true}
     caveats: {type: text, many: true}
 
+object_binding:
+  description: How a table represents one clinical object, and what identifies an instance.
+  entry: true
+  fields:
+    completeness: {type: value, of: object_completeness}
+    authority: {type: value, of: object_authority}
+    derivation: {type: value, of: object_derivation}
+    identity_scope:
+      type: text
+      description: What the identity columns identify, and within what scope.
+    rows_per_instance: {type: value, of: rows_per_instance}
+    longitudinal_identity:
+      type: flag
+      description: Whether the identity persists across a patient's records.
+    reserved_exceptions:
+      type: record
+      entry_kind: reserved_exception
+      description: Identity values with a special meaning, keyed by a short name.
+    caveats: {type: text, many: true}
+
+reserved_exception:
+  description: An identity value with a special meaning.
+  entry: true
+  fields:
+    representation: {type: text, required: true}
+    meaning: {type: text, required: true}
+    caveats: {type: text, many: true}
+
 column:
   description: One physical column of a table.
   entry: true
@@ -236,23 +287,25 @@ column:
     interpretations:
       type: record
       entry_kind: interpretation
-      description: Meanings of specific represented values in this column, keyed by the value.
+      description: Meanings of specific represented values in this column, keyed by a short name.
 
 interpretation:
   description: The meaning of one represented value in one column.
   entry: true
   fields:
+    representation: {type: text, required: true}
     meaning: {type: text, required: true}
     status: {type: value, of: claim_statuses, required: true}
     caveats: {type: text, many: true}
 
 vocabulary:
-  description: A code list used by one or more columns.
+  description: A code list used by one or more column mappings of one profile.
   fields:
     label: {type: text, required: true}
     completeness: {type: value, of: vocabulary_completeness, required: true}
-    null_meaning: {type: value, of: null_meanings}
+    null_meaning: {type: value, of: null_meanings, many: true}
     parsing: {type: value, of: vocabulary_parsing, required: true}
+    legend_role: {type: value, of: legend_roles}
     evidence: {type: value, of: evidence_kinds, many: true}
     caveats: {type: text, many: true}
     codes:
@@ -260,8 +313,38 @@ vocabulary:
       required: true
       description: Each code and its label.
 
-profile_support:
-  description: Whether a profile supports a semantic document, and with what limits.
+join:
+  description: A physical join between columns that represents one or more clinical relationships.
   fields:
-    status: {type: value, of: support_statuses, required: true}
+    label: {type: text}
+    join_type: {type: value, of: join_types, required: true}
+    source_completeness: {type: value, of: endpoint_completeness}
+    cardinality:
+      type: record
+      required: true
+      fields:
+        targets_per_source: {type: value, of: cardinalities, required: true}
+        sources_per_target: {type: value, of: cardinalities, required: true}
+    evidence: {type: value, of: evidence_kinds, many: true}
+    hazards: {type: text, many: true}
     caveats: {type: text, many: true}
+
+join_path:
+  description: An ordered sequence of joins that together represent one clinical relationship.
+  fields:
+    label: {type: text}
+    definition: {type: text, required: true}
+    caveats: {type: text, many: true}
+
+profile_support:
+  description: >-
+    Whether a profile's evidence supports a semantic document,
+    and whether the profile represents it in usable columns.
+  fields:
+    evidence_status: {type: value, of: evidence_statuses}
+    evidence_summary: {type: text}
+    evidence_caveats: {type: text, many: true}
+    representation_status: {type: value, of: representation_statuses}
+    representation_summary: {type: text}
+    representation_caveats: {type: text, many: true}
+    search_terms: {type: text, many: true}

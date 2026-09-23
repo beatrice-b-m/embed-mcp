@@ -85,6 +85,19 @@ class FindingTests(CatalogTestCase):
         self.write("catalog/base/b.yaml", "kind: note\nlabel: B\nstatus: open\n")
         self.assertFinding(self.load(), "a.yaml", 4, "this link needs `{id: b, score: ...}`")
 
+    def test_link_qualifiers_are_links_with_their_own_backlinks(self):
+        self.write("catalog/base/topic.t.yaml", "kind: topic\nlabel: T\n")
+        self.write("catalog/base/a.yaml", "kind: note\nlabel: A\nstatus: open\nrates:\n  - {id: b, score: open, via: topic.t}\n")
+        self.write("catalog/base/b.yaml", "kind: note\nlabel: B\nstatus: open\n")
+        catalog = self.load()
+        self.assertEqual(catalog.findings, [])
+        self.assertEqual([(l.source, l.spec.backlink) for l in catalog.incoming("topic.t")], [("a", "rated_via")])
+
+    def test_link_qualifier_target_is_checked(self):
+        self.write("catalog/base/a.yaml", "kind: note\nlabel: A\nstatus: open\nrates:\n  - {id: b, score: open, via: b}\n")
+        self.write("catalog/base/b.yaml", "kind: note\nlabel: B\nstatus: open\n")
+        self.assertFinding(self.load(), "a.yaml", 5, "`b` is a note; `via` links point to: topic")
+
     def test_symmetric_link_written_from_both_sides_warns(self):
         self.write("catalog/base/a.yaml", "kind: note\nlabel: A\nstatus: open\nrelated: [b]\n")
         self.write("catalog/base/b.yaml", "kind: note\nlabel: B\nstatus: open\nrelated: [a]\n")

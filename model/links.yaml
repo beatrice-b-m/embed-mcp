@@ -14,15 +14,17 @@
 #   local       bare values name entries in the same document,
 #               so `acc_anon` means `<this-document>#acc_anon`
 #   qualifiers  extra fields a link may carry; a link then takes the form
-#               `{id: <target>, <qualifier>: ...}`
+#               `{id: <target>, <qualifier>: ...}`. A qualifier of
+#               `type: link` is itself a link, with its own `targets` and
+#               `backlink`.
 #
 # Every link may also be written as `{id: <target>, note: <text>}` to explain
 # why the link exists.
-#
-# Prototype (slice 1): slice 2 finalizes names and targets.
+
+# Organization and provenance ----------------------------------------------
 
 topics:
-  owners: [clinical_object, concept, feature, relationship, temporal, aggregation, guardrail, pattern, context]
+  owners: [clinical_object, concept, feature, relationship, temporal, aggregation, guardrail, pattern, context, profile_support]
   targets: [topic]
   backlink: members
   description: Hub documents this document belongs under.
@@ -34,13 +36,6 @@ topic_broader:
   backlink: narrower
   acyclic: true
 
-broader:
-  owners: [concept]
-  targets: [concept]
-  backlink: narrower
-  acyclic: true
-  description: More general concepts; a concept may have several.
-
 related:
   owners: any
   targets: any
@@ -49,7 +44,7 @@ related:
   description: An association without a more specific link type.
 
 cites:
-  owners: [clinical_object, concept, feature, relationship, temporal, aggregation, guardrail, pattern, context, profile_support, missing_state, interpretation]
+  owners: [clinical_object, concept, feature, relationship, temporal, aggregation, guardrail, pattern, context, missing_state, interpretation, object_binding, reserved_exception, join, join_path]
   targets: [claim]
   backlink: cited_by
   description: Claims that support this document.
@@ -67,6 +62,15 @@ step_claims:
   targets: [claim]
   local: true
   backlink: steps
+
+# Clinical meaning -----------------------------------------------------------
+
+broader:
+  owners: [concept]
+  targets: [concept]
+  backlink: narrower
+  acyclic: true
+  description: More general concepts; a concept may have several.
 
 objects:
   owners: [feature]
@@ -86,12 +90,14 @@ feature_temporal:
   owners: [feature]
   targets: [temporal]
   backlink: features
+  description: Time meanings this feature records or depends on.
 
-relationship_temporal:
-  field: temporal
-  owners: [relationship]
-  targets: [temporal]
-  backlink: relationships
+temporal_objects:
+  field: objects
+  owners: [temporal]
+  targets: [clinical_object]
+  backlink: temporal_meanings
+  description: Clinical objects whose events this time meaning describes.
 
 relative_to:
   owners: [temporal]
@@ -113,10 +119,17 @@ target_object:
   required: true
   backlink: target_of
 
+relationship_temporal:
+  field: temporal
+  owners: [relationship]
+  targets: [temporal]
+  backlink: relationships
+
 input_feature:
   owners: [aggregation]
   targets: [feature]
   many: false
+  required: true
   backlink: aggregated_by
 
 result_feature:
@@ -129,10 +142,11 @@ via:
   owners: [aggregation]
   targets: [relationship]
   backlink: aggregations
+  description: Relationships the aggregation combines across.
 
 applies_to:
   owners: [guardrail]
-  targets: [clinical_object, concept, feature, relationship, temporal, aggregation, table, column]
+  targets: [clinical_object, concept, feature, relationship, temporal, aggregation, profile_support, table, column]
   backlink: guardrails
   description: Documents whose interpretation this guardrail constrains.
 
@@ -143,24 +157,72 @@ uses:
 
 about:
   owners: [context]
-  targets: [clinical_object, concept, feature, relationship, temporal, aggregation, table, column]
+  targets: [clinical_object, concept, feature, relationship, temporal, aggregation, table, column, join]
   backlink: contexts
   description: Documents this context gives background on.
+
+# Physical representation --------------------------------------------------
 
 maps:
   owners: [column]
   targets: [feature]
   backlink: columns
+  description: Features this column records, one entry per mapping.
   qualifiers:
     mapping: {type: value, of: mapping_statuses, required: true}
-  description: Features this column records.
+    vocabulary:
+      type: link
+      targets: [vocabulary]
+      backlink: mappings
+      description: The code list this mapping uses.
+    notes: {type: text, many: true}
+    slot:
+      type: text
+      description: Physical slot position among repeated columns; semantic ordering is unresolved.
+    role:
+      type: text
+      description: Which of several objects co-located in the row the value describes.
+    attribute:
+      type: text
+      description: The attribute of the feature this column records.
+    source_attribute:
+      type: text
+      description: The source-system attribute name the column carries.
+    axis:
+      type: text
+      description: The dimension of a multi-dimensional feature this column records.
+    direction:
+      type: text
+      description: The direction of a directional measurement this column records.
+    category_column:
+      type: text
+      description: The column in this table whose value selects this mapping.
+    category_value:
+      type: text
+      description: The value of the category column for which this mapping applies.
+    subject_column:
+      type: text
+      description: The column in this table that identifies whom the value describes.
+    subject_value:
+      type: text
+      description: The value of the subject column for which this mapping applies.
+    locator_component:
+      type: text
+      description: Which part of a file locator this column records.
+    accession_role:
+      type: text
+      description: Which accession of several this column records.
+    composite_with:
+      type: text
+      description: A column in this table that must be combined with this one to form the value.
 
-column_vocabulary:
-  field: vocabulary
-  owners: [column]
-  targets: [vocabulary]
+interpretation_feature:
+  field: feature
+  owners: [interpretation]
+  targets: [feature]
   many: false
-  backlink: columns
+  backlink: interpretations
+  description: The mapped feature this interpretation belongs to, when the column maps to several.
 
 key_columns:
   field: columns
@@ -170,9 +232,86 @@ key_columns:
   required: true
   backlink: keys
 
+object:
+  owners: [object_binding]
+  targets: [clinical_object]
+  many: false
+  required: true
+  backlink: represented_by
+
+object_columns:
+  field: columns
+  owners: [object_binding]
+  targets: [column]
+  local: true
+  backlink: represents
+
+identity_columns:
+  owners: [object_binding]
+  targets: [column]
+  local: true
+  backlink: identifies
+
+exception_column:
+  field: column
+  owners: [reserved_exception]
+  targets: [column]
+  local: true
+  many: false
+  required: true
+  backlink: reserved_exceptions
+
+join_relationships:
+  field: relationships
+  owners: [join]
+  targets: [relationship]
+  required: true
+  backlink: joins
+  description: Clinical relationships this join represents.
+
+source_columns:
+  owners: [join]
+  targets: [column]
+  required: true
+  backlink: joins_from
+
+target_columns:
+  owners: [join]
+  targets: [column]
+  required: true
+  backlink: joins_to
+
+path_relationship:
+  field: relationship
+  owners: [join_path]
+  targets: [relationship]
+  many: false
+  required: true
+  backlink: join_paths
+
+path_joins:
+  field: joins
+  owners: [join_path]
+  targets: [join]
+  required: true
+  backlink: paths
+  description: The joins in traversal order.
+
 subject:
   owners: [profile_support]
   targets: [clinical_object, concept, feature, relationship, temporal, aggregation, guardrail, context]
   many: false
   required: true
   backlink: profile_support
+
+evidence_cites:
+  owners: [profile_support]
+  targets: [claim]
+  backlink: cited_by
+  description: Claims supporting the evidence status.
+
+representation_cites:
+  owners: [profile_support]
+  targets: [claim]
+  backlink: cited_by
+  description: Claims supporting the representation status.

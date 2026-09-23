@@ -353,7 +353,10 @@ class _Loader:
             target = item.get("id")
             note = item.get("note")
             for name, qualifier in spec.qualifiers.items():
-                if name in item:
+                if name in item and qualifier.link is not None:
+                    self._qualifier_link(owner, qualifier.link, item[name], (*path, name))
+                    qualifiers[name] = item[name]
+                elif name in item:
                     self._check_field(owner, qualifier, item[name], (*path, name))
                     qualifiers[name] = item[name]
                 elif qualifier.required:
@@ -368,6 +371,14 @@ class _Loader:
             self._error(source.file, line, where, "a link must be an ID or a mapping with `id:`")
             return None
         return Link(owner.address, spec, self._resolve_target(owner, spec, target), note, qualifiers, source.file, line, where)
+
+    def _qualifier_link(self, owner: Node, spec: LinkSpec, value: Any, path: tuple) -> None:
+        source = owner.source
+        if not isinstance(value, str):
+            self._error(source.file, source.line(path), _where(path), "expected a single ID")
+            return
+        link = Link(owner.address, spec, self._resolve_target(owner, spec, value), None, {}, source.file, source.line(path), _where(path))
+        self.pending.append((link, owner.module))
 
     def _resolve_target(self, owner: Node, spec: LinkSpec, target: str) -> str:
         document = owner.address.split("#", 1)[0]
