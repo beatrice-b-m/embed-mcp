@@ -12,6 +12,12 @@ dependencies = [
     "ruamel.yaml>=0.18",
 ]
 
+[project.optional-dependencies]
+# The MCP server (`embed-context serve`). The CLI works without it.
+mcp = [
+    "mcp==2.0.0",
+]
+
 [project.urls]
 Repository = "https://github.com/beatrice-b-m/embed-mcp"
 

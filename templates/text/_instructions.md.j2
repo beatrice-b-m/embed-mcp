@@ -1,0 +1,29 @@
+{#- MCP server instructions (embed_context.operations.instructions): how to
+    move through the catalog, the loaded modules and their notices, and the
+    documents that model/operations.yaml lists under `server.instructions`.
+    Clinical content comes from those documents, never from this template. -#}
+{% import "text/_macros.j2" as m with context %}
+Read-only context on how EMBED data represents clinical meaning, as a graph of linked documents.
+
+How to use it
+- {{ command("search") }} takes a clinical question or term and returns compact results.
+- {{ command("read") }} takes an ID and returns that document with its links in both directions. Linked documents appear by ID and label, never in full; read a linked ID to follow the link.
+- {{ command("code") }} explains a represented value through the code lists, column interpretations, and missing states that apply.
+- Output is text. Pass {{ arg("read", "format") }} json for the same facts as JSON.
+
+Modules loaded
+{% for module in d.modules %}
+- {{ module.label }} ({{ module.id }})
+{% for notice in module.notices | default([]) %}
+  {{ notice }}
+{% endfor %}
+{% endfor %}
+{% if d.documents %}
+
+Read before interpreting data
+{% for doc in d.documents %}
+- {{ doc.label }} ({{ doc.id }} · {{ doc.kind | replace("_", " ") }}{% if doc.facts is defined %}{% for name, value in doc.facts.items() %} · {{ name | replace("_", " ") }} {{ value }}{% endfor %}{% endif %}){% if doc.summary is defined %}: {{ doc.summary }}{% endif %}
+
+{% endfor %}
+{% endif %}
+{{ m.legend(d) }}
