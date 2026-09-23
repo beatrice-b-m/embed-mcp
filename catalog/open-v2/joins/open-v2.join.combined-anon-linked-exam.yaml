@@ -1,0 +1,19 @@
+kind: join
+join_type: reference
+source_completeness: optional
+cardinality:
+  targets_per_source: zero_or_one
+  sources_per_target: zero_or_more
+evidence: [cross_table_check]
+hazards:
+  - Treat this as an optional reference with possible dangling values, not a foreign key.
+  - >-
+    Repeated wide rows may reference the same linked exam, so joining exam attributes can repeat
+    them at wide-row grain.
+caveats:
+  - >-
+    Some non-null linked accessions in the wide surface do not resolve to the open-v2 exam
+    surface.
+source_columns:
+  - open-v2.combined_anon#linkedaccession_anon
+target_columns: [open-v2.exam_level_anon#acc_anon]

@@ -1,0 +1,23 @@
+kind: guardrail
+label: Pathology severity uses inverse ordering
+category: prohibition
+priority: high
+statement: Do not select the numeric maximum as the most severe pathology result.
+rationale: >-
+  Values 0 through 5 run from invasive breast cancer toward non-breast cancer, and supplied
+  side/exam aggregates use the minimum.
+scope: embed_general
+search_terms: [most severe pathology, minimum severity, inverse scale]
+caveats:
+  - Null remains an attachment state, not an ordered negative category.
+topics: [topic.pathology]
+applies_to:
+  - pathology_diagnosis
+  - breast_side
+  - imaging_exam
+  - pathology.severity
+  - breast_side.pathology_severity_aggregate
+  - exam.pathology_severity_aggregate
+  - aggregation.pathology-observation-severity
+  - aggregation.pathology-severity-to-side
+  - aggregation.pathology-severity-to-exam

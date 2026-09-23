@@ -1,0 +1,33 @@
+kind: guardrail
+label: Reported patient history is not verified current care
+category: interpretation_limit
+priority: high
+statement: >-
+  Do not merge HormoneHist or ProcHist entries with current-exam procedures, verified
+  procedure-associated pathology, or imaging findings solely because their clinical labels,
+  accession context, or laterality agree.
+rationale: >-
+  The history tables represent reported or previously documented history.
+  ProcHist results mix several clinical levels and have no unconditional attribution to the
+  represented procedure subtype or a current finding.
+search_terms:
+  - historical result verified pathology
+  - prior biopsy current finding
+  - merge ProcHist pathology
+  - patient history attribution
+caveats:
+  - NONE means no reported historical result and must not be normalized to negative pathology.
+topics: [topic.imaging, topic.pathology, topic.procedure, topic.workflow]
+cites:
+  - internal-v2.patient-history-context#reported-history-not-current-care
+  - internal-v2.patient-history-context#procedure-history-result
+applies_to:
+  - internal-v2.hormone_history_entry
+  - internal-v2.procedure_history_entry
+  - imaging_finding
+  - procedure
+  - pathology_diagnosis
+  - internal-v2.procedure_history.reported_result
+  - internal-v2.clinical.patient-hormone-history
+  - internal-v2.clinical.patient-procedure-history
+  - internal-v2.support.patient-history-row-identity

@@ -1,0 +1,23 @@
+kind: vocabulary
+label: Reported hormone-history codes
+completeness: unknown
+parsing: atomic
+evidence: [maintainer_confirmed, observed_source_values]
+caveats:
+  - These meanings apply only when exposure category is H.
+  - The confirmed codes are not asserted to exhaust every represented source value.
+  - >-
+    The reviewed topology packet also represents ORAL under H and T and TAXOL under H; these
+    category occurrences have unresolved meanings and are not assigned meanings from another
+    category.
+codes:
+  C: Estrogen and progesterone; combined hormone-replacement therapy
+  ESTRO: Estrogen
+  PH: Premphase
+  PP: Prempro
+  PROGES: Progesterone
+  R: Premarin
+  RA: Raloxifene
+  TAMOX: Tamoxifen
+  V: Provera
+  O: Other hormone

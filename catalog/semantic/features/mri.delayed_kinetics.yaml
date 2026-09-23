@@ -1,0 +1,10 @@
+kind: feature
+label: MRI delayed kinetics
+definition: MRI delayed-enhancement kinetics code.
+value_type: coded
+evidence: [release_schema, release_legend, inference]
+search_terms: [mri delayed kinetics]
+caveats:
+  - The vocabulary binding is a case-only legend match.
+topics: [topic.imaging, topic.mri]
+objects: [imaging_finding]

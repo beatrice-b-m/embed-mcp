@@ -1,0 +1,26 @@
+kind: join
+join_type: reference
+source_completeness: required
+cardinality:
+  targets_per_source: zero_or_more
+  sources_per_target: zero_or_more
+evidence: [observed_source_values, inference]
+hazards:
+  - >-
+    Joining on the patient identifier alone crosses every exam and image of that patient; always
+    combine it with the accession.
+caveats:
+  - >-
+    The shared identifier supports cross-table patient identity and patient-agreement checking
+    on an accession join; it is not an independent image-attachment route.
+  - The clinical and image-metadata occurrences use the same anonymization namespace.
+  - >-
+    V1c patient coverage is narrower than internal clinical V2, so an unmatched patient is
+    outside extraction coverage.
+cites:
+  - internal-v2.v1c-metadata-context#patient-and-exam-projection
+  - internal-v2.v1c-metadata-context#version-boundary
+source_columns:
+  - internal-v2.magview_all_cohorts_pacs_v2_anon#empi_anon
+target_columns:
+  - internal-v2.metadata_all_cohorts_v1c#empi_anon

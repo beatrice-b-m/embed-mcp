@@ -1,0 +1,16 @@
+kind: profile_support
+evidence_status: interpretation_limit
+evidence_summary: >-
+  The internal occurrence reuses the inverse-severity concept for an extraction-derived
+  row-level projection from path1 through path10; code 5 is non-breast cancer, code 6 is
+  invalid, and null requires every descriptor slot to be empty.
+evidence_caveats:
+  - Exclude or explicitly flag code 6 as invalid rather than ordering it clinically.
+  - >-
+    Do not coerce null into a governed diagnosis group; a populated descriptor alongside null
+    severity is a data-quality error.
+subject: pathology.severity
+evidence_cites:
+  - internal-v2.magview-pathology-context#path-severity-derived-occurrence
+  - internal-v2.magview-pathology-context#path-severity-six
+  - internal-v2.magview-pathology-context#path-severity-five-six-disagreement

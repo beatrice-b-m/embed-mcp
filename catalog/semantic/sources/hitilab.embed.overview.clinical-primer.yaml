@@ -5,8 +5,7 @@ scope: general_clinical
 locator_type: url
 locator: https://docs.hitilab.com/datasets/embed/overview#primer-on-mammography
 version_scope: >-
-  General screening and diagnostic mammography background;
-  no open-v2 physical representation is asserted.
+  General screening and diagnostic mammography background; no open-v2 physical representation is
+  asserted.
 notes:
   - Use for clinical pathway orientation, not clinical advice or cohort logic.
-  - The page's empirical proportions are outside this catalog's count-free scope.

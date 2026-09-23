@@ -1,0 +1,19 @@
+kind: guardrail
+label: ROI-to-finding attribution depends on side-level finding multiplicity
+category: interpretation_limit
+priority: high
+statement: >-
+  Same-accession, same-side ROI attribution is generally reliable only when exactly one clinical
+  finding is represented on that side; when multiple findings are present, EMBED supplies no
+  reliable individual ROI-to-finding link.
+rationale: >-
+  The ROI collections contain no finding identifier.
+  Multiple ROIs can all belong to the single represented finding, but accession and side cannot
+  distinguish several findings from one another.
+search_terms: [link ROI to finding, ROI finding attribution, multiple findings one side]
+caveats:
+  - An ROI need not mark the most severe lesion or a lesion that later became cancer.
+topics: [topic.imaging, topic.breast_side]
+cites:
+  - internal-v2.roi-context#roi-finding-attribution
+applies_to: [imaging_finding, region_of_interest, internal-v2.roi.coordinate_collection]

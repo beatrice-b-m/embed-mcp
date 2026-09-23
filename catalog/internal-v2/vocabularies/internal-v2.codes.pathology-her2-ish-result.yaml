@@ -1,0 +1,19 @@
+kind: vocabulary
+label: HER2 in-situ hybridization categories
+completeness: unknown
+parsing: atomic
+evidence: [release_legend, observed_source_values]
+caveats:
+  - The comparison dictionaries do not state that this code list is exhaustive.
+  - Null semantics are occurrence specific and must not be inferred from code membership.
+codes:
+  +: positive
+  "-": negative
+  "0": not amplified (HER2 gene copy <4.0 or ratio <1.8)
+  A: performed on another specimen
+  E: Equivocal (HER2 gene copy 4.0 to 6.0 or ratio 1.8 to 2.2)
+  M: Amplified (HER2 gene copy >6.0 or ratio >2.2)
+  N: not performed
+  P: pending
+  R: no residual invasive carcinoma after presurgical therapy
+  U: result unknown

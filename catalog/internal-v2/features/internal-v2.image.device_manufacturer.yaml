@@ -1,0 +1,14 @@
+kind: feature
+label: Acquisition device manufacturer
+definition: Represented manufacturer of the device that produced one internal V1c image row.
+value_type: categorical
+evidence: [observed_source_values]
+search_terms: [manufacturer, device vendor, scanner manufacturer]
+caveats:
+  - >-
+    Represented values include image-processing and secondary-capture vendors as well as
+    acquisition-system vendors.
+topics: [topic.imaging, topic.technical]
+cites:
+  - internal-v2.v1c-metadata-context#parsed-dicom-element-semantics
+objects: [image]

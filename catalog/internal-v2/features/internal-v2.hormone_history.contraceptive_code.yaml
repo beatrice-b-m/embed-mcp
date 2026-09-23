@@ -1,0 +1,17 @@
+kind: feature
+label: Reported contraceptive-history code
+definition: Contraceptive code for an exposure-history entry whose category is contraceptive.
+value_type: coded
+evidence: [maintainer_confirmed]
+search_terms:
+  - HormoneHist contraceptive code
+  - oral contraceptive history
+  - birth control history
+caveats:
+  - >-
+    This meaning is conditional on exposure category O; code C therefore means combined oral
+    contraceptive here rather than combined hormone-replacement therapy.
+topics: [topic.procedure]
+cites:
+  - internal-v2.patient-history-context#reported-history-not-current-care
+objects: [internal-v2.hormone_history_entry]

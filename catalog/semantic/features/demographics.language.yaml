@@ -1,0 +1,10 @@
+kind: feature
+label: Patient language
+definition: Patient spoken language.
+value_type: categorical
+evidence: [release_schema, release_legend]
+search_terms: [patient language, spoken language]
+caveats:
+  - The legend provides no controlled code list or null semantics.
+topics: [topic.demographics, topic.social_determinants_of_health]
+objects: [patient]

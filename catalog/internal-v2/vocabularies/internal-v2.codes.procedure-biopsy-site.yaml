@@ -1,0 +1,15 @@
+kind: vocabulary
+label: Biopsy site slots
+completeness: unknown
+parsing: atomic
+evidence: [release_legend, observed_source_values]
+caveats:
+  - The comparison dictionaries do not state that this code list is exhaustive.
+  - Null semantics are occurrence specific and must not be inferred from code membership.
+codes:
+  A: Site A
+  B: Site B
+  C: Site C
+  D: Site D
+  E: Site E
+  F: Site F

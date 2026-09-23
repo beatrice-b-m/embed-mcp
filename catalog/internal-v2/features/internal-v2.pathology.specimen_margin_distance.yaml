@@ -1,0 +1,16 @@
+kind: feature
+label: Directional specimen-margin distance
+definition: Recorded distance to a named directional specimen margin, in millimeters.
+value_type: numeric
+evidence: [release_legend, observed_source_values]
+search_terms:
+  - specimen margin distance
+  - superior inferior anterior posterior medial lateral margin
+caveats:
+  - >-
+    Direction is carried by a scalar mapping qualifier; exceptional negative source values are
+    not validated measurements.
+topics: [topic.pathology]
+cites:
+  - internal-v2.magview-pathology-context#specimen-surface
+objects: [pathology_specimen]

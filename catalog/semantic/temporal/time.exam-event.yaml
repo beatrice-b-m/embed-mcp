@@ -1,0 +1,10 @@
+kind: temporal
+label: Imaging exam event time
+temporal_type: event_time
+definition: The anonymized study date represents the imaging-exam event.
+search_terms: [exam date, study date, imaging time, index imaging]
+caveats:
+  - Absolute calendar values are shifted and must not be interpreted literally.
+  - An exam event date is not a universal diagnosis date.
+topics: [topic.exam, topic.imaging, topic.temporal]
+objects: [imaging_exam]

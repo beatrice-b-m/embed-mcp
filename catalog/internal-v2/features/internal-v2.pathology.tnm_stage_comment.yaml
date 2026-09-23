@@ -1,0 +1,12 @@
+kind: feature
+label: TNM staging comment
+definition: Free-text TNM staging comment associated with a pathology diagnosis.
+value_type: text
+evidence: [release_legend]
+search_terms: [TNM stage comment, staging note]
+caveats:
+  - This is not a normalized stage category and its content is not exposed by the catalog.
+topics: [topic.pathology]
+cites:
+  - internal-v2.magview-pathology-context#specimen-surface
+objects: [pathology_diagnosis]

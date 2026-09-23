@@ -1,0 +1,12 @@
+kind: feature
+label: Number of pathology foci
+definition: Recorded number of foci for a pathology specimen.
+value_type: numeric
+evidence: [release_legend, observed_source_values]
+search_terms: [number of foci, focal count]
+caveats:
+  - Range and null semantics are not documented.
+topics: [topic.pathology]
+cites:
+  - internal-v2.magview-pathology-context#specimen-surface
+objects: [pathology_specimen]

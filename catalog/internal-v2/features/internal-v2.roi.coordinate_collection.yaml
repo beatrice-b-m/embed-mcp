@@ -1,0 +1,38 @@
+kind: feature
+label: Region-of-interest coordinate collection
+definition: >-
+  Nested serialized list of [y_min, x_min, y_max, x_max] rectangles with inclusive minimum and
+  maximum bounds in the attached DICOM image's pixel-array coordinate space, one per region of
+  interest.
+value_type: text
+evidence: [maintainer_confirmed, observed_source_values]
+search_terms: [ROI coordinates, ROI bounding box, ROI geometry, ROI rectangle]
+caveats:
+  - >-
+    Coordinates correspond directly to the attached pixel array and require no spacing,
+    orientation, or other coordinate transformation.
+  - >-
+    An inclusive rectangle has height y_max - y_min + 1 and width x_max - x_min + 1; NumPy
+    slices therefore use y_max + 1 and x_max + 1 as their exclusive stops.
+  - >-
+    The expected curated invariant is 0 <= y_min <= y_max < Rows and 0 <= x_min <= x_max <
+    Columns; residual out-of-bounds coordinates may be safely clipped to the attached image's
+    valid pixel-array bounds.
+  - >-
+    The collection is aligned by position with the frame-index and depth-derivation collections;
+    position is not region identity.
+topics: [topic.imaging]
+cites:
+  - internal-v2.roi-context#roi-serialized-collections
+  - internal-v2.roi-context#roi-coordinate-geometry
+objects: [region_of_interest]
+missing_states:
+  empty-collection:
+    representation: empty serialized collection
+    meaning: No region of interest is represented for the image row
+    caveats:
+      - >-
+        An empty collection is not evidence that the image was never reviewed or contains no
+        abnormality.
+    cites:
+      - internal-v2.roi-context#roi-serialized-collections

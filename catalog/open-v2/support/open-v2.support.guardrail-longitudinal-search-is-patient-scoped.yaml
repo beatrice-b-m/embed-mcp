@@ -1,0 +1,6 @@
+kind: profile_support
+evidence_status: supported
+subject: guardrail.longitudinal-search-is-patient-scoped
+evidence_cites:
+  - open-v2.pathology-procedure-context#outcome-capture-not-established
+  - open-v2.pathology-procedure-context#patient-aggregate-absence

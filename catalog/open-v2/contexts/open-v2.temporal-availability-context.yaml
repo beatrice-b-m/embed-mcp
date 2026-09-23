@@ -1,0 +1,89 @@
+kind: context
+label: Open-v2 temporal availability guardrail
+context_type: known_issue
+definition: >-
+  Open-v2 dates use a consistent per-patient random shift, preserving within-patient ordering
+  and date differences while obscuring absolute calendar dates.
+search_terms:
+  - temporal availability
+  - temporal leakage
+  - task anchor
+  - post-exam information
+  - anonymized dates
+caveats:
+  - >-
+    Task-specific cohort, follow-up, label, and modality-inclusion choices are analysis policies
+    rather than dataset claims; agents must choose and defend them outside the portable catalog.
+topics:
+  - topic.imaging
+  - topic.pathology
+  - topic.procedure
+  - topic.report
+  - topic.risk
+  - topic.temporal
+  - topic.workflow
+about:
+  - exam.study_date
+  - pathology.procedure_date
+  - pathology.report_date
+  - report.text
+  - risk.ibis_ten_year
+  - open-v2.exam_level_anon
+  - open-v2.pathology_findings_anon
+  - open-v2.reports_anon
+  - open-v2.risk_anon
+  - open-v2.combined_anon
+  - open-v2.join.pathology-findings-anon-exam
+  - open-v2.join.reports-anon-exam
+  - open-v2.join.risk-anon-exam
+  - open-v2.join.combined-anon-pathology-index-projection
+claims:
+  date-representation:
+    statement: >-
+      Open-v2 exposes exam, procedure, and pathology-report date fields in separate clinical
+      surfaces.
+    status: verified
+    caveats:
+      - Absolute calendar values are anonymized and must not be interpreted literally.
+    sources: [open-v2.release-schema, open-v2.release-legend]
+  anonymization-properties:
+    statement: >-
+      EMBED applies one consistent random date shift per patient across that patient's dates, so
+      within-patient ordering and date differences are reliable while absolute day, month, and
+      year are not.
+    status: verified
+    caveats:
+      - Do not compare absolute calendar dates across patients.
+    sources:
+      - open-v2.release-schema
+      - open-v2.release-legend
+      - open-v2.maintainer-clarification-2026-07-29
+  wide-table-colocation:
+    statement: >-
+      Co-location of fields in combined_anon does not establish that they were observed at the
+      same clinical time.
+    status: reconciled
+    caveats:
+      - The wide table's construction remains unresolved.
+    sources: [open-v2.release-schema, open-v2.catalog-linkage-review]
+  wide-object-projection:
+    statement: >-
+      Combined_anon projects patient, exam, finding, procedure, and pathology fields onto wide
+      rows; those projections do not establish that repeated attributes are authoritative, that
+      each clinical object has wide-row identity, or that fields were co-available.
+    status: reconciled
+    caveats:
+      - >-
+        Use canonical or co-located normalized bindings to understand object representation
+        before relying on a wide projection.
+    sources: [open-v2.release-schema, open-v2.catalog-linkage-review]
+  unsupported-time-bindings:
+    statement: >-
+      The registered open-v2 feature bindings contain exam, procedure, and pathology-report
+      dates but no specimen-collection date or universal downstream-availability timestamp.
+    status: verified
+    caveats:
+      - >-
+        A missing binding does not prove that the clinical event or availability transition did
+        not occur.
+    sources: [open-v2.release-schema]

@@ -1,0 +1,9 @@
+kind: feature
+label: Serialized pandas index
+definition: Unnamed pandas index serialized into the Parquet schema.
+value_type: technical
+evidence: [release_schema]
+search_terms: [serialized pandas index, export index, row index]
+caveats:
+  - This is an export artifact, not a clinical feature or portable natural key.
+topics: [topic.technical]

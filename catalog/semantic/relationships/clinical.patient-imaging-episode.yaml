@@ -1,0 +1,24 @@
+kind: relationship
+label: Patient has breast-imaging episode
+relationship_type: hierarchy
+definition: Clinical ownership of an episode by a patient.
+cardinality:
+  targets_per_source: zero_or_more
+  sources_per_target: exactly_one
+optionality:
+  source: optional
+  target: required
+attribution_limitations:
+  - >-
+    A profile may represent episode membership through incomplete exam links rather than a
+    canonical episode identifier.
+temporal_qualification: >-
+  Episodes occur during the patient's represented timeline; no completeness is implied.
+search_terms: [patient imaging episodes, longitudinal exams]
+caveats:
+  - >-
+    A patient with no represented episode must not be interpreted as having no breast-imaging
+    care.
+source_object: patient
+target_object: breast_imaging_episode
+topics: [topic.identity, topic.exam, topic.temporal]

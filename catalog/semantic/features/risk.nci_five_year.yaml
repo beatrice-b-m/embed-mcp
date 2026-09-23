@@ -1,0 +1,13 @@
+kind: feature
+label: NCI five-year output
+definition: >-
+  NCI five-year risk output calculated during clinical care and extracted from MagView.
+value_type: model_output
+evidence: [release_schema, observed_source_values, maintainer_confirmed, unresolved]
+search_terms: [nci five-year-like output, risk model]
+caveats:
+  - >-
+    The exact model version, percentage-point formatting, and meanings of -35, -2, and 100 are
+    not validated.
+topics: [topic.risk]
+objects: [risk_assessment]

@@ -1,0 +1,103 @@
+kind: context
+label: Internal V2 reported patient history
+context_type: data_representation
+definition: >-
+  HormoneHist represents reported hormone, treatment, and contraceptive exposures, while
+  ProcHist represents reported prior gynecological and breast procedures; both belong to the
+  patient and carry an imaging-accession recording context that is not the historical event
+  accession or event time.
+search_terms:
+  - HormoneHist
+  - ProcHist
+  - patient history
+  - hormone therapy history
+  - contraceptive history
+  - prior breast procedure
+  - prior gynecological procedure
+caveats:
+  - >-
+    The controlled code meanings remain supported, while packet-observed category discrepancies
+    and composite result semantics are separately unresolved.
+  - Vocabulary completeness remains unknown; an unobserved documented code is not invalidated.
+topics: [topic.identity, topic.procedure, topic.temporal, topic.workflow]
+about:
+  - internal-v2.hormone_history.exposure_category
+  - internal-v2.hormone_history.hormone_code
+  - internal-v2.hormone_history.therapy_code
+  - internal-v2.hormone_history.contraceptive_code
+  - internal-v2.procedure_history.procedure_category
+  - internal-v2.procedure_history.gynecological_procedure_code
+  - internal-v2.procedure_history.breast_procedure_code
+  - internal-v2.procedure_history.reported_result
+  - internal-v2.hormonehist_anon
+  - internal-v2.procedurehist_anon
+claims:
+  patient-and-accession-context:
+    statement: >-
+      empi_anon identifies the patient using the established longitudinal internal V2 namespace,
+      and a valid acc_anon identifies the associated imaging accession using the established
+      exam namespace; the accession is recording context and does not identify when the
+      historical exposure or procedure occurred.
+    status: verified
+    caveats:
+      - >-
+        The meaning of candidate sentinel value 999 is not established and is not encoded as a
+        missing value.
+      - >-
+        A history record must not be attributed across patients; each valid accession belongs to
+        exactly one patient.
+    sources:
+      - internal-v2.patient-history-maintainer-confirmation
+      - internal-v2.magview-maintainer-clarifications
+  reported-history-not-current-care:
+    statement: >-
+      HormoneHist and ProcHist record reported or previously documented patient history rather
+      than a treatment, procedure, or pathology event performed during the associated imaging
+      exam.
+    status: verified
+    caveats:
+      - >-
+        A historical breast procedure or result is not automatically attributable to a current
+        imaging finding or equivalent to verified procedure-associated pathology.
+    sources:
+      - internal-v2.patient-history-maintainer-confirmation
+  hormone-history-timing:
+    statement: >-
+      HormoneHist can represent reported exposure start and end through age and partial calendar
+      components, along with current, continuous, and duration fields, but the duration unit and
+      any precedence or consistency rule among those representations are not established.
+    status: reconciled
+    caveats:
+      - Month and year components are not exact dates.
+      - >-
+        Current and continuous status are reported states in the recording context and do not
+        supply exact interval endpoints.
+    sources:
+      - internal-v2.patient-history-maintainer-confirmation
+  procedure-history-result:
+    statement: >-
+      ProcHist result codes are reported historical results spanning broad assessments,
+      malignant diagnoses, high-risk lesions, and benign histologies or conditions; they are not
+      uniformly a verified pathology diagnosis or severity scale.
+    status: verified
+    caveats:
+      - >-
+        The available evidence does not establish result provenance or unconditional attribution
+        of a result to the procedure subtype carried by the same history entry.
+      - NONE means no reported result, not a negative pathology result.
+    sources:
+      - internal-v2.patient-history-maintainer-confirmation
+  history-identity-and-physical-scope:
+    statement: >-
+      Complete physical inventories and supported mappings are now cataloged from reviewed
+      packets plus maintainer clarification, but no stable history-entry identifier or semantic
+      deduplication rule is established.
+    status: unresolved
+    caveats:
+      - Repeated entries may be separate reports, corrections, or duplicates.
+      - The tested patient and exam groupings do not determine the history attributes.
+    sources:
+      - internal-v2.patient-history-maintainer-confirmation
+      - internal-v2.hormone-history-topology-packet
+      - internal-v2.procedure-history-topology-packet
+      - internal-v2.history-inventory-maintainer-confirmation

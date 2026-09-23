@@ -1,0 +1,19 @@
+kind: profile_support
+representation_status: supported
+representation_summary: >-
+  Internal V2 supplies governed semantic objects, concepts, conditional code meanings,
+  relationships, and interpretation limits for HormoneHist and ProcHist.
+representation_caveats:
+  - >-
+    Confirmed meanings remain supported; topology-observed category exceptions and composite
+    results do not establish additional clinical meanings or exhaustive vocabularies.
+search_terms:
+  - HormoneHist semantics
+  - ProcHist semantics
+  - patient history vocabulary
+  - internal patient history
+subject: internal-v2.patient-history-context
+topics: [topic.identity, topic.pathology, topic.procedure, topic.temporal, topic.workflow]
+representation_cites:
+  - internal-v2.patient-history-context#reported-history-not-current-care
+  - internal-v2.patient-history-context#procedure-history-result

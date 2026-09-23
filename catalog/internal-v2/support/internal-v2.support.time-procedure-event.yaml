@@ -1,0 +1,11 @@
+kind: profile_support
+evidence_status: supported
+evidence_summary: >-
+  Internal procdate_anon represents procedure occurrence time and participates in the consistent
+  patient-specific date shift.
+evidence_caveats:
+  - Do not substitute this occurrence for pathology-report or specimen-collection time.
+subject: time.procedure-event
+evidence_cites:
+  - internal-v2.magview-temporal-context#procedure-date-disagreement
+  - internal-v2.magview-temporal-context#patient-date-shift

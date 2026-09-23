@@ -1,0 +1,12 @@
+kind: feature
+label: EMBED data version
+definition: Code identifying the first EMBED release version in which the element was included.
+value_type: coded
+evidence: [release_schema, release_legend, maintainer_confirmed]
+search_terms: [embed data version]
+caveats:
+  - >-
+    This records first inclusion in EMBED, not a per-row processing-lineage or schema-version
+    guarantee.
+topics: [topic.exam, topic.workflow]
+objects: [imaging_exam]

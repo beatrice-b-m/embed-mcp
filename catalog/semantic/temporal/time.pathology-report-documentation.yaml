@@ -1,0 +1,25 @@
+kind: temporal
+label: Pathology report documentation time
+temporal_type: documentation_time
+definition: >-
+  The anonymized pathology-report date represents documentation or reporting of pathology
+  information.
+search_terms:
+  - pathology report date
+  - diagnosis report time
+  - pathology documentation
+  - procedure report fallback
+  - coalesce event dates
+  - proxy diagnosis date
+caveats:
+  - >-
+    Documentation time may differ from procedure, specimen, clinical recognition, and data
+    availability.
+  - The field is not designated as a universal diagnosis date.
+  - Do not coalesce procedure, specimen, report, or imaging-exam dates into one event timestamp.
+  - >-
+    Missing pathology-report documentation time remains missing for that endpoint; another time
+    meaning may be studied only as a separately named endpoint or sensitivity analysis.
+topics: [topic.pathology, topic.report, topic.temporal]
+objects: [pathology_observation, pathology_diagnosis]
+relative_to: [time.procedure-event, time.specimen-collection]

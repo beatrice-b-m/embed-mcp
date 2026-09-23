@@ -1,0 +1,22 @@
+kind: feature
+label: Region-of-interest depth-derivation flag collection
+definition: >-
+  Serialized collection of one boolean per ROI; true means an in-house model inferred the DBT
+  frame-depth coordinates after radiologist 2D coordinates were transferred to the DBT image.
+value_type: flag
+evidence: [maintainer_confirmed, observed_source_values]
+search_terms: [ROI depth derived, ROI depth flag, derived ROI depth]
+caveats:
+  - >-
+    Its length agrees with the represented region count because the ROI collections are
+    generated in tandem.
+  - >-
+    True refers to inferred z/depth information; the x/y coordinates originate from a
+    radiologist clinical annotation.
+  - It does not provide stable ROI identity or an individual annotator identifier.
+topics: [topic.imaging]
+cites:
+  - internal-v2.roi-context#roi-serialized-collections
+  - internal-v2.roi-context#roi-frame-depth-semantics
+  - internal-v2.roi-context#roi-identity-and-provenance
+objects: [region_of_interest]

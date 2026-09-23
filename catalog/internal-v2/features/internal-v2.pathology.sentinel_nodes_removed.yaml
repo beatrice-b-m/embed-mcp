@@ -1,0 +1,10 @@
+kind: feature
+label: Sentinel nodes removed
+definition: Recorded number of sentinel lymph nodes removed.
+value_type: numeric
+evidence: [release_legend, observed_source_values]
+search_terms: [sentinel nodes removed, sentinel node count]
+topics: [topic.pathology, topic.procedure]
+cites:
+  - internal-v2.magview-pathology-context#specimen-surface
+objects: [pathology_specimen]

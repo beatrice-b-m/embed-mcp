@@ -1,0 +1,31 @@
+kind: vocabulary
+label: Derived mammographic image-type classes
+completeness: open
+parsing: atomic
+evidence: [observed_source_values, inference]
+caveats:
+  - >-
+    These are pipeline-derived classes, not source DICOM values, and the class set is scoped to
+    the current internal V1c extraction.
+  - >-
+    The classification is not exhaustive: source image-type tokens equivalent to a named class
+    also occur under the residual class.
+  - Every non-mammographic source modality falls into the residual class.
+  - >-
+    ROI_SS and ROI_SSC are secondary screen-capture annotation-transfer artifacts retained
+    solely for ROI extraction and are not intended for other use.
+codes:
+  2D: >-
+    two-dimensional mammographic acquisition; also covers contrast-enhanced, stereotactic, and
+    post-biopsy acquisitions separable only through the source image-type attribute
+  3D: tomosynthesis acquisition
+  cview: synthetic two-dimensional image reconstructed from a tomosynthesis acquisition
+  ROI_SS: >-
+    secondary screen-capture image containing burned-in radiologist pixel annotations, retained
+    solely to enable ROI coordinate extraction and transfer to the original image
+  ROI_SSC: >-
+    secondary screen-capture image containing burned-in radiologist pixel annotations, retained
+    solely to enable ROI coordinate extraction and transfer to the original image
+  other: >-
+    residual class for rows the classification does not assign to a named mammographic
+    acquisition form

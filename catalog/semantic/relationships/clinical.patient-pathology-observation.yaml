@@ -1,0 +1,48 @@
+kind: relationship
+label: Patient has represented pathology observation
+relationship_type: association
+definition: >-
+  Patient attribution inherited by traversing from each candidate pathology observation's
+  associated accession to that candidate exam and then to its patient.
+cardinality:
+  targets_per_source: zero_or_more
+  sources_per_target: exactly_one
+optionality:
+  source: optional
+  target: required
+attribution_limitations:
+  - >-
+    A profile may carry patient attribution indirectly through an exam or accession
+    relationship.
+  - >-
+    The pathology row's accession identifies its own associated candidate exam; it is not
+    necessarily the index exam accession used by a longitudinal analysis.
+  - >-
+    The pathology-to-exam association alone does not implement patient-level longitudinal
+    ascertainment; the candidate exam must also be attributed to the patient.
+temporal_qualification: >-
+  The observation occurs within the patient's represented clinical timeline and can be compared
+  with qualifying index exams only after patient attribution; same-day inclusion and
+  nearest-event tie-breaking remain analyst choices.
+search_terms:
+  - patient pathology
+  - patient diagnosis observations
+  - patient timeline pathology
+  - prior cancer
+  - subsequent cancer
+  - nearest pathology
+  - cancer history
+  - within days
+  - longitudinal cancer ascertainment
+caveats:
+  - >-
+    This semantic relation requires the two-edge open-v2 traversal pathology accession to
+    candidate exam to patient; no single pathology-to-exam binding is a complete
+    patient-pathology implementation.
+source_object: patient
+target_object: pathology_observation
+topics: [topic.identity, topic.pathology]
+temporal:
+  - time.procedure-event
+  - time.pathology-report-documentation
+  - time.downstream-availability

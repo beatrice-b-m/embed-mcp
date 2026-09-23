@@ -1,0 +1,10 @@
+kind: profile_support
+evidence_status: interpretation_limit
+evidence_summary: >-
+  The physical severity is projected onto each finding/procedure association row; no supplied
+  reduction across all rows linked to one finding is established.
+evidence_caveats:
+  - One finding can carry multiple severity or attachment states across repeated rows.
+subject: aggregation.pathology-severity-to-finding
+evidence_cites:
+  - internal-v2.magview-pathology-context#path-severity-derived-occurrence

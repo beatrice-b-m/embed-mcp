@@ -1,0 +1,10 @@
+kind: feature
+label: MRI mass shape
+definition: MRI mass-shape code.
+value_type: coded
+evidence: [release_schema, release_legend, inference]
+search_terms: [mri mass shape]
+caveats:
+  - The vocabulary binding is a case-only legend match.
+topics: [topic.imaging, topic.mri]
+objects: [imaging_finding]

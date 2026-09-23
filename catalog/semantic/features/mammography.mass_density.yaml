@@ -1,0 +1,8 @@
+kind: feature
+label: Mammographic mass density
+definition: Mammographic mass-density code.
+value_type: coded
+evidence: [release_schema, release_legend]
+search_terms: [mammographic mass density]
+topics: [topic.imaging, topic.mammography]
+objects: [imaging_finding]

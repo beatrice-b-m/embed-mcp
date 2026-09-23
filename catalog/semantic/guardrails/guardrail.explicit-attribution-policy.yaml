@@ -1,0 +1,26 @@
+kind: guardrail
+label: Finding-to-pathology attribution requires an explicit policy
+category: analyst_choice
+priority: high
+statement: >-
+  Do not treat finding, procedure, or pathology attribution as one-to-one or silently
+  deduplicate multiplied rows.
+rationale: >-
+  Represented attribution is optional and many-to-many; incomplete tuples and duplicate matches
+  can change grain and interpretation.
+scope: embed_general
+search_terms: [many to many pathology join, finding attribution, join multiplication]
+caveats:
+  - No automatic matching or reconciliation algorithm is provided.
+topics: [topic.imaging, topic.procedure, topic.pathology]
+cites:
+  - embed.finding-procedure-recording#retroactive-attribution
+applies_to:
+  - imaging_finding
+  - procedure
+  - pathology_observation
+  - imaging.finding_number
+  - pathology.severity
+  - clinical.finding-procedure
+  - clinical.finding-pathology-observation
+  - aggregation.pathology-severity-to-finding

@@ -1,0 +1,20 @@
+kind: vocabulary
+label: Breast depth and grid codes
+completeness: unknown
+null_meaning: [undocumented, occurrence_specific]
+parsing: atomic
+legend_role: comparison_legend
+evidence: [observed_source_values, release_legend]
+codes:
+  "1": 1A
+  "2": 1B
+  "3": 1C
+  "4": 2A
+  "5": 2B
+  "6": 2C
+  "7": 3A
+  "8": 3B
+  "9": 3C
+  A: Anterior
+  M: Middle
+  P: Posterior

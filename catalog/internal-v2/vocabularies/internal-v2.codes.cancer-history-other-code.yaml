@@ -1,0 +1,39 @@
+kind: vocabulary
+label: Provisional other-history code meanings
+completeness: unknown
+parsing: atomic
+evidence: [observed_source_values, inference]
+caveats:
+  - >-
+    Candidate meanings from a work-in-progress internal-dictionary reconciliation; not final
+    verified CancerHist code definitions.
+  - >-
+    Meaning is category-specific; no severity or malignancy rule follows from category
+    membership.
+  - >-
+    Applies only under type O; code O is provisionally ovarian cancer here, distinct from the
+    type O category.
+codes:
+  BLAD: Bladder cancer
+  BONE: Bone cancer
+  BRAIN: Brain cancer
+  CERV: Cervical cancer
+  COLON: Colon cancer
+  G: Endometrial cancer
+  GI: Gastrointestinal cancer
+  HODG: Hodgkin disease
+  KID: Kidney cancer
+  LEUK: Leukemia
+  LIVER: Liver cancer
+  LUNG: Lung cancer
+  LYM: Lymphoma
+  MEL: Melanoma
+  O: Ovarian cancer
+  OTHER: Other cancer
+  PAN: Pancreatic cancer
+  THY: Thyroid cancer
+  UTER: Uterine cancer
+  VULV: Vulvar cancer
+  PROS: Prostate cancer
+  SKIN: Skin cancer
+  STOM: Stomach cancer

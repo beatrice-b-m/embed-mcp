@@ -1,0 +1,16 @@
+kind: join
+join_type: hierarchy
+source_completeness: required
+cardinality:
+  targets_per_source: zero_or_one
+  sources_per_target: zero_or_more
+evidence: [release_schema, release_legend, inference, unresolved]
+hazards:
+  - Do not promote this expectation to an enforced foreign key without a profile-specific check.
+caveats:
+  - >-
+    The expected hierarchy is supported by shared identifier meaning, but full referential
+    coverage was not registered.
+relationships: [clinical.patient-exam]
+source_columns: [open-v2.exam_level_anon#empi_anon]
+target_columns: [open-v2.patients_anon#empi_anon]

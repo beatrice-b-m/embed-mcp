@@ -1,0 +1,14 @@
+kind: profile_support
+representation_status: supported
+representation_summary: >-
+  Internal V1c ROI rectangles use inclusive [y_min, x_min, y_max, x_max] coordinates expressed
+  directly in the attached DICOM pixel-array coordinate space without transformation.
+representation_caveats:
+  - >-
+    Coordinates are expected to be within the attached image bounds after curation; residual
+    out-of-bounds coordinates may be safely clipped to those valid bounds.
+search_terms: [ROI coordinate order, ROI bounding box, ROI geometry, ROI coordinate system]
+subject: internal-v2.roi.coordinate_collection
+topics: [topic.imaging]
+representation_cites:
+  - internal-v2.roi-context#roi-coordinate-geometry

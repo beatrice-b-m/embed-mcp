@@ -1,0 +1,20 @@
+kind: feature
+label: Anonymized SOP Instance UID
+definition: >-
+  Anonymized DICOM SOP Instance UID identifying one image durably within an EMBED dataset
+  version and encoded as the anon_dicom_path filename without its .dcm suffix.
+value_type: identifier
+evidence: [maintainer_confirmed]
+search_terms: [SOP Instance UID, DICOM image identifier, image identity, DICOM filename]
+caveats:
+  - >-
+    The UID is not exported as a separate metadata column and must be parsed from the file
+    basename.
+  - No durability or equality across dataset versions is asserted.
+  - >-
+    A missing anon_dicom_path makes this identity unavailable for that row and is a data-quality
+    defect.
+topics: [topic.imaging, topic.identity, topic.technical]
+cites:
+  - internal-v2.v1c-metadata-context#image-instance-identity
+objects: [image]

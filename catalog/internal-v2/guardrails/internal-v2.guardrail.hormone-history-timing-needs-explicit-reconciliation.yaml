@@ -1,0 +1,36 @@
+kind: guardrail
+label: Hormone-history timing fields have no supplied reconciliation rule
+category: analyst_choice
+priority: high
+statement: >-
+  Do not silently choose or reconcile HormoneHist duration, current or continuous status,
+  reported start or end ages, and partial month or year components when they disagree.
+rationale: >-
+  The fields provide distinct reported representations, the duration unit is unknown, partial
+  calendar components are not exact dates, and no source precedence or consistency rule is
+  established.
+search_terms:
+  - HormoneHist timing conflict
+  - hormone duration unit
+  - partial hormone dates
+  - current continuous disagreement
+caveats:
+  - >-
+    Any downstream reconciliation must be declared for the task and must preserve the
+    distinction between reported age and partial calendar components.
+topics: [topic.procedure, topic.temporal, topic.workflow]
+cites:
+  - internal-v2.patient-history-context#hormone-history-timing
+applies_to:
+  - internal-v2.hormone_history_entry
+  - internal-v2.hormone_history.continuous_status
+  - internal-v2.hormone_history.current_status
+  - internal-v2.hormone_history.reported_duration
+  - internal-v2.hormone_history.reported_start_age
+  - internal-v2.hormone_history.reported_start_month
+  - internal-v2.hormone_history.reported_start_year
+  - internal-v2.hormone_history.reported_end_age
+  - internal-v2.hormone_history.reported_end_month
+  - internal-v2.hormone_history.reported_end_year
+  - internal-v2.time.reported-exposure-start
+  - internal-v2.time.reported-exposure-end

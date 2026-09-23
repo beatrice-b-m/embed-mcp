@@ -1,0 +1,204 @@
+kind: table
+label: CancerHist_anon
+grain: >-
+  one source history record; clinical-entry identity and rows per historical event remain
+  unresolved
+caveats:
+  - >-
+    Physical types are packet-reported pandas parse types, with str represented as string;
+    comment is assessed as string from maintainer description rather than packet observation.
+  - >-
+    No embedded schema or nullability contract is supplied; every column is conservatively
+    nullable, independently of observed missingness.
+  - >-
+    Text padding and blank strings are physical representations, not global missing-value or
+    normalization rules.
+  - >-
+    The packet tests groupings only and does not establish unique row identity, deduplication,
+    or cross-table match coverage.
+keys:
+  patient-grouping:
+    key_type: technical
+    uniqueness: not_unique
+    completeness: unknown
+    evidence: [observed_source_values]
+    caveats:
+      - >-
+        A tested grouping with varying attributes, not a unique history-row or clinical-entry
+        identity; missing values were retained as levels.
+      - >-
+        No completeness, sentinel, or longitudinal history-identity assertion follows from the
+        topology export.
+    columns: [empi_anon]
+  exam-grouping:
+    key_type: technical
+    uniqueness: not_unique
+    completeness: unknown
+    evidence: [observed_source_values]
+    caveats:
+      - >-
+        A tested grouping with varying attributes, not a unique history-row or clinical-entry
+        identity; missing values were retained as levels.
+      - >-
+        No completeness, sentinel, or longitudinal history-identity assertion follows from the
+        topology export.
+    columns: [acc_anon]
+  relative-grouping:
+    key_type: technical
+    uniqueness: not_unique
+    completeness: unknown
+    evidence: [observed_source_values]
+    caveats:
+      - >-
+        A tested grouping with varying attributes, not a unique history-row or clinical-entry
+        identity; missing values were retained as levels.
+      - >-
+        No completeness, sentinel, or longitudinal history-identity assertion follows from the
+        topology export.
+    columns: [acc_anon, patient, rel]
+objects:
+  internal-v2.cancer_history_entry:
+    completeness: partial
+    authority: reference
+    derivation: source
+    caveats:
+      - No instance identity or relative-person object is asserted.
+      - >-
+        The row may concern a relative rather than the patient; code and time interpretation
+        remains qualified.
+    object: internal-v2.cancer_history_entry
+    cites:
+      - internal-v2.cancer-history-context#subject-and-relationship
+      - internal-v2.cancer-history-context#relative-grouping-not-identity
+    columns:
+      - empi_anon
+      - acc_anon
+      - patient
+      - rel
+      - type
+      - cancercode
+      - premen
+      - bilat
+      - side
+      - month
+      - year
+      - diag_age
+      - curr_age
+      - brca1
+      - brca2
+      - comment
+columns:
+  empi_anon:
+    type: int64
+    nullable: true
+  acc_anon:
+    type: int64
+    nullable: true
+  patient:
+    type: int64
+    nullable: true
+    maps:
+      - id: internal-v2.cancer_history.subject_category
+        mapping: direct
+        vocabulary: internal-v2.codes.cancer-history-subject-category
+    interpretations:
+      represented category-specific source token:
+        representation: represented category-specific source token
+        meaning: 1 denotes the patient; 0 denotes a relative, not a relative identifier
+        status: verified
+        cites:
+          - internal-v2.cancer-history-context#subject-and-relationship
+  rel:
+    type: string
+    nullable: true
+    maps:
+      - id: internal-v2.cancer_history.relative_relationship_code
+        mapping: conditional
+        subject_column: patient
+        subject_value: "0"
+    interpretations:
+      represented category-specific source token:
+        representation: represented category-specific source token
+        meaning: Relationship category for a relative; not unique person identity
+        status: verified
+        cites:
+          - internal-v2.cancer-history-context#subject-and-relationship
+  type:
+    type: string
+    nullable: true
+    maps:
+      - id: internal-v2.cancer_history.history_category
+        mapping: unresolved
+        vocabulary: internal-v2.codes.cancer-history-history-category
+    interpretations:
+      represented category-specific source token:
+        representation: represented category-specific source token
+        meaning: >-
+          B and O have provisional breast and other history interpretations; blank remains
+          unspecified
+        status: unverified
+        cites:
+          - internal-v2.cancer-history-context#provisional-code-meanings
+  cancercode:
+    type: string
+    nullable: true
+    maps:
+      - id: internal-v2.cancer_history.breast_code
+        mapping: unresolved
+        vocabulary: internal-v2.codes.cancer-history-breast-code
+        category_column: type
+        category_value: B
+      - id: internal-v2.cancer_history.other_code
+        mapping: unresolved
+        vocabulary: internal-v2.codes.cancer-history-other-code
+        category_column: type
+        category_value: O
+    interpretations:
+      represented category-specific source token:
+        representation: represented category-specific source token
+        meaning: >-
+          Candidate meaning from a work-in-progress internal dictionary, conditional on the
+          source type category
+        status: unverified
+        cites:
+          - internal-v2.cancer-history-context#provisional-code-meanings
+        feature: internal-v2.cancer_history.breast_code
+      represented category-specific source token@internal-v2.cancer_history.other_code:
+        representation: represented category-specific source token
+        meaning: >-
+          Candidate meaning from a work-in-progress internal dictionary, conditional on the
+          source type category
+        status: unverified
+        cites:
+          - internal-v2.cancer-history-context#provisional-code-meanings
+        feature: internal-v2.cancer_history.other_code
+  premen:
+    type: string
+    nullable: true
+  bilat:
+    type: string
+    nullable: true
+  side:
+    type: string
+    nullable: true
+  month:
+    type: string
+    nullable: true
+  year:
+    type: string
+    nullable: true
+  diag_age:
+    type: string
+    nullable: true
+  curr_age:
+    type: string
+    nullable: true
+  brca1:
+    type: string
+    nullable: true
+  brca2:
+    type: string
+    nullable: true
+  comment:
+    type: string
+    nullable: true

@@ -1,0 +1,20 @@
+kind: relationship
+label: Patient has risk assessment
+relationship_type: association
+definition: Patient association of a represented risk score set.
+cardinality:
+  targets_per_source: zero_or_more
+  sources_per_target: zero_or_one
+optionality:
+  source: optional
+  target: optional
+attribution_limitations:
+  - The natural identity and completeness of risk rows remain limited.
+temporal_qualification: >-
+  Risk outputs were calculated during clinical care, but exact availability time is unresolved.
+search_terms: [patient risk assessments, IBIS NCI patient]
+caveats:
+  - No risk record is approved for modeling merely because it is represented.
+source_object: patient
+target_object: risk_assessment
+topics: [topic.identity, topic.risk, topic.temporal]

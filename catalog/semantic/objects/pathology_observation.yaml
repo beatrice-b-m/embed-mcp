@@ -1,11 +1,11 @@
 kind: clinical_object
 label: Pathology observation
 definition: >-
-  A procedure-associated pathology descriptor observation
-  recorded in one of the pathology code slots.
+  A procedure-associated pathology descriptor observation recorded in one of the pathology code
+  slots.
 grain: one represented pathology descriptor occurrence
-topics: [topic.pathology, topic.procedure]
 search_terms: [pathology observation, pathology descriptor, pathology finding code]
 caveats:
   - Slot position and duplicate occurrence are not informative for clinical decision-making.
   - Some valid source-system codes have unresolved meanings.
+topics: [topic.pathology, topic.procedure]

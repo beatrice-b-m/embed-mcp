@@ -1,0 +1,13 @@
+kind: clinical_object
+label: Breast-cancer risk assessment
+definition: >-
+  A represented set of named clinical risk-model outputs associated with a patient and
+  optionally an exam.
+grain: one represented risk-assessment row
+search_terms: [risk assessment, IBIS, NCI risk, breast cancer risk]
+caveats:
+  - >-
+    Risk-output interpretation depends on the named model, version, units, and field-specific
+    exceptional-value semantics.
+  - A risk output is not an imaging assessment or pathology diagnosis.
+topics: [topic.risk, topic.temporal]

@@ -1,0 +1,24 @@
+kind: relationship
+label: Exam contains image
+relationship_type: hierarchy
+definition: An image can be represented as part of an imaging exam.
+cardinality:
+  targets_per_source: unknown
+  sources_per_target: unknown
+optionality:
+  source: unknown
+  target: unknown
+attribution_limitations:
+  - >-
+    The catalog does not define a portable physical identifier or file-layout rule for
+    associating images with exams.
+temporal_qualification: >-
+  Image acquisition belongs to the imaging-exam context, but profile-specific acquisition
+  timestamps and availability require separate evidence.
+search_terms: [exam images, images in study, image accession]
+caveats:
+  - Cardinality and physical linkage remain profile-specific.
+source_object: imaging_exam
+target_object: image
+topics: [topic.exam, topic.imaging]
+temporal: [time.exam-event]

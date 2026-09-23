@@ -1,0 +1,12 @@
+kind: source
+label: Governed Open V2 profile comparison
+source_type: public_documentation
+scope: embed_general
+locator_type: repository_path
+locator: catalog/profiles/open-v2.json
+version_scope: >-
+  Governed Open V2 profile vocabulary and binding comparison, including the canonical
+  0-through-5 pathology-severity categories.
+notes:
+  - Used only to compare governed Open V2 meanings with the internal representation.
+  - Open V2 physical and aggregate bindings are not imported into internal-v2.

@@ -1,0 +1,34 @@
+kind: guardrail
+label: ROI coordinates use inclusive, normally in-bounds pixel bounds
+category: interpretation_limit
+priority: high
+statement: >-
+  Interpret ROI rectangles as inclusive [y_min, x_min, y_max, x_max] pixel-array bounds.
+  Curated coordinates are expected to lie within the attached image; if residual out-of-bounds
+  coordinates are encountered downstream, they may be safely clipped to the valid pixel-array
+  bounds.
+rationale: >-
+  Coordinates outside y indices 0 through Rows - 1 or x indices 0 through Columns - 1 are
+  residual data-quality conditions rather than intended representation semantics.
+  Inclusive bounds also require adding one to y_max and x_max when using exclusive-stop slicing
+  APIs such as NumPy.
+search_terms:
+  - ROI bounds
+  - ROI crop
+  - inclusive coordinates
+  - clip ROI coordinates
+  - out of bounds ROI
+caveats:
+  - >-
+    The supported clipping behavior is recovery for residual defects; it does not redefine
+    out-of-bounds values as an intended source representation.
+topics: [topic.imaging, topic.technical]
+cites:
+  - internal-v2.roi-context#roi-coordinate-geometry
+applies_to:
+  - image
+  - region_of_interest
+  - internal-v2.image.pixel_matrix_dimension
+  - internal-v2.roi.coordinate_collection
+  - clinical.image-region-of-interest
+  - internal-v2.support.v1c-roi-coordinate-geometry

@@ -1,14 +1,13 @@
 kind: clinical_object
 label: Linked breast procedure
 definition: >-
-  A biopsy, surgery, or other tissue-related procedure
-  represented with procedure-associated pathology information.
+  A biopsy, surgery, or other tissue-related procedure represented with procedure-associated
+  pathology information.
 grain: one represented procedure association
-topics: [topic.procedure, topic.pathology, topic.temporal]
 search_terms: [procedure, biopsy, surgery, tissue sampling]
-cites:
-  # Prototype: also cites embed.finding-procedure-recording#multiple-procedures,
-  # which is outside this slice.
-  - clinical.screening-diagnostic-pathway#pathology-follows-sampling
 caveats:
   - A procedure-to-finding association may be absent or ambiguous.
+topics: [topic.procedure, topic.pathology, topic.temporal]
+cites:
+  - embed.finding-procedure-recording#multiple-procedures
+  - clinical.screening-diagnostic-pathway#pathology-follows-sampling

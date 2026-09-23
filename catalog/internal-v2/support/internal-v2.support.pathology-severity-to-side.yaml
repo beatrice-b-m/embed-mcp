@@ -1,0 +1,19 @@
+kind: profile_support
+evidence_status: unsupported
+evidence_summary: No internal side-level pathology-severity aggregate feature is supplied.
+evidence_caveats:
+  - Do not copy the Open V2 side aggregate binding.
+representation_status: unsupported
+representation_summary: >-
+  The internal MagView table has no supplied breast-side pathology-severity aggregate column.
+representation_caveats:
+  - >-
+    A downstream reduction remains analyst defined and must preserve attribution and null
+    limitations.
+search_terms: [internal side pathology aggregate, side severity column]
+subject: aggregation.pathology-severity-to-side
+topics: [topic.breast_side, topic.pathology]
+evidence_cites:
+  - internal-v2.magview-pathology-context#no-curated-severity-aggregates
+representation_cites:
+  - internal-v2.magview-pathology-context#no-curated-severity-aggregates

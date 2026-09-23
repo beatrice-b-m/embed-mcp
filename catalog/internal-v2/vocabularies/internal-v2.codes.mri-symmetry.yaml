@@ -1,0 +1,10 @@
+kind: vocabulary
+label: MRI symmetry codes
+completeness: unknown
+null_meaning: [undocumented, occurrence_specific]
+parsing: atomic
+legend_role: comparison_legend
+evidence: [observed_source_values, release_legend]
+codes:
+  A: asymmetric
+  S: symmetric

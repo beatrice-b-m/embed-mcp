@@ -1,0 +1,45 @@
+kind: guardrail
+label: Risk outputs require validation before probability metrics
+category: prohibition
+priority: critical
+statement: >-
+  Do not use the represented risk outputs as probability-like predictions for calibration slope,
+  Brier score, or predicted-versus-observed calibration until their scale, units, exceptional
+  values, model version, horizon meaning, and probability semantics are validated.
+rationale: >-
+  Association or ranking studies may be possible with an explicitly qualified score
+  interpretation, but unresolved scale, horizon, exceptional-value, and model-version semantics
+  limit probability interpretation.
+scope: embed_general
+search_terms:
+  - risk probability
+  - risk calibration
+  - calibration slope
+  - Brier score
+  - predicted versus observed
+  - risk score scale
+  - exceptional risk values
+  - risk model version
+  - risk horizon
+caveats:
+  - This constraint does not mark the physical risk fields unsupported.
+  - >-
+    A separately justified association or ranking analysis must still report the unresolved
+    score interpretation.
+topics: [topic.risk, topic.workflow]
+applies_to:
+  - risk_assessment
+  - risk.ibis_brca1
+  - risk.ibis_brca2
+  - risk.ibis_lifetime
+  - risk.ibis_population_lifetime
+  - risk.ibis_population_ten_year
+  - risk.ibis_td1
+  - risk.ibis_td2
+  - risk.ibis_td3
+  - risk.ibis_td4
+  - risk.ibis_ten_year
+  - risk.nci_five_year
+  - risk.nci_lifetime
+  - clinical.patient-risk-assessment
+  - clinical.exam-risk-assessment

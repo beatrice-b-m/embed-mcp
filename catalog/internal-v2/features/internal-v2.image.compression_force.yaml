@@ -1,0 +1,12 @@
+kind: feature
+label: Compression force
+definition: Represented source DICOM compression force applied for one internal V1c image row.
+value_type: numeric
+evidence: [observed_source_values]
+search_terms: [compression force, compression]
+caveats:
+  - The unit is not documented in the extraction.
+topics: [topic.imaging, topic.mammography]
+cites:
+  - internal-v2.v1c-metadata-context#parsed-dicom-element-semantics
+objects: [image]

@@ -1,0 +1,14 @@
+kind: feature
+label: Reported continuous-exposure status
+definition: Reported indication of whether the historical exposure was continuous.
+value_type: flag
+evidence: [maintainer_confirmed]
+search_terms: [continuous hormone use, continuous therapy, HormoneHist continuous]
+caveats:
+  - >-
+    No precedence or consistency rule with duration, current status, or interval fields is
+    established.
+topics: [topic.procedure, topic.temporal]
+cites:
+  - internal-v2.patient-history-context#hormone-history-timing
+objects: [internal-v2.hormone_history_entry]

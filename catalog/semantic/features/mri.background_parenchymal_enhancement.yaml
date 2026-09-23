@@ -1,0 +1,10 @@
+kind: feature
+label: MRI background parenchymal enhancement level
+definition: MRI background parenchymal enhancement level code.
+value_type: coded
+evidence: [release_schema, release_legend]
+search_terms:
+  - mri background parenchymal enhancement level
+caveats: [Letter order is not an ordinal encoding.]
+topics: [topic.imaging, topic.mri]
+objects: [imaging_finding]

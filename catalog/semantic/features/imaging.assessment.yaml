@@ -3,10 +3,8 @@ label: Imaging assessment
 definition: BI-RADS assessment code.
 value_type: coded
 evidence: [release_schema, release_legend]
-topics: [topic.imaging]
-objects: [imaging_interpretation]
 search_terms: [imaging assessment, birads, bi-rads]
 caveats:
   - Do not impose a simple ordinal scale across assessment states.
-  # The former "Null semantics are not documented…" caveat is now the
-  # `null_meaning` field of each profile's assessment vocabulary.
+topics: [topic.imaging]
+objects: [imaging_interpretation]

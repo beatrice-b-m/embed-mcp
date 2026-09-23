@@ -1,0 +1,114 @@
+kind: context
+label: Internal V2 MagView temporal and availability limits
+context_type: known_issue
+definition: >-
+  The table exposes confirmed exam- and procedure-occurrence dates plus a provisional
+  pathology-report date; no specimen-collection or universal availability timestamp is
+  supported.
+search_terms:
+  - internal V2 dates
+  - study date meaning
+  - procedure date meaning
+  - specimen collection time
+  - data availability
+caveats:
+  - >-
+    Different date meanings must remain separate; missingness is not repaired through
+    coalescing.
+  - No date is designated as a universal diagnosis date.
+topics:
+  - topic.exam
+  - topic.procedure
+  - topic.pathology
+  - topic.report
+  - topic.temporal
+  - topic.workflow
+about:
+  - exam.study_date
+  - pathology.procedure_date
+  - pathology.report_date
+  - internal-v2.magview_all_cohorts_pacs_v2_anon
+claims:
+  study-date-disagreement:
+    statement: >-
+      Internal V2 studydate_anon represents exam occurrence time; this profile-specific
+      maintainer interpretation supersedes historical public classic-table wording that
+      described a corresponding field as report-signing time.
+    status: reconciled
+    caveats:
+      - Exam occurrence does not necessarily mean the acquisition time of any particular image.
+    sources:
+      - internal-v2.magview-maintainer-clarifications
+      - internal-v2.v2-open-legend-comparison
+      - internal-v2.public-embed-overview
+  procedure-date-disagreement:
+    statement: >-
+      Internal V2 procdate_anon represents procedure occurrence time; this profile-specific
+      maintainer interpretation supersedes historical public classic-table wording that
+      described a corresponding field as pathology-result time.
+    status: reconciled
+    caveats:
+      - >-
+        Do not substitute this procedure event time for pathology-report or specimen-collection
+        time.
+    sources:
+      - internal-v2.magview-maintainer-clarifications
+      - internal-v2.v1-open-dictionary-comparison
+      - internal-v2.v2-open-legend-comparison
+      - internal-v2.public-embed-overview
+  patient-date-shift:
+    statement: >-
+      Every anonymized date value across EMBED tables and dataset versions uses one consistent
+      patient-specific shift, so absolute dates are not literal while within-patient ordering
+      and time differences remain reliable across the clinical and image-metadata tables.
+    status: verified
+    caveats:
+      - >-
+        The shift does not establish event meaning for an otherwise undocumented date-like
+        column.
+    sources:
+      - internal-v2.magview-maintainer-clarifications
+      - internal-v2.v1c-metadata-maintainer-clarifications
+  age-at-study-derivation:
+    statement: >-
+      Internal V2 age_at_study_anon is derived from the consistently shifted patient birth and
+      study dates; ages 90 years or older are top-coded to 89.
+    status: verified
+    caveats:
+      - Repeated age values may still contain ordinary data-quality inconsistencies.
+    sources:
+      - internal-v2.magview-maintainer-clarifications
+  pathology-report-date-provisional:
+    statement: >-
+      Internal V2 pdate_anon is believed to represent pathology-report documentation time, but
+      this interpretation has lower maintainer confidence and the field is rarely used in
+      current internal workflows.
+    status: unverified
+    caveats:
+      - Retain this occurrence as ambiguous until its meaning is independently confirmed.
+    sources:
+      - internal-v2.magview-maintainer-clarifications
+  unsupported-time-bindings:
+    statement: >-
+      The assessed MagView clinical table has date-like exam, procedure, and pathology-report
+      occurrences but no supported specimen-collection time or universal downstream-availability
+      timestamp.
+    status: verified
+    caveats:
+      - >-
+        Undocumented date-like columns remain unmapped rather than promoted to temporal
+        semantics.
+    sources:
+      - internal-v2.magview-maintainer-confirmation
+      - internal-v2.magview-footer-schema
+  wide-colocation-not-availability:
+    statement: >-
+      Co-location of imaging, procedure, pathology, and specimen fields in the MagView row does
+      not establish that downstream information was available at imaging time.
+    status: reconciled
+    caveats:
+      - Task-specific availability boundaries remain analyst responsibilities.
+    sources:
+      - internal-v2.magview-maintainer-confirmation
+      - internal-v2.magview-grain-observation
+      - hitilab.embed.overview.pathology-attribution

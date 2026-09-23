@@ -1,0 +1,13 @@
+kind: feature
+label: IBIS ten-year output
+definition: >-
+  IBIS ten-year risk output calculated during clinical care and extracted from MagView.
+value_type: model_output
+evidence: [release_schema, observed_source_values, maintainer_confirmed, unresolved]
+search_terms: [ibis ten-year-like output, risk model]
+caveats:
+  - >-
+    The exact model version, percentage-point formatting, and meanings of exceptional values
+    such as 100 are not validated.
+topics: [topic.risk]
+objects: [risk_assessment]

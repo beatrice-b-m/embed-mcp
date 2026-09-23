@@ -1,0 +1,54 @@
+kind: source
+label: Internal V1c image-metadata maintainer clarifications
+source_type: maintainer_confirmed
+locator_type: logical_artifact
+locator: maintainer-confirmed:internal-v1c-image-metadata-identity-and-availability
+version_scope: >-
+  Internal EMBED V1c extraction coverage, patient, accession, and image identity, anonymization,
+  legacy image fields, acquisition grouping, DBT frame-count interpretation, reliable final
+  laterality, DICOM interpretation, and locator expectations within the internal-v2 working
+  profile.
+notes:
+  - >-
+    empi_anon and acc_anon were generated in the same anonymization process for the clinical
+    tables and DICOM metadata; they support cross-table patient and exam identity.
+  - >-
+    acc_anon is the exam identifier across EMBED; a cross-patient association is a data-quality
+    defect that must not be retained as a valid identity or linkage association and does not
+    redefine the accession as several exams.
+  - >-
+    The same patient-specific date shift is applied consistently to every anonymized date value
+    across EMBED tables and dataset versions.
+  - >-
+    Parsed-out DICOM elements retain the applicable standard DICOM element semantics;
+    pipeline-derived fields require separate extraction evidence.
+  - >-
+    All DICOM objects associated with EMBEDv1 accessions were extracted, after which secondary
+    captures and screen saves were excluded except ROI_SS and ROI_SSC annotation images retained
+    solely to enable ROI extraction.
+  - >-
+    anon_dicom_path is intended to be defined for every extracted image row; a missing value
+    likely means anonymization failed before the de-identified file could be saved and is a
+    data-quality defect.
+  - >-
+    The anonymized SOP Instance UID is durable within one dataset version and is present in the
+    source DICOM and as the anon_dicom_path filename without the .dcm suffix.
+  - >-
+    PNG locators are legacy EMBEDv1 FFDM conversion outputs and should not be used for current
+    or future work; the DICOM files are the maintained image representation.
+  - >-
+    acquisition_group_id is constructed as acc_anon, normalized ProtocolName, and integer
+    ContentTime; it is stable across reruns and globally unique for simultaneous acquisition
+    groups.
+  - >-
+    ImagesInAcquisition is informative for DBT images and represents the number of frames or
+    z-slices in the image, not the number of image instances in an acquisition group.
+  - >-
+    ImageLateralityFinal is the reliable image breast-laterality attribute even though its
+    derivation rule and LateralityDeriveFlag meanings remain unresolved.
+  - >-
+    PatientAge is top-coded to 89, PatientSex is unchanged, and sensitive
+    non-identifier/non-date attributes were dropped during anonymization.
+  - >-
+    No DICOM processing other than anonymization and sensitive-information redaction was
+    applied.

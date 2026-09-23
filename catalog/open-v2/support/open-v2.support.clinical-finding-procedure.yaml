@@ -1,0 +1,5 @@
+kind: profile_support
+evidence_status: supported
+subject: clinical.finding-procedure
+evidence_cites:
+  - open-v2.pathology-procedure-context#imaging-link-tuple

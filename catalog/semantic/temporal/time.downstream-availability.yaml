@@ -1,0 +1,15 @@
+kind: temporal
+label: Downstream clinical information availability
+temporal_type: availability_time
+definition: >-
+  The time by which procedure, pathology observation, or pathology diagnosis information was
+  available for a particular use.
+search_terms: [data availability, temporal leakage, known by prediction time]
+caveats:
+  - >-
+    A selected profile may not provide a field-level availability timestamp; inspect profile
+    coverage.
+  - Co-location in a wide row does not establish contemporaneous availability.
+topics: [topic.pathology, topic.procedure, topic.temporal]
+objects: [procedure, pathology_observation, pathology_diagnosis]
+relative_to: [time.exam-event, time.procedure-event, time.pathology-report-documentation]

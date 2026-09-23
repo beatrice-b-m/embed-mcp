@@ -1,0 +1,27 @@
+kind: feature
+label: Anonymized DICOM file locator
+definition: Technical reference to the anonymized DICOM file for one internal V1c image row.
+value_type: technical
+evidence: [observed_source_values]
+search_terms: [image file path, DICOM locator, image file reference]
+caveats:
+  - >-
+    The full path is a technical locator; its filename without the .dcm suffix is the anonymized
+    SOP Instance UID and supplies dataset-version-scoped image identity.
+  - It is intended to be defined for every extracted image row.
+  - >-
+    A missing value likely means anonymization failed before the de-identified DICOM could be
+    saved and is a data-quality defect.
+topics: [topic.imaging, topic.technical]
+cites:
+  - internal-v2.v1c-metadata-context#image-instance-identity
+missing_states:
+  missing-locator:
+    representation: null or blank value
+    meaning: >-
+      The de-identified image file and its exported SOP Instance UID representation are
+      unavailable, likely because anonymization failed before the file could be saved
+    caveats:
+      - Treat this as a data-quality defect, not intended optionality.
+    cites:
+      - internal-v2.v1c-metadata-context#image-instance-identity

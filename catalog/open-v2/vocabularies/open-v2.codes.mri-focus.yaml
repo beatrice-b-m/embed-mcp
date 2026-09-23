@@ -1,0 +1,9 @@
+kind: vocabulary
+label: MRI focus codes
+completeness: unknown
+null_meaning: [undocumented]
+parsing: atomic
+evidence: [release_legend]
+codes:
+  F: focus of enhancement
+  I: multiple enhancing foci

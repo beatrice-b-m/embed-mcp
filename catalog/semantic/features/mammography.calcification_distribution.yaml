@@ -1,0 +1,8 @@
+kind: feature
+label: Calcification distribution
+definition: Mammographic calcification-distribution code.
+value_type: coded
+evidence: [release_schema, release_legend]
+search_terms: [calcification distribution]
+topics: [topic.imaging, topic.mammography]
+objects: [imaging_finding]

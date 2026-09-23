@@ -1,0 +1,10 @@
+kind: vocabulary
+label: MRI background parenchymal enhancement symmetry codes
+completeness: unknown
+null_meaning: [undocumented, occurrence_specific]
+parsing: atomic
+legend_role: comparison_legend
+evidence: [observed_source_values, release_legend]
+codes:
+  A: The background parenchymal enhancement is asymmetrical.
+  S: The background parenchymal enhancement is symmetrical.

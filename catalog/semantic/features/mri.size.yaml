@@ -1,0 +1,10 @@
+kind: feature
+label: MRI size field
+definition: Numeric-looking MRI size field whose meaning and units are not documented.
+value_type: numeric
+evidence: [release_schema, observed_source_values, unresolved]
+search_terms: [mri size field]
+caveats:
+  - Do not treat the field as a usable size measurement without maintainer confirmation.
+topics: [topic.imaging, topic.mri]
+objects: [imaging_finding]

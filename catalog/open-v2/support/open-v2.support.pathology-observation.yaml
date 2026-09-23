@@ -1,0 +1,6 @@
+kind: profile_support
+evidence_status: supported
+subject: pathology_observation
+evidence_cites:
+  - open-v2.pathology-procedure-context#diagnosis-slot-order
+  - open-v2.pathology-procedure-context#pathology-code-mappings

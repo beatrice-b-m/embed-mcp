@@ -1,0 +1,10 @@
+kind: feature
+label: Architectural distortion presence
+definition: Indicator for the presence of mammographic architectural distortion.
+value_type: flag
+evidence: [release_schema, release_legend, unresolved]
+search_terms: [architectural distortion presence]
+caveats:
+  - The legend describes presence but does not explicitly define the numeric flag encoding.
+topics: [topic.imaging, topic.mammography]
+objects: [imaging_finding]

@@ -1,0 +1,10 @@
+kind: feature
+label: Nodal macrometastasis count
+definition: Recorded number of nodal macrometastases.
+value_type: numeric
+evidence: [release_legend, observed_source_values]
+search_terms: [macrometastases, macrometastasis count]
+topics: [topic.pathology]
+cites:
+  - internal-v2.magview-pathology-context#specimen-surface
+objects: [pathology_specimen, pathology_diagnosis]

@@ -1,0 +1,12 @@
+kind: vocabulary
+label: MRI delayed-kinetics codes
+completeness: unknown
+null_meaning: [undocumented, occurrence_specific]
+parsing: comma_delimited_unordered
+legend_role: comparison_legend
+evidence: [observed_source_values, release_legend]
+codes:
+  L: plateau kinetics
+  P: persistent
+  S: minimal washout kinetics
+  W: washout kinetics

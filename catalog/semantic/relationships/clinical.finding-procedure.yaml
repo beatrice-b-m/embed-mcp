@@ -1,0 +1,26 @@
+kind: relationship
+label: Finding may be attributed to procedure
+relationship_type: attribution
+definition: Manual or source-system attribution of a later procedure to an imaging finding.
+cardinality:
+  targets_per_source: zero_or_more
+  sources_per_target: zero_or_more
+optionality:
+  source: optional
+  target: optional
+attribution_limitations:
+  - Attribution can be missing, duplicated, or many-to-many.
+  - A diagnostic-study procedure may not be back-attributed to an earlier screening finding.
+temporal_qualification: >-
+  The procedure is downstream of the original finding; the represented exam link does not define
+  a universal time window.
+search_terms: [finding procedure link, biopsy attribution, many to many pathology link]
+caveats:
+  - No deterministic repair or backfill rule is supplied.
+source_object: imaging_finding
+target_object: procedure
+topics: [topic.imaging, topic.procedure, topic.pathology, topic.temporal]
+cites:
+  - embed.finding-procedure-recording#retroactive-attribution
+  - embed.finding-procedure-recording#screening-attribution-gap
+temporal: [time.exam-event, time.procedure-event, time.downstream-availability]

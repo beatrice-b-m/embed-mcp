@@ -1,0 +1,17 @@
+kind: vocabulary
+label: Implant-finding codes
+completeness: unknown
+null_meaning: [undocumented]
+parsing: comma_composed_undocumented
+evidence: [release_legend]
+codes:
+  A: Asymmetric
+  C: Calcified
+  D: Distorted
+  F: Fibrosed
+  H: Herniated
+  K: Capsular Calcification
+  N: Normal Implants
+  R: Ruptured
+  S: Free silicone
+  T: Capsular contraction

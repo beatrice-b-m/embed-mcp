@@ -1,0 +1,13 @@
+kind: source
+label: HITI Lab EMBED pathology-recording note
+source_type: public_documentation
+scope: embed_general
+locator_type: url
+locator: >-
+  https://docs.hitilab.com/datasets/embed/overview#special-note-pathology-results-in-clinical-data
+version_scope: >-
+  Public EMBED documentation for the classic clinical-data representation; not verified as the
+  open-v2 physical schema.
+notes:
+  - Use for documented EMBED recording provenance only.
+  - Do not import the described row layout or a temporal matching algorithm into open-v2.

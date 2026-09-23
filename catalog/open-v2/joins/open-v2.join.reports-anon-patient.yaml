@@ -1,0 +1,14 @@
+kind: join
+join_type: reference
+source_completeness: required
+cardinality:
+  targets_per_source: zero_or_one
+  sources_per_target: zero_or_more
+evidence: [release_schema, release_legend, inference, unresolved]
+hazards:
+  - Do not enforce this as a complete foreign key without profile-specific verification.
+caveats:
+  - The report patient surface may extend beyond patients_anon; no anti-join was registered.
+relationships: [clinical.patient-report]
+source_columns: [open-v2.reports_anon#empi_anon]
+target_columns: [open-v2.patients_anon#empi_anon]

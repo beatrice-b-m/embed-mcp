@@ -1,0 +1,4 @@
+kind: profile_support
+evidence_status: supported
+subject: clinical.exam-risk-assessment
+evidence_cites: [open-v2.risk-context#exam-coverage, open-v2.risk-context#risk-availability]

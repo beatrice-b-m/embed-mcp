@@ -1,0 +1,1159 @@
+kind: table
+label: metadata_all_cohorts_v1c
+grain: >-
+  one internal V1c image-metadata row describing the attributes of one extracted breast-imaging
+  DICOM image instance, carrying repeated patient and exam projections and serialized per-image
+  region-of-interest collections
+caveats:
+  - >-
+    The artifact is delimited text with no embedded column schema: recorded physical types are
+    assessed parse types from a deterministic full-file text scan, not a source-declared schema.
+  - >-
+    Because the artifact declares no nullability, every column is conservatively recorded as
+    nullable; this is not a statement about observed missingness.
+  - >-
+    The artifact declares no numeric width, so every integer-parsable column is recorded at the
+    widest deterministic integer type rather than a narrower assessed magnitude.
+  - >-
+    A few inventoried columns yield no parsable value in this extraction, so their parse type
+    defaults to text and their meaning is unresolved.
+  - >-
+    Region-of-interest information is serialized in per-row collections; this table is not one
+    row per region of interest.
+  - >-
+    This extraction is internal V1c and covers every EMBEDv1 exam and patient; it remains
+    narrower than internal clinical V2, so absence of a later clinical V2 exam here is not
+    absence of images.
+  - >-
+    DICOM objects associated with EMBEDv1 accessions were extracted, then secondary captures and
+    screen saves were excluded except ROI_SS and ROI_SSC images retained solely for ROI
+    extraction.
+  - >-
+    ROI_SS and ROI_SSC rows contain burned-in radiologist annotations used to extract
+    coordinates and transfer them to the original images; they are one annotation source and are
+    not intended for other use.
+  - >-
+    Other ROI workflows include annotation DICOM objects without pixel arrays, from which
+    coordinates were extracted directly before attachment to the corresponding target images.
+  - >-
+    DICOM time-of-day attributes are numerically parsable, so a numeric parse discards zero
+    padding and any fractional-second form; they remain inventoried and unmapped.
+  - >-
+    DICOM PatientAge is top-coded to 89, PatientSex is unchanged, and sensitive
+    non-identifier/non-date attributes were dropped during anonymization.
+  - >-
+    Detailed DICOM acquisition, dose, detector, collimator, geometry, windowing, and icon-image
+    attributes retain standard DICOM element semantics but remain inventoried without dedicated
+    catalogue concepts or mappings.
+keys:
+  patient-locator:
+    key_type: natural
+    uniqueness: not_unique
+    completeness: complete
+    evidence: [observed_source_values]
+    caveats:
+      - >-
+        The anonymized identifier repeats across the patient's image rows and remains
+        patient-level.
+      - >-
+        The identifier uses the same anonymization namespace as the clinical table and supports
+        cross-table patient identity.
+    columns: [empi_anon]
+  exam-locator:
+    key_type: natural
+    uniqueness: not_unique
+    completeness: complete
+    evidence: [observed_source_values]
+    caveats:
+      - The accession repeats across the exam's image rows and remains exam-level.
+      - >-
+        acc_anon remains the identifier of one distinct exam across EMBED and belongs to exactly
+        one patient; an association with more than one patient identifier is an invalid
+        data-quality error.
+    columns: [acc_anon]
+  image-file-locator:
+    key_type: technical
+    uniqueness: unique
+    completeness: incomplete
+    evidence: [observed_source_values]
+    caveats:
+      - >-
+        The path is a technical file reference whose filename without .dcm is the anonymized SOP
+        Instance UID and supplies identity within one dataset version.
+      - >-
+        It is intended to be defined for every extracted image row; a missing value likely means
+        anonymization failed before the de-identified file could be saved.
+      - >-
+        Because missing values occur, it cannot serve as a complete physical row key in this
+        extraction.
+    columns: [anon_dicom_path]
+  dicom-position-locator:
+    key_type: technical
+    uniqueness: not_unique
+    completeness: complete
+    evidence: [observed_source_values]
+    caveats:
+      - >-
+        DICOM series and instance numbers do not distinguish one image row within an accession,
+        including among rows that carry a file locator.
+    columns: [acc_anon, SeriesNumber, InstanceNumber]
+  acquisition-group-locator:
+    key_type: technical
+    uniqueness: not_unique
+    completeness: complete
+    evidence: [observed_source_values]
+    caveats:
+      - >-
+        The value is globally unique for one simultaneous acquisition group and is stable across
+        reruns.
+      - >-
+        It is constructed from acc_anon, ProtocolName with spaces replaced by hyphens, and
+        integer-cast ContentTime.
+      - It is not a region-of-interest identity or correspondence grouping.
+    columns: [acquisition_group_id]
+objects:
+  image:
+    completeness: partial
+    authority: preferred
+    derivation: source
+    identity_scope: >-
+      Dataset-version-scoped anonymized SOP Instance UID encoded in the anon_dicom_path filename
+      without the .dcm suffix.
+    rows_per_instance: exactly_one
+    longitudinal_identity: false
+    caveats:
+      - >-
+        Coverage is internal V1c: it covers the complete EMBEDv1 exam and patient set and is
+        narrower than the internal clinical V2 table.
+      - >-
+        The anon_dicom_path basename is the anonymized SOP Instance UID and supplies
+        dataset-version-scoped image identity; a missing path makes that identity unavailable
+        for the affected row.
+      - >-
+        DICOM-derived attributes, pipeline-derived classifications, and enrichment flags are
+        separate mappings and must not be conflated.
+      - >-
+        Legacy PNG locators and has_pix_array must not be used as current image-availability
+        evidence.
+      - >-
+        The anonymized DICOM locator is intended to be present; a missing value likely means
+        anonymization failed before the de-identified file was saved and is a data-quality
+        defect.
+    object: image
+    cites:
+      - internal-v2.v1c-metadata-context#image-row-grain
+      - internal-v2.v1c-metadata-context#image-instance-identity
+      - internal-v2.v1c-metadata-context#version-boundary
+      - internal-v2.v1c-metadata-context#modality-surface
+      - internal-v2.v1c-metadata-context#locator-and-enrichment-population
+      - internal-v2.v1c-metadata-context#burned-in-annotation-semantics
+    columns:
+      - empi_anon
+      - acc_anon
+      - study_date_anon
+      - anon_dicom_path
+      - png_path
+      - png_folder_path
+      - png_filename
+      - StudyID
+      - SeriesNumber
+      - InstanceNumber
+      - acquisition_group_id
+      - Modality
+      - ImageType
+      - FinalImageType
+      - ViewPosition
+      - 0_ViewCodeSequence_CodeMeaning
+      - 0_ViewCodeSequence_0_ViewModifierCodeSequence_CodeMeaning
+      - spot_mag
+      - ImageLaterality
+      - Laterality
+      - ImageLateralityFinal
+      - LateralityDeriveFlag
+      - BodyPartExamined
+      - PresentationIntentType
+      - PhotometricInterpretation
+      - PixelRepresentation
+      - Rows
+      - Columns
+      - BitsAllocated
+      - BitsStored
+      - HighBit
+      - SamplesPerPixel
+      - ImagesInAcquisition
+      - ImagerPixelSpacing
+      - PixelSpacing
+      - CompressionForce
+      - BodyPartThickness
+      - KVP
+      - EntranceDoseInmGy
+      - Manufacturer
+      - ManufacturerModelName
+      - SoftwareVersions
+      - DetectorType
+      - BreastImplantPresent
+      - BurnedInAnnotation
+      - ConversionType
+      - category
+      - has_pix_array
+      - num_ROI
+    identity_columns: [anon_dicom_path]
+    reserved_exceptions:
+      anon_dicom_path=null or blank:
+        representation: null or blank
+        meaning: >-
+          Invalid row-level exception in which anonymization likely failed before the
+          de-identified DICOM file and its exported SOP Instance UID representation could be
+          saved.
+        caveats:
+          - This is a data-quality defect and does not define a second image-identity scheme.
+        column: anon_dicom_path
+        cites:
+          - internal-v2.v1c-metadata-context#image-instance-identity
+  region_of_interest:
+    completeness: partial
+    authority: preferred
+    derivation: derived
+    caveats:
+      - >-
+        One image row carries a collection of zero or more regions, so this binding is a
+        collection-valued occurrence and not a row-per-region representation.
+      - >-
+        No region identifier is declared: within a row a region is addressable only by its
+        position in the aligned collections, and position is not durable identity.
+      - >-
+        Coordinates use inclusive [y_min, x_min, y_max, x_max] bounds directly in the attached
+        DICOM pixel-array coordinate space; curated coordinates are expected in bounds, and
+        residual out-of-bounds values may be safely clipped.
+      - >-
+        ROIs originate from radiologist annotations created during routine clinical operations
+        through multiple source workflows, including direct coordinate extraction from
+        annotation DICOM objects without pixel arrays and annotation extraction from
+        ROI_SS/ROI_SSC screen captures; model-inferred DBT depth is marked by ROI_depth_derived.
+      - >-
+        Correspondence among regions on separate images of one acquisition group is not
+        represented.
+      - >-
+        ROI-to-finding attribution is reliable only when exactly one finding is represented on
+        the same accession side; multiple findings on one side cannot be individually linked.
+    object: region_of_interest
+    cites:
+      - internal-v2.roi-context#roi-attached-to-image
+      - internal-v2.roi-context#roi-serialized-collections
+      - internal-v2.roi-context#roi-coordinate-geometry
+      - internal-v2.roi-context#roi-identity-and-provenance
+      - internal-v2.roi-context#roi-cross-image-correspondence-absent
+      - internal-v2.roi-context#roi-finding-attribution
+    columns: [num_ROI, ROI_coords, ROI_frames, ROI_depth_derived]
+  patient:
+    completeness: partial
+    authority: reference
+    derivation: projected
+    identity_scope: >-
+      Release-scoped anonymized patient identity within the internal V1c image-metadata
+      extraction.
+    rows_per_instance: one_or_more
+    longitudinal_identity: true
+    caveats:
+      - >-
+        The patient identifier repeats across the patient's image rows and remains
+        patient-level; row multiplicity is not clinical multiplicity.
+      - >-
+        The clinical table remains the preferred patient representation; this projection carries
+        only top-coded age-at-imaging and unchanged DICOM patient sex.
+      - >-
+        The identifier uses the same anonymization namespace as the clinical table and supports
+        cross-table patient identity.
+    object: patient
+    cites:
+      - internal-v2.v1c-metadata-context#patient-and-exam-projection
+      - internal-v2.v1c-metadata-context#version-boundary
+    columns: [empi_anon, PatientAge, PatientSex]
+    identity_columns: [empi_anon]
+  imaging_exam:
+    completeness: partial
+    authority: reference
+    derivation: projected
+    identity_scope: >-
+      Cross-table accession-scoped exam identity shared by the internal V1c image metadata and
+      clinical table; not longitudinal.
+    rows_per_instance: one_or_more
+    longitudinal_identity: false
+    caveats:
+      - The accession repeats across the exam's image rows and remains exam-level.
+      - >-
+        acc_anon uses the same anonymization namespace as the clinical table and identifies one
+        distinct exam across EMBED.
+      - >-
+        Association with more than one patient identifier is an invalid data-quality error and
+        must not be retained as a valid identity or linkage association.
+      - >-
+        The patient identifier supports cross-table patient identity and consistency checking
+        but is not an exam-identity component.
+      - >-
+        Only an accession, an exam date, a cohort number, and top-coded DICOM patient age
+        project here; the clinical table remains the preferred exam representation.
+      - Exam coverage is internal V1c and narrower than internal clinical V2.
+    object: imaging_exam
+    cites:
+      - internal-v2.v1c-metadata-context#patient-and-exam-projection
+      - internal-v2.v1c-metadata-context#version-boundary
+      - internal-v2.v1c-metadata-context#coverage-is-not-image-absence
+    columns: [acc_anon, study_date_anon, cohort_num, PatientAge]
+    identity_columns: [acc_anon]
+  breast_side:
+    completeness: partial
+    authority: alternative
+    derivation: derived
+    caveats:
+      - >-
+        ImageLateralityFinal is the reliable attribute for the breast represented by the image;
+        it is not automatically the imaging-finding or procedure side.
+      - >-
+        Only left and right are represented; a missing derived laterality is not bilateral and
+        prevents a side projection for that row.
+      - No side identity is declared because the derived laterality is not always resolved.
+    object: breast_side
+    cites:
+      - internal-v2.v1c-metadata-context#laterality-roles
+    columns: [acc_anon, ImageLateralityFinal]
+columns:
+  AcquisitionContextSequence:
+    type: string
+    nullable: true
+  AcquisitionTime:
+    type: double
+    nullable: true
+  0_AnatomicRegionSequence_CodeMeaning:
+    type: string
+    nullable: true
+  0_AnatomicRegionSequence_CodeValue:
+    type: string
+    nullable: true
+  0_AnatomicRegionSequence_CodingSchemeDesignator:
+    type: string
+    nullable: true
+  AnodeTargetMaterial:
+    type: string
+    nullable: true
+  BitsAllocated:
+    type: double
+    nullable: true
+    maps:
+      - {id: internal-v2.image.pixel_bit_depth, mapping: direct, attribute: bits_allocated}
+  BitsStored:
+    type: double
+    nullable: true
+    maps:
+      - {id: internal-v2.image.pixel_bit_depth, mapping: direct, attribute: bits_stored}
+  BodyPartExamined:
+    type: string
+    nullable: true
+    maps:
+      - {id: internal-v2.image.body_part_examined, mapping: direct}
+  BodyPartThickness:
+    type: double
+    nullable: true
+    maps:
+      - {id: internal-v2.image.body_part_thickness, mapping: direct}
+  BreastImplantPresent:
+    type: string
+    nullable: true
+    maps:
+      - {id: internal-v2.image.breast_implant_present, mapping: direct}
+  BurnedInAnnotation:
+    type: string
+    nullable: true
+    maps:
+      - id: internal-v2.image.burned_in_annotation_flag
+        mapping: direct
+        vocabulary: internal-v2.codes.image-burned-in-annotation
+  Columns:
+    type: double
+    nullable: true
+    maps:
+      - {id: internal-v2.image.pixel_matrix_dimension, mapping: direct, axis: columns}
+  CompressionForce:
+    type: double
+    nullable: true
+    maps:
+      - {id: internal-v2.image.compression_force, mapping: direct}
+  ContentTime:
+    type: int64
+    nullable: true
+  DetectorBinning:
+    type: string
+    nullable: true
+  DetectorConditionsNominalFlag:
+    type: string
+    nullable: true
+  DetectorTemperature:
+    type: double
+    nullable: true
+  DetectorType:
+    type: string
+    nullable: true
+    maps:
+      - {id: internal-v2.image.detector_type, mapping: direct}
+  DistanceSourceToDetector:
+    type: double
+    nullable: true
+  DistanceSourceToPatient:
+    type: double
+    nullable: true
+  EntranceDose:
+    type: double
+    nullable: true
+  EntranceDoseInmGy:
+    type: double
+    nullable: true
+    maps:
+      - {id: internal-v2.image.entrance_dose_mgy, mapping: direct}
+  EstimatedRadiographicMagnificationFactor:
+    type: double
+    nullable: true
+  Exposure:
+    type: double
+    nullable: true
+  ExposureControlMode:
+    type: string
+    nullable: true
+  ExposureControlModeDescription:
+    type: string
+    nullable: true
+  ExposureInuAs:
+    type: double
+    nullable: true
+  ExposureTime:
+    type: double
+    nullable: true
+  ExposureTimeInuS:
+    type: double
+    nullable: true
+  FieldOfViewHorizontalFlip:
+    type: string
+    nullable: true
+  FieldOfViewOrigin:
+    type: string
+    nullable: true
+  FieldOfViewRotation:
+    type: double
+    nullable: true
+  FilterMaterial:
+    type: string
+    nullable: true
+  FilterThicknessMaximum:
+    type: double
+    nullable: true
+  FilterThicknessMinimum:
+    type: double
+    nullable: true
+  FilterType:
+    type: string
+    nullable: true
+  FocalSpots:
+    type: double
+    nullable: true
+  Grid:
+    type: string
+    nullable: true
+  HalfValueLayer:
+    type: double
+    nullable: true
+  HighBit:
+    type: double
+    nullable: true
+    maps:
+      - {id: internal-v2.image.pixel_bit_depth, mapping: direct, attribute: high_bit}
+  ImageLaterality:
+    type: string
+    nullable: true
+    maps:
+      - id: internal-v2.image.source_laterality
+        mapping: direct
+        vocabulary: internal-v2.codes.breast-side
+        source_attribute: image_laterality
+  ImageType:
+    type: string
+    nullable: true
+    maps:
+      - {id: internal-v2.image.dicom_image_type, mapping: direct}
+  ImagerPixelSpacing:
+    type: string
+    nullable: true
+    maps:
+      - {id: internal-v2.image.pixel_spacing, mapping: direct, attribute: imager_pixel_spacing}
+  ImagesInAcquisition:
+    type: double
+    nullable: true
+    maps:
+      - {id: internal-v2.image.dbt_frame_count, mapping: direct}
+  InstanceNumber:
+    type: int64
+    nullable: true
+    maps:
+      - {id: internal-v2.image.dicom_instance_number, mapping: direct}
+  IssuerOfPatientID:
+    type: string
+    nullable: true
+  KVP:
+    type: double
+    nullable: true
+    maps:
+      - {id: internal-v2.image.tube_voltage_kvp, mapping: direct}
+  LossyImageCompression:
+    type: double
+    nullable: true
+  Manufacturer:
+    type: string
+    nullable: true
+    maps:
+      - {id: internal-v2.image.device_manufacturer, mapping: direct}
+  ManufacturerModelName:
+    type: string
+    nullable: true
+    maps:
+      - {id: internal-v2.image.device_model, mapping: direct}
+  Modality:
+    type: string
+    nullable: true
+    maps:
+      - id: internal-v2.image.source_modality
+        mapping: direct
+        vocabulary: internal-v2.codes.image-source-modality
+  OrganDose:
+    type: double
+    nullable: true
+  OrganExposed:
+    type: string
+    nullable: true
+  PaddleDescription:
+    type: string
+    nullable: true
+  PatientAge:
+    type: string
+    nullable: true
+    maps:
+      - {id: demographics.age_at_exam, mapping: direct}
+    interpretations:
+      DICOM PatientAge value:
+        representation: DICOM PatientAge value
+        meaning: >-
+          Patient age at imaging, with ages 90 years or older top-coded to 89 during
+          anonymization
+        status: verified
+        caveats:
+          - >-
+            The physical value retains DICOM age-string serialization rather than the clinical
+            table's numeric representation.
+        cites:
+          - internal-v2.v1c-metadata-context#dicom-demographic-anonymization
+  PatientOrientation:
+    type: string
+    nullable: true
+  PatientSex:
+    type: string
+    nullable: true
+    maps:
+      - {id: demographics.gender_description, mapping: direct}
+    interpretations:
+      DICOM PatientSex value:
+        representation: DICOM PatientSex value
+        meaning: >-
+          The source DICOM patient-sex value, retained without modification during anonymization
+        status: verified
+        cites:
+          - internal-v2.v1c-metadata-context#dicom-demographic-anonymization
+  PerformedProcedureStepDescription:
+    type: string
+    nullable: true
+  PerformedProcedureStepStartTime:
+    type: double
+    nullable: true
+  0_PerformedProtocolCodeSequence_CodeMeaning:
+    type: string
+    nullable: true
+  0_PerformedProtocolCodeSequence_CodeValue:
+    type: string
+    nullable: true
+  0_PerformedProtocolCodeSequence_CodingSchemeDesignator:
+    type: string
+    nullable: true
+  PhotometricInterpretation:
+    type: string
+    nullable: true
+    maps:
+      - {id: internal-v2.image.photometric_interpretation, mapping: direct}
+  PixelIntensityRelationship:
+    type: string
+    nullable: true
+  PixelIntensityRelationshipSign:
+    type: double
+    nullable: true
+  PixelPaddingValue:
+    type: double
+    nullable: true
+  PixelRepresentation:
+    type: double
+    nullable: true
+    maps:
+      - {id: internal-v2.image.pixel_representation, mapping: direct}
+  PixelSpacing:
+    type: string
+    nullable: true
+    maps:
+      - {id: internal-v2.image.pixel_spacing, mapping: direct, attribute: pixel_spacing}
+  PositionerPrimaryAngle:
+    type: double
+    nullable: true
+  PositionerType:
+    type: string
+    nullable: true
+  PresentationIntentType:
+    type: string
+    nullable: true
+    maps:
+      - {id: internal-v2.image.presentation_intent, mapping: conditional}
+    interpretations:
+      "null":
+        representation: "null"
+        meaning: No presentation intent is represented for the row
+        status: reconciled
+        caveats:
+          - >-
+            Tomosynthesis-classified and screen-save classified rows carry no presentation
+            intent, so it must not be assumed for them.
+        cites:
+          - internal-v2.v1c-metadata-context#image-type-distinctions
+  PresentationLUTShape:
+    type: string
+    nullable: true
+  0_ProcedureCodeSequence_CodeMeaning:
+    type: string
+    nullable: true
+  0_ProcedureCodeSequence_CodeValue:
+    type: string
+    nullable: true
+  0_ProcedureCodeSequence_CodingSchemeDesignator:
+    type: string
+    nullable: true
+  0_ProcedureCodeSequence_CodingSchemeVersion:
+    type: double
+    nullable: true
+  ProtocolName:
+    type: string
+    nullable: true
+  QualityControlImage:
+    type: string
+    nullable: true
+  RelativeXRayExposure:
+    type: double
+    nullable: true
+  RescaleIntercept:
+    type: double
+    nullable: true
+  RescaleSlope:
+    type: double
+    nullable: true
+  RescaleType:
+    type: string
+    nullable: true
+  Rows:
+    type: double
+    nullable: true
+    maps:
+      - {id: internal-v2.image.pixel_matrix_dimension, mapping: direct, axis: rows}
+  SamplesPerPixel:
+    type: double
+    nullable: true
+    maps:
+      - {id: internal-v2.image.samples_per_pixel, mapping: direct}
+  SeriesDescription:
+    type: string
+    nullable: true
+  SeriesNumber:
+    type: int64
+    nullable: true
+    maps:
+      - {id: internal-v2.image.dicom_series_number, mapping: direct}
+  SeriesTime:
+    type: double
+    nullable: true
+  SoftwareVersions:
+    type: string
+    nullable: true
+    maps:
+      - {id: internal-v2.image.device_software_versions, mapping: direct}
+  0_SourceImageSequence_0_PurposeOfReferenceCodeSequence_CodeMeaning:
+    type: string
+    nullable: true
+  0_SourceImageSequence_0_PurposeOfReferenceCodeSequence_CodeValue:
+    type: double
+    nullable: true
+  0_SourceImageSequence_0_PurposeOfReferenceCodeSequence_CodingSchemeDesignator:
+    type: string
+    nullable: true
+  0_SourceImageSequence_SpatialLocationsPreserved:
+    type: string
+    nullable: true
+  SpecificCharacterSet:
+    type: string
+    nullable: true
+  StudyDescription:
+    type: string
+    nullable: true
+  StudyID:
+    type: string
+    nullable: true
+    maps:
+      - {id: internal-v2.image.dicom_study_identifier, mapping: ambiguous}
+  StudyTime:
+    type: double
+    nullable: true
+  TimeOfLastDetectorCalibration:
+    type: double
+    nullable: true
+  0_ViewCodeSequence_CodeMeaning:
+    type: string
+    nullable: true
+    maps:
+      - id: internal-v2.image.view_position
+        mapping: direct
+        notes:
+          - >-
+            This occurrence is a source code meaning and is not reconciled with the plain
+            view-position occurrence.
+        source_attribute: view_code_sequence_code_meaning
+  0_ViewCodeSequence_CodeValue:
+    type: string
+    nullable: true
+  0_ViewCodeSequence_CodingSchemeDesignator:
+    type: string
+    nullable: true
+  0_ViewCodeSequence_ViewModifierCodeSequence:
+    type: string
+    nullable: true
+  ViewPosition:
+    type: string
+    nullable: true
+    maps:
+      - {id: internal-v2.image.view_position, mapping: direct, source_attribute: view_position}
+  WindowCenter:
+    type: string
+    nullable: true
+  WindowWidth:
+    type: string
+    nullable: true
+  XRayTubeCurrent:
+    type: double
+    nullable: true
+  has_pix_array:
+    type: string
+    nullable: true
+    maps:
+      - {id: internal-v2.image.pixel_array_present_flag, mapping: direct}
+    interpretations:
+      negative state only:
+        representation: negative state only
+        meaning: >-
+          A legacy, unreliable negative pixel-array determination from an obsolete field that is
+          no longer populated
+        status: verified
+        caveats:
+          - Do not use the value or its absence to infer whether pixel data is available.
+        cites:
+          - internal-v2.v1c-metadata-context#locator-and-enrichment-population
+  category:
+    type: string
+    nullable: true
+    maps:
+      - id: internal-v2.image.extraction_category_flag
+        mapping: unresolved
+        vocabulary: internal-v2.codes.image-extraction-category
+    interpretations:
+      non-default category value:
+        representation: non-default category value
+        meaning: The extraction assigned a category other than its default to the image row
+        status: unresolved
+        caveats:
+          - The category label must not be read as evidence that no image exists for the row.
+          - >-
+            The represented values are strongly associated with the derived image-type
+            classification.
+        cites:
+          - internal-v2.v1c-metadata-context#locator-and-enrichment-population
+  PositionerPrimaryAngleDirection:
+    type: string
+    nullable: true
+  PixelPaddingRangeLimit:
+    type: double
+    nullable: true
+  0_ViewCodeSequence_0_ViewModifierCodeSequence_CodeMeaning:
+    type: string
+    nullable: true
+    maps:
+      - {id: internal-v2.image.view_modifier, mapping: direct}
+  0_ViewCodeSequence_0_ViewModifierCodeSequence_CodeValue:
+    type: string
+    nullable: true
+  0_ViewCodeSequence_0_ViewModifierCodeSequence_CodingSchemeDesignator:
+    type: string
+    nullable: true
+  AcquisitionDeviceProcessingCode:
+    type: string
+    nullable: true
+  AcquisitionDeviceProcessingDescription:
+    type: string
+    nullable: true
+  DerivationDescription:
+    type: string
+    nullable: true
+  DetectorConfiguration:
+    type: string
+    nullable: true
+  FieldOfViewDimensions:
+    type: string
+    nullable: true
+  FieldOfViewShape:
+    type: string
+    nullable: true
+  Laterality:
+    type: string
+    nullable: true
+    maps:
+      - id: internal-v2.image.source_laterality
+        mapping: direct
+        vocabulary: internal-v2.codes.breast-side
+        notes:
+          - >-
+            The two source laterality attributes sit at different DICOM levels and are not
+            reconciled with one another.
+        source_attribute: laterality
+  Sensitivity:
+    type: double
+    nullable: true
+  ConversionType:
+    type: string
+    nullable: true
+    maps:
+      - {id: internal-v2.image.dicom_conversion_type, mapping: direct}
+  0_RelatedSeriesSequence_0_PurposeOfReferenceCodeSequence_CodeMeaning:
+    type: string
+    nullable: true
+  0_RelatedSeriesSequence_0_PurposeOfReferenceCodeSequence_CodeValue:
+    type: string
+    nullable: true
+  0_RelatedSeriesSequence_0_PurposeOfReferenceCodeSequence_CodingSchemeDesignator:
+    type: string
+    nullable: true
+  CollimatorLeftVerticalEdge:
+    type: double
+    nullable: true
+  CollimatorLowerHorizontalEdge:
+    type: double
+    nullable: true
+  CollimatorRightVerticalEdge:
+    type: double
+    nullable: true
+  CollimatorShape:
+    type: string
+    nullable: true
+  CollimatorUpperHorizontalEdge:
+    type: double
+    nullable: true
+  CommentsOnRadiationDose:
+    type: string
+    nullable: true
+  DetectorActiveDimensions:
+    type: string
+    nullable: true
+  DetectorActiveShape:
+    type: string
+    nullable: true
+  DetectorElementPhysicalSize:
+    type: string
+    nullable: true
+  DetectorElementSpacing:
+    type: string
+    nullable: true
+  DistanceSourceToEntrance:
+    type: double
+    nullable: true
+  ExposureStatus:
+    type: string
+    nullable: true
+  0_IconImageSequence_BitsAllocated:
+    type: double
+    nullable: true
+  0_IconImageSequence_BitsStored:
+    type: double
+    nullable: true
+  0_IconImageSequence_Columns:
+    type: double
+    nullable: true
+  0_IconImageSequence_HighBit:
+    type: double
+    nullable: true
+  0_IconImageSequence_PhotometricInterpretation:
+    type: string
+    nullable: true
+  0_IconImageSequence_PixelRepresentation:
+    type: double
+    nullable: true
+  0_IconImageSequence_Rows:
+    type: double
+    nullable: true
+  0_IconImageSequence_SamplesPerPixel:
+    type: double
+    nullable: true
+  VOILUTFunction:
+    type: string
+    nullable: true
+  WindowCenterWidthExplanation:
+    type: string
+    nullable: true
+  DetectorDescription:
+    type: string
+    nullable: true
+  png_path:
+    type: string
+    nullable: true
+    maps:
+      - id: internal-v2.image.png_render_locator
+        mapping: conditional
+        locator_component: full_path
+  empi_anon:
+    type: int64
+    nullable: true
+    maps:
+      - id: identity.patient_identifier
+        mapping: direct
+        notes:
+          - The identifier repeats across the patient's image rows and remains patient-level.
+  acc_anon:
+    type: int64
+    nullable: true
+    maps:
+      - id: exam.accession_identifier
+        mapping: direct
+        notes:
+          - >-
+            The accession repeats across the exam's image rows and identifies one distinct exam
+            in the shared cross-table namespace; each accession belongs to exactly one patient
+            and a cross-patient association is an invalid data-quality error.
+  study_date_anon:
+    type: string
+    nullable: true
+    maps:
+      - {id: exam.study_date, mapping: direct}
+    interpretations:
+      text-serialized date value:
+        representation: text-serialized date value
+        meaning: >-
+          The same anonymized exam event date represented by clinical studydate_anon, exported
+          as text in internal V1c image metadata
+        status: verified
+        caveats:
+          - >-
+            The value is text rather than a parsed timestamp, unlike the clinical table's
+            exam-date projection.
+        cites:
+          - internal-v2.v1c-metadata-context#cross-table-date-alignment
+  cohort_num:
+    type: int64
+    nullable: true
+    maps:
+      - id: demographics.cohort
+        mapping: direct
+        notes:
+          - >-
+            Repeated on image rows; it remains a patient-level extraction cohort rather than an
+            image attribute.
+  FillerOrderNumberImagingServiceRequest:
+    type: string
+    nullable: true
+  LateralityDeriveFlag:
+    type: double
+    nullable: true
+    maps:
+      - id: internal-v2.image.laterality_derivation_flag
+        mapping: ambiguous
+        vocabulary: internal-v2.codes.image-laterality-derivation-flag
+  ImageLateralityFinal:
+    type: string
+    nullable: true
+    maps:
+      - id: breast.side
+        mapping: derived
+        vocabulary: internal-v2.codes.image-derived-laterality
+      - id: internal-v2.image.derived_laterality
+        mapping: derived
+        vocabulary: internal-v2.codes.image-derived-laterality
+    interpretations:
+      derived left or right image laterality:
+        representation: derived left or right image laterality
+        meaning: >-
+          Reliable breast side represented by the image row's pipeline-derived final image
+          laterality
+        status: verified
+        caveats:
+          - >-
+            Use this attribute to determine image breast laterality; it is not automatically
+            equal to an individual finding or procedure side.
+        cites:
+          - internal-v2.v1c-metadata-context#laterality-roles
+        feature: breast.side
+      "null":
+        representation: "null"
+        meaning: >-
+          No derived image laterality is represented, including where the source laterality is
+          bilateral
+        status: reconciled
+        caveats: [Null is not bilateral.]
+        cites:
+          - internal-v2.v1c-metadata-context#laterality-roles
+        feature: breast.side
+  FinalImageType:
+    type: string
+    nullable: true
+    maps:
+      - id: internal-v2.image.derived_image_type
+        mapping: derived
+        vocabulary: internal-v2.codes.image-derived-image-type
+  spot_mag:
+    type: double
+    nullable: true
+    maps:
+      - {id: internal-v2.image.spot_magnification_flag, mapping: derived}
+    interpretations:
+      affirmative state only:
+        representation: affirmative state only
+        meaning: >-
+          The extraction marked the image row as a spot-compression or magnification acquisition
+        status: unverified
+        caveats:
+          - The flag does not distinguish spot compression from magnification.
+      "null":
+        representation: "null"
+        meaning: No spot or magnification indication is represented
+        status: unresolved
+        caveats:
+          - >-
+            Absence is not a negative determination, and the affirmative state does not occur on
+            tomosynthesis-classified rows.
+  png_folder_path:
+    type: string
+    nullable: true
+    maps:
+      - id: internal-v2.image.png_render_locator
+        mapping: conditional
+        locator_component: directory
+  png_filename:
+    type: string
+    nullable: true
+    maps:
+      - id: internal-v2.image.png_render_locator
+        mapping: conditional
+        locator_component: filename
+    interpretations:
+      "null":
+        representation: "null"
+        meaning: No legacy PNG conversion locator component is represented for the row
+        status: verified
+        caveats:
+          - PNG fields are legacy and must not be used to infer source DICOM availability.
+        cites:
+          - internal-v2.v1c-metadata-context#locator-and-enrichment-population
+  anon_dicom_path:
+    type: string
+    nullable: true
+    maps:
+      - {id: internal-v2.image.dicom_file_locator, mapping: direct}
+      - id: internal-v2.image.sop_instance_identifier
+        mapping: derived
+        notes:
+          - >-
+            Take the filename without the .dcm suffix; the anonymized SOP Instance UID is
+            durable within one dataset version.
+  acquisition_group_id:
+    type: string
+    nullable: true
+    maps:
+      - {id: internal-v2.image.acquisition_group_identifier, mapping: derived}
+  ROI_coords:
+    type: string
+    nullable: true
+    maps:
+      - {id: internal-v2.roi.coordinate_collection, mapping: derived}
+    interpretations:
+      serialized collection of four-element integer rectangles:
+        representation: serialized collection of four-element integer rectangles
+        meaning: >-
+          One [y_min, x_min, y_max, x_max] rectangle with inclusive minimum and maximum bounds
+          in the attached DICOM pixel-array coordinate space for each region of interest
+        status: verified
+        caveats:
+          - No spacing or orientation transformation is required.
+          - >-
+            For NumPy slicing, add one to each inclusive maximum: [100, 200, 150, 250] maps to
+            image[100:151, 200:251] and yields 51 by 51 pixels.
+          - >-
+            Curated coordinates are expected to lie within the attached pixel array; residual
+            out-of-bounds components may be safely clipped to the valid bounds.
+        cites:
+          - internal-v2.roi-context#roi-coordinate-geometry
+      empty serialized collection:
+        representation: empty serialized collection
+        meaning: No region of interest is represented for the image row
+        status: reconciled
+        cites:
+          - internal-v2.roi-context#roi-serialized-collections
+  ROI_frames:
+    type: string
+    nullable: true
+    maps:
+      - {id: internal-v2.roi.frame_index_collection, mapping: derived}
+    interpretations:
+      serialized collection of zero-based frame-index lists:
+        representation: serialized collection of zero-based frame-index lists
+        meaning: >-
+          For DBT images, one nested list of one or more matched frame indices for each
+          positionally corresponding region of interest
+        status: verified
+        caveats:
+          - Values represented for 2D and synthetic 2D images are not informative.
+          - >-
+            When ImagesInAcquisition is represented for the DBT row, each zero-based frame index
+            should be less than that frame count.
+        cites:
+          - internal-v2.roi-context#roi-frame-depth-semantics
+      empty serialized collection alongside represented regions of interest:
+        representation: empty serialized collection alongside represented regions of interest
+        meaning: No frame indices are represented for the row's regions
+        status: verified
+        caveats: [An empty collection is not frame zero.]
+        cites:
+          - internal-v2.roi-context#roi-frame-depth-semantics
+  ROI_depth_derived:
+    type: string
+    nullable: true
+    maps:
+      - {id: internal-v2.roi.depth_derivation_flag_collection, mapping: derived}
+    interpretations:
+      true at one ROI-list position:
+        representation: true at one ROI-list position
+        meaning: >-
+          An in-house model inferred the corresponding DBT ROI frame-depth coordinates after
+          radiologist x/y coordinates were transferred from a grouped 2D image
+        status: verified
+        caveats:
+          - >-
+            The boolean refers to inferred z/depth information, not to retrospective creation of
+            the underlying radiologist clinical annotation.
+        cites:
+          - internal-v2.roi-context#roi-frame-depth-semantics
+  num_ROI:
+    type: int64
+    nullable: true
+    maps:
+      - {id: internal-v2.image.region_of_interest_count, mapping: derived}

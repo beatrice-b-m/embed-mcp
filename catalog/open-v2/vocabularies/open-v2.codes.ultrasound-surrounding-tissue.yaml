@@ -1,0 +1,11 @@
+kind: vocabulary
+label: Ultrasound surrounding-tissue codes
+completeness: unknown
+null_meaning: [undocumented]
+parsing: comma_composed_undocumented
+evidence: [release_legend]
+codes:
+  D: The surrounding tissue is distorted.
+  E: The surrounding tissue is edematous.
+  F: The surrounding tissue is diffusely altered in echogenicity.
+  U: The surrounding tissue is unaffected.

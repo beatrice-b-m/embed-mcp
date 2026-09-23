@@ -1,0 +1,35 @@
+kind: guardrail
+label: No observed diagnosis is not proven disease absence
+category: interpretation_limit
+priority: high
+statement: >-
+  A zero may validly mean no represented biopsy or cancer event under a declared extraction
+  policy, but it must not be interpreted as never biopsied, cancer-free, or complete negative
+  outcome ascertainment.
+rationale: >-
+  Represented-event endpoints can be useful when accurately named.
+  Outside-system outcomes, incomplete attribution, release coverage, and follow-up opportunity
+  limit stronger disease-absence or complete-follow-up claims.
+scope: embed_general
+search_terms:
+  - no observed cancer
+  - follow-up completeness
+  - outcome ascertainment
+  - represented biopsy endpoint
+  - represented cancer endpoint
+  - binary represented event
+  - observation proxy
+caveats:
+  - Follow-up windows, censoring, exclusions, and outcomes are analysis policies.
+  - >-
+    Follow-up opportunity measures may be used as observation proxies when named as proxies
+    rather than proof of complete follow-up.
+topics: [topic.identity, topic.pathology, topic.temporal]
+cites:
+  - embed.finding-procedure-recording#screening-attribution-gap
+applies_to:
+  - patient
+  - pathology_diagnosis
+  - pathology.severity
+  - clinical.patient-pathology-observation
+  - aggregation.pathology-severity-to-patient

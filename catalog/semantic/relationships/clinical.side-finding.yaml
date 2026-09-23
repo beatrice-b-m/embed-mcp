@@ -1,0 +1,21 @@
+kind: relationship
+label: Breast side relates to imaging finding
+relationship_type: association
+definition: Laterality attribution of an imaging finding.
+cardinality:
+  targets_per_source: zero_or_more
+  sources_per_target: zero_or_more
+optionality:
+  source: optional
+  target: optional
+attribution_limitations:
+  - Bilateral findings can be represented with null finding side rather than two side links.
+temporal_qualification: >-
+  The relation is part of the exam interpretation, not a later procedure attribution.
+search_terms: [finding laterality, side finding, bilateral finding]
+caveats:
+  - Null laterality must be interpreted by field role.
+source_object: breast_side
+target_object: imaging_finding
+topics: [topic.breast_side, topic.imaging]
+temporal: [time.exam-event]

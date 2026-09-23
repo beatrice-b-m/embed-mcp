@@ -1,0 +1,17 @@
+kind: vocabulary
+label: HER2 immunohistochemistry categories
+completeness: unknown
+parsing: atomic
+evidence: [release_legend, observed_source_values]
+caveats:
+  - The comparison dictionaries do not state that this code list is exhaustive.
+  - Null semantics are occurrence specific and must not be inferred from code membership.
+codes:
+  "0": Negative (Score 0)
+  "1": Negative (Score 1+)
+  "2": Equivocal (Score 2+)
+  "3": Positive (score 3+)
+  A: performed on another specimen
+  N: not performed
+  P: pending
+  R: No residual invasive carcinoma after presurgical therapy

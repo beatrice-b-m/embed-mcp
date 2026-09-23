@@ -1,0 +1,20 @@
+kind: clinical_object
+label: Reported prior-procedure history entry
+definition: One represented report of a patient's prior gynecological or breast procedure.
+grain: one represented prior-procedure history entry for one patient
+search_terms:
+  - ProcHist
+  - procedure history
+  - prior breast biopsy
+  - prior breast surgery
+  - hysterectomy history
+  - oophorectomy history
+caveats:
+  - >-
+    The entry is not the shared current procedure object and is not automatically attributable
+    to a current imaging finding.
+  - No stable entry identifier or semantic deduplication rule is established.
+topics: [topic.breast_side, topic.pathology, topic.procedure, topic.temporal, topic.workflow]
+cites:
+  - internal-v2.patient-history-context#reported-history-not-current-care
+  - internal-v2.patient-history-context#procedure-history-result

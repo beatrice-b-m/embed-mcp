@@ -1,0 +1,17 @@
+kind: feature
+label: Extraction category flag
+definition: Pipeline-assigned extraction category recorded on one internal V1c image row.
+value_type: categorical
+evidence: [observed_source_values, unresolved]
+search_terms: [extraction category, no image category, pipeline category]
+caveats:
+  - >-
+    The intended meaning of each represented value is not established, and the non-default value
+    must not be read as evidence that no image exists for that row.
+  - >-
+    The represented values are strongly associated with the derived image-type classification
+    rather than distributed across it.
+topics: [topic.imaging, topic.technical]
+cites:
+  - internal-v2.v1c-metadata-context#locator-and-enrichment-population
+objects: [image]

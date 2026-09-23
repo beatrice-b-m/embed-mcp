@@ -1,0 +1,6 @@
+kind: profile_support
+evidence_status: supported
+subject: guardrail.inverse-severity-ordering
+evidence_cites:
+  - open-v2.pathology-procedure-context#severity-aggregation
+  - open-v2.pathology-procedure-context#severity-meaning

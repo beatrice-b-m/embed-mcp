@@ -1,0 +1,16 @@
+kind: feature
+label: Reported procedure-history category
+definition: Category identifying a reported prior gynecological or breast procedure.
+value_type: coded
+evidence: [maintainer_confirmed]
+search_terms:
+  - ProcHist type
+  - procedure history category
+  - gynecological procedure history
+  - breast procedure history
+caveats:
+  - The category selects the applicable category-specific procedure-code meaning.
+topics: [topic.procedure]
+cites:
+  - internal-v2.patient-history-context#reported-history-not-current-care
+objects: [internal-v2.procedure_history_entry]

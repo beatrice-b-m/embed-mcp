@@ -1,0 +1,12 @@
+kind: feature
+label: MRI other finding
+definition: Released MRI other-finding-like code string.
+value_type: categorical
+evidence: [release_schema, observed_source_values, unresolved]
+search_terms: [mri other finding]
+caveats:
+  - >-
+    No legend header defines this field; token overlap with other fields is not proof of
+    equivalent meanings.
+topics: [topic.imaging, topic.mri]
+objects: [imaging_finding]

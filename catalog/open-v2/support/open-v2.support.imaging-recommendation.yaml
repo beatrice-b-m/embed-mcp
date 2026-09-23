@@ -1,6 +1,6 @@
 kind: profile_support
-subject: imaging.recommendation
 evidence_status: supported
+subject: imaging.recommendation
 evidence_cites:
   - open-v2.assessment-recommendation-context#recommendation-code-mappings
   - open-v2.assessment-recommendation-context#recommendation-composition

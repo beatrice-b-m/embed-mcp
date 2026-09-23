@@ -1,0 +1,26 @@
+kind: guardrail
+label: Non-breast cancer is not absence of malignancy
+category: interpretation_limit
+priority: high
+statement: >-
+  The non-breast-cancer pathology-severity state must not be interpreted as benign, healthy, or
+  free of malignancy.
+rationale: >-
+  The state distinguishes a malignancy that is not classified as breast cancer from benign
+  pathology and from the separate unattached-pathology state.
+scope: embed_general
+search_terms:
+  - non breast cancer
+  - other malignancy
+  - not healthy control
+  - pathology severity five
+caveats:
+  - >-
+    Whether this state is eligible for any task-specific comparison group is an analysis
+    decision outside the catalog.
+topics: [topic.pathology]
+applies_to:
+  - pathology_diagnosis
+  - pathology.severity
+  - clinical.pathology-observation-diagnosis
+  - aggregation.pathology-observation-severity

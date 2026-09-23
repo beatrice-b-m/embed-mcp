@@ -1,0 +1,22 @@
+kind: aggregation
+label: Pathology severity to patient
+aggregation_status: analyst_defined
+definition: >-
+  No supplied patient-level diagnosis aggregation is defined; a task-specific policy must select
+  time, recurrence, multiplicity, and state transitions.
+ordering: >-
+  No universal ordering across a patient's episodes is selected beyond the coded severity
+  ordering within represented groups.
+search_terms: [patient cancer outcome, patient pathology aggregate, longitudinal diagnosis]
+caveats:
+  - >-
+    A patient may have multiple sides, exams, procedures, diagnoses, and changing states over
+    time.
+  - >-
+    The catalog does not define incident, prevalent, earliest, or ever-positive patient
+    outcomes.
+source_object: pathology_diagnosis
+target_object: patient
+input_feature: pathology.severity
+topics: [topic.identity, topic.pathology, topic.temporal]
+via: [clinical.pathology-observation-diagnosis, clinical.patient-pathology-observation]

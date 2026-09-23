@@ -1,0 +1,12 @@
+kind: feature
+label: Gender description
+definition: Patient legal sex recorded at the time of the exam.
+value_type: categorical
+evidence: [release_schema, maintainer_confirmed]
+search_terms: [gender description, gender, sex]
+caveats:
+  - >-
+    This field does not represent gender identity; category completeness and null semantics are
+    not established.
+topics: [topic.demographics]
+objects: [patient]

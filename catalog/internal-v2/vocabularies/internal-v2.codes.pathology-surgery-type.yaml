@@ -1,0 +1,22 @@
+kind: vocabulary
+label: Breast-surgery codes
+completeness: unknown
+null_meaning: [undocumented, occurrence_specific]
+parsing: atomic
+legend_role: comparison_legend
+evidence: [observed_source_values, release_legend]
+codes:
+  A: Axillary dissection
+  BM: Subcutaneous Mastectomy
+  E: Excisional Breast Biopsy
+  I: Incisional Breast Biopsy
+  IR: Implant Replacement
+  L: Lumpectomy
+  M: Mastectomy-all types
+  MRM: Modified Radical Mastectomy
+  O: Other
+  Q: Quadrantectomy
+  RE: Re-excision
+  RM: Radical Mastectomy
+  SE: Surgical Excision
+  SM: Simple Mastectomy

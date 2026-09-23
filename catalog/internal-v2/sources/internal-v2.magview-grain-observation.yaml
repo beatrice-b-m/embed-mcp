@@ -1,0 +1,12 @@
+kind: source
+label: Internal V2 MagView targeted grain and linkage observation
+source_type: supporting_internal
+locator_type: logical_artifact
+locator: internal-v2 MagView targeted grain and linkage review
+version_scope: >-
+  Question scope: whether rows repeat findings across procedure/pathology attachments, which
+  candidate tuples are complete or unique, and how linked accessions behave.
+notes:
+  - >-
+    The review projected only columns needed for grain, functional-dependency, and linkage
+    questions.

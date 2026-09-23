@@ -1,0 +1,6 @@
+kind: profile_support
+evidence_status: supported
+subject: radiology_report
+evidence_cites:
+  - open-v2.report-context#separate-report-surface
+  - open-v2.report-context#sequence-meaning

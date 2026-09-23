@@ -1,0 +1,5 @@
+kind: profile_support
+evidence_status: supported
+subject: guardrail.null-pathology-not-negative
+evidence_cites:
+  - open-v2.pathology-procedure-context#severity-meaning

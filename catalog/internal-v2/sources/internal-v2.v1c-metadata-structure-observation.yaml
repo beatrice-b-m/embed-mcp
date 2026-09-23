@@ -1,0 +1,17 @@
+kind: source
+label: Internal V1c image-metadata targeted structural observation
+source_type: supporting_internal
+locator_type: logical_artifact
+locator: internal-v1c image-metadata targeted structural review
+version_scope: >-
+  Question scope: assessed parse types, image row grain, candidate image-identity uniqueness and
+  completeness, accession and patient projection behaviour, represented controlled values for
+  image, modality, view, laterality, and enrichment fields, and region-of-interest collection
+  structure and alignment.
+notes:
+  - >-
+    Full-column checks were used only to establish uniqueness, completeness, and
+    collection-alignment invariants.
+  - >-
+    An observed representation establishes occurrence in this extraction, not intended meaning
+    or exhaustiveness.

@@ -1,0 +1,26 @@
+kind: vocabulary
+label: Reported breast-procedure history codes
+completeness: unknown
+parsing: atomic
+evidence: [maintainer_confirmed, observed_source_values]
+caveats:
+  - These meanings apply only when procedure category is B.
+  - >-
+    A reported historical procedure is not a current-exam procedure or a verified pathology
+    attachment.
+codes:
+  "1": Core biopsy
+  SB: Stereotactic core biopsy
+  UCB: Ultrasound-guided core biopsy
+  B: MRI-guided core biopsy
+  E: Excisional biopsy
+  NB: Needle biopsy
+  CA: Cyst aspiration
+  FNA: Fine-needle aspiration
+  L: Lumpectomy
+  M: Mastectomy
+  D: Breast reduction
+  MP: Mammoplasty
+  R: Reconstruction
+  EXI: Implants removed
+  "NO": Non-oncologic procedure

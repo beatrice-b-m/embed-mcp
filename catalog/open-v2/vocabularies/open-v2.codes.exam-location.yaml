@@ -1,0 +1,20 @@
+kind: vocabulary
+label: Exam location codes
+completeness: unknown
+null_meaning: [undocumented]
+parsing: atomic
+evidence: [release_legend]
+codes:
+  LOC001: Site 1
+  LOC002: Site 2
+  LOC003: Site 3
+  LOC005: Site 5
+  LOC006: Site 6
+  LOC007: Site 7
+  LOC008: Site 8
+  LOC009: Site 9
+  LOC010: Site 10
+  LOC011: Site 11
+  LOC012: Site 12
+  LOC013: Site 13
+  LOC014: Site 14

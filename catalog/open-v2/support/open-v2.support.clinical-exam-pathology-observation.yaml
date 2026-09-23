@@ -1,0 +1,6 @@
+kind: profile_support
+evidence_status: supported
+subject: clinical.exam-pathology-observation
+evidence_cites:
+  - open-v2.pathology-procedure-context#imaging-link-tuple
+  - open-v2.temporal-availability-context#date-representation

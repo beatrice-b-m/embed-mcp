@@ -1,0 +1,10 @@
+kind: feature
+label: Secondary delayed-kinetics field
+definition: Second released field with a delayed-kinetics-like physical name.
+value_type: categorical
+evidence: [release_schema, observed_source_values, unresolved]
+search_terms: [secondary delayed-kinetics field]
+caveats:
+  - Equivalence to mdelayed is not established, and no matching legend header was found.
+topics: [topic.imaging, topic.mri]
+objects: [imaging_finding]

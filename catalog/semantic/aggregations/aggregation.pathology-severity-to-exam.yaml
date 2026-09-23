@@ -1,0 +1,15 @@
+kind: aggregation
+label: Pathology severity to imaging exam
+aggregation_status: provided
+definition: Take the minimum represented pathology-severity value in the applicable exam group.
+ordering: "Inverse severity ordering: minimum means most severe."
+search_terms: [exam pathology aggregate, minimum severity by exam]
+caveats:
+  - An exam aggregate does not establish that pathology was available at imaging time.
+  - Null does not establish a negative outcome.
+source_object: pathology_diagnosis
+target_object: imaging_exam
+input_feature: pathology.severity
+topics: [topic.exam, topic.pathology]
+result_feature: exam.pathology_severity_aggregate
+via: [clinical.pathology-observation-diagnosis, clinical.exam-pathology-observation]

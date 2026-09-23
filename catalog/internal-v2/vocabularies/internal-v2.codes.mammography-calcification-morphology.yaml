@@ -1,0 +1,34 @@
+kind: vocabulary
+label: Calcification morphology codes
+completeness: unknown
+null_meaning: [undocumented, occurrence_specific]
+parsing: comma_delimited_unordered
+legend_role: comparison_legend
+evidence: [observed_source_values, release_legend]
+caveats:
+  - >-
+    Parse comma-delimited tokens; ordering and repetition do not change meaning, and preserve
+    unexplained component codes.
+codes:
+  "9": Benign
+  A: Amorphous
+  B: Fine linear-branching (casting)
+  C: Course Popcorn-like
+  D: Dystrophic
+  E: Rim
+  F: Fine-linear (casting)
+  G: Generic
+  H: Coarse heterogeneous
+  I: Fine pleomorphic
+  J: Oil Cyst
+  K: Pleomorphic
+  L: Large Rodlike
+  M: Milk of calcium
+  O: Lucent-centered
+  P: Punctate
+  Q: Coarse
+  R: Round
+  S: Skin
+  U: Suture
+  V: Vascular
+  N: Unresolved internal source code

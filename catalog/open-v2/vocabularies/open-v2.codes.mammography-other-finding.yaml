@@ -1,0 +1,40 @@
+kind: vocabulary
+label: Other mammographic-finding codes
+completeness: unknown
+null_meaning: [undocumented]
+parsing: comma_composed_undocumented
+evidence: [release_legend]
+codes:
+  "1": area of post-lumpectomy and radiation change
+  "2": prominent lymph node
+  "3": reduction mammoplasty change
+  "4": asymmetry
+  "5": density in the MLO projection
+  "!": area of post-mastectomy change and myocutaneous flap reconstruction
+  "%": calcified oil cyst
+  A: axilliary adenopathy
+  B: site(s) of previous percutaneous needle biopsy with clip placement
+  C: area of post-reduction change
+  D: area of architectural distortion
+  E: duct ectasia
+  F: site(s) of prior stereotactic core biopsy with clip placement
+  G: area of subareolar density that is consistent with gynecomastia
+  H: a hematoma
+  I: focal asymmetry density in the CC projection
+  J: diffuse skin thickening
+  K: site(s) of prior ultrasound core biopsy with clip placement
+  L: skin lesion
+  M: clip(s) related to prior MRI biopsy
+  N: nipple retraction
+  O: dilated duct
+  P: area of post-surgical change
+  Q: focal asymmetry
+  R: area of skin retraction
+  S: area of skin thickening
+  T: area of trabecular thickening
+  U: area of post-lumpectomy change
+  V: normal lymph node(s)
+  W: biopsy clip
+  X: area of post-mastectomy change and implant placement
+  Y: asymmetric breast tissue
+  Z: abnormal lymph node(s)

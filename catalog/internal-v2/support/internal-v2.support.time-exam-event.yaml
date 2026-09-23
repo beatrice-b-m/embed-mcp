@@ -1,0 +1,11 @@
+kind: profile_support
+evidence_status: supported
+evidence_summary: >-
+  Internal studydate_anon represents exam occurrence time and participates in the consistent
+  patient-specific date shift.
+evidence_caveats:
+  - Exam occurrence does not necessarily identify acquisition time for a particular image.
+subject: time.exam-event
+evidence_cites:
+  - internal-v2.magview-temporal-context#study-date-disagreement
+  - internal-v2.magview-temporal-context#patient-date-shift

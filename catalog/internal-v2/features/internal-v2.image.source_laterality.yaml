@@ -1,0 +1,19 @@
+kind: feature
+label: Source DICOM laterality attribute
+definition: >-
+  Laterality recorded on a source DICOM laterality attribute for one internal V1c image row.
+value_type: coded
+evidence: [observed_source_values]
+search_terms: [image laterality, DICOM laterality, source laterality]
+caveats:
+  - >-
+    Two separate source laterality attributes are inventoried; they sit at different DICOM
+    levels and are not reconciled here.
+  - >-
+    A bilateral source value is represented and is not resolved into the derived final image
+    laterality.
+  - Image laterality is not the imaging-finding or procedure side.
+topics: [topic.imaging, topic.breast_side]
+cites:
+  - internal-v2.v1c-metadata-context#laterality-roles
+objects: [image]

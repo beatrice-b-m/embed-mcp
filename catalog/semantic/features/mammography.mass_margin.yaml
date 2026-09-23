@@ -1,0 +1,8 @@
+kind: feature
+label: Mammographic mass margin
+definition: Mammographic mass-margin code.
+value_type: coded
+evidence: [release_schema, release_legend]
+search_terms: [mammographic mass margin]
+topics: [topic.imaging, topic.mammography]
+objects: [imaging_finding]

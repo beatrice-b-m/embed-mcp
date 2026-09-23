@@ -1,0 +1,20 @@
+kind: vocabulary
+label: Biopsy-technique codes
+completeness: unknown
+null_meaning: [undocumented, occurrence_specific]
+parsing: atomic
+legend_role: comparison_legend
+evidence: [observed_source_values, release_legend]
+codes:
+  CA: Cyst aspiration
+  CB: Core biopsy
+  EB: Excisional biopsy
+  FNA: FNA
+  MA: Mammographic non-stereotactic cyst aspiration
+  MR: MRI guided biopsy
+  MRX: MRI guided core biopsy
+  SA: Stereotactic guided cyst aspiration
+  SB: Stereotactic core biopsy
+  TB: Tomo guided biopsy
+  UA: Ultrasound guided cyst aspiration
+  UB: Ultrasound guided core biopsy

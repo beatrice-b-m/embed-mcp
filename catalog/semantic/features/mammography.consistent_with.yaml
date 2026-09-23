@@ -1,0 +1,8 @@
+kind: feature
+label: Consistent-with interpretation
+definition: Code string describing an interpretation that a finding is consistent with.
+value_type: coded
+evidence: [release_schema, release_legend, observed_source_values, unresolved]
+search_terms: [consistent-with interpretation]
+topics: [topic.imaging, topic.mammography]
+objects: [imaging_finding]

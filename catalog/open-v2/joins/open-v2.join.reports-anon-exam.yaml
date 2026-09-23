@@ -1,0 +1,15 @@
+kind: join
+join_type: hierarchy
+source_completeness: required
+cardinality:
+  targets_per_source: zero_or_one
+  sources_per_target: zero_or_more
+evidence: [release_schema, inference, unresolved]
+hazards:
+  - Joining reports to finding-grain tables by accession multiplies rows.
+  - Report sequence is neither documented as chronological nor unique within accession.
+caveats:
+  - Report-to-exam referential coverage was not directly checked.
+relationships: [clinical.exam-report]
+source_columns: [open-v2.reports_anon#acc_anon]
+target_columns: [open-v2.exam_level_anon#acc_anon]

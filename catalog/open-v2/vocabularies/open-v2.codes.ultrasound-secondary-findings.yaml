@@ -1,0 +1,14 @@
+kind: vocabulary
+label: Ultrasound secondary-finding codes
+completeness: unknown
+null_meaning: [undocumented]
+parsing: comma_composed_undocumented
+evidence: [release_legend]
+codes:
+  D: distortion of surrounding parenchyma
+  E: edema
+  I: infiltration of subcutaneous fat
+  L: abnormal appearing axillary nodes
+  M: marked skin thickening
+  P: apparent involvement of pectoral muscle
+  S: skin thickening

@@ -1,0 +1,21 @@
+kind: profile_support
+representation_status: supported
+representation_summary: >-
+  HormoneHist_anon and ProcedureHist_anon have complete physical inventories from reviewed
+  packet columns plus the confirmed comment field, and bindings for supported history semantics.
+representation_caveats:
+  - >-
+    Packet dtypes are parse observations, comment is assessed as text, and all columns are
+    conservatively nullable.
+  - >-
+    Unresolved ProcHist time candidates and HormoneHist side remain inventoried without clinical
+    mappings.
+search_terms:
+  - HormoneHist table
+  - ProcHist table
+  - patient history columns
+  - patient history physical binding
+subject: internal-v2.patient-history-context
+topics: [topic.procedure, topic.technical, topic.workflow]
+representation_cites:
+  - internal-v2.history-topology-context#physical-inventories

@@ -1,0 +1,6 @@
+kind: profile_support
+evidence_status: supported
+subject: guardrail.colocation-not-coavailability
+evidence_cites:
+  - open-v2.assessment-recommendation-context#wide-projection-boundary
+  - open-v2.temporal-availability-context#wide-table-colocation

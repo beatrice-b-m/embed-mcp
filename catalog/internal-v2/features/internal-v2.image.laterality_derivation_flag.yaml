@@ -1,0 +1,19 @@
+kind: feature
+label: Image-laterality derivation indicator
+definition: >-
+  Represented indicator accompanying the derived final image laterality of one internal V1c
+  image row.
+value_type: coded
+evidence: [observed_source_values, unresolved]
+search_terms: [laterality derive flag, laterality provenance, derived laterality source]
+caveats:
+  - >-
+    The intended meaning of each represented value is not established; only structural
+    association with the source and derived laterality fields was observed.
+  - >-
+    The indicator is itself sometimes absent, including on rows whose derived laterality is
+    represented, so it is not a total provenance record.
+topics: [topic.imaging, topic.breast_side, topic.technical]
+cites:
+  - internal-v2.v1c-metadata-context#laterality-roles
+objects: [image]

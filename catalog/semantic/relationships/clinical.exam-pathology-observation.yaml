@@ -1,0 +1,26 @@
+kind: relationship
+label: Exam associated with pathology observation
+relationship_type: association
+definition: Accession association carried by the pathology representation.
+cardinality:
+  targets_per_source: zero_or_more
+  sources_per_target: zero_or_one
+optionality:
+  source: optional
+  target: optional
+attribution_limitations:
+  - >-
+    The accession relationship is not an enforced foreign key and does not imply contemporaneous
+    availability.
+temporal_qualification: Pathology may follow the associated imaging exam.
+search_terms: [exam pathology, accession pathology]
+caveats:
+  - The associated exam is not automatically a diagnosis-date anchor.
+source_object: imaging_exam
+target_object: pathology_observation
+topics: [topic.exam, topic.pathology, topic.temporal]
+temporal:
+  - time.exam-event
+  - time.procedure-event
+  - time.pathology-report-documentation
+  - time.downstream-availability

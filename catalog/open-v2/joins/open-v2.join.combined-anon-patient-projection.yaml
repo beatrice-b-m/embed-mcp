@@ -1,0 +1,13 @@
+kind: join
+join_type: projection
+source_completeness: required
+cardinality:
+  targets_per_source: exactly_one
+  sources_per_target: zero_or_more
+evidence: [cross_table_check]
+hazards:
+  - Identity resolution does not establish equality of every repeated patient attribute.
+caveats:
+  - Exact resolution was verified for open-v2 and is not a cross-profile contract.
+source_columns: [open-v2.combined_anon#empi_anon]
+target_columns: [open-v2.patients_anon#empi_anon]

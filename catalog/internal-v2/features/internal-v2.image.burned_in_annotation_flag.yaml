@@ -1,0 +1,27 @@
+kind: feature
+label: Burned-in annotation attribute
+definition: >-
+  Represented source DICOM declaration of whether one internal V1c image row contains sufficient
+  burned-in annotation to identify the patient and the date the image was acquired.
+value_type: coded
+evidence: [observed_source_values]
+search_terms: [burned in annotation, burned-in text, pixel annotation]
+caveats:
+  - The attribute is a source declaration and is not a verification of the pixel data.
+  - >-
+    NO does not mean that the image contains no annotation; it means the source does not declare
+    sufficient burned-in annotation to identify the patient and acquisition date.
+  - The catalogue does not prescribe an action for YES, NO, or absence.
+topics: [topic.imaging, topic.technical]
+cites:
+  - internal-v2.v1c-metadata-context#burned-in-annotation-semantics
+objects: [image]
+missing_states:
+  absent-attribute:
+    representation: null or absent value
+    meaning: >-
+      The source makes no Burned In Annotation declaration; sufficient identifying annotation
+      may or may not be present
+    caveats: [Do not interpret absence as NO.]
+    cites:
+      - internal-v2.v1c-metadata-context#burned-in-annotation-semantics

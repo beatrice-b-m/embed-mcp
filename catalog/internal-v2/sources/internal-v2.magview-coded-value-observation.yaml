@@ -1,0 +1,13 @@
+kind: source
+label: Internal V2 MagView targeted categorical and sentinel observation
+source_type: supporting_internal
+locator_type: logical_artifact
+locator: internal-v2 MagView targeted categorical-value review
+version_scope: >-
+  Question scope: represented controlled values, unexplained source codes, laterality roles, and
+  exceptional numeric representations for already identified features.
+notes:
+  - Only non-identifying represented codes needed for reconciliation were reviewed.
+  - >-
+    Absence of a documented value from the current artifact is not treated as proof that it is
+    impossible.

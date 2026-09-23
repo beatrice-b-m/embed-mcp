@@ -1,0 +1,10 @@
+kind: feature
+label: Breast surgery type
+definition: Breast-surgery type code.
+value_type: coded
+evidence: [release_schema, release_legend]
+search_terms: [breast surgery type]
+caveats:
+  - Surgery may be post-exam and requires a task-specific temporal anchor.
+topics: [topic.pathology, topic.procedure]
+objects: [procedure]

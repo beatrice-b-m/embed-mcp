@@ -1,0 +1,19 @@
+kind: clinical_object
+label: Reported patient or relative cancer-history entry
+definition: >-
+  One represented cancer-history report concerning either the patient or a reported relative,
+  with subject category distinct from the patient whose history record is organized.
+grain: one represented history entry, without established unique person or event identity
+search_terms: [CancerHist, family cancer history, personal cancer history, relative history]
+caveats:
+  - >-
+    Reported history is not verified current pathology; candidate code meanings span malignant
+    and nonmalignant findings.
+  - >-
+    The relative grouping is not a unique person identifier and no longitudinal relative
+    identity is established.
+topics: [topic.identity, topic.pathology, topic.risk, topic.workflow]
+cites:
+  - internal-v2.cancer-history-context#subject-and-relationship
+  - internal-v2.cancer-history-context#relative-grouping-not-identity
+  - internal-v2.cancer-history-context#provisional-code-meanings

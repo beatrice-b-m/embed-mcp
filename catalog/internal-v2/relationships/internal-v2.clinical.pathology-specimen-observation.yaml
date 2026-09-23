@@ -1,0 +1,30 @@
+kind: relationship
+label: Pathology specimen has descriptor observation
+relationship_type: hierarchy
+definition: A pathology descriptor slot may be co-located with a putative specimen association.
+cardinality:
+  targets_per_source: zero_or_more
+  sources_per_target: zero_or_more
+optionality:
+  source: optional
+  target: optional
+attribution_limitations:
+  - Slot order and duplicate occurrences do not create clinical weight.
+  - Specimen presence, identity, completeness, reliability, and cardinality are unresolved.
+temporal_qualification: >-
+  Descriptor observations are documented in the downstream pathology context.
+search_terms: [specimen pathology descriptor, specimen diagnosis code]
+caveats:
+  - >-
+    Row co-location does not prove a specimen-to-observation attribution; current operations
+    should not rely on this edge.
+source_object: pathology_specimen
+target_object: pathology_observation
+topics: [topic.pathology, topic.procedure, topic.temporal]
+cites:
+  - internal-v2.magview-pathology-context#specimen-surface
+  - internal-v2.magview-pathology-context#path-severity-derived-occurrence
+temporal:
+  - time.procedure-event
+  - time.pathology-report-documentation
+  - time.downstream-availability

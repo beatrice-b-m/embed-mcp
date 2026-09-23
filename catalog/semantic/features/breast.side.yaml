@@ -1,0 +1,13 @@
+kind: feature
+label: Breast side
+definition: Breast laterality or side.
+value_type: coded
+evidence: [release_schema, release_legend, maintainer_confirmed]
+search_terms: [breast side, laterality]
+caveats:
+  - For a side attached to a clinical finding, null represents a bilateral finding.
+  - >-
+    Outside the finding-side context, null generally represents unknown laterality; in
+    particular, a null biopsy or procedure side must not be interpreted as bilateral.
+topics: [topic.breast_side]
+objects: [breast_side, imaging_finding, procedure]

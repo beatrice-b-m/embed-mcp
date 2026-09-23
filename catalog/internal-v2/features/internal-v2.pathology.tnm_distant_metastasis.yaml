@@ -1,0 +1,14 @@
+kind: feature
+label: TNM distant-metastasis category
+definition: Recorded distant-metastasis component of TNM classification.
+value_type: coded
+evidence: [release_legend, observed_source_values]
+search_terms: [M category, TNM distant metastasis]
+caveats:
+  - >-
+    The literal CMO source token is preserved; it is not silently corrected to a presumed
+    alternative spelling.
+topics: [topic.pathology]
+cites:
+  - internal-v2.magview-pathology-context#specimen-surface
+objects: [pathology_diagnosis]

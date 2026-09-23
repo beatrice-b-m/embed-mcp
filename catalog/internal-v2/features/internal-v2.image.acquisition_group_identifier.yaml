@@ -1,0 +1,17 @@
+kind: feature
+label: Derived acquisition-group identifier
+definition: >-
+  Stable, globally unique identifier for one simultaneous acquisition group, constructed as
+  acc_anon, ProtocolName with spaces replaced by hyphens, and ContentTime cast as an integer.
+value_type: technical
+evidence: [observed_source_values, maintainer_confirmed]
+search_terms: [acquisition group, image grouping, simultaneous acquisition]
+caveats:
+  - The serialized form is {acc_anon}_{normalized ProtocolName}_{integer ContentTime}.
+  - >-
+    It is stable across extraction reruns and can group several image rows from one simultaneous
+    acquisition.
+  - It is not a region-of-interest correspondence representation.
+topics: [topic.imaging, topic.technical]
+cites:
+  - internal-v2.v1c-metadata-context#acquisition-grouping

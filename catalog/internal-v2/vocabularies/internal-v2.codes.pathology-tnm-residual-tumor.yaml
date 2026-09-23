@@ -1,0 +1,13 @@
+kind: vocabulary
+label: TNM residual-tumor categories
+completeness: unknown
+parsing: atomic
+evidence: [release_legend, observed_source_values]
+caveats:
+  - Internal source tokens use uppercase forms of the comparison-dictionary codes.
+  - The comparison dictionaries do not state that this code list is exhaustive.
+codes:
+  RX: Presence of residual tumor cannot be assessed
+  R0: No residual tumor
+  R1: Microscopic residual tumor
+  R2: Macroscopic residual tumor

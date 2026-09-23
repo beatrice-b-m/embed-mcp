@@ -1,0 +1,14 @@
+kind: feature
+label: Image view modifier
+definition: >-
+  Represented view-modifier meaning applied to one internal V1c image row's projection.
+value_type: categorical
+evidence: [observed_source_values]
+search_terms: [view modifier, spot compression, magnification view, implant displaced]
+caveats:
+  - Represented as a source code meaning rather than a governed internal code list.
+  - Only one modifier occurrence is inventoried; a source sequence may carry more.
+topics: [topic.imaging, topic.mammography]
+cites:
+  - internal-v2.v1c-metadata-context#parsed-dicom-element-semantics
+objects: [image]

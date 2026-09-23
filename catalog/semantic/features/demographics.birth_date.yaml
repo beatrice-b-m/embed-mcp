@@ -1,0 +1,12 @@
+kind: feature
+label: Anonymized birth date
+definition: Anonymized patient birth-date-like value.
+value_type: date
+evidence: [release_schema, maintainer_confirmed]
+search_terms: [anonymized birth date, date of birth, dob]
+caveats:
+  - >-
+    The absolute calendar date is shifted and must not be interpreted literally; within-patient
+    ordering and date differences are preserved.
+topics: [topic.demographics, topic.temporal]
+objects: [patient]

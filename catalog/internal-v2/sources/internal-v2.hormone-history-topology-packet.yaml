@@ -1,0 +1,16 @@
+kind: source
+label: Reviewed internal hormone-history topology packet
+source_type: supporting_internal
+locator_type: logical_artifact
+locator: hormone-hist-packet.json
+version_scope: >-
+  Internal history representation in HormoneHist_anon.csv, supplied for the internal-v2 working
+  profile; no public-release applicability is established.
+notes:
+  - >-
+    Reviewed topology export: selected column names and pandas dtypes, tested grouping
+    dependencies, feature placements, categorical levels, and author-selected census paths.
+  - >-
+    Observed dependencies describe the evaluated input and supplied keys only; they do not
+    establish clinical identity, temporal stability, cross-table coverage, or schema
+    nullability.

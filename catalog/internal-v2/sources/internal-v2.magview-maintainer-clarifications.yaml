@@ -8,17 +8,19 @@ version_scope: >-
   date deidentification, procedure reliability, specimen uncertainty, categorical normalization,
   pathology severity, and registry linkage semantics.
 notes:
-  - Confirms that empi_anon persists across a patient's records within internal V2 and supports longitudinal traversal.
   - >-
-    Confirms that linked accessions are explicitly linked co-occurring exams in one imaging episode
-    and never prior or follow-up exams.
+    Confirms that empi_anon persists across a patient's records within internal V2 and supports
+    longitudinal traversal.
   - >-
-    Confirms accession-plus-finding-number clinical finding identity,
-    the synthetic contralateral negative finding-number representation, per-patient date shifting,
-    age derivation and top-coding, exam and procedure event-date meanings,
-    procedure identity within a patient by procedure date, type, and biopsy side,
-    specimen-level uncertainty, supported code normalization, code-5 meaning,
-    invalid code-6 handling, and cancer-registry reference semantics.
+    Confirms that linked accessions are explicitly linked co-occurring exams in one imaging
+    episode and never prior or follow-up exams.
   - >-
-    Confirms that every exam-level field is invariant across repeated rows for one accession
-    and that conflicting repeated values are data-quality errors.
+    Confirms accession-plus-finding-number clinical finding identity, the synthetic
+    contralateral negative finding-number representation, per-patient date shifting, age
+    derivation and top-coding, exam and procedure event-date meanings, procedure identity within
+    a patient by procedure date, type, and biopsy side, specimen-level uncertainty, supported
+    code normalization, code-5 meaning, invalid code-6 handling, and cancer-registry reference
+    semantics.
+  - >-
+    Confirms that every exam-level field is invariant across repeated rows for one accession and
+    that conflicting repeated values are data-quality errors.

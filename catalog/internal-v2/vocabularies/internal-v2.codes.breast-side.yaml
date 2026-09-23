@@ -1,0 +1,11 @@
+kind: vocabulary
+label: Breast-side codes
+completeness: unknown
+null_meaning: [undocumented, occurrence_specific]
+parsing: atomic
+legend_role: comparison_legend
+evidence: [observed_source_values, release_legend]
+codes:
+  B: Both
+  L: Left
+  R: Right

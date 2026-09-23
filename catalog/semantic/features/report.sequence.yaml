@@ -1,0 +1,19 @@
+kind: feature
+label: Report sequence
+definition: >-
+  MagView report-version sequence number incremented when a new report version is created.
+value_type: identifier
+evidence: [release_schema, observed_source_values, maintainer_confirmed]
+search_terms: [report sequence]
+caveats:
+  - >-
+    Within an accession, the minimum sequence identifies the earliest represented report and the
+    maximum identifies the latest represented report.
+  - >-
+    The specific origin of sequence value zero is unknown, but it participates in the same
+    minimum-to-maximum ordering.
+  - >-
+    Source-system and site heterogeneity can produce duplicate natural tuples; sequence is not a
+    globally unique report identifier.
+topics: [topic.report]
+objects: [radiology_report]

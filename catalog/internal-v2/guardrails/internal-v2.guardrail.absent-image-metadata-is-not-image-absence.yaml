@@ -1,0 +1,25 @@
+kind: guardrail
+label: Missing image metadata is not missing imaging
+category: interpretation_limit
+priority: high
+statement: >-
+  Do not treat a clinical V2 exam without a matching internal V1c row, a missing legacy PNG
+  locator, or has_pix_array as evidence that no DICOM image exists.
+rationale: >-
+  V1c completely covers EMBEDv1 but is narrower than clinical V2; PNG conversion fields are
+  legacy, has_pix_array is obsolete and unreliable, and a missing anon_dicom_path instead
+  indicates a data-quality failure to save the anonymized DICOM.
+search_terms: [no images for exam, missing image metadata, image availability, unmatched exam]
+caveats:
+  - >-
+    Use anon_dicom_path for current DICOM availability, treating its absence as an anonymization
+    data-quality error rather than intended optionality.
+topics: [topic.imaging, topic.exam]
+cites:
+  - internal-v2.v1c-metadata-context#coverage-is-not-image-absence
+  - internal-v2.v1c-metadata-context#locator-and-enrichment-population
+applies_to:
+  - image
+  - imaging_exam
+  - clinical.exam-image
+  - internal-v2.support.v1c-image-modality-coverage

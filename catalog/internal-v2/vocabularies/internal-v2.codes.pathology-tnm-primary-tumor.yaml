@@ -1,0 +1,24 @@
+kind: vocabulary
+label: Pathologic TNM primary-tumor categories
+completeness: unknown
+parsing: atomic
+evidence: [release_legend, observed_source_values]
+caveats:
+  - The comparison dictionaries do not state that this code list is exhaustive.
+  - Null semantics are occurrence specific and must not be inferred from code membership.
+codes:
+  PT0: no evidence of primary tumor
+  PT1A: tumor >1 mm but <= 5 mm
+  PT1B: tumor >5 mm but <= 10 mm
+  PT1C: tumor >10 mm but <= 20 mm
+  PT1MI: tumor <=1 mm
+  PT2: Tumor >20 mm but <= 50 mm
+  PT3: tumor >50 mm
+  PT4A: extension to chest wall
+  PT4B: Ulceration and/or ipsilateral satellite nodules and/or edema of the skin
+  PT4C: both T4a and T4b
+  PT4D: Inflammatory carcinoma
+  PTISD: ductal carcinoma in situ
+  PTISL: lobular carcinoma in situ
+  PTISP: paget disease of the nipple not associated with invasive carcinoma
+  PXT: primary tumor cannot be assessed

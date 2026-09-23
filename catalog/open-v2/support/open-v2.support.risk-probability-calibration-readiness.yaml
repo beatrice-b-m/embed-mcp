@@ -1,0 +1,22 @@
+kind: profile_support
+representation_status: unresolved
+representation_summary: >-
+  Open-v2 risk fields are physically represented, but their scale, units, exceptional values,
+  model versions, horizon semantics, and readiness for probability-calibration metrics have not
+  been validated.
+representation_caveats:
+  - This unresolved readiness statement does not mark the physical risk fields unsupported.
+  - >-
+    Association or ranking analyses may be possible when score interpretation and remaining
+    uncertainty are explicitly qualified.
+search_terms:
+  - risk probability readiness
+  - risk calibration readiness
+  - Brier score readiness
+  - calibration slope
+  - risk exceptional values
+  - risk model version
+  - risk score scale
+subject: open-v2.risk-context
+topics: [topic.risk, topic.workflow]
+representation_cites: [open-v2.risk-context#risk-semantics]

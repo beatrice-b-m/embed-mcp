@@ -1,0 +1,14 @@
+kind: feature
+label: Exam-level architectural distortion aggregate
+definition: >-
+  Exam-level Boolean summary of mammography finding-level architectural-distortion presence.
+value_type: aggregate
+evidence: [release_schema, observed_source_values, maintainer_confirmed]
+search_terms:
+  - exam-level architectural distortion aggregate
+caveats:
+  - >-
+    This summary is aggregated only from mammography findings, including FFDM, synthetic 2D, and
+    DBT; it does not summarize non-mammography modalities.
+topics: [topic.exam, topic.mammography]
+objects: [imaging_exam]

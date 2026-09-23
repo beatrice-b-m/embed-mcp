@@ -1,0 +1,36 @@
+kind: vocabulary
+label: Reported historical-procedure result codes
+completeness: unknown
+parsing: comma_composed_undocumented
+evidence: [maintainer_confirmed, observed_source_values]
+caveats:
+  - >-
+    The codes mix broad assessments, specific malignant diagnoses, high-risk lesions, and benign
+    histologies or conditions; they do not form one pathology-severity scale.
+  - >-
+    A matching clinical label does not make a history result equivalent to verified
+    procedure-associated pathology.
+  - >-
+    FA,SF is observed as a combined token, but delimiter, ordering, and repetition semantics are
+    unresolved for ProcHist; the individual code meanings do not authorize splitting this
+    occurrence.
+    Blank is not established as equivalent to NONE.
+codes:
+  ADH: Atypical ductal hyperplasia
+  ALH: Atypical lobular hyperplasia
+  BEN: Benign
+  BOT: Invasive ductal carcinoma and ductal carcinoma in situ
+  DE: Duct ectasia
+  DS: Ductal carcinoma in situ
+  FA: Fibroadenoma
+  FN: Fat necrosis
+  ID: Invasive ductal carcinoma
+  IF: Chronic inflammatory changes
+  IL: Invasive lobular carcinoma
+  LS: Lobular carcinoma in situ
+  LY: Lymphoma
+  MAL: Malignant
+  PA: Papilloma
+  SA: Sclerosing adenosis
+  SF: Stromal fibrosis
+  NONE: No reported result

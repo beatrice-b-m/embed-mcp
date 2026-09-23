@@ -1,0 +1,13 @@
+kind: feature
+label: Accession source-system type
+definition: Source-system category recorded for a current or linked imaging accession.
+value_type: coded
+evidence: [release_legend, observed_source_values]
+search_terms: [accession type, MagView source, linked accession source]
+caveats:
+  - Current and linked occurrences use one concept with an explicit accession-role qualifier.
+  - This category does not establish linkage completeness or exam chronology.
+topics: [topic.exam, topic.workflow]
+cites:
+  - internal-v2.magview-representation-context#linked-accession-surface
+objects: [imaging_exam]

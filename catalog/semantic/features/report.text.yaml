@@ -1,0 +1,12 @@
+kind: feature
+label: Anonymized report text
+definition: Anonymized report represented physically as a string.
+value_type: text
+evidence: [release_schema, unresolved]
+search_terms: [anonymized report text]
+caveats:
+  - >-
+    No report content was read during the reviewed work; content, blank behavior, and vocabulary
+    are not characterized.
+topics: [topic.report]
+objects: [radiology_report]

@@ -1,0 +1,21 @@
+kind: relationship
+label: Exam may have risk assessment
+relationship_type: association
+definition: Optional accession association of a represented risk assessment.
+cardinality:
+  targets_per_source: zero_or_more
+  sources_per_target: zero_or_one
+optionality:
+  source: optional
+  target: optional
+attribution_limitations:
+  - Not every exam has a risk record and some risk references may not resolve.
+temporal_qualification: >-
+  The assessment was calculated during care; exact within-episode timing is unresolved.
+search_terms: [exam risk assessment, accession risk]
+caveats:
+  - Clinical-time calculation does not establish pre-imaging availability.
+source_object: imaging_exam
+target_object: risk_assessment
+topics: [topic.exam, topic.risk, topic.temporal]
+temporal: [time.exam-event]

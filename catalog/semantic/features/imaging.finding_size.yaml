@@ -1,0 +1,10 @@
+kind: feature
+label: Imaging finding size
+definition: Imaging finding size in millimeters.
+value_type: numeric
+evidence: [release_schema, release_legend, observed_source_values, unresolved]
+search_terms: [imaging finding size]
+caveats:
+  - Negative and zero values require an explicit sentinel policy.
+topics: [topic.imaging, topic.mammography]
+objects: [imaging_finding]

@@ -1,0 +1,8 @@
+kind: feature
+label: Mammographic mass shape
+definition: Mammographic mass-shape code.
+value_type: coded
+evidence: [release_schema, release_legend, observed_source_values, unresolved]
+search_terms: [mammographic mass shape]
+topics: [topic.imaging, topic.mammography]
+objects: [imaging_finding]

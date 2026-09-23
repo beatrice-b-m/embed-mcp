@@ -1,0 +1,10 @@
+kind: profile_support
+evidence_status: supported
+evidence_summary: >-
+  Internal age_at_study_anon is derived from consistently shifted birth and study dates, with
+  ages 90 years or older top-coded to 89.
+evidence_caveats:
+  - Repeated values can still contain ordinary data-quality inconsistencies.
+subject: demographics.age_at_exam
+evidence_cites:
+  - internal-v2.magview-temporal-context#age-at-study-derivation

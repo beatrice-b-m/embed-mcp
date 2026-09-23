@@ -1,0 +1,16 @@
+kind: feature
+label: Acquisition device software versions
+definition: >-
+  Serialized represented software versions of the device that produced one internal V1c image
+  row.
+value_type: text
+evidence: [observed_source_values]
+search_terms: [software versions, device firmware]
+caveats:
+  - >-
+    The value is a serialized sequence of vendor-specific component versions and is not parsed
+    here.
+topics: [topic.imaging, topic.technical]
+cites:
+  - internal-v2.v1c-metadata-context#parsed-dicom-element-semantics
+objects: [image]

@@ -1,0 +1,12 @@
+kind: vocabulary
+label: MRI mass-shape codes
+completeness: unknown
+null_meaning: [undocumented, occurrence_specific]
+parsing: atomic
+legend_role: comparison_legend
+evidence: [observed_source_values, release_legend]
+codes:
+  I: irregular mass
+  L: lobulated mass
+  O: oval mass
+  R: round mass

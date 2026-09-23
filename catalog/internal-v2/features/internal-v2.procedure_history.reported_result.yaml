@@ -1,0 +1,29 @@
+kind: feature
+label: Reported historical-procedure result
+definition: >-
+  Reported result carried by a prior-procedure history entry, spanning broad assessments,
+  diagnoses, high-risk lesions, and benign histologies or conditions.
+value_type: coded
+evidence: [maintainer_confirmed]
+search_terms:
+  - ProcHist result
+  - historical biopsy result
+  - prior pathology result
+  - historical benign result
+  - historical malignant result
+caveats:
+  - >-
+    This is not uniformly a verified pathology diagnosis or severity and is not automatically
+    attributable to the represented procedure subtype or a current finding.
+topics: [topic.pathology, topic.procedure, topic.workflow]
+cites:
+  - internal-v2.patient-history-context#procedure-history-result
+  - internal-v2.history-topology-context#procedure-result-representation
+objects: [internal-v2.procedure_history_entry]
+missing_states:
+  no-reported-result:
+    representation: NONE
+    meaning: >-
+      No result was reported for the history entry; this is not a negative pathology result.
+    cites:
+      - internal-v2.patient-history-context#procedure-history-result

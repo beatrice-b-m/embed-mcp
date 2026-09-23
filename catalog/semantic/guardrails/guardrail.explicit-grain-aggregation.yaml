@@ -1,0 +1,29 @@
+kind: guardrail
+label: Changing clinical grain requires an explicit aggregation policy
+category: analyst_choice
+priority: high
+statement: >-
+  Moving among finding, side, exam, episode, and patient grain requires a declared aggregation,
+  multiplicity, and time policy.
+rationale: >-
+  The same person can have multiple exams, sides, findings, procedures, and diagnoses; supplied
+  aggregates cover only documented transitions.
+scope: embed_general
+search_terms: [unit of analysis, grain transition, aggregation policy]
+caveats:
+  - The catalog does not select a canonical cohort or patient-level outcome.
+topics: [topic.identity, topic.exam, topic.breast_side, topic.imaging, topic.pathology]
+applies_to:
+  - patient
+  - breast_imaging_episode
+  - imaging_exam
+  - breast_side
+  - imaging_finding
+  - pathology_diagnosis
+  - pathology.severity
+  - breast_side.pathology_severity_aggregate
+  - exam.pathology_severity_aggregate
+  - aggregation.pathology-severity-to-side
+  - aggregation.pathology-severity-to-exam
+  - aggregation.pathology-severity-to-finding
+  - aggregation.pathology-severity-to-patient

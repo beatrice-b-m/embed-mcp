@@ -1,0 +1,11 @@
+kind: feature
+label: Nodal evaluation method
+definition: >-
+  Recorded method used to evaluate lymph-node pathology, including a not-performed state.
+value_type: coded
+evidence: [release_legend, observed_source_values]
+search_terms: [node evaluation method, H&E, immunohistochemistry]
+topics: [topic.pathology, topic.procedure]
+cites:
+  - internal-v2.magview-pathology-context#specimen-surface
+objects: [pathology_specimen]

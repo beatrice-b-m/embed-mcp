@@ -1,0 +1,31 @@
+kind: feature
+label: Region-of-interest frame-index collection
+definition: >-
+  Nested serialized collection of zero-based frame-index lists aligned one-for-one with the ROI
+  coordinate collection; a DBT ROI can match one or several frames.
+value_type: text
+evidence: [maintainer_confirmed, observed_source_values]
+search_terms: [ROI frames, ROI frame indices, tomosynthesis slice, ROI depth]
+caveats:
+  - >-
+    Frame indices are informative only for DBT images; represented values on 2D or synthetic 2D
+    images are not informative.
+  - >-
+    Aligned by position with the coordinate collection; a region's frame list may hold one or
+    several indices.
+  - >-
+    When ImagesInAcquisition is represented for the DBT row, each zero-based frame index should
+    be less than that frame count.
+topics: [topic.imaging]
+cites:
+  - internal-v2.roi-context#roi-serialized-collections
+  - internal-v2.roi-context#roi-frame-depth-semantics
+objects: [region_of_interest]
+missing_states:
+  empty-frame-collection:
+    representation: empty serialized collection alongside represented regions of interest
+    meaning: No frame indices are represented for the row's regions
+    caveats:
+      - An empty frame collection means absent frame information, not frame zero.
+    cites:
+      - internal-v2.roi-context#roi-frame-depth-semantics

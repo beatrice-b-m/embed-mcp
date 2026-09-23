@@ -1,0 +1,18 @@
+kind: clinical_object
+label: Pathology specimen
+definition: >-
+  A putative procedure-associated tissue-specimen representation whose presence, completeness,
+  reliability, identity, and cardinality remain unresolved in internal MagView.
+grain: >-
+  one putative pathology specimen association within an internal MagView finding/procedure
+  context
+search_terms: [pathology specimen, tissue specimen, specimen number, specimen biomarkers]
+caveats:
+  - Current internal V2 operations should not rely on specimen-level fields.
+  - No globally unique or durable specimen identity is established.
+  - >-
+    A putative specimen representation may repeat across physical rows and is not equivalent to
+    one pathology descriptor slot.
+topics: [topic.pathology, topic.procedure]
+cites:
+  - internal-v2.magview-pathology-context#specimen-surface

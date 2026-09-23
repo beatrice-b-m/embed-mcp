@@ -1,0 +1,20 @@
+kind: profile_support
+evidence_status: unsupported
+evidence_summary: >-
+  No supported specimen-collection timestamp is bound in the MagView clinical table.
+evidence_caveats:
+  - Do not invent a proxy from another date-like column.
+representation_status: unsupported
+representation_summary: >-
+  The assessed internal V2 MagView table contains no supported specimen-collection time binding.
+representation_caveats:
+  - >-
+    Do not substitute procedure date, pathology-report date, or an undocumented date-like
+    column.
+search_terms: [internal V2 specimen collection time]
+subject: time.specimen-collection
+topics: [topic.pathology, topic.temporal]
+evidence_cites:
+  - internal-v2.magview-temporal-context#unsupported-time-bindings
+representation_cites:
+  - internal-v2.magview-temporal-context#unsupported-time-bindings

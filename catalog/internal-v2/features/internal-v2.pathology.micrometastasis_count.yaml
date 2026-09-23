@@ -1,0 +1,10 @@
+kind: feature
+label: Nodal micrometastasis count
+definition: Recorded number of nodal micrometastases.
+value_type: numeric
+evidence: [release_legend, observed_source_values]
+search_terms: [micrometastases, micrometastasis count]
+topics: [topic.pathology]
+cites:
+  - internal-v2.magview-pathology-context#specimen-surface
+objects: [pathology_specimen, pathology_diagnosis]

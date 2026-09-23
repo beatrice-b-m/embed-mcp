@@ -1,0 +1,25 @@
+kind: temporal
+label: Procedure event time
+temporal_type: event_time
+definition: >-
+  The anonymized procedure date represents when a linked biopsy, surgery, or related procedure
+  occurred.
+search_terms:
+  - procedure date
+  - biopsy date
+  - surgery date
+  - procedure report fallback
+  - coalesce event dates
+  - proxy date
+caveats:
+  - The procedure can occur after the associated imaging exam.
+  - Procedure date is not interchangeable with specimen or pathology-report time.
+  - Do not coalesce procedure, specimen, report, or imaging-exam dates into one event timestamp.
+  - >-
+    Missing procedure-event time remains missing for that endpoint; another time meaning may be
+    studied only as a separately named endpoint or sensitivity analysis.
+topics: [topic.procedure, topic.pathology, topic.temporal]
+cites:
+  - clinical.screening-diagnostic-pathway#pathology-follows-sampling
+objects: [procedure]
+relative_to: [time.exam-event]

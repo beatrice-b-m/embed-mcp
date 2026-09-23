@@ -1,0 +1,8 @@
+kind: feature
+label: Imaging finding location
+definition: Clock, quadrant, or region code string for an imaging finding.
+value_type: coded
+evidence: [release_schema, release_legend]
+search_terms: [imaging finding location]
+topics: [topic.imaging, topic.breast_side]
+objects: [imaging_finding]

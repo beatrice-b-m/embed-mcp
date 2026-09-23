@@ -1,0 +1,33 @@
+kind: guardrail
+label: Cancer history needs subject and evidence qualification
+category: interpretation_limit
+priority: high
+statement: >-
+  Keep patient and relative history distinct; do not treat a relationship category as a unique
+  person or a provisional history code as verified current pathology.
+  Do not decode BRCA tokens without a reviewed mapping.
+rationale: >-
+  The subject flag distinguishes self from relative history; the tested relative tuple is not
+  unique, supplied cancer dictionaries are provisional, and BRCA mappings are unavailable.
+search_terms:
+  - CancerHist family history
+  - BRCA1 BRCA2 unknown codes
+  - relative cancer patient diagnosis
+caveats:
+  - >-
+    Blank is not generic cancer or a negative result; code lists do not establish complete
+    history capture.
+topics: [topic.identity, topic.pathology, topic.risk, topic.workflow]
+cites:
+  - internal-v2.cancer-history-context#subject-and-relationship
+  - internal-v2.cancer-history-context#relative-grouping-not-identity
+  - internal-v2.cancer-history-context#provisional-code-meanings
+  - internal-v2.cancer-history-context#clinical-and-temporal-meaning
+applies_to:
+  - internal-v2.cancer_history_entry
+  - internal-v2.cancer_history.subject_category
+  - internal-v2.cancer_history.relative_relationship_code
+  - internal-v2.cancer_history.history_category
+  - internal-v2.cancer_history.breast_code
+  - internal-v2.cancer_history.other_code
+  - internal-v2.support.cancer-history-semantics

@@ -1,0 +1,12 @@
+kind: feature
+label: Biopsy side
+definition: Breast side on which a biopsy was performed.
+value_type: coded
+evidence: [release_schema, release_legend]
+search_terms: [biopsy side]
+caveats:
+  - >-
+    Null semantics are occurrence- and profile-specific; inspect the selected binding rather
+    than inferring them from the code meanings.
+topics: [topic.pathology, topic.procedure, topic.breast_side]
+objects: [procedure]

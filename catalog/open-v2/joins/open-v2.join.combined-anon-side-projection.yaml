@@ -1,0 +1,16 @@
+kind: join
+join_type: projection
+source_completeness: optional
+cardinality:
+  targets_per_source: zero_or_one
+  sources_per_target: zero_or_more
+evidence: [cross_table_check]
+hazards:
+  - Do not coerce null side to bilateral, left, or right.
+  - SQL null equality differs from the null-as-state comparison used during investigation.
+caveats:
+  - >-
+    Complete wide side tuples resolved during the registered check; incomplete tuples do not
+    define a join.
+source_columns: [open-v2.combined_anon#acc_anon, open-v2.combined_anon#side]
+target_columns: [open-v2.side_level_anon#acc_anon, open-v2.side_level_anon#side]

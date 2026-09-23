@@ -1,0 +1,19 @@
+kind: feature
+label: Image view position
+definition: Represented mammographic projection or view for one internal V1c image row.
+value_type: coded
+evidence: [observed_source_values]
+search_terms: [view position, projection, CC view, MLO view, view code]
+caveats:
+  - >-
+    No view code dictionary is established for internal V1c; represented values include
+    untrimmed, lowercase, and specimen radiography variants, so comparison needs explicit
+    normalization.
+  - >-
+    The plain view-position attribute and the view code-sequence meaning are separate
+    occurrences and are not reconciled.
+  - View position is separate from image laterality.
+topics: [topic.imaging, topic.mammography]
+cites:
+  - internal-v2.v1c-metadata-context#image-type-distinctions
+objects: [image]

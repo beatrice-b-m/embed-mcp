@@ -1,0 +1,8 @@
+kind: clinical_object
+label: Radiology report
+definition: A versioned radiology report associated with an imaging accession.
+grain: one represented report version
+search_terms: [radiology report, report version, addendum]
+caveats:
+  - Report text may contain sensitive content and is not exposed by this tool.
+topics: [topic.report, topic.imaging, topic.temporal]

@@ -1,0 +1,40 @@
+kind: relationship
+label: Patient has imaging exam
+relationship_type: hierarchy
+definition: >-
+  Patient ownership of each imaging accession, supporting traversal across all represented exams
+  in that patient's timeline.
+cardinality:
+  targets_per_source: zero_or_more
+  sources_per_target: exactly_one
+optionality:
+  source: optional
+  target: required
+attribution_limitations:
+  - Release-local identifiers and incomplete longitudinal capture limit portability.
+  - >-
+    A task may retain exam-side or finding output grain, but searches for prior, subsequent,
+    nearest, or interval events must first consider candidate exams across the patient timeline
+    rather than only the index accession.
+temporal_qualification: >-
+  Each exam has its own event date within a patient timeline; same-day inclusion, episode
+  membership, and tie-breaking remain declared analyst choices.
+search_terms:
+  - patient exams
+  - patient accession
+  - patient timeline
+  - prior exam
+  - subsequent exam
+  - nearest exam
+  - history
+  - within days
+  - longitudinal candidate search
+caveats:
+  - This direct relation does not replace the clinically useful episode layer.
+  - >-
+    Do not equate a candidate event's accession with an index accession merely because the final
+    result is reported at exam-side or finding grain.
+source_object: patient
+target_object: imaging_exam
+topics: [topic.identity, topic.exam]
+temporal: [time.exam-event]

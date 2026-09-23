@@ -1,0 +1,16 @@
+kind: feature
+label: Reported exposure-end month
+definition: Reported calendar month component for the end of a historical exposure.
+value_type: numeric
+evidence: [maintainer_confirmed]
+search_terms: [HormoneHist mlast, exposure end month]
+caveats:
+  - >-
+    A month component is not an exact date and has no established precedence over reported end
+    age.
+topics: [topic.procedure, topic.temporal]
+cites:
+  - internal-v2.patient-history-context#hormone-history-timing
+objects: [internal-v2.hormone_history_entry]
+temporal:
+  - {id: internal-v2.time.reported-exposure-end, records: true}

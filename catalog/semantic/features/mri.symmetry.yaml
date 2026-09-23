@@ -1,0 +1,10 @@
+kind: feature
+label: MRI finding symmetry
+definition: MRI finding-symmetry code.
+value_type: coded
+evidence: [release_schema, release_legend, inference]
+search_terms: [mri finding symmetry]
+caveats:
+  - The vocabulary binding is a case-only legend match.
+topics: [topic.imaging, topic.mri]
+objects: [imaging_finding]

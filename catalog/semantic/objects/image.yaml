@@ -1,0 +1,13 @@
+kind: clinical_object
+label: Breast-imaging image
+definition: One represented image acquired as part of a breast-imaging exam.
+grain: one acquired image instance
+search_terms: [image, breast image, imaging instance, mammography image]
+caveats:
+  - >-
+    Image identity, file representation, series membership, and availability are
+    profile-specific.
+  - >-
+    Catalog coverage of an image object does not imply that a selected profile has an image
+    table or file binding.
+topics: [topic.imaging]

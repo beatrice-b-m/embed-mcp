@@ -1,0 +1,117 @@
+kind: context
+label: Internal CancerHist representation and unresolved semantics
+context_type: data_representation
+definition: >-
+  CancerHist distinguishes patient versus relative history with a confirmed subject flag and
+  relationship-category field.
+  Cancer code meanings remain provisional, BRCA encodings unresolved, and the tested relative
+  grouping is not person or event identity.
+search_terms:
+  - CancerHist
+  - CancerHist_anon
+  - cancer history
+  - family history
+  - relative identity
+  - patient rel
+  - BRCA1 BRCA2 history
+caveats:
+  - >-
+    Topology is observation evidence for the supplied input, not a clinical entity model or an
+    analysis policy.
+topics: [topic.identity, topic.procedure, topic.technical, topic.temporal, topic.workflow]
+about:
+  - internal-v2.cancer_history.subject_category
+  - internal-v2.cancer_history.relative_relationship_code
+  - internal-v2.cancer_history.history_category
+  - internal-v2.cancer_history.breast_code
+  - internal-v2.cancer_history.other_code
+  - internal-v2.cancerhist_anon
+claims:
+  relative-grouping-not-identity:
+    statement: >-
+      The packet tests (acc_anon, patient, rel) under the label RELATIVE, finer than EXAM.
+      The remaining history attributes, including curr_age, brca1, and brca2, vary within that
+      grouping; the tuple is not a unique row key and does not establish one identifiable
+      relative.
+    status: reconciled
+    caveats:
+      - Author-selected key labels are not independent clinical identity evidence.
+      - >-
+        No longitudinal relative identity, event identity, or deduplication rule follows from
+        this grouping.
+    sources:
+      - internal-v2.cancer-history-topology-packet
+  conditional-code-structure:
+    statement: >-
+      CancerHist census paths show type-dependent cancercode branches and patient-dependent rel
+      branches.
+      The self-versus-relative distinction is maintainer-confirmed, while type and cancer-code
+      meanings are provisional and do not establish verified cancer diagnoses.
+    status: unresolved
+    caveats:
+      - >-
+        Do not transfer diagnosis dictionaries from MagView or ProcHist merely because code
+        strings match.
+      - >-
+        The packet does not establish that every entry is malignant, nor that an absent history
+        entry is cancer absence.
+    sources:
+      - internal-v2.cancer-history-topology-packet
+      - internal-v2.cancer-history-maintainer-clarification
+      - internal-v2.cancer-history-draft-dictionaries
+  clinical-and-temporal-meaning:
+    statement: >-
+      CancerHist premen, bilat, side, brca1, brca2, and its age and calendar fields need
+      source-specific meaning and timing review.
+      BRCA mappings have not been found; numeric-looking tokens must not be decoded as positive,
+      negative, or untested.
+    status: unresolved
+    caveats:
+      - >-
+        A field varying within the tested relative grouping cannot be promoted to a stable
+        person attribute on that evidence.
+      - >-
+        Neither current age nor an associated accession establishes the time a history record
+        became available.
+    sources:
+      - internal-v2.cancer-history-topology-packet
+      - internal-v2.cancer-history-maintainer-clarification
+  subject-and-relationship:
+    statement: >-
+      CancerHist patient=1 denotes history about the patient and patient=0 denotes history about
+      a relative.
+      rel is a relationship category populated only when patient=0, not a unique relative
+      identifier.
+    status: verified
+    caveats:
+      - >-
+        The observed relative branch also includes blank rel; patient=0 does not require a
+        populated relationship category.
+      - >-
+        Relative history must not be attributed as the imaging patient's own diagnosis or
+        genetic result.
+    sources:
+      - internal-v2.cancer-history-maintainer-clarification
+  provisional-code-meanings:
+    statement: >-
+      The supplied draft interprets type B as breast and O as other, with category-specific
+      cancercode meanings.
+      These are provisional internal-dictionary interpretations, not final verified meanings for
+      every CancerHist occurrence.
+    status: unverified
+    caveats:
+      - >-
+        B, blank, DCG, DCS, and XX in the breast branch remain unresolved; no generic cancer
+        meaning is assigned to blank.
+      - >-
+        Candidate breast codes include atypia, papilloma, radial scar, and other findings, so a
+        breast-history category is not a malignant-diagnosis assertion.
+      - >-
+        No pathology severity, outcome label, date, or preferred aggregation is derived from
+        these candidate meanings.
+      - >-
+        ID and IDC and ANM and MDN remain separately addressable source tokens even where
+        candidate meanings agree.
+    sources:
+      - internal-v2.cancer-history-draft-dictionaries
+      - internal-v2.cancer-history-topology-packet

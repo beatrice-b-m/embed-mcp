@@ -1,0 +1,4 @@
+kind: profile_support
+evidence_status: supported
+subject: clinical.patient-report
+evidence_cites: [open-v2.report-context#natural-key-limit]

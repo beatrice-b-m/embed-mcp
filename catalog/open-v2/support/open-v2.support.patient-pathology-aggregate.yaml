@@ -1,0 +1,12 @@
+kind: profile_support
+representation_status: unsupported
+representation_summary: >-
+  Open-v2 supplies no canonical patient-level pathology severity field or universal longitudinal
+  outcome rollup.
+representation_caveats:
+  - Any patient-level policy remains analysis specific.
+search_terms: [patient aggregate coverage, patient outcome field]
+subject: aggregation.pathology-severity-to-patient
+topics: [topic.identity, topic.pathology, topic.temporal]
+representation_cites:
+  - open-v2.pathology-procedure-context#patient-aggregate-absence

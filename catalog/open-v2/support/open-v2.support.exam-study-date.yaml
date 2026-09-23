@@ -1,0 +1,6 @@
+kind: profile_support
+evidence_status: supported
+subject: exam.study_date
+evidence_cites:
+  - open-v2.temporal-availability-context#anonymization-properties
+  - open-v2.temporal-availability-context#date-representation

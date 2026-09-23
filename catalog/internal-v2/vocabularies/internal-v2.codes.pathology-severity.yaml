@@ -1,0 +1,23 @@
+kind: vocabulary
+label: Internal pathology severity groups
+completeness: unknown
+parsing: atomic
+evidence: [maintainer_confirmed, observed_source_values]
+caveats:
+  - "The scale is inverse: lower values represent more severe pathology."
+  - >-
+    Historical public documentation uses a conflicting code-5/code-6 scheme; internal maintainer
+    knowledge establishes code 5 as non-breast cancer.
+  - >-
+    Any represented code 6 is invalid, has no expected meaning, and must not be ordered or
+    grouped as a clinical severity category.
+  - Null means no pathology is attached and is not a benign or negative category.
+  - A null severity with any populated descriptor slot is a data-quality error.
+codes:
+  "0": Invasive breast cancer
+  "1": In-situ breast cancer
+  "2": High-risk lesion
+  "3": Borderline lesion
+  "4": Benign finding
+  "5": Non-breast cancer
+  "6": Invalid source value with no expected meaning

@@ -1,0 +1,6 @@
+kind: profile_support
+evidence_status: supported
+subject: breast_side.pathology_severity_aggregate
+evidence_cites:
+  - open-v2.pathology-procedure-context#severity-aggregation
+  - open-v2.pathology-procedure-context#severity-meaning

@@ -1,0 +1,151 @@
+kind: context
+label: Internal V2 image regions of interest
+context_type: data_representation
+definition: >-
+  Internal V1c represents radiologist-origin clinical regions of interest as tandem-generated
+  serialized per-image collections in DICOM pixel-array coordinates; no stable per-region
+  identity or cross-image correspondence is represented, and finding attribution is reliable
+  only in the documented single-finding-per-side case.
+search_terms:
+  - ROI coordinates
+  - ROI count
+  - ROI frames
+  - image region of interest
+  - internal V2 ROI
+  - serialized ROI collection
+caveats:
+  - >-
+    This context records the region-of-interest semantic boundary and its internal V1c physical
+    representation, not a complete ROI data dictionary.
+  - The physical representation belongs to the current internal V1c image-metadata artifact.
+topics: [topic.imaging]
+about:
+  - internal-v2.metadata_all_cohorts_v1c
+  - internal-v2.join.image-region-of-interest
+claims:
+  roi-attached-to-image:
+    statement: >-
+      Each internal V2 region of interest originates on exactly one source image and cannot
+      exist without that source-image attachment.
+    status: verified
+    caveats:
+      - >-
+        Linking corresponding or normalized ROIs across simultaneously acquired FFDM, DBT, and
+        synthetic 2D images is not represented.
+    sources: [internal-v2.roi-maintainer-confirmation]
+  roi-serialized-collections:
+    statement: >-
+      An internal V1c image row carries a represented region-of-interest count together with
+      serialized coordinate, frame-index, and depth-derivation collections whose lengths agree
+      with that count, and represents no regions of interest as empty collections.
+    status: verified
+    caveats:
+      - >-
+        The three collections are aligned by position only; no per-region identifier is
+        represented.
+      - >-
+        The collections are generated in tandem, so mismatched counts or collection lengths are
+        not a valid representation.
+    sources:
+      - internal-v2.v1c-metadata-structure-observation
+      - internal-v2.public-embed-roi
+      - internal-v2.roi-maintainer-confirmation
+  roi-coordinate-geometry:
+    statement: >-
+      ROI_coords is a nested list of rectangles in [y_min, x_min, y_max, x_max] order with both
+      minimum and maximum bounds inclusive, expressed directly in the coordinate space of the
+      attached DICOM image's pixel array without a spacing, orientation, or other coordinate
+      transformation.
+    status: verified
+    caveats:
+      - >-
+        For example, [100, 200, 150, 250] is a 51 by 51 pixel region and corresponds to NumPy
+        indexing image[100:151, 200:251].
+      - >-
+        The expected curated invariant is 0 <= y_min <= y_max < Rows and 0 <= x_min <= x_max <
+        Columns for the attached image.
+      - >-
+        Negative coordinates or maxima beyond the attached image bounds are residual
+        data-quality conditions, not intended representation semantics, and should normally be
+        resolved during dataset curation; downstream consumers may safely clip any residual
+        coordinates to the valid pixel-array bounds.
+    sources:
+      - internal-v2.v1c-metadata-structure-observation
+      - internal-v2.public-embed-roi
+      - internal-v2.roi-maintainer-confirmation
+  roi-frame-depth-semantics:
+    statement: >-
+      ROI_frames is a nested list aligned by ROI position whose sublists contain one or more
+      matched frame indices; those indices are informative only for DBT images, while
+      ROI_depth_derived is an aligned boolean list whose true state marks DBT depth coordinates
+      inferred by an in-house model after transferring radiologist 2D coordinates.
+    status: verified
+    caveats:
+      - Frame-index values represented on 2D or synthetic 2D rows are not informative.
+      - >-
+        A DBT ROI may match one or several frames; when ImagesInAcquisition is represented, each
+        zero-based frame index should be less than that DBT frame count.
+      - >-
+        ROI_depth_derived describes inferred depth only; the radiologist-origin x/y annotation
+        remains a clinical artifact.
+    sources:
+      - internal-v2.v1c-metadata-structure-observation
+      - internal-v2.public-embed-roi
+      - internal-v2.roi-maintainer-confirmation
+  roi-identity-and-provenance:
+    statement: >-
+      Every represented ROI originates from a radiologist annotation created during routine
+      clinical operations through one of multiple annotation sources or workflows, but internal
+      V1c exports no stable ROI identifier or individual annotator field and addresses each ROI
+      only by its position within one image row's aligned collections.
+    status: verified
+    caveats:
+      - >-
+        Collection position is a serialization artefact and must not be treated as a durable
+        region identifier.
+      - >-
+        Annotation DICOM objects without pixel arrays supplied coordinates directly in one
+        workflow; ROI_SS and ROI_SSC screen captures supplied burned-in annotations that were
+        extracted and transferred to the corresponding original images in another workflow.
+      - ROI_SS and ROI_SSC are not the exclusive source of represented ROIs.
+      - >-
+        The annotations are in-time clinical artifacts communicating some aspect of decision
+        making, but they need not mark the most severe lesion or the lesion that later became
+        cancer.
+      - >-
+        For some DBT rows an in-house model inferred the matched frames after radiologist 2D
+        coordinates were transferred; ROI_depth_derived records that distinction.
+    sources:
+      - internal-v2.v1c-metadata-structure-observation
+      - internal-v2.roi-maintainer-confirmation
+  roi-cross-image-correspondence-absent:
+    statement: >-
+      Internal V1c attaches region-of-interest collections to individual image rows and
+      represents no correspondence among regions on separate images of one acquisition group.
+    status: verified
+    caveats:
+      - >-
+        The derived acquisition-group identifier groups image rows and must not be read as a
+        region-of-interest grouping.
+      - No stable cross-image ROI correspondence should be inferred.
+    sources:
+      - internal-v2.v1c-metadata-structure-observation
+      - internal-v2.roi-maintainer-confirmation
+  roi-finding-attribution:
+    statement: >-
+      Internal V1c provides no explicit ROI-to-MagView-finding link; matching all
+      same-accession, same-side ROIs to the clinical finding is generally reliable only when
+      exactly one finding is represented on that side, while individual attribution is
+      unreliable when more than one finding is present.
+    status: verified
+    caveats:
+      - >-
+        When exactly one finding exists on the side, multiple ROIs may all be associated with
+        that one finding.
+      - >-
+        When more than one finding exists on the side, EMBED currently supplies no reliable
+        method to distinguish which ROI belongs to which finding.
+      - >-
+        This limitation does not establish that any ROI marks the most severe lesion or a future
+        cancer.
+    sources: [internal-v2.roi-maintainer-confirmation]

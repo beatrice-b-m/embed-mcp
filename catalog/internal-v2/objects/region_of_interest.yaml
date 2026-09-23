@@ -1,0 +1,28 @@
+kind: clinical_object
+label: Image region of interest
+definition: >-
+  One represented spatial region originating on exactly one breast-imaging source image.
+grain: one represented region of interest on exactly one source image
+search_terms: [region of interest, ROI, image annotation, image region]
+caveats:
+  - >-
+    The internal V1c physical representation is a serialized per-image collection using [y_min,
+    x_min, y_max, x_max] coordinates in attached DICOM pixel-array space.
+  - >-
+    ROIs originate from radiologists during routine clinical operations; some DBT frame depths
+    are inferred by an in-house model and marked by ROI_depth_derived.
+  - >-
+    No region identifier is represented: a region is addressable only by its position within one
+    image row's aligned collections.
+  - >-
+    Correspondence among ROIs across simultaneous FFDM, DBT, and synthetic 2D images is not
+    represented.
+  - >-
+    A represented ROI is not automatically equivalent to a clinical finding; same-side
+    attribution is reliable only in the single-finding case.
+topics: [topic.imaging]
+cites:
+  - internal-v2.roi-context#roi-attached-to-image
+  - internal-v2.roi-context#roi-serialized-collections
+  - internal-v2.roi-context#roi-coordinate-geometry
+  - internal-v2.roi-context#roi-identity-and-provenance

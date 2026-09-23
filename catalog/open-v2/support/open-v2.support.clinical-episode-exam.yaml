@@ -1,0 +1,6 @@
+kind: profile_support
+evidence_status: supported
+subject: clinical.episode-exam
+evidence_cites:
+  - open-v2.linked-exam-context#link-meaning
+  - open-v2.linked-exam-context#optional-reference

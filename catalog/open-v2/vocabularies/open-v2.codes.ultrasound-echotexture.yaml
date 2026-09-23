@@ -1,0 +1,12 @@
+kind: vocabulary
+label: Ultrasound echotexture codes
+completeness: unknown
+null_meaning: [undocumented]
+parsing: comma_composed_undocumented
+evidence: [release_legend]
+codes:
+  A: anechoic
+  I: isoechoic
+  M: both hyperechoic and hypoechoic
+  P: hypoechoic
+  R: hyperechoic

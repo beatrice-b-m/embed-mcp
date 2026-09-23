@@ -1,0 +1,19 @@
+kind: profile_support
+representation_status: unresolved
+representation_summary: >-
+  No stable HormoneHist or ProcHist row identifier, clinical-entry identity, or semantic
+  deduplication rule is established.
+representation_caveats:
+  - >-
+    Repeated rows may represent distinct reports, corrections, or duplicates and must not be
+    silently collapsed.
+search_terms:
+  - HormoneHist row key
+  - ProcHist duplicate
+  - patient history identity
+  - history deduplication
+subject: internal-v2.patient-history-context
+topics: [topic.identity, topic.procedure, topic.workflow]
+representation_cites:
+  - internal-v2.patient-history-context#history-identity-and-physical-scope
+  - internal-v2.history-topology-context#tested-groupings

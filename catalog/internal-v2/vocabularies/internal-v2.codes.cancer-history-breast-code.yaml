@@ -1,0 +1,56 @@
+kind: vocabulary
+label: Provisional breast-history code meanings
+completeness: unknown
+parsing: atomic
+evidence: [observed_source_values, inference]
+caveats:
+  - >-
+    Candidate meanings from a work-in-progress internal-dictionary reconciliation; not final
+    verified CancerHist code definitions.
+  - >-
+    Meaning is category-specific; no severity or malignancy rule follows from category
+    membership.
+  - >-
+    Applies only under type B.
+    B, blank, DCG, DCS, and XX have no assigned meaning; a broader pathology dictionary does not
+    resolve their CancerHist occurrences.
+codes:
+  I: Invasive mammary carcinoma
+  DC: Ductal carcinoma in situ
+  DCL: Ductal carcinoma in situ, low grade
+  DCH: Ductal carcinoma in situ, high grade
+  DCC: Ductal carcinoma in situ with comedonecrosis
+  IDC: Invasive ductal carcinoma
+  ID: Invasive ductal carcinoma
+  INC: Inflammatory carcinoma
+  ADH: Atypical ductal hyperplasia
+  II: Invasive and in-situ carcinoma
+  IL: Invasive lobular carcinoma
+  LS: Lobular carcinoma in situ
+  RS: Radial scar
+  BVI: Blood vessel invasion
+  MIM: Metastasis to intramammary lymph node
+  MDN: Metastasis to axillary node
+  PA: Papilloma
+  SQ: Squamous carcinoma
+  AS: Angiosarcoma
+  PD: Paget disease
+  LY: Lymphoma
+  ADE: Adenocarcinoma
+  PT: Phyllodes tumor
+  PTM: Malignant phyllodes tumor
+  CI: Intraductal comedocarcinoma
+  ADC: Adenoid cystic carcinoma
+  ALH: Atypical lobular hyperplasia
+  CC: Colloid or mucinous carcinoma
+  MB: Metastasis to breast
+  ANM: Metastasis to axillary node
+  IPC: Invasive papillary carcinoma
+  ICP: Intracystic papillary carcinoma
+  CS: Carcinosarcoma
+  TC: Tubular carcinoma
+  CM: Carcinoma in males
+  CCH: Carcinoma in children
+  CEB: Carcinoma in ectopic breast
+  CMT: Carcinoma with metaplasia
+  MC: Medullary carcinoma

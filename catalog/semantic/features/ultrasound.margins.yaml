@@ -1,0 +1,8 @@
+kind: feature
+label: Ultrasound margins
+definition: Ultrasound finding-margin code string.
+value_type: coded
+evidence: [release_schema, release_legend]
+search_terms: [ultrasound margins]
+topics: [topic.imaging, topic.ultrasound]
+objects: [imaging_finding]

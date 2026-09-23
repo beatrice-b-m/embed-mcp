@@ -1,0 +1,13 @@
+kind: join
+join_type: projection
+source_completeness: required
+cardinality:
+  targets_per_source: exactly_one
+  sources_per_target: zero_or_more
+evidence: [cross_table_check]
+hazards:
+  - Resolution does not establish equality or authority of every repeated exam attribute.
+caveats:
+  - Resolution was verified for open-v2 and does not explain wide-table construction.
+source_columns: [open-v2.combined_anon#empi_anon, open-v2.combined_anon#acc_anon]
+target_columns: [open-v2.exam_level_anon#empi_anon, open-v2.exam_level_anon#acc_anon]

@@ -1,0 +1,24 @@
+kind: join
+join_type: reference
+source_completeness: optional
+cardinality:
+  targets_per_source: zero_or_more
+  sources_per_target: zero_or_more
+evidence: [release_schema, observed_source_values]
+hazards:
+  - >-
+    Do not inner-join away dangling references or infer the explicit accession solely from
+    linked_study_flag.
+caveats:
+  - >-
+    The optional linked accession can dangle, and conflicting repeated values are data-quality
+    errors; the reference does not by itself construct a complete imaging episode.
+  - >-
+    It represents a co-occurring same-episode exam and must not be used as a prior-or-follow-up
+    link.
+cites:
+  - internal-v2.magview-representation-context#linked-accession-surface
+source_columns:
+  - internal-v2.magview_all_cohorts_pacs_v2_anon#linkedaccession_anon
+target_columns:
+  - internal-v2.magview_all_cohorts_pacs_v2_anon#acc_anon

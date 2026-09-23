@@ -1,0 +1,10 @@
+kind: feature
+label: Anonymized menarche age
+definition: Age at menarche in years.
+value_type: numeric
+evidence: [release_schema, observed_source_values, maintainer_confirmed]
+search_terms: [anonymized menarche age]
+caveats:
+  - Values such as zero are data-quality errors, not documented sentinel codes.
+topics: [topic.demographics, topic.temporal]
+objects: [patient, imaging_exam]

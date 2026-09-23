@@ -1,0 +1,22 @@
+kind: vocabulary
+label: Reported therapy-history codes
+completeness: unknown
+parsing: atomic
+evidence: [maintainer_confirmed, observed_source_values]
+caveats:
+  - These meanings apply only when exposure category is T.
+  - The confirmed codes are not asserted to exhaust every represented source value.
+  - >-
+    The reviewed topology packet also represents ORAL under H and T and TAXOL under H; these
+    category occurrences have unresolved meanings and are not assigned meanings from another
+    category.
+codes:
+  CH: Chemotherapy
+  ET: Endocrine therapy
+  H: Hormonal therapy
+  RT: Radiation therapy
+  RTC: Radiation therapy and chemotherapy
+  RTH: Radiation therapy and hormone therapy
+  TAXOL: Taxol
+  XRT: XRT/radiation therapy
+  O: Other therapy

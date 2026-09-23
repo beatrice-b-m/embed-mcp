@@ -1,0 +1,82 @@
+kind: context
+label: Open-v2 demographic and administrative semantics
+context_type: data_representation
+definition: >-
+  Open-v2 age, ancestry, legal-sex, and release-version fields retain source-specific
+  definitions and deidentification caveats.
+search_terms:
+  - age deidentification
+  - age top coding
+  - Ashkenazi heritage
+  - legal sex
+  - EMBED version
+caveats:
+  - Do not convert data-quality errors into sentinel meanings without field-specific evidence.
+  - >-
+    Administrative legal sex, gender identity, and self-identified heritage are distinct
+    constructs.
+topics: [topic.demographics, topic.exam, topic.temporal, topic.workflow]
+about:
+  - demographics.age_at_exam
+  - demographics.age_at_menarche
+  - demographics.age_at_menopause
+  - demographics.age_at_pregnancy
+  - demographics.ashkenazi_indicator
+  - demographics.gender_description
+  - exam.release_version
+  - open-v2.patients_anon
+  - open-v2.exam_level_anon
+  - open-v2.combined_anon
+claims:
+  age-years-and-quality:
+    statement: >-
+      The age-at-exam, menarche-age, menopause-age, and pregnancy-age fields are measured in
+      years; values such as zero are data-quality errors rather than documented sentinel codes.
+    status: verified
+    caveats:
+      - The specific pregnancy event represented by pregnancy age remains unresolved.
+    sources:
+      - open-v2.release-schema
+      - open-v2.maintainer-clarification-2026-07-29
+  age-at-exam-deidentification:
+    statement: >-
+      Age at exam is calculated from the patient birth date and study date after both dates
+      receive the same within-patient shift; it is otherwise unchanged except that ages greater
+      than or equal to 90 are top-coded to 89.
+    status: verified
+    caveats:
+      - The shifted calendar dates must not be interpreted literally.
+    sources:
+      - open-v2.release-schema
+      - open-v2.maintainer-clarification-2026-07-29
+  ashkenazi-heritage:
+    statement: >-
+      The Ashkenazi indicator represents self-identified Ashkenazi Jewish heritage recorded as a
+      known breast-cancer risk factor.
+    status: verified
+    caveats:
+      - Completeness, reliability, encoding, and null semantics are not established.
+    sources:
+      - open-v2.release-schema
+      - open-v2.maintainer-clarification-2026-07-29
+  legal-sex:
+    statement: >-
+      The released gender-description field represents patient legal sex at the time of the
+      exam.
+    status: verified
+    caveats:
+      - This field does not represent gender identity.
+    sources:
+      - open-v2.release-schema
+      - open-v2.maintainer-clarification-2026-07-29
+  release-version-meaning:
+    statement: >-
+      The EMBED data-version field records the first EMBED release version in which the element
+      was included.
+    status: verified
+    caveats:
+      - It is not a per-row processing-lineage or schema-version guarantee.
+    sources:
+      - open-v2.release-schema
+      - open-v2.release-legend
+      - open-v2.maintainer-clarification-2026-07-29

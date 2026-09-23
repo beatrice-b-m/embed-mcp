@@ -1,0 +1,10 @@
+kind: feature
+label: Biopsy depth
+definition: Depth or grid-location code for a biopsy.
+value_type: coded
+evidence: [release_schema, release_legend]
+search_terms: [biopsy depth]
+caveats:
+  - Letter and grid representations coexist; null semantics are not documented.
+topics: [topic.pathology, topic.procedure, topic.breast_side]
+objects: [procedure]

@@ -1,105 +1,1585 @@
 kind: table
 label: magview_all_cohorts_PACS_v2_anon
 grain: >-
-  one finding-oriented denormalized MagView clinical association row
-  with repeated patient and exam attributes
-  and optional finding, procedure, pathology, and specimen representations
+  one finding-oriented denormalized MagView clinical association row with repeated patient and
+  exam attributes and optional finding, procedure, pathology, and specimen representations
 caveats:
   - No complete durable physical-row key is established.
   - >-
     Repeated patient attributes may vary over time and require an explicit as-of-time choice;
-    repeated exam attributes should agree and conflicts are data-quality errors without a supplied repair policy.
-  - The modality_desc occurrence is preferred; modality remains unmapped because its relationship to modality_desc is unknown.
-  - Unmapped columns remain physically inventoried because their clinical meaning is unresolved or outside supported evidence.
+    repeated exam attributes should agree and conflicts are data-quality errors without a
+    supplied repair policy.
+  - >-
+    The modality_desc occurrence is preferred; modality remains unmapped because its
+    relationship to modality_desc is unknown.
+  - >-
+    Unmapped columns remain physically inventoried because their clinical meaning is unresolved
+    or outside supported evidence.
 keys:
-  # Prototype: the procedure-locator and procedure-specimen-row-locator keys
-  # use columns outside this excerpt.
   patient-locator:
-    columns: [empi_anon]
     key_type: natural
     uniqueness: not_unique
     completeness: complete
     evidence: [release_schema, observed_source_values]
     caveats:
       - The anonymized identifier is release scoped and repeats across wide rows.
+    columns: [empi_anon]
   exam-locator:
-    columns: [acc_anon]
     key_type: natural
     uniqueness: not_unique
     completeness: complete
     evidence: [release_schema, observed_source_values]
     caveats:
       - The accession is source scoped and repeats for findings and downstream attachments.
+    columns: [acc_anon]
   finding-locator:
-    columns: [acc_anon, numfind]
     key_type: natural
     uniqueness: not_unique
     completeness: incomplete
     evidence: [release_schema, observed_source_values]
     caveats:
-      - The clinical identity can occupy repeated rows while procedure, pathology, or descriptor fields differ.
-      - A reserved negative finding number and data-quality conflicts prevent unconditional physical-row uniqueness.
+      - >-
+        The clinical identity can occupy repeated rows while procedure, pathology, or descriptor
+        fields differ.
+      - >-
+        A reserved negative finding number and data-quality conflicts prevent unconditional
+        physical-row uniqueness.
+    columns: [acc_anon, numfind]
+  procedure-locator:
+    key_type: natural
+    uniqueness: unique
+    completeness: incomplete
+    evidence: [release_schema, maintainer_confirmed, observed_source_values]
+    caveats:
+      - >-
+        Within one patient, each complete procedure-date, procedure-type, and biopsy-side tuple
+        identifies one unique procedure.
+      - >-
+        Incomplete procedure fields prevent unconditional use of this locator, and the identity
+        is not durable across releases.
+    columns: [empi_anon, procdate_anon, type, bside]
+  procedure-specimen-row-locator:
+    key_type: natural
+    uniqueness: unique
+    completeness: incomplete
+    evidence: [release_schema, observed_source_values]
+    caveats:
+      - >-
+        Uniqueness applies only when every component is represented and does not establish
+        durable clinical procedure or specimen identity.
+      - >-
+        This specimen-associated physical row locator must not be mistaken for the supported
+        procedure locator.
+      - Most procedure-associated rows cannot use this complete locator.
+    columns:
+      - acc_anon
+      - side
+      - numfind
+      - procdate_anon
+      - pdate_anon
+      - type
+      - technique
+      - biopsite
+      - surgery
+      - lymphsurg
+      - bside
+      - specnum
 objects:
-  # Prototype: excerpt; the table represents further objects.
-  imaging_exam:
-    object: imaging_exam
-    columns: [acc_anon]
+  patient:
     completeness: complete
     authority: preferred
     derivation: projected
-    identity_columns: [acc_anon]
+    identity_scope: >-
+      Release-scoped anonymized patient identity within the internal MagView table.
+    rows_per_instance: one_or_more
+    longitudinal_identity: true
+    caveats:
+      - >-
+        Patient-level attributes repeat across wide rows and may change or disagree; any
+        latest-value use requires an explicit as-of time.
+    object: patient
+    cites:
+      - internal-v2.magview-representation-context#wide-association-grain
+      - internal-v2.magview-representation-context#patient-attribute-variation
+    columns: [empi_anon]
+    identity_columns: [empi_anon]
+  breast_imaging_episode:
+    completeness: partial
+    authority: reference
+    derivation: projected
+    caveats:
+      - The optional linked accession is not a complete episode identity or construction rule.
+      - >-
+        The reference can dangle; conflicting values across repeated rows are data-quality
+        errors.
+    object: breast_imaging_episode
+    cites:
+      - internal-v2.magview-representation-context#linked-accession-surface
+    columns: [acc_anon, linkedaccession_anon]
+  imaging_exam:
+    completeness: complete
+    authority: preferred
+    derivation: projected
     identity_scope: Release-scoped imaging accession within the internal MagView source.
     rows_per_instance: one_or_more
     longitudinal_identity: false
-    # Prototype: cites internal-v2.magview-representation-context claims,
-    # which are outside this slice.
     caveats:
-      - Exam attributes should agree across repeated rows; conflicts are data-quality errors without a supplied repair rule.
-  imaging_finding:
-    object: imaging_finding
-    columns: [acc_anon, side, numfind]
+      - >-
+        Exam attributes should agree across repeated rows; conflicts are data-quality errors
+        without a supplied repair rule.
+    object: imaging_exam
+    cites:
+      - internal-v2.magview-representation-context#wide-association-grain
+      - internal-v2.magview-representation-context#exam-attribute-inconsistency
+    columns: [acc_anon]
+    identity_columns: [acc_anon]
+  breast_side:
     completeness: partial
     authority: preferred
     derivation: projected
-    identity_columns: [acc_anon, numfind]
     identity_scope: >-
-      Ordinary clinical finding identity within one imaging accession;
-      side is an attribute rather than an identity component.
+      Unilateral left or right breast-side identity within one imaging accession; bilateral B
+      and null occurrences project to both unilateral identities.
     rows_per_instance: one_or_more
     longitudinal_identity: false
+    caveats:
+      - >-
+        Finding-side B and null are bilateral projections to both unilateral breast-side
+        identities; neither creates a third bilateral identity.
+    object: breast_side
+    cites:
+      - internal-v2.magview-coded-values-context#laterality-roles
+    columns: [acc_anon, side]
+    identity_columns: [acc_anon, side]
     reserved_exceptions:
-      synthetic-contralateral-negative:
-        column: numfind
+      side=B:
+        representation: B
+        meaning: >-
+          Bilateral finding-side occurrence that maps to both left and right breast-side
+          identities.
+        caveats:
+          - Do not create a third bilateral breast-side identity.
+        column: side
+        cites:
+          - internal-v2.magview-coded-values-context#laterality-roles
+  imaging_finding:
+    completeness: partial
+    authority: preferred
+    derivation: projected
+    identity_scope: >-
+      Ordinary clinical finding identity within one imaging accession; side is an attribute
+      rather than an identity component.
+    rows_per_instance: one_or_more
+    longitudinal_identity: false
+    caveats:
+      - >-
+        The locator can repeat across procedure, pathology, specimen, or differing descriptor
+        rows.
+      - Finding identity is accession scoped and does not persist longitudinally.
+    object: imaging_finding
+    cites:
+      - internal-v2.magview-representation-context#finding-identity-scope
+      - internal-v2.magview-representation-context#finding-procedure-repetition
+    columns: [acc_anon, side, numfind]
+    identity_columns: [acc_anon, numfind]
+    reserved_exceptions:
+      numfind=-9:
         representation: "-9"
-        meaning: Synthetic contralateral BI-RADS 1 negative finding added by the EMBED extraction.
+        meaning: >-
+          Synthetic contralateral BI-RADS 1 negative finding added by the EMBED extraction.
         caveats:
           - It is not an originally documented source finding.
+        column: numfind
+        cites:
+          - internal-v2.magview-representation-context#synthetic-contralateral-negative-finding
+  imaging_interpretation:
+    completeness: partial
+    authority: preferred
+    derivation: projected
     caveats:
-      - The locator can repeat across procedure, pathology, specimen, or differing descriptor rows.
-      - Finding identity is accession scoped and does not persist longitudinally.
-# Prototype: an excerpt of 5 of the table's 152 columns, in physical order.
+      - >-
+        Assessment and recommendation are co-located but no independent interpretation identity
+        or timestamp is supplied.
+    object: imaging_interpretation
+    cites:
+      - internal-v2.magview-coded-values-context#legend-continuity
+    columns: [asses, recc]
+  procedure:
+    completeness: partial
+    authority: preferred
+    derivation: projected
+    identity_scope: >-
+      Release-scoped procedure identity; within one patient the identifying tuple is procedure
+      date, procedure type, and biopsy side.
+    rows_per_instance: one_or_more
+    longitudinal_identity: false
+    caveats:
+      - >-
+        Within a patient, procedure date, procedure type, and biopsy side identify one unique
+        procedure.
+      - >-
+        The identity is incomplete when any component is absent and is not durable across
+        releases; one finding with multiple procedures occupies repeated rows.
+    object: procedure
+    cites:
+      - internal-v2.magview-pathology-context#procedure-pathology-attachment
+    columns:
+      - empi_anon
+      - acc_anon
+      - numfind
+      - procdate_anon
+      - type
+      - technique
+      - biopsite
+      - surgery
+      - lymphsurg
+      - bside
+    identity_columns: [empi_anon, procdate_anon, type, bside]
+  pathology_specimen:
+    completeness: unknown
+    authority: unspecified
+    derivation: projected
+    caveats:
+      - >-
+        Specimen-level presence, completeness, reliability, identity, and cardinality are
+        unresolved; current internal operations should not rely on this binding.
+      - >-
+        Specimen number is source scoped, not globally unique, and can repeat across physical
+        rows.
+      - No durable specimen identity or specimen-collection timestamp is established.
+    object: pathology_specimen
+    cites:
+      - internal-v2.magview-pathology-context#specimen-surface
+    columns:
+      - acc_anon
+      - side
+      - numfind
+      - procdate_anon
+      - pdate_anon
+      - type
+      - technique
+      - biopsite
+      - surgery
+      - lymphsurg
+      - bside
+      - specnum
+  pathology_observation:
+    completeness: partial
+    authority: preferred
+    derivation: projected
+    caveats:
+      - >-
+        Descriptor slots share one dictionary; slot position and duplicate occurrences do not
+        imply weight or chronology.
+      - Some represented descriptor code meanings remain unresolved.
+    object: pathology_observation
+    cites:
+      - internal-v2.magview-pathology-context#procedure-pathology-attachment
+      - internal-v2.magview-pathology-context#path-severity-derived-occurrence
+    columns: [path1, path2, path3, path4, path5, path6, path7, path8, path9, path10]
+  pathology_diagnosis:
+    completeness: partial
+    authority: preferred
+    derivation: projected
+    caveats:
+      - >-
+        The row-level severity is descriptor derived and not a supplied reduction across every
+        row linked to one finding.
+      - >-
+        Severity code 6 is invalid and has no expected meaning, while regional-node TNM code
+        meanings remain unresolved.
+    object: pathology_diagnosis
+    cites:
+      - internal-v2.magview-pathology-context#path-severity-derived-occurrence
+    columns: [path_severity, hgrade, tnmpt, tnmpn, tnmm, tnmdesc, tnmr, stage]
 columns:
   empi_anon:
     type: int64
     nullable: true
+    maps:
+      - {id: identity.patient_identifier, mapping: direct}
+  studydate_anon:
+    type: timestamp[ns]
+    nullable: true
+    maps:
+      - id: exam.study_date
+        mapping: direct
+        notes:
+          - >-
+            Profile-specific maintainer confirmation establishes exam occurrence time and a
+            consistent patient-specific anonymization shift.
   acc_anon:
     type: int64
     nullable: true
+    maps:
+      - {id: exam.accession_identifier, mapping: direct}
+  linkedaccession_anon:
+    type: int64
+    nullable: true
+    maps:
+      - {id: imaging.linked_accession_identifier, mapping: direct}
+  desc:
+    type: string
+    nullable: true
+    maps:
+      - {id: exam.procedure_description, mapping: direct}
+  modality_desc:
+    type: string
+    nullable: true
+    maps:
+      - id: exam.modality
+        mapping: direct
+        vocabulary: internal-v2.codes.exam-modality
+        notes:
+          - >-
+            This is the preferred internal V2 modality occurrence; the separate modality column
+            remains unmapped.
+  loc_num_anon:
+    type: string
+    nullable: true
+    maps:
+      - {id: exam.location, mapping: direct, vocabulary: internal-v2.codes.exam-location}
+  accession_type:
+    type: string
+    nullable: true
+    maps:
+      - id: internal-v2.exam.accession_source_type
+        mapping: direct
+        vocabulary: internal-v2.codes.exam-accession-source-type
+        accession_role: current
+  linkedaccession_type:
+    type: string
+    nullable: true
+    maps:
+      - id: internal-v2.exam.accession_source_type
+        mapping: conditional
+        vocabulary: internal-v2.codes.exam-accession-source-type
+        accession_role: linked
+    interpretations:
+      "null":
+        representation: "null"
+        meaning: >-
+          No linked-accession source type is represented; absence of a linked exam is not proved
+          by this field alone
+        status: reconciled
+        cites:
+          - internal-v2.magview-representation-context#linked-accession-surface
+  mg_exam_type:
+    type: string
+    nullable: true
+    maps:
+      - id: exam.mammography_type
+        mapping: direct
+        vocabulary: internal-v2.codes.exam-mammography-type
+  vtype:
+    type: string
+    nullable: true
+    maps:
+      - {id: exam.visit_type, mapping: direct, vocabulary: internal-v2.codes.exam-visit-type}
+  recc:
+    type: string
+    nullable: true
+    maps:
+      - id: imaging.recommendation
+        mapping: direct
+        vocabulary: internal-v2.codes.imaging-recommendation
+  tissueden:
+    type: int8
+    nullable: true
+    maps:
+      - id: exam.tissue_density
+        mapping: direct
+        vocabulary: internal-v2.codes.exam-tissue-density
   side:
     type: string
     nullable: true
-    # Prototype: maps to breast.side (role: finding), which is outside this slice.
+    maps:
+      - id: breast.side
+        mapping: direct
+        vocabulary: internal-v2.codes.breast-side
+        role: finding
+    interpretations:
+      B:
+        representation: B
+        meaning: >-
+          Bilateral finding side, projecting semantically to both the left and right breast-side
+          identities for the exam
+        status: verified
+        caveats:
+          - B does not create a third bilateral breast-side identity.
+        cites:
+          - internal-v2.magview-coded-values-context#laterality-roles
+      "null":
+        representation: "null"
+        meaning: >-
+          Bilateral finding side, equivalent to source code B and projecting semantically to
+          both the left and right breast-side identities for the exam
+        status: verified
+        caveats:
+          - Null in this finding-side occurrence is not unknown laterality.
+        cites:
+          - internal-v2.magview-coded-values-context#laterality-roles
   numfind:
     type: int8
     nullable: true
+    maps:
+      - {id: imaging.finding_number, mapping: direct}
+    interpretations:
+      "-9":
+        representation: "-9"
+        meaning: >-
+          Synthetic contralateral BI-RADS 1 negative finding implied by a bilateral exam with a
+          unilateral non-negative finding
+        status: verified
+        caveats:
+          - >-
+            This is an extraction-added finding rather than an originally documented source
+            finding.
+        cites:
+          - internal-v2.magview-representation-context#synthetic-contralateral-negative-finding
   asses:
     type: string
     nullable: true
     maps:
-      - {id: imaging.assessment, mapping: direct, vocabulary: internal-v2.codes.imaging-assessment}
+      - id: imaging.assessment
+        mapping: direct
+        vocabulary: internal-v2.codes.imaging-assessment
     interpretations:
-      lowercase-s:
+      s:
         representation: s
         meaning: Suspicious after supported uppercase and surrounding-whitespace normalization
         status: reconciled
-        cites: [internal-v2.magview-coded-values-context#code-normalization]
+        cites:
+          - internal-v2.magview-coded-values-context#code-normalization
+  total_L_find:
+    type: int8
+    nullable: true
+    maps:
+      - {id: exam.left_finding_total, mapping: derived}
+  total_R_find:
+    type: int8
+    nullable: true
+    maps:
+      - {id: exam.right_finding_total, mapping: derived}
+  path_severity:
+    type: int8
+    nullable: true
+    maps:
+      - id: pathology.severity
+        mapping: derived
+        vocabulary: internal-v2.codes.pathology-severity
+    interpretations:
+      "6":
+        representation: "6"
+        meaning: >-
+          Invalid source value with no expected meaning outside the governed clinical severity
+          scale
+        status: verified
+        caveats:
+          - >-
+            Exclude or explicitly flag this value rather than assigning or ordering it as a
+            diagnosis group.
+        cites:
+          - internal-v2.magview-pathology-context#path-severity-six
+      "null":
+        representation: "null"
+        meaning: >-
+          No pathology severity or path1 through path10 descriptor is attached to this row
+          occurrence
+        status: reconciled
+        caveats:
+          - >-
+            Null is not a benign, negative, or code-6 category; any populated descriptor
+            alongside null severity is a data-quality error.
+        cites:
+          - internal-v2.magview-pathology-context#path-severity-derived-occurrence
+  cancer_outcome_registry_id:
+    type: int8
+    nullable: true
+    maps:
+      - id: internal-v2.technical.cancer_registry_record_identifier
+        mapping: conditional
+        notes:
+          - >-
+            This technical reference is meaningful only as the tuple (empi_anon,
+            cancer_outcome_registry_id) against the separate registry-derived table; it is not
+            itself an outcome.
+        composite_with: empi_anon
+  mass:
+    type: int8
+    nullable: true
+    maps:
+      - {id: mammography.mass_present, mapping: direct}
+    interpretations:
+      "0":
+        representation: "0"
+        meaning: Feature or state is not represented
+        status: reconciled
+        cites:
+          - internal-v2.magview-coded-values-context#legend-continuity
+      "1":
+        representation: "1"
+        meaning: Feature or state is represented
+        status: reconciled
+        cites:
+          - internal-v2.magview-coded-values-context#legend-continuity
+  asymmetry:
+    type: int8
+    nullable: true
+    maps:
+      - {id: mammography.asymmetry_present, mapping: direct}
+    interpretations:
+      "0":
+        representation: "0"
+        meaning: Feature or state is not represented
+        status: reconciled
+        cites:
+          - internal-v2.magview-coded-values-context#legend-continuity
+      "1":
+        representation: "1"
+        meaning: Feature or state is represented
+        status: reconciled
+        cites:
+          - internal-v2.magview-coded-values-context#legend-continuity
+  arch_distortion:
+    type: int8
+    nullable: true
+    maps:
+      - {id: mammography.architectural_distortion_present, mapping: direct}
+    interpretations:
+      "0":
+        representation: "0"
+        meaning: Feature or state is not represented
+        status: reconciled
+        cites:
+          - internal-v2.magview-coded-values-context#legend-continuity
+      "1":
+        representation: "1"
+        meaning: Feature or state is represented
+        status: reconciled
+        cites:
+          - internal-v2.magview-coded-values-context#legend-continuity
+  calc:
+    type: int8
+    nullable: true
+    maps:
+      - {id: mammography.calcification_present, mapping: direct}
+    interpretations:
+      "0":
+        representation: "0"
+        meaning: Feature or state is not represented
+        status: reconciled
+        cites:
+          - internal-v2.magview-coded-values-context#legend-continuity
+      "1":
+        representation: "1"
+        meaning: Feature or state is represented
+        status: reconciled
+        cites:
+          - internal-v2.magview-coded-values-context#legend-continuity
+  massshape:
+    type: string
+    nullable: true
+    maps:
+      - id: mammography.mass_shape
+        mapping: direct
+        vocabulary: internal-v2.codes.mammography-mass-shape
+  massmargin:
+    type: string
+    nullable: true
+    maps:
+      - id: mammography.mass_margin
+        mapping: direct
+        vocabulary: internal-v2.codes.mammography-mass-margin
+  massdens:
+    type: string
+    nullable: true
+    maps:
+      - id: mammography.mass_density
+        mapping: direct
+        vocabulary: internal-v2.codes.mammography-mass-density
+  calcfind:
+    type: string
+    nullable: true
+    maps:
+      - id: mammography.calcification_morphology
+        mapping: direct
+        vocabulary: internal-v2.codes.mammography-calcification-morphology
+  calcdistri:
+    type: string
+    nullable: true
+    maps:
+      - id: mammography.calcification_distribution
+        mapping: direct
+        vocabulary: internal-v2.codes.mammography-calcification-distribution
+  calcnumber:
+    type: string
+    nullable: true
+    maps:
+      - {id: mammography.calcification_number, mapping: direct}
+    interpretations:
+      "-2.0":
+        representation: "-2.0"
+        meaning: Unresolved exceptional calcification-number representation
+        status: unresolved
+        caveats:
+          - Do not treat this source string as a validated count.
+        cites:
+          - internal-v2.magview-coded-values-context#numeric-exceptions
+      "-3.0":
+        representation: "-3.0"
+        meaning: Unresolved exceptional calcification-number representation
+        status: unresolved
+        caveats:
+          - Do not treat this source string as a validated count.
+        cites:
+          - internal-v2.magview-coded-values-context#numeric-exceptions
+      "-5.0":
+        representation: "-5.0"
+        meaning: Unresolved exceptional calcification-number representation
+        status: unresolved
+        caveats:
+          - Do not treat this source string as a validated count.
+        cites:
+          - internal-v2.magview-coded-values-context#numeric-exceptions
+      "-6.0":
+        representation: "-6.0"
+        meaning: Unresolved exceptional calcification-number representation
+        status: unresolved
+        caveats:
+          - Do not treat this source string as a validated count.
+        cites:
+          - internal-v2.magview-coded-values-context#numeric-exceptions
+  otherfind:
+    type: string
+    nullable: true
+    maps:
+      - id: mammography.other_finding
+        mapping: direct
+        vocabulary: internal-v2.codes.mammography-other-finding
+  implanfind:
+    type: string
+    nullable: true
+    maps:
+      - id: mammography.implant_finding
+        mapping: direct
+        vocabulary: internal-v2.codes.mammography-implant-finding
+  consistent:
+    type: string
+    nullable: true
+    maps:
+      - id: mammography.consistent_with
+        mapping: direct
+        vocabulary: internal-v2.codes.mammography-consistent-with
+  procdate_anon:
+    type: timestamp[ns]
+    nullable: true
+    maps:
+      - id: pathology.procedure_date
+        mapping: direct
+        notes:
+          - >-
+            Profile-specific maintainer confirmation establishes procedure occurrence time and a
+            consistent patient-specific anonymization shift.
+  pdate_anon:
+    type: timestamp[ns]
+    nullable: true
+    maps:
+      - id: pathology.report_date
+        mapping: ambiguous
+        notes:
+          - >-
+            Believed to represent pathology-report documentation time, but the interpretation
+            remains provisional and the field is rarely used in current internal workflows.
+  mdelayed.1:
+    type: string
+    nullable: true
+    maps:
+      - id: mri.delayed_kinetics_secondary
+        mapping: unresolved
+        notes:
+          - >-
+            The comparison dictionaries do not establish the role of this secondary
+            delayed-kinetics occurrence.
+  secondaryfindings:
+    type: string
+    nullable: true
+    maps:
+      - id: ultrasound.secondary_findings
+        mapping: direct
+        vocabulary: internal-v2.codes.ultrasound-secondary-findings
+  ethnic:
+    type: int16
+    nullable: true
+  livebirths:
+    type: int8
+    nullable: true
+  modality:
+    type: string
+    nullable: true
+  dt_final_anon:
+    type: timestamp[ns]
+    nullable: true
+  dt_rel_anon:
+    type: timestamp[ns]
+    nullable: true
+  size:
+    type: int16
+    nullable: true
+    maps:
+      - {id: imaging.finding_size, mapping: direct}
+    interpretations:
+      "-99":
+        representation: "-99"
+        meaning: >-
+          Unresolved exceptional source representation; not a validated physical measurement
+        status: unresolved
+        cites:
+          - internal-v2.magview-coded-values-context#numeric-exceptions
+  location:
+    type: string
+    nullable: true
+    maps:
+      - {id: imaging.location, mapping: direct, vocabulary: internal-v2.codes.breast-location}
+  depth:
+    type: string
+    nullable: true
+    maps:
+      - {id: imaging.depth, mapping: direct, vocabulary: internal-v2.codes.breast-depth}
+  distance:
+    type: int16
+    nullable: true
+    maps:
+      - {id: imaging.distance, mapping: direct}
+    interpretations:
+      "-2":
+        representation: "-2"
+        meaning: >-
+          Unresolved exceptional source representation; not a validated physical measurement
+        status: unresolved
+        cites:
+          - internal-v2.magview-coded-values-context#numeric-exceptions
+  stable:
+    type: int8
+    nullable: true
+    maps:
+      - {id: imaging.stable_flag, mapping: direct}
+    interpretations:
+      "0":
+        representation: "0"
+        meaning: Feature or state is not represented
+        status: reconciled
+        cites:
+          - internal-v2.magview-coded-values-context#legend-continuity
+      "1":
+        representation: "1"
+        meaning: Feature or state is represented
+        status: reconciled
+        cites:
+          - internal-v2.magview-coded-values-context#legend-continuity
+  new:
+    type: int8
+    nullable: true
+    maps:
+      - {id: imaging.new_flag, mapping: direct}
+    interpretations:
+      "0":
+        representation: "0"
+        meaning: Feature or state is not represented
+        status: reconciled
+        cites:
+          - internal-v2.magview-coded-values-context#legend-continuity
+      "1":
+        representation: "1"
+        meaning: Feature or state is represented
+        status: reconciled
+        cites:
+          - internal-v2.magview-coded-values-context#legend-continuity
+  changed:
+    type: string
+    nullable: true
+    maps:
+      - {id: imaging.change, mapping: direct, vocabulary: internal-v2.codes.imaging-change}
+  USFinding:
+    type: string
+    nullable: true
+    maps:
+      - id: ultrasound.finding
+        mapping: direct
+        vocabulary: internal-v2.codes.ultrasound-finding
+  shape:
+    type: string
+    nullable: true
+    maps:
+      - {id: ultrasound.shape, mapping: direct, vocabulary: internal-v2.codes.ultrasound-shape}
+  orientation:
+    type: string
+    nullable: true
+    maps:
+      - id: ultrasound.orientation
+        mapping: direct
+        vocabulary: internal-v2.codes.ultrasound-orientation
+  margins:
+    type: string
+    nullable: true
+    maps:
+      - id: ultrasound.margins
+        mapping: direct
+        vocabulary: internal-v2.codes.ultrasound-margins
+  modifers:
+    type: string
+    nullable: true
+    maps:
+      - id: ultrasound.modifiers
+        mapping: direct
+        vocabulary: internal-v2.codes.ultrasound-modifiers
+  echotexture:
+    type: string
+    nullable: true
+    maps:
+      - id: ultrasound.echotexture
+        mapping: direct
+        vocabulary: internal-v2.codes.ultrasound-echotexture
+  posteriorfeatures:
+    type: string
+    nullable: true
+    maps:
+      - id: ultrasound.posterior_features
+        mapping: direct
+        vocabulary: internal-v2.codes.ultrasound-posterior-features
+  vascularity:
+    type: string
+    nullable: true
+    maps:
+      - id: ultrasound.vascularity
+        mapping: direct
+        vocabulary: internal-v2.codes.ultrasound-vascularity
+  surroundingtissue:
+    type: string
+    nullable: true
+    maps:
+      - id: ultrasound.surrounding_tissue
+        mapping: direct
+        vocabulary: internal-v2.codes.ultrasound-surrounding-tissue
+  mfocus:
+    type: string
+    nullable: true
+    maps:
+      - {id: mri.focus, mapping: direct, vocabulary: internal-v2.codes.mri-focus}
+  mshape:
+    type: string
+    nullable: true
+    maps:
+      - {id: mri.mass_shape, mapping: direct, vocabulary: internal-v2.codes.mri-mass-shape}
+  mmargin:
+    type: string
+    nullable: true
+    maps:
+      - {id: mri.mass_margin, mapping: direct, vocabulary: internal-v2.codes.mri-mass-margin}
+  menhance:
+    type: string
+    nullable: true
+    maps:
+      - id: mri.internal_enhancement
+        mapping: direct
+        vocabulary: internal-v2.codes.mri-internal-enhancement
+  mdist:
+    type: string
+    nullable: true
+    maps:
+      - {id: mri.distribution, mapping: direct, vocabulary: internal-v2.codes.mri-distribution}
+  mpattern:
+    type: string
+    nullable: true
+    maps:
+      - {id: mri.pattern, mapping: direct, vocabulary: internal-v2.codes.mri-pattern}
+  msym:
+    type: string
+    nullable: true
+    maps:
+      - {id: mri.symmetry, mapping: direct, vocabulary: internal-v2.codes.mri-symmetry}
+  massoc:
+    type: string
+    nullable: true
+    maps:
+      - id: mri.associated_finding
+        mapping: direct
+        vocabulary: internal-v2.codes.mri-associated-finding
+  mother:
+    type: string
+    nullable: true
+    maps:
+      - id: mri.other_finding
+        mapping: unresolved
+        vocabulary: internal-v2.codes.mri-other-finding
+        notes:
+          - >-
+            The represented MRI other-finding codes are absent from both comparison
+            dictionaries.
+  minitial:
+    type: string
+    nullable: true
+    maps:
+      - id: mri.initial_kinetics
+        mapping: direct
+        vocabulary: internal-v2.codes.mri-initial-kinetics
+  mdelayed:
+    type: string
+    nullable: true
+    maps:
+      - id: mri.delayed_kinetics
+        mapping: direct
+        vocabulary: internal-v2.codes.mri-delayed-kinetics
+  msize:
+    type: int8
+    nullable: true
+    maps:
+      - {id: mri.size, mapping: direct}
+    interpretations:
+      "0":
+        representation: "0"
+        meaning: >-
+          Unresolved MRI-size representation with undocumented unit and missingness semantics
+        status: unresolved
+        cites:
+          - internal-v2.magview-coded-values-context#numeric-exceptions
+  mbpe_level:
+    type: string
+    nullable: true
+    maps:
+      - id: mri.background_parenchymal_enhancement
+        mapping: direct
+        vocabulary: internal-v2.codes.mri-background-parenchymal-enhancement
+  MBPE_SYM:
+    type: string
+    nullable: true
+    maps:
+      - id: mri.background_parenchymal_enhancement_symmetry
+        mapping: direct
+        vocabulary: internal-v2.codes.mri-background-parenchymal-enhancement-symmetry
+  type:
+    type: string
+    nullable: true
+    maps:
+      - id: pathology.biopsy_type
+        mapping: direct
+        vocabulary: internal-v2.codes.pathology-biopsy-type
+  technique:
+    type: string
+    nullable: true
+    maps:
+      - id: pathology.biopsy_technique
+        mapping: direct
+        vocabulary: internal-v2.codes.pathology-biopsy-technique
+  biopsite:
+    type: string
+    nullable: true
+    maps:
+      - id: internal-v2.procedure.biopsy_site
+        mapping: direct
+        vocabulary: internal-v2.codes.procedure-biopsy-site
+  bcomp:
+    type: string
+    nullable: true
+    maps:
+      - id: pathology.biopsy_complication
+        mapping: direct
+        vocabulary: internal-v2.codes.pathology-biopsy-complication
+  diag_out:
+    type: string
+    nullable: true
+    maps:
+      - id: internal-v2.procedure.diagnostic_disposition
+        mapping: direct
+        vocabulary: internal-v2.codes.procedure-diagnostic-disposition
+  surgery:
+    type: string
+    nullable: true
+    maps:
+      - id: pathology.surgery_type
+        mapping: direct
+        vocabulary: internal-v2.codes.pathology-surgery-type
+  lymphsurg:
+    type: string
+    nullable: true
+    maps:
+      - id: pathology.lymph_node_surgery_type
+        mapping: direct
+        vocabulary: internal-v2.codes.pathology-lymph-node-surgery-type
+  bside:
+    type: string
+    nullable: true
+    maps:
+      - id: pathology.biopsy_side
+        mapping: direct
+        vocabulary: internal-v2.codes.breast-side
+        role: biopsy
+    interpretations:
+      "null":
+        representation: "null"
+        meaning: >-
+          Biopsy laterality is not represented for this occurrence and must not be filled from
+          finding side
+        status: unresolved
+        cites:
+          - internal-v2.magview-coded-values-context#laterality-roles
+  path1:
+    type: string
+    nullable: true
+    maps:
+      - id: pathology.diagnosis_code_slot
+        mapping: direct
+        vocabulary: internal-v2.codes.pathology-finding-codes
+        slot: "1"
+  path2:
+    type: string
+    nullable: true
+    maps:
+      - id: pathology.diagnosis_code_slot
+        mapping: direct
+        vocabulary: internal-v2.codes.pathology-finding-codes
+        slot: "2"
+  path3:
+    type: string
+    nullable: true
+    maps:
+      - id: pathology.diagnosis_code_slot
+        mapping: direct
+        vocabulary: internal-v2.codes.pathology-finding-codes
+        slot: "3"
+  path4:
+    type: string
+    nullable: true
+    maps:
+      - id: pathology.diagnosis_code_slot
+        mapping: direct
+        vocabulary: internal-v2.codes.pathology-finding-codes
+        slot: "4"
+  path5:
+    type: string
+    nullable: true
+    maps:
+      - id: pathology.diagnosis_code_slot
+        mapping: direct
+        vocabulary: internal-v2.codes.pathology-finding-codes
+        slot: "5"
+  path6:
+    type: string
+    nullable: true
+    maps:
+      - id: pathology.diagnosis_code_slot
+        mapping: direct
+        vocabulary: internal-v2.codes.pathology-finding-codes
+        slot: "6"
+  path7:
+    type: string
+    nullable: true
+    maps:
+      - id: pathology.diagnosis_code_slot
+        mapping: direct
+        vocabulary: internal-v2.codes.pathology-finding-codes
+        slot: "7"
+  path8:
+    type: string
+    nullable: true
+    maps:
+      - id: pathology.diagnosis_code_slot
+        mapping: direct
+        vocabulary: internal-v2.codes.pathology-finding-codes
+        slot: "8"
+  path9:
+    type: string
+    nullable: true
+    maps:
+      - id: pathology.diagnosis_code_slot
+        mapping: direct
+        vocabulary: internal-v2.codes.pathology-finding-codes
+        slot: "9"
+  path10:
+    type: string
+    nullable: true
+    maps:
+      - id: pathology.diagnosis_code_slot
+        mapping: direct
+        vocabulary: internal-v2.codes.pathology-finding-codes
+        slot: "10"
+  concord:
+    type: string
+    nullable: true
+    maps:
+      - id: internal-v2.pathology.concordance_status
+        mapping: direct
+        vocabulary: internal-v2.codes.pathology-concordance-status
+  hgrade:
+    type: string
+    nullable: true
+    maps:
+      - id: internal-v2.pathology.histologic_grade
+        mapping: direct
+        vocabulary: internal-v2.codes.pathology-histologic-grade
+  tnmpt:
+    type: string
+    nullable: true
+    maps:
+      - id: internal-v2.pathology.tnm_primary_tumor
+        mapping: direct
+        vocabulary: internal-v2.codes.pathology-tnm-primary-tumor
+  tnmpn:
+    type: string
+    nullable: true
+    maps:
+      - id: internal-v2.pathology.tnm_regional_nodes
+        mapping: unresolved
+        vocabulary: internal-v2.codes.pathology-tnm-regional-nodes
+        notes:
+          - >-
+            Both comparison dictionaries provide an incompatible pT code dictionary for this
+            pN-labeled field.
+  tnmm:
+    type: string
+    nullable: true
+    maps:
+      - id: internal-v2.pathology.tnm_distant_metastasis
+        mapping: direct
+        vocabulary: internal-v2.codes.pathology-tnm-distant-metastasis
+  tnmdesc:
+    type: string
+    nullable: true
+    maps:
+      - id: internal-v2.pathology.tnm_descriptors
+        mapping: direct
+        vocabulary: internal-v2.codes.pathology-tnm-descriptors
+  tnmr:
+    type: string
+    nullable: true
+    maps:
+      - id: internal-v2.pathology.tnm_residual_tumor
+        mapping: direct
+        vocabulary: internal-v2.codes.pathology-tnm-residual-tumor
+  stage:
+    type: string
+    nullable: true
+    maps:
+      - {id: internal-v2.pathology.tnm_stage_comment, mapping: direct}
+  loc:
+    type: string
+    nullable: true
+    maps:
+      - id: pathology.biopsy_location
+        mapping: direct
+        vocabulary: internal-v2.codes.breast-location
+  bdepth:
+    type: string
+    nullable: true
+    maps:
+      - id: pathology.biopsy_depth
+        mapping: direct
+        vocabulary: internal-v2.codes.breast-depth
+  bdistance:
+    type: double
+    nullable: true
+    maps:
+      - {id: pathology.biopsy_distance, mapping: direct}
+    interpretations:
+      "-2":
+        representation: "-2"
+        meaning: >-
+          Unresolved exceptional source representation; not a validated physical measurement
+        status: unresolved
+        cites:
+          - internal-v2.magview-coded-values-context#numeric-exceptions
+  focality:
+    type: string
+    nullable: true
+    maps:
+      - id: internal-v2.pathology.focality
+        mapping: direct
+        vocabulary: internal-v2.codes.pathology-focality
+  nfocal:
+    type: int8
+    nullable: true
+    maps:
+      - {id: internal-v2.pathology.focus_count, mapping: direct}
+  specsize:
+    type: int16
+    nullable: true
+    maps:
+      - {id: internal-v2.pathology.specimen_size, mapping: direct}
+  specsize2:
+    type: int16
+    nullable: true
+  specsize3:
+    type: int16
+    nullable: true
+  dcissize:
+    type: int16
+    nullable: true
+    maps:
+      - {id: internal-v2.pathology.dcis_size, mapping: direct}
+  invsize:
+    type: int16
+    nullable: true
+    maps:
+      - {id: internal-v2.pathology.invasive_size, mapping: direct}
+    interpretations:
+      "-4":
+        representation: "-4"
+        meaning: >-
+          Unresolved exceptional source representation; not a validated physical measurement
+        status: unresolved
+        cites:
+          - internal-v2.magview-coded-values-context#numeric-exceptions
+      "-2":
+        representation: "-2"
+        meaning: >-
+          Unresolved exceptional source representation; not a validated physical measurement
+        status: unresolved
+        cites:
+          - internal-v2.magview-coded-values-context#numeric-exceptions
+      "-1":
+        representation: "-1"
+        meaning: >-
+          Unresolved exceptional source representation; not a validated physical measurement
+        status: unresolved
+        cites:
+          - internal-v2.magview-coded-values-context#numeric-exceptions
+  superior:
+    type: int16
+    nullable: true
+    maps:
+      - id: internal-v2.pathology.specimen_margin_distance
+        mapping: direct
+        direction: superior
+    interpretations:
+      "-1":
+        representation: "-1"
+        meaning: >-
+          Unresolved exceptional source representation; not a validated physical measurement
+        status: unresolved
+        cites:
+          - internal-v2.magview-coded-values-context#numeric-exceptions
+  inferior:
+    type: double
+    nullable: true
+    maps:
+      - id: internal-v2.pathology.specimen_margin_distance
+        mapping: direct
+        direction: inferior
+  anterior:
+    type: double
+    nullable: true
+    maps:
+      - id: internal-v2.pathology.specimen_margin_distance
+        mapping: direct
+        direction: anterior
+  posterior:
+    type: double
+    nullable: true
+    maps:
+      - id: internal-v2.pathology.specimen_margin_distance
+        mapping: direct
+        direction: posterior
+    interpretations:
+      "-1":
+        representation: "-1"
+        meaning: >-
+          Unresolved exceptional source representation; not a validated physical measurement
+        status: unresolved
+        cites:
+          - internal-v2.magview-coded-values-context#numeric-exceptions
+  medial:
+    type: int16
+    nullable: true
+    maps:
+      - {id: internal-v2.pathology.specimen_margin_distance, mapping: direct, direction: medial}
+  lateral:
+    type: double
+    nullable: true
+    maps:
+      - id: internal-v2.pathology.specimen_margin_distance
+        mapping: direct
+        direction: lateral
+  specinteg:
+    type: string
+    nullable: true
+    maps:
+      - id: internal-v2.pathology.specimen_integrity
+        mapping: direct
+        vocabulary: internal-v2.codes.pathology-specimen-integrity
+    interpretations:
+      N:
+        representation: N
+        meaning: Unresolved internal specimen-integrity code
+        status: unresolved
+        cites:
+          - internal-v2.magview-coded-values-context#unlisted-source-codes
+  specnum:
+    type: int8
+    nullable: true
+    maps:
+      - {id: internal-v2.pathology.specimen_number, mapping: direct}
+  specembed:
+    type: string
+    nullable: true
+    maps:
+      - id: internal-v2.pathology.specimen_embedded_status
+        mapping: unresolved
+        vocabulary: internal-v2.codes.pathology-specimen-embedded-status
+  est:
+    type: string
+    nullable: true
+    maps:
+      - id: internal-v2.pathology.estrogen_receptor_result
+        mapping: direct
+        vocabulary: internal-v2.codes.pathology-estrogen-receptor-result
+  estp:
+    type: int16
+    nullable: true
+    maps:
+      - {id: internal-v2.pathology.estrogen_receptor_percent, mapping: direct}
+  her2:
+    type: string
+    nullable: true
+    maps:
+      - id: internal-v2.pathology.her2_ihc_result
+        mapping: direct
+        vocabulary: internal-v2.codes.pathology-her2-ihc-result
+  fish:
+    type: string
+    nullable: true
+    maps:
+      - id: internal-v2.pathology.her2_ish_result
+        mapping: direct
+        vocabulary: internal-v2.codes.pathology-her2-ish-result
+  ki67:
+    type: string
+    nullable: true
+    maps:
+      - id: internal-v2.pathology.ki67_result
+        mapping: direct
+        vocabulary: internal-v2.codes.pathology-ki67-result
+  extracap:
+    type: string
+    nullable: true
+    maps:
+      - id: internal-v2.pathology.extracapsular_extension
+        mapping: direct
+        vocabulary: internal-v2.codes.pathology-extracapsular-extension
+  methodevl:
+    type: string
+    nullable: true
+    maps:
+      - id: internal-v2.pathology.nodal_evaluation_method
+        mapping: direct
+        vocabulary: internal-v2.codes.pathology-nodal-evaluation-method
+  snode_rem:
+    type: int16
+    nullable: true
+    maps:
+      - {id: internal-v2.pathology.sentinel_nodes_removed, mapping: direct}
+  node_rem:
+    type: int16
+    nullable: true
+    maps:
+      - {id: internal-v2.pathology.nodes_removed, mapping: direct}
+  node_pos:
+    type: int16
+    nullable: true
+    maps:
+      - {id: internal-v2.pathology.nodes_positive, mapping: direct}
+  macrometa:
+    type: int16
+    nullable: true
+    maps:
+      - {id: internal-v2.pathology.macrometastasis_count, mapping: direct}
+  micrometa:
+    type: int16
+    nullable: true
+    maps:
+      - {id: internal-v2.pathology.micrometastasis_count, mapping: direct}
+  isocell:
+    type: int8
+    nullable: true
+    maps:
+      - {id: internal-v2.pathology.isolated_cell_count, mapping: direct}
+  largedp:
+    type: double
+    nullable: true
+    maps:
+      - {id: internal-v2.pathology.largest_deposit_size, mapping: direct}
+  eic:
+    type: string
+    nullable: true
+    maps:
+      - id: internal-v2.pathology.extensive_intraductal_component_status
+        mapping: direct
+        vocabulary: internal-v2.codes.pathology-extensive-intraductal-component-status
+  dstatus:
+    type: string
+    nullable: true
+  height:
+    type: int16
+    nullable: true
+  weight:
+    type: int16
+    nullable: true
+  GENDER_DESC:
+    type: string
+    nullable: true
+    maps:
+      - {id: demographics.gender_description, mapping: direct}
+  race:
+    type: string
+    nullable: true
+    maps:
+      - {id: demographics.race, mapping: direct}
+  ethnicity:
+    type: string
+    nullable: true
+    maps:
+      - {id: demographics.ethnicity, mapping: direct}
+  patient_language:
+    type: string
+    nullable: true
+    maps:
+      - {id: demographics.language, mapping: direct}
+  PATIENT_BIRTH_DT_anon:
+    type: timestamp[ns]
+    nullable: true
+    maps:
+      - id: demographics.birth_date
+        mapping: direct
+        notes:
+          - >-
+            Repeated occurrences can disagree within the proposed patient or exam identity
+            scope; no reconciliation rule is supplied.
+  age_at_study_anon:
+    type: int16
+    nullable: true
+    maps:
+      - id: demographics.age_at_exam
+        mapping: derived
+        notes:
+          - >-
+            Repeated occurrences can disagree within the proposed patient or exam identity
+            scope; no reconciliation rule is supplied.
+  menopauseage_anon:
+    type: int16
+    nullable: true
+    maps:
+      - {id: demographics.age_at_menopause, mapping: direct}
+  pregnancyage_anon:
+    type: int16
+    nullable: true
+    maps:
+      - {id: demographics.age_at_pregnancy, mapping: direct}
+  menarcheage_anon:
+    type: int16
+    nullable: true
+    maps:
+      - {id: demographics.age_at_menarche, mapping: direct}
+  linked_study_flag:
+    type: string
+    nullable: true
+    maps:
+      - {id: imaging.linked_study_flag, mapping: direct}
+    interpretations:
+      N:
+        representation: N
+        meaning: Flag is not asserted
+        status: unverified
+        cites:
+          - internal-v2.magview-representation-context#linked-study-flag-meaning
+      Y:
+        representation: Y
+        meaning: Flag is asserted
+        status: unverified
+        cites:
+          - internal-v2.magview-representation-context#linked-study-flag-meaning
+  addendum_flag:
+    type: string
+    nullable: true
+    maps:
+      - {id: imaging.addendum_flag, mapping: direct}
+    interpretations:
+      Y:
+        representation: Y
+        meaning: Flag is asserted
+        status: reconciled
+        cites:
+          - internal-v2.magview-coded-values-context#legend-continuity
+      "null":
+        representation: "null"
+        meaning: Flag is not asserted in this occurrence; clinical absence is not established
+        status: unresolved
+        cites:
+          - internal-v2.magview-coded-values-context#unlisted-source-codes
+  proc_flag:
+    type: string
+    nullable: true
+    maps:
+      - {id: exam.procedure_related_flag, mapping: direct}
+    interpretations:
+      N:
+        representation: N
+        meaning: Flag is not asserted
+        status: reconciled
+        cites:
+          - internal-v2.magview-coded-values-context#legend-continuity
+      Y:
+        representation: Y
+        meaning: Flag is asserted
+        status: reconciled
+        cites:
+          - internal-v2.magview-coded-values-context#legend-continuity
+  biopsy_flag:
+    type: string
+    nullable: true
+    maps:
+      - {id: exam.biopsy_related_flag, mapping: direct}
+    interpretations:
+      Y:
+        representation: Y
+        meaning: Flag is asserted
+        status: reconciled
+        cites:
+          - internal-v2.magview-coded-values-context#legend-continuity
+      "null":
+        representation: "null"
+        meaning: Flag is not asserted in this occurrence; clinical absence is not established
+        status: unresolved
+        cites:
+          - internal-v2.magview-coded-values-context#unlisted-source-codes
+  extract_flag:
+    type: string
+    nullable: true
+    maps:
+      - {id: exam.extraction_eligibility_flag, mapping: direct}
+    interpretations:
+      N:
+        representation: N
+        meaning: Flag is not asserted
+        status: reconciled
+        cites:
+          - internal-v2.magview-coded-values-context#legend-continuity
+      Y:
+        representation: Y
+        meaning: Flag is asserted
+        status: reconciled
+        cites:
+          - internal-v2.magview-coded-values-context#legend-continuity
+  open_data_flag:
+    type: string
+    nullable: true
+  version:
+    type: int8
+    nullable: true
+    maps:
+      - id: exam.release_version
+        mapping: direct
+        vocabulary: internal-v2.codes.exam-release-version
+  cohort_num:
+    type: int8
+    nullable: true
+    maps:
+      - {id: demographics.cohort, mapping: direct}

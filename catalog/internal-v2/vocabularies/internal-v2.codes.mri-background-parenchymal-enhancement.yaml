@@ -1,0 +1,12 @@
+kind: vocabulary
+label: MRI background parenchymal enhancement codes
+completeness: unknown
+null_meaning: [undocumented, occurrence_specific]
+parsing: atomic
+legend_role: comparison_legend
+evidence: [observed_source_values, release_legend]
+codes:
+  A: There is marked background parenchymal enhancement.
+  I: There is mild background parenchymal enhancement.
+  M: There is minimal background parenchymal enhancement.
+  O: There is moderate background parenchymal enhancement.

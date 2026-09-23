@@ -1,0 +1,10 @@
+kind: vocabulary
+label: MRI mass-margin codes
+completeness: unknown
+null_meaning: [undocumented]
+parsing: atomic
+evidence: [release_legend]
+codes:
+  I: irregular margin
+  M: circumscribed margin
+  S: spiculated margin

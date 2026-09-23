@@ -1,0 +1,14 @@
+kind: vocabulary
+label: Reported historical breast-procedure laterality
+completeness: unknown
+parsing: atomic
+evidence: [maintainer_confirmed]
+caveats:
+  - >-
+    Blank is represented as an unspecified or unknown missing state on the concept rather than
+    as a vocabulary code.
+  - Laterality is breast-specific and is not required for a gynecological procedure.
+codes:
+  L: Left
+  R: Right
+  B: Bilateral

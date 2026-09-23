@@ -1,0 +1,12 @@
+kind: clinical_object
+label: Breast side
+definition: >-
+  A left- or right-breast view of an exam used for laterality-specific findings and aggregates.
+grain: one breast side within an exam
+search_terms: [breast side, laterality, left breast, right breast]
+caveats:
+  - >-
+    A null side on a finding can represent bilateral involvement, while null procedure side
+    generally means unknown.
+  - The semantic object must not inherit one catalog-wide null-laterality rule.
+topics: [topic.breast_side, topic.exam, topic.imaging]

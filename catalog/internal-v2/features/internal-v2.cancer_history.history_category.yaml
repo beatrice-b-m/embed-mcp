@@ -1,0 +1,10 @@
+kind: feature
+label: Provisional cancer-history category
+definition: Source category with provisional breast or other history interpretation.
+value_type: coded
+evidence: [observed_source_values, inference]
+search_terms: [CancerHist history_category, Provisional cancer-history category]
+topics: [topic.identity, topic.pathology, topic.workflow]
+cites:
+  - internal-v2.cancer-history-context#provisional-code-meanings
+objects: [internal-v2.cancer_history_entry]

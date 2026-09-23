@@ -1,0 +1,28 @@
+kind: relationship
+label: Finding may be attributed pathology observation
+relationship_type: attribution
+definition: Represented attribution between imaging finding and pathology record.
+cardinality:
+  targets_per_source: zero_or_more
+  sources_per_target: zero_or_more
+optionality:
+  source: optional
+  target: optional
+attribution_limitations:
+  - The accession-side-finding tuple is optional and many-to-many.
+  - Incomplete tuples and duplicate matches require an explicit analysis reconciliation policy.
+temporal_qualification: >-
+  Pathology is downstream; attribution does not make it available at imaging time.
+search_terms: [finding pathology, pathology attribution, many to many finding diagnosis]
+caveats:
+  - No one-to-one finding truth label is implied.
+source_object: imaging_finding
+target_object: pathology_observation
+topics: [topic.imaging, topic.pathology, topic.temporal]
+cites:
+  - embed.finding-procedure-recording#retroactive-attribution
+temporal:
+  - time.exam-event
+  - time.procedure-event
+  - time.pathology-report-documentation
+  - time.downstream-availability

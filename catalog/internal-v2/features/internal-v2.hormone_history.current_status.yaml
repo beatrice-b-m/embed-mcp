@@ -1,0 +1,14 @@
+kind: feature
+label: Reported current-exposure status
+definition: Reported indication of whether the exposure was current in its recording context.
+value_type: flag
+evidence: [maintainer_confirmed]
+search_terms: [current hormone use, current therapy, current contraceptive, HormoneHist current]
+caveats:
+  - >-
+    Current is relative to the history record's recording context, whose exact documentation
+    time is unsupported.
+topics: [topic.procedure, topic.temporal, topic.workflow]
+cites:
+  - internal-v2.patient-history-context#hormone-history-timing
+objects: [internal-v2.hormone_history_entry]

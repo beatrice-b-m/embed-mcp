@@ -1,0 +1,48 @@
+kind: guardrail
+label: Longitudinal candidate search is patient-scoped
+category: prohibition
+priority: critical
+statement: >-
+  Search candidate prior or subsequent exams, procedures, and pathology across the represented
+  patient timeline; do not restrict candidate ascertainment to the index accession.
+rationale: >-
+  The output can remain at exam-side or finding grain, but a candidate pathology row's accession
+  identifies its own associated exam.
+  Patient-level traversal requires pathology accession to candidate exam to patient before
+  comparison with qualifying index exams for that patient.
+scope: embed_general
+search_terms:
+  - patient timeline
+  - longitudinal candidate search
+  - nearest subsequent cancer
+  - most recent prior cancer
+  - cancer history
+  - prior pathology
+  - subsequent pathology
+  - within days
+  - index accession restriction
+caveats:
+  - Incomplete represented follow-up still limits ascertainment after patient-scoped traversal.
+  - >-
+    This guardrail does not choose same-day boundaries, episode definitions, tie-breaking, or a
+    preferred event timestamp.
+topics: [topic.identity, topic.exam, topic.pathology, topic.temporal]
+applies_to:
+  - patient
+  - imaging_exam
+  - procedure
+  - pathology_observation
+  - pathology_diagnosis
+  - identity.patient_identifier
+  - exam.accession_identifier
+  - exam.study_date
+  - pathology.procedure_date
+  - pathology.report_date
+  - pathology.severity
+  - clinical.patient-exam
+  - clinical.patient-pathology-observation
+  - clinical.exam-pathology-observation
+  - time.exam-event
+  - time.procedure-event
+  - time.pathology-report-documentation
+  - aggregation.pathology-severity-to-patient

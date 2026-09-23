@@ -1,0 +1,13 @@
+kind: vocabulary
+label: MRI enhancement-pattern codes
+completeness: unknown
+null_meaning: [undocumented]
+parsing: atomic
+evidence: [release_legend]
+codes:
+  C: clumped
+  M: homogeneous
+  Q: clustered ring
+  R: reticular
+  S: stippled
+  T: heterogeneous

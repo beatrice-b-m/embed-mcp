@@ -1,0 +1,13 @@
+kind: vocabulary
+label: Ultrasound posterior-feature codes
+completeness: unknown
+null_meaning: [undocumented]
+parsing: comma_composed_undocumented
+evidence: [release_legend]
+codes:
+  C: There is central shadowing.
+  E: There is posterior enhancement.
+  G: There is enhancement with edge shadowing.
+  N: There is no effect on posterior tissue.
+  P: There is posterior shadowing.
+  T: There is eccentric shadowing.

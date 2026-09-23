@@ -2,8 +2,11 @@ kind: clinical_object
 label: Imaging interpretation
 definition: The assessment and recommendation associated with an imaging finding.
 grain: one finding-level interpretation representation
-topics: [topic.imaging, topic.workflow]
 search_terms: [assessment, recommendation, BI-RADS, imaging interpretation]
-cites: [clinical.screening-diagnostic-pathway#assessment-guides-next-step]
 caveats:
-  - Assessment and recommendation are separate fields and must not be collapsed into pathology truth.
+  - >-
+    Assessment and recommendation are separate fields and must not be collapsed into pathology
+    truth.
+topics: [topic.imaging, topic.workflow]
+cites:
+  - clinical.screening-diagnostic-pathway#assessment-guides-next-step

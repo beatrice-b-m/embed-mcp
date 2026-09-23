@@ -1,0 +1,20 @@
+kind: feature
+label: Cancer-registry record identifier
+definition: >-
+  Technical identifier for a record in a separate Georgia cancer-registry-derived pathology
+  table, scoped jointly with the internal patient identifier.
+value_type: technical
+evidence: [release_schema, maintainer_confirmed]
+search_terms:
+  - cancer registry record identifier
+  - Georgia cancer registry linkage
+  - registry pathology reference
+caveats:
+  - The value is meaningful only together with empi_anon.
+  - >-
+    It is not itself a cancer diagnosis, cancer outcome, or proof that diagnosis occurred at
+    Emory.
+  - The referenced registry table is not yet physically bound.
+topics: [topic.pathology, topic.technical]
+cites:
+  - internal-v2.magview-representation-context#cancer-registry-reference

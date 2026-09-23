@@ -1,0 +1,19 @@
+kind: profile_support
+representation_status: unresolved
+representation_summary: >-
+  CancerHist subject flag and relationship-category roles are supported, while cancer-code
+  interpretations are provisional and BRCA meanings, relative identity, and timing remain
+  unresolved.
+representation_caveats:
+  - >-
+    A physical inventory does not establish verified cancer, genetic-test results, complete
+    clinical capture, or a unique relative identifier.
+search_terms: [CancerHist, cancer history, family history, relative identity, BRCA history]
+subject: internal-v2.cancer-history-context
+topics: [topic.identity, topic.pathology, topic.technical, topic.temporal]
+representation_cites:
+  - internal-v2.cancer-history-context#relative-grouping-not-identity
+  - internal-v2.cancer-history-context#conditional-code-structure
+  - internal-v2.cancer-history-context#clinical-and-temporal-meaning
+  - internal-v2.cancer-history-context#subject-and-relationship
+  - internal-v2.cancer-history-context#provisional-code-meanings

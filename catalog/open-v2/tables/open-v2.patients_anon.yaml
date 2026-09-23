@@ -1,0 +1,71 @@
+kind: table
+label: patients_anon
+grain: patient
+caveats:
+  - >-
+    This patient surface is not a declaration that every auxiliary-table patient must occur
+    here.
+keys:
+  patient_identifier:
+    key_type: natural
+    uniqueness: unique
+    completeness: complete
+    evidence: [release_schema, observed_source_values]
+    caveats:
+      - >-
+        Uniqueness and completeness were verified for open-v2; no cross-release constraint is
+        documented.
+      - The anonymized identifier is opaque and must not be interpreted as a clinical value.
+    columns: [empi_anon]
+objects:
+  patient:
+    authority: preferred
+    derivation: source
+    caveats:
+      - The anonymized identifier is release scoped.
+    object: patient
+    columns: [empi_anon]
+columns:
+  empi_anon:
+    type: int64
+    nullable: true
+    maps:
+      - {id: identity.patient_identifier, mapping: direct}
+  GENDER_DESC:
+    type: string
+    nullable: true
+    maps:
+      - {id: demographics.gender_description, mapping: direct}
+  race:
+    type: string
+    nullable: true
+    maps:
+      - {id: demographics.race, mapping: direct}
+  ethnicity:
+    type: string
+    nullable: true
+    maps:
+      - {id: demographics.ethnicity, mapping: direct}
+  patient_language:
+    type: string
+    nullable: true
+    maps:
+      - {id: demographics.language, mapping: direct}
+  PATIENT_BIRTH_DT_anon:
+    type: timestamp[ns]
+    nullable: true
+    maps:
+      - {id: demographics.birth_date, mapping: direct}
+  cohort_num:
+    type: int8
+    nullable: true
+    maps:
+      - {id: demographics.cohort, mapping: direct}
+  __index_level_0__:
+    type: int64
+    nullable: true
+    maps:
+      - id: technical.pandas_index
+        mapping: direct
+        notes:
+          - Technical export provenance only; not a clinical identifier.

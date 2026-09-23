@@ -1,0 +1,12 @@
+kind: feature
+label: Number of calcifications
+definition: String field labeled by the legend as the number of calcifications.
+value_type: categorical
+evidence: [release_schema, release_legend, observed_source_values, unresolved]
+search_terms: [number of calcifications]
+caveats:
+  - >-
+    The physical type is string and negative numeric-looking values have undocumented meanings;
+    do not coerce without a sentinel policy.
+topics: [topic.imaging, topic.mammography]
+objects: [imaging_finding]

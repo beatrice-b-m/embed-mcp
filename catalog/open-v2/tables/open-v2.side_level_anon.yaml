@@ -1,0 +1,96 @@
+kind: table
+label: side_level_anon
+grain: breast_side
+caveats:
+  - Do not infer that a bilateral row decomposes into left and right rows.
+keys:
+  accession_side:
+    key_type: natural
+    uniqueness: unique
+    completeness: incomplete
+    evidence: [release_schema, observed_source_values]
+    caveats:
+      - >-
+        Release uniqueness retained null side as a state; this is not a SQL uniqueness
+        constraint over nullable columns.
+      - The relationship between null, bilateral, left, and right rows is unresolved.
+    columns: [acc_anon, side]
+  accession_identifier:
+    key_type: natural
+    uniqueness: not_unique
+    completeness: complete
+    evidence: [release_schema, observed_source_values]
+    caveats:
+      - An accession may have multiple side-level rows.
+    columns: [acc_anon]
+objects:
+  breast_side:
+    authority: preferred
+    derivation: source
+    caveats:
+      - Laterality null semantics remain field-role specific.
+    object: breast_side
+    cites:
+      - open-v2.multimodal-finding-context#finding-side-null
+    columns: [acc_anon, side]
+columns:
+  acc_anon:
+    type: int64
+    nullable: true
+    maps:
+      - {id: exam.accession_identifier, mapping: direct}
+  side:
+    type: string
+    nullable: true
+    maps:
+      - {id: breast.side, mapping: direct, vocabulary: open-v2.codes.breast-side}
+    interpretations:
+      "null":
+        representation: "null"
+        meaning: >-
+          Laterality is unknown or missing for this breast-side record; it does not mean a
+          bilateral clinical finding.
+        status: verified
+        caveats:
+          - >-
+            This occurrence represents breast-side record laterality, not finding-side or
+            procedure-side laterality.
+        cites:
+          - open-v2.multimodal-finding-context#finding-side-null
+  total_L_find:
+    type: int8
+    nullable: true
+    maps:
+      - {id: exam.left_finding_total, mapping: direct}
+  total_R_find:
+    type: int8
+    nullable: true
+    maps:
+      - {id: exam.right_finding_total, mapping: direct}
+  path_severity_side_level:
+    type: int8
+    nullable: true
+    maps:
+      - id: breast_side.pathology_severity_aggregate
+        mapping: direct
+        vocabulary: open-v2.codes.pathology-severity
+  mass_side_level:
+    type: int8
+    nullable: true
+    maps:
+      - {id: breast_side.mass_aggregate, mapping: direct}
+  asymmetry_side_level:
+    type: int8
+    nullable: true
+    maps:
+      - {id: breast_side.asymmetry_aggregate, mapping: direct}
+  arch_distortion_side_level:
+    type: int8
+    nullable: true
+    maps:
+      - {id: breast_side.architectural_distortion_aggregate, mapping: direct}
+  calc_side_level:
+    type: int8
+    nullable: true
+    maps:
+      - {id: breast_side.calcification_aggregate, mapping: direct}

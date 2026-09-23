@@ -1,0 +1,44 @@
+kind: vocabulary
+label: Ultrasound finding codes
+completeness: unknown
+null_meaning: [undocumented, occurrence_specific]
+parsing: comma_delimited_unordered
+legend_role: comparison_legend
+evidence: [observed_source_values, release_legend]
+caveats:
+  - >-
+    Parse comma-delimited tokens; ordering and repetition do not change meaning, and preserve
+    unexplained component codes.
+codes:
+  "1": fat lobule
+  "4": area of fat necrosis
+  "5": lobular mass
+  "9": seroma
+  /: area of axillary adenopathy
+  "&": intraductal calcifications
+  "#": finding consistent with free silicone
+  A: no abnormality
+  B: sebaceous cyst
+  C: simple cyst
+  D: area of duct ectasia
+  E: intradermal mass most in keeping with epidermal inclusion cyst or sebaceous cyst
+  F: fluid collection
+  G: area of dense tissue without any lesion
+  H: hematoma
+  I: intracystic lesion
+  J: abscess
+  K: skin lesion
+  L: abnormal lymph node
+  M: intraductal mass
+  N: Not seen on ultrasound
+  P: area of post surgical change
+  Q: area of edematous change consistent with unknown etiology
+  R: normal lymph node
+  S: solid mass
+  T: area of asymmetric tissue
+  U: cluster of cysts
+  V: complicated cyst versus solid mass
+  W: area of edematous change consistent with mastitis
+  X: complex cystic and solid mass
+  Y: complicated cyst
+  Z: normal-appearing tissue

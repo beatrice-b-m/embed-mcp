@@ -1,0 +1,14 @@
+kind: vocabulary
+label: Lymph-node surgery codes
+completeness: unknown
+null_meaning: [undocumented]
+parsing: atomic
+evidence: [release_legend]
+codes:
+  AN: Axillary Lymph Node Dissection
+  HAN: High Axillary Lymph Node Dissection
+  IMN: Internal Mammary Lymph Node Dissection
+  LAN: Low Axillary Lymph Node Dissection
+  NS: Lymph Nodes Not Sampled
+  O: Other
+  S: Sentinel node biopsy

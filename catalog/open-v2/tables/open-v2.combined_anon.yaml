@@ -1,0 +1,787 @@
+kind: table
+label: combined_anon
+grain: wide_row
+caveats:
+  - No tested standard natural-key join reproduces this table.
+  - >-
+    Its construction and authority when repeated values disagree with normalized tables remain
+    unresolved.
+  - >-
+    Its column mappings transfer canonical feature context only; value equality, derivation,
+    observed domain, and occurrence-specific missingness were not established.
+keys:
+  finding_tuple:
+    key_type: natural
+    uniqueness: unknown
+    completeness: incomplete
+    evidence: [release_schema, cross_table_check, unresolved]
+    caveats:
+      - >-
+        The tuple resolves complete rows to finding surfaces but is not established as the
+        wide-row key.
+      - Null and sentinel-like side or finding states prevent an unconditional natural-key join.
+    columns: [acc_anon, side, numfind]
+  export_index:
+    key_type: technical
+    uniqueness: unique
+    completeness: complete
+    evidence: [release_schema, cross_table_check]
+    caveats:
+      - >-
+        The retained index is release-local construction provenance, not a clinical key or
+        current row position.
+      - The wide index contains rows outside both normalized finding-table index surfaces.
+    columns: [__index_level_0__]
+objects:
+  patient:
+    derivation: projected
+    caveats:
+      - >-
+        Wide-row co-location does not establish authority or equality for every repeated patient
+        attribute.
+    object: patient
+    cites:
+      - open-v2.temporal-availability-context#wide-object-projection
+    columns: [empi_anon]
+  breast_imaging_episode:
+    derivation: projected
+    caveats:
+      - >-
+        The projection carries an optional same-episode reference but no complete episode
+        identity or construction rule.
+    object: breast_imaging_episode
+    cites:
+      - open-v2.linked-exam-context#optional-reference
+      - open-v2.linked-exam-context#link-meaning
+      - open-v2.temporal-availability-context#wide-object-projection
+    columns: [acc_anon, linkedaccession_anon]
+  imaging_exam:
+    derivation: projected
+    caveats:
+      - >-
+        Exam attributes repeat at wide-row grain and do not become finding- or pathology-grain
+        facts.
+    object: imaging_exam
+    cites:
+      - open-v2.temporal-availability-context#wide-object-projection
+    columns: [acc_anon]
+  breast_side:
+    derivation: projected
+    caveats:
+      - >-
+        Incomplete tuples and context-dependent null laterality prevent an unconditional side
+        identity.
+    object: breast_side
+    cites:
+      - open-v2.multimodal-finding-context#finding-side-null
+      - open-v2.temporal-availability-context#wide-object-projection
+    columns: [acc_anon, side]
+  imaging_finding:
+    derivation: projected
+    identity_scope: >-
+      Distinct clinical finding within one accession after excluding reserved synthetic entries.
+    rows_per_instance: one_or_more
+    longitudinal_identity: false
+    caveats:
+      - >-
+        The wide projection can contain rows without a resolving normalized imaging index and
+        does not establish a cross-release finding key.
+      - The clinical identity omits side and may occupy multiple physical rows.
+    object: imaging_finding
+    cites:
+      - open-v2.multimodal-finding-context#descriptor-families
+      - open-v2.multimodal-finding-context#synthetic-contralateral-finding
+      - open-v2.temporal-availability-context#wide-object-projection
+    columns: [acc_anon, side, numfind]
+    identity_columns: [acc_anon, numfind]
+    reserved_exceptions:
+      numfind=-9:
+        representation: "-9"
+        meaning: >-
+          Derived synthetic contralateral negative finding rather than an ordinary clinical
+          finding identity.
+        caveats:
+          - Exclude this reserved value when identifying ordinary distinct clinical findings.
+        column: numfind
+        cites:
+          - open-v2.multimodal-finding-context#synthetic-contralateral-finding
+  imaging_interpretation:
+    derivation: projected
+    caveats:
+      - >-
+        Projected assessment and recommendation do not gain an independent interpretation
+        identity, timestamp, or co-availability guarantee.
+    object: imaging_interpretation
+    cites:
+      - open-v2.assessment-recommendation-context#separate-fields
+      - open-v2.assessment-recommendation-context#wide-projection-boundary
+      - open-v2.temporal-availability-context#wide-object-projection
+    columns: [asses, recc]
+  procedure:
+    derivation: projected
+    caveats:
+      - >-
+        Projected procedure fields do not establish a unique procedure identity or availability
+        at imaging time.
+    object: procedure
+    cites:
+      - open-v2.pathology-procedure-context#separate-pathology-surface
+      - open-v2.temporal-availability-context#wide-table-colocation
+      - open-v2.temporal-availability-context#wide-object-projection
+    columns: [procdate_anon, type]
+  pathology_observation:
+    derivation: projected
+    caveats:
+      - >-
+        Projected descriptor slots retain their procedure association and do not become
+        contemporaneous imaging observations.
+    object: pathology_observation
+    cites:
+      - open-v2.pathology-procedure-context#diagnosis-slot-order
+      - open-v2.temporal-availability-context#wide-table-colocation
+      - open-v2.temporal-availability-context#wide-object-projection
+    columns: [path1, path2, path3, path4, path5, path6, path7, path8, path9, path10]
+  pathology_diagnosis:
+    derivation: projected
+    caveats:
+      - >-
+        Projected severity retains unattached-pathology null semantics and does not establish
+        availability at imaging time.
+    object: pathology_diagnosis
+    cites:
+      - open-v2.pathology-procedure-context#severity-meaning
+      - open-v2.temporal-availability-context#wide-table-colocation
+      - open-v2.temporal-availability-context#wide-object-projection
+    columns: [path_severity]
+columns:
+  empi_anon:
+    type: int64
+    nullable: true
+    maps:
+      - {id: identity.patient_identifier, mapping: derived}
+  GENDER_DESC:
+    type: string
+    nullable: true
+    maps:
+      - {id: demographics.gender_description, mapping: derived}
+  race:
+    type: string
+    nullable: true
+    maps:
+      - {id: demographics.race, mapping: derived}
+  ethnicity:
+    type: string
+    nullable: true
+    maps:
+      - {id: demographics.ethnicity, mapping: derived}
+  patient_language:
+    type: string
+    nullable: true
+    maps:
+      - {id: demographics.language, mapping: derived}
+  PATIENT_BIRTH_DT_anon:
+    type: timestamp[ns]
+    nullable: true
+    maps:
+      - {id: demographics.birth_date, mapping: derived}
+  cohort_num:
+    type: int8
+    nullable: true
+    maps:
+      - {id: demographics.cohort, mapping: derived}
+  studydate_anon:
+    type: timestamp[ns]
+    nullable: true
+    maps:
+      - {id: exam.study_date, mapping: derived}
+  acc_anon:
+    type: int64
+    nullable: true
+    maps:
+      - {id: exam.accession_identifier, mapping: derived}
+  desc:
+    type: string
+    nullable: true
+    maps:
+      - {id: exam.procedure_description, mapping: derived}
+  modality_desc:
+    type: string
+    nullable: true
+    maps:
+      - {id: exam.modality, mapping: derived, vocabulary: open-v2.codes.exam-modality}
+  loc_num_anon:
+    type: string
+    nullable: true
+    maps:
+      - {id: exam.location, mapping: derived, vocabulary: open-v2.codes.exam-location}
+  mg_exam_type:
+    type: string
+    nullable: true
+    maps:
+      - id: exam.mammography_type
+        mapping: derived
+        vocabulary: open-v2.codes.exam-mammography-type
+  tissueden:
+    type: int8
+    nullable: true
+    maps:
+      - id: exam.tissue_density
+        mapping: derived
+        vocabulary: open-v2.codes.exam-tissue-density
+  ASHKENAZI:
+    type: string
+    nullable: true
+    maps:
+      - {id: demographics.ashkenazi_indicator, mapping: derived}
+  age_at_study_anon:
+    type: int16
+    nullable: true
+    maps:
+      - {id: demographics.age_at_exam, mapping: derived}
+  menopauseage_anon:
+    type: int16
+    nullable: true
+    maps:
+      - {id: demographics.age_at_menopause, mapping: derived}
+  pregnancyage_anon:
+    type: int16
+    nullable: true
+    maps:
+      - {id: demographics.age_at_pregnancy, mapping: derived}
+  menarcheage_anon:
+    type: int16
+    nullable: true
+    maps:
+      - {id: demographics.age_at_menarche, mapping: derived}
+  proc_flag:
+    type: string
+    nullable: true
+    maps:
+      - {id: exam.procedure_related_flag, mapping: derived}
+  biopsy_flag:
+    type: string
+    nullable: true
+    maps:
+      - {id: exam.biopsy_related_flag, mapping: derived}
+  extract_flag:
+    type: string
+    nullable: true
+    maps:
+      - {id: exam.extraction_eligibility_flag, mapping: derived}
+  vtype:
+    type: string
+    nullable: true
+    maps:
+      - {id: exam.visit_type, mapping: derived, vocabulary: open-v2.codes.exam-visit-type}
+  version:
+    type: int8
+    nullable: true
+    maps:
+      - id: exam.release_version
+        mapping: derived
+        vocabulary: open-v2.codes.exam-release-version
+  side:
+    type: string
+    nullable: true
+    maps:
+      - {id: breast.side, mapping: derived, vocabulary: open-v2.codes.breast-side}
+    interpretations:
+      "null":
+        representation: "null"
+        meaning: >-
+          The occurrence-specific laterality meaning of null in this wide side projection is
+          unresolved.
+        status: unresolved
+        caveats:
+          - >-
+            Do not assume this projected null is bilateral, left, right, or unknown without
+            establishing its row role.
+        cites:
+          - open-v2.multimodal-finding-context#finding-side-null
+          - open-v2.temporal-availability-context#wide-object-projection
+  total_L_find:
+    type: int8
+    nullable: true
+    maps:
+      - {id: exam.left_finding_total, mapping: derived}
+  total_R_find:
+    type: int8
+    nullable: true
+    maps:
+      - {id: exam.right_finding_total, mapping: derived}
+  linkedaccession_anon:
+    type: int64
+    nullable: true
+    maps:
+      - {id: imaging.linked_accession_identifier, mapping: derived}
+  linked_study_flag:
+    type: string
+    nullable: true
+    maps:
+      - {id: imaging.linked_study_flag, mapping: derived}
+  numfind:
+    type: int8
+    nullable: true
+    maps:
+      - {id: imaging.finding_number, mapping: derived}
+  asses:
+    type: string
+    nullable: true
+    maps:
+      - {id: imaging.assessment, mapping: derived, vocabulary: open-v2.codes.imaging-assessment}
+  mass:
+    type: int8
+    nullable: true
+    maps:
+      - {id: mammography.mass_present, mapping: derived}
+  asymmetry:
+    type: int8
+    nullable: true
+    maps:
+      - {id: mammography.asymmetry_present, mapping: derived}
+  arch_distortion:
+    type: int8
+    nullable: true
+    maps:
+      - {id: mammography.architectural_distortion_present, mapping: derived}
+  calc:
+    type: int8
+    nullable: true
+    maps:
+      - {id: mammography.calcification_present, mapping: derived}
+  massshape:
+    type: string
+    nullable: true
+    maps:
+      - id: mammography.mass_shape
+        mapping: derived
+        vocabulary: open-v2.codes.mammography-mass-shape
+  massmargin:
+    type: string
+    nullable: true
+    maps:
+      - id: mammography.mass_margin
+        mapping: derived
+        vocabulary: open-v2.codes.mammography-mass-margin
+  massdens:
+    type: string
+    nullable: true
+    maps:
+      - id: mammography.mass_density
+        mapping: derived
+        vocabulary: open-v2.codes.mammography-mass-density
+  calcfind:
+    type: string
+    nullable: true
+    maps:
+      - id: mammography.calcification_morphology
+        mapping: derived
+        vocabulary: open-v2.codes.mammography-calcification-morphology
+  calcdistri:
+    type: string
+    nullable: true
+    maps:
+      - id: mammography.calcification_distribution
+        mapping: derived
+        vocabulary: open-v2.codes.mammography-calcification-distribution
+  calcnumber:
+    type: string
+    nullable: true
+    maps:
+      - {id: mammography.calcification_number, mapping: derived}
+  otherfind:
+    type: string
+    nullable: true
+    maps:
+      - id: mammography.other_finding
+        mapping: derived
+        vocabulary: open-v2.codes.mammography-other-finding
+  implanfind:
+    type: string
+    nullable: true
+    maps:
+      - id: mammography.implant_finding
+        mapping: derived
+        vocabulary: open-v2.codes.mammography-implant-finding
+  consistent:
+    type: string
+    nullable: true
+    maps:
+      - id: mammography.consistent_with
+        mapping: derived
+        vocabulary: open-v2.codes.mammography-consistent-with
+  mdelayed.1:
+    type: string
+    nullable: true
+    maps:
+      - id: mri.delayed_kinetics_secondary
+        mapping: derived
+        notes:
+          - Do not inherit the mdelayed vocabulary; equivalence is unresolved.
+  secondaryfindings:
+    type: string
+    nullable: true
+    maps:
+      - id: ultrasound.secondary_findings
+        mapping: derived
+        vocabulary: open-v2.codes.ultrasound-secondary-findings
+  size:
+    type: int16
+    nullable: true
+    maps:
+      - {id: imaging.finding_size, mapping: derived}
+  location:
+    type: string
+    nullable: true
+    maps:
+      - {id: imaging.location, mapping: derived, vocabulary: open-v2.codes.breast-location}
+  depth:
+    type: string
+    nullable: true
+    maps:
+      - {id: imaging.depth, mapping: derived, vocabulary: open-v2.codes.breast-depth}
+  distance:
+    type: int16
+    nullable: true
+    maps:
+      - {id: imaging.distance, mapping: derived}
+  stable:
+    type: int8
+    nullable: true
+    maps:
+      - {id: imaging.stable_flag, mapping: derived}
+  new:
+    type: int8
+    nullable: true
+    maps:
+      - {id: imaging.new_flag, mapping: derived}
+  changed:
+    type: string
+    nullable: true
+    maps:
+      - {id: imaging.change, mapping: derived, vocabulary: open-v2.codes.imaging-change}
+  USFinding:
+    type: string
+    nullable: true
+    maps:
+      - {id: ultrasound.finding, mapping: derived, vocabulary: open-v2.codes.ultrasound-finding}
+  shape:
+    type: string
+    nullable: true
+    maps:
+      - {id: ultrasound.shape, mapping: derived, vocabulary: open-v2.codes.ultrasound-shape}
+  orientation:
+    type: string
+    nullable: true
+    maps:
+      - id: ultrasound.orientation
+        mapping: derived
+        vocabulary: open-v2.codes.ultrasound-orientation
+  margins:
+    type: string
+    nullable: true
+    maps:
+      - {id: ultrasound.margins, mapping: derived, vocabulary: open-v2.codes.ultrasound-margins}
+  modifers:
+    type: string
+    nullable: true
+    maps:
+      - id: ultrasound.modifiers
+        mapping: derived
+        vocabulary: open-v2.codes.ultrasound-modifiers
+  echotexture:
+    type: string
+    nullable: true
+    maps:
+      - id: ultrasound.echotexture
+        mapping: derived
+        vocabulary: open-v2.codes.ultrasound-echotexture
+  posteriorfeatures:
+    type: string
+    nullable: true
+    maps:
+      - id: ultrasound.posterior_features
+        mapping: derived
+        vocabulary: open-v2.codes.ultrasound-posterior-features
+  vascularity:
+    type: string
+    nullable: true
+    maps:
+      - id: ultrasound.vascularity
+        mapping: derived
+        vocabulary: open-v2.codes.ultrasound-vascularity
+  surroundingtissue:
+    type: string
+    nullable: true
+    maps:
+      - id: ultrasound.surrounding_tissue
+        mapping: derived
+        vocabulary: open-v2.codes.ultrasound-surrounding-tissue
+  mfocus:
+    type: string
+    nullable: true
+    maps:
+      - {id: mri.focus, mapping: derived, vocabulary: open-v2.codes.mri-focus}
+  mshape:
+    type: string
+    nullable: true
+    maps:
+      - {id: mri.mass_shape, mapping: derived, vocabulary: open-v2.codes.mri-mass-shape}
+  mmargin:
+    type: string
+    nullable: true
+    maps:
+      - {id: mri.mass_margin, mapping: derived, vocabulary: open-v2.codes.mri-mass-margin}
+  menhance:
+    type: string
+    nullable: true
+    maps:
+      - id: mri.internal_enhancement
+        mapping: derived
+        vocabulary: open-v2.codes.mri-internal-enhancement
+  mdist:
+    type: string
+    nullable: true
+    maps:
+      - {id: mri.distribution, mapping: derived, vocabulary: open-v2.codes.mri-distribution}
+  mpattern:
+    type: string
+    nullable: true
+    maps:
+      - {id: mri.pattern, mapping: derived, vocabulary: open-v2.codes.mri-pattern}
+  msym:
+    type: string
+    nullable: true
+    maps:
+      - {id: mri.symmetry, mapping: derived, vocabulary: open-v2.codes.mri-symmetry}
+  massoc:
+    type: string
+    nullable: true
+    maps:
+      - id: mri.associated_finding
+        mapping: derived
+        vocabulary: open-v2.codes.mri-associated-finding
+  mother:
+    type: string
+    nullable: true
+    maps:
+      - {id: mri.other_finding, mapping: derived}
+  minitial:
+    type: string
+    nullable: true
+    maps:
+      - id: mri.initial_kinetics
+        mapping: derived
+        vocabulary: open-v2.codes.mri-initial-kinetics
+  mdelayed:
+    type: string
+    nullable: true
+    maps:
+      - id: mri.delayed_kinetics
+        mapping: derived
+        vocabulary: open-v2.codes.mri-delayed-kinetics
+  msize:
+    type: int8
+    nullable: true
+    maps:
+      - {id: mri.size, mapping: derived}
+  mbpe_level:
+    type: string
+    nullable: true
+    maps:
+      - id: mri.background_parenchymal_enhancement
+        mapping: derived
+        vocabulary: open-v2.codes.mri-background-parenchymal-enhancement
+  MBPE_SYM:
+    type: string
+    nullable: true
+    maps:
+      - id: mri.background_parenchymal_enhancement_symmetry
+        mapping: derived
+        vocabulary: open-v2.codes.mri-background-parenchymal-enhancement-symmetry
+  addendum_flag:
+    type: string
+    nullable: true
+    maps:
+      - {id: imaging.addendum_flag, mapping: derived}
+  recc:
+    type: string
+    nullable: true
+    maps:
+      - id: imaging.recommendation
+        mapping: derived
+        vocabulary: open-v2.codes.imaging-recommendation
+  path_severity:
+    type: int8
+    nullable: true
+    maps:
+      - {id: pathology.severity, mapping: derived, vocabulary: open-v2.codes.pathology-severity}
+  procdate_anon:
+    type: timestamp[ns]
+    nullable: true
+    maps:
+      - {id: pathology.procedure_date, mapping: derived}
+  pdate_anon:
+    type: timestamp[ns]
+    nullable: true
+    maps:
+      - {id: pathology.report_date, mapping: derived}
+  type:
+    type: string
+    nullable: true
+    maps:
+      - id: pathology.biopsy_type
+        mapping: derived
+        vocabulary: open-v2.codes.pathology-biopsy-type
+  technique:
+    type: string
+    nullable: true
+    maps:
+      - id: pathology.biopsy_technique
+        mapping: derived
+        vocabulary: open-v2.codes.pathology-biopsy-technique
+  bside:
+    type: string
+    nullable: true
+    maps:
+      - {id: pathology.biopsy_side, mapping: derived, vocabulary: open-v2.codes.breast-side}
+    interpretations:
+      "null":
+        representation: "null"
+        meaning: >-
+          The occurrence-specific biopsy-side meaning of null in this wide projection is
+          unresolved.
+        status: unresolved
+        caveats:
+          - >-
+            Do not treat this projected null as bilateral or automatically transfer the
+            normalized biopsy-side interpretation.
+        cites:
+          - open-v2.multimodal-finding-context#finding-side-null
+          - open-v2.temporal-availability-context#wide-object-projection
+  bcomp:
+    type: string
+    nullable: true
+    maps:
+      - id: pathology.biopsy_complication
+        mapping: derived
+        vocabulary: open-v2.codes.pathology-biopsy-complication
+  surgery:
+    type: string
+    nullable: true
+    maps:
+      - id: pathology.surgery_type
+        mapping: derived
+        vocabulary: open-v2.codes.pathology-surgery-type
+  lymphsurg:
+    type: string
+    nullable: true
+    maps:
+      - id: pathology.lymph_node_surgery_type
+        mapping: derived
+        vocabulary: open-v2.codes.pathology-lymph-node-surgery-type
+  path1:
+    type: string
+    nullable: true
+    maps:
+      - id: pathology.diagnosis_code_slot
+        mapping: derived
+        vocabulary: open-v2.codes.pathology-finding-codes
+        slot: "1"
+  path2:
+    type: string
+    nullable: true
+    maps:
+      - id: pathology.diagnosis_code_slot
+        mapping: derived
+        vocabulary: open-v2.codes.pathology-finding-codes
+        slot: "2"
+  path3:
+    type: string
+    nullable: true
+    maps:
+      - id: pathology.diagnosis_code_slot
+        mapping: derived
+        vocabulary: open-v2.codes.pathology-finding-codes
+        slot: "3"
+  path4:
+    type: string
+    nullable: true
+    maps:
+      - id: pathology.diagnosis_code_slot
+        mapping: derived
+        vocabulary: open-v2.codes.pathology-finding-codes
+        slot: "4"
+  path5:
+    type: string
+    nullable: true
+    maps:
+      - id: pathology.diagnosis_code_slot
+        mapping: derived
+        vocabulary: open-v2.codes.pathology-finding-codes
+        slot: "5"
+  path6:
+    type: string
+    nullable: true
+    maps:
+      - id: pathology.diagnosis_code_slot
+        mapping: derived
+        vocabulary: open-v2.codes.pathology-finding-codes
+        slot: "6"
+  path7:
+    type: string
+    nullable: true
+    maps:
+      - id: pathology.diagnosis_code_slot
+        mapping: derived
+        vocabulary: open-v2.codes.pathology-finding-codes
+        slot: "7"
+  path8:
+    type: string
+    nullable: true
+    maps:
+      - id: pathology.diagnosis_code_slot
+        mapping: derived
+        vocabulary: open-v2.codes.pathology-finding-codes
+        slot: "8"
+  path9:
+    type: string
+    nullable: true
+    maps:
+      - id: pathology.diagnosis_code_slot
+        mapping: derived
+        vocabulary: open-v2.codes.pathology-finding-codes
+        slot: "9"
+  path10:
+    type: string
+    nullable: true
+    maps:
+      - id: pathology.diagnosis_code_slot
+        mapping: derived
+        vocabulary: open-v2.codes.pathology-finding-codes
+        slot: "10"
+  loc:
+    type: string
+    nullable: true
+    maps:
+      - id: pathology.biopsy_location
+        mapping: derived
+        vocabulary: open-v2.codes.breast-location
+  bdepth:
+    type: string
+    nullable: true
+    maps:
+      - {id: pathology.biopsy_depth, mapping: derived, vocabulary: open-v2.codes.breast-depth}
+  bdistance:
+    type: double
+    nullable: true
+    maps:
+      - {id: pathology.biopsy_distance, mapping: derived}
+  __index_level_0__:
+    type: int64
+    nullable: true
+    maps:
+      - id: technical.pandas_index
+        mapping: direct
+        notes:
+          - Technical export provenance only; not a clinical identifier.

@@ -1,0 +1,35 @@
+kind: vocabulary
+label: Visit-type codes
+completeness: unknown
+null_meaning: [undocumented, occurrence_specific]
+parsing: atomic
+legend_role: comparison_legend
+evidence: [observed_source_values, release_legend]
+codes:
+  "1": Procedure
+  "2": Loc
+  "3": Response to treatment
+  "6": Short term follow up of prior MR finding
+  A: Additional evaluation requested from recent study
+  B: Post biopsy
+  C: Technical Callback
+  D: Outside films not available
+  E: Eval finding on OSF
+  F: Follow-up at short-interval from prior study
+  G: Extent of disease
+  H: High-risk screening
+  I: Eval of finding on MRI
+  K: Abnormal finding on prior study
+  L: Post lumpectomy
+  M: Post mastectomy follow-up
+  N: Specimen
+  O: Review of an outside study
+  P: Problem indicated
+  Q: Reflector Placement
+  R: Pre-reduction mammoplasty
+  S: Screening
+  T: Pre-radiation therapy
+  U: Implant Evaluation
+  V: Additional evaluation requested at current screening
+  X: Abnormal finding seen on other modality
+  Z: Post chemo

@@ -1,0 +1,13 @@
+kind: vocabulary
+label: Pathology focality categories
+completeness: unknown
+parsing: atomic
+evidence: [release_legend, observed_source_values]
+caveats:
+  - The comparison dictionaries do not state that this code list is exhaustive.
+  - Null semantics are occurrence specific and must not be inferred from code membership.
+codes:
+  S: single focus
+  M: multiple foci
+  N: no residual invasive carcinoma
+  I: indeterminate

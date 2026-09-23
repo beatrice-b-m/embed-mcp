@@ -1,0 +1,10 @@
+kind: feature
+label: Calcification presence
+definition: Indicator for the presence of mammographic calcification.
+value_type: flag
+evidence: [release_schema, release_legend, unresolved]
+search_terms: [calcification presence]
+caveats:
+  - The legend describes presence but does not explicitly define the numeric flag encoding.
+topics: [topic.imaging, topic.mammography]
+objects: [imaging_finding]

@@ -1,0 +1,22 @@
+kind: source
+label: Provisional CancerHist internal dictionary reconciliation
+source_type: supporting_internal
+locator_type: logical_artifact
+locator: maintainer-supplied:cancer-history-work-in-progress-dictionaries
+version_scope: Internal CancerHist representation in the internal-v2 working profile.
+notes:
+  - >-
+    Maintainer-supplied work-in-progress type and cancercode interpretation assembled from
+    internal dictionaries, accompanied by a broader pathology-code comparison dictionary.
+  - >-
+    The type labels B (breast) and O (other) and named code meanings remain provisional; the
+    supplied draft is not final code confirmation.
+  - >-
+    The breast-history meanings of B, blank, DCG, DCS, and XX remain explicitly uncertain,
+    including the candidate generic breast-cancer interpretation of B despite the broader
+    comparison dictionary.
+  - >-
+    Repeated enum member names are treated as separate source code entries: ID and IDC, and ANM
+    and MDN, are preserved.
+    The snippet is source material and is not executed.
+  - UNKNOWN is a draft software enum fallback, not an observed or governed source code.

@@ -1,0 +1,10 @@
+kind: vocabulary
+label: EMBED data-version codes
+completeness: unknown
+null_meaning: [undocumented, occurrence_specific]
+parsing: atomic
+legend_role: comparison_legend
+evidence: [observed_source_values, release_legend]
+codes:
+  "1": part of EMBED v1
+  "2": part of EMBED v2

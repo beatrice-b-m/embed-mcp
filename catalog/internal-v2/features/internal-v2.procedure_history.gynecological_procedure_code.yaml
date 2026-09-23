@@ -1,0 +1,18 @@
+kind: feature
+label: Reported gynecological-procedure history code
+definition: >-
+  Gynecological procedure code for a prior-procedure history entry whose category is
+  gynecological.
+value_type: coded
+evidence: [maintainer_confirmed]
+search_terms:
+  - ProcHist gynecological code
+  - hysterectomy history
+  - oophorectomy history
+  - ovary removed
+caveats:
+  - This meaning is conditional on procedure category G; breast laterality does not apply.
+topics: [topic.procedure]
+cites:
+  - internal-v2.patient-history-context#reported-history-not-current-care
+objects: [internal-v2.procedure_history_entry]

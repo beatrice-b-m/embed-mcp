@@ -1,0 +1,16 @@
+kind: aggregation
+label: Pathology severity to breast side
+aggregation_status: provided
+definition: >-
+  Take the minimum represented pathology-severity value in the applicable breast-side group.
+ordering: "Inverse severity ordering: minimum means most severe."
+search_terms: [side pathology aggregate, minimum severity by breast]
+caveats:
+  - The physical grouping and attachment limitations still apply.
+  - Null does not become benign during aggregation.
+source_object: pathology_diagnosis
+target_object: breast_side
+input_feature: pathology.severity
+topics: [topic.breast_side, topic.pathology]
+result_feature: breast_side.pathology_severity_aggregate
+via: [clinical.pathology-observation-diagnosis, clinical.side-pathology-observation]

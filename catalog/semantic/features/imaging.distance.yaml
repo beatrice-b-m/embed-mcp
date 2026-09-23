@@ -1,0 +1,10 @@
+kind: feature
+label: Imaging finding distance
+definition: Imaging finding distance in centimeters.
+value_type: numeric
+evidence: [release_schema, release_legend, observed_source_values, unresolved]
+search_terms: [imaging finding distance]
+caveats:
+  - Negative and zero values require an explicit sentinel policy.
+topics: [topic.imaging, topic.breast_side]
+objects: [imaging_finding]

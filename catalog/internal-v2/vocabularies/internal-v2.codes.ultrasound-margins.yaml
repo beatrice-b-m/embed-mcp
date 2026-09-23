@@ -1,0 +1,20 @@
+kind: vocabulary
+label: Ultrasound margin codes
+completeness: unknown
+null_meaning: [undocumented, occurrence_specific]
+parsing: comma_delimited_unordered
+legend_role: comparison_legend
+evidence: [observed_source_values, release_legend]
+caveats:
+  - >-
+    Parse comma-delimited tokens; ordering and repetition do not change meaning, and preserve
+    unexplained component codes.
+codes:
+  A: angular margins
+  C: circumscribed margins
+  I: indistinct margins
+  M: microlobulated margins
+  N: well defined margins
+  P: poorly defined margins
+  R: partially defined margins
+  S: spiculated margins

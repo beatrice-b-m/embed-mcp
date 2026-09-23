@@ -1,0 +1,8 @@
+kind: feature
+label: Finding change
+definition: Code string describing change noted in an imaging finding.
+value_type: coded
+evidence: [release_schema, release_legend]
+search_terms: [finding change]
+topics: [topic.imaging]
+objects: [imaging_finding]

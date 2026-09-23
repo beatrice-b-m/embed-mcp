@@ -1,0 +1,38 @@
+kind: join
+join_type: reference
+source_completeness: required
+cardinality:
+  targets_per_source: zero_or_more
+  sources_per_target: zero_or_more
+evidence: [maintainer_confirmed, inference]
+hazards:
+  - >-
+    Repeated wide clinical rows and history entries can multiply associations; no deduplication
+    or aggregation policy is supplied.
+  - >-
+    Patient-only association spans recording exams and must not imply exam-specific event
+    attribution.
+  - >-
+    Cross-patient accession associations are invalid; candidate accession sentinel behavior
+    remains unresolved.
+caveats:
+  - >-
+    Descriptive route through established identifier namespaces; cross-table match coverage was
+    not tested by these packets.
+  - >-
+    Physical rows repeat both endpoints; physical multiplicity is distinct from clinical
+    ownership.
+  - >-
+    A valid accession is recording context rather than the historical event or exact recording
+    time.
+cites:
+  - internal-v2.patient-history-context#patient-and-accession-context
+  - internal-v2.history-topology-context#tested-groupings
+relationships:
+  - internal-v2.clinical.exam-procedure-history-recording-context
+source_columns:
+  - internal-v2.magview_all_cohorts_pacs_v2_anon#empi_anon
+  - internal-v2.magview_all_cohorts_pacs_v2_anon#acc_anon
+target_columns:
+  - internal-v2.procedurehist_anon#empi_anon
+  - internal-v2.procedurehist_anon#acc_anon

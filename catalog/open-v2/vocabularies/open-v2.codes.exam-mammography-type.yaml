@@ -1,0 +1,10 @@
+kind: vocabulary
+label: Mammography exam-type codes
+completeness: unknown
+null_meaning: [undocumented]
+parsing: atomic
+evidence: [release_legend]
+codes:
+  diagnostic: diagnostic exam
+  screening: screening exam
+  screening and diagnostic: combined screening and diagnostic exam

@@ -1,0 +1,14 @@
+kind: join
+join_type: reference
+source_completeness: required
+cardinality:
+  targets_per_source: zero_or_one
+  sources_per_target: zero_or_more
+evidence: [release_schema, release_legend, inference, unresolved]
+hazards:
+  - When exam context matters, join risk to exam by accession and validate patient identifiers.
+caveats:
+  - The direct patient reference is plausible but referential coverage was not checked.
+relationships: [clinical.patient-risk-assessment]
+source_columns: [open-v2.risk_anon#empi_anon]
+target_columns: [open-v2.patients_anon#empi_anon]

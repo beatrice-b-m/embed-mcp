@@ -1,0 +1,12 @@
+kind: feature
+label: Patient identifier
+definition: Unique patient identifier in the released clinical tables.
+value_type: identifier
+evidence: [release_schema, release_legend]
+search_terms: [patient identifier, patient id, empi]
+caveats:
+  - >-
+    Treat identifiers as opaque; do not expose values or assume stability beyond the documented
+    release.
+topics: [topic.identity]
+objects: [patient]

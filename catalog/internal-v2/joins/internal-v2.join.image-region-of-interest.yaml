@@ -1,0 +1,39 @@
+kind: join
+join_type: hierarchy
+source_completeness: optional
+cardinality:
+  targets_per_source: zero_or_more
+  sources_per_target: exactly_one
+evidence: [observed_source_values]
+hazards:
+  - >-
+    Exploding the serialized collections multiplies image rows; the resulting region rows have
+    positional order only and no identifier.
+  - >-
+    Do not join regions across image rows of one acquisition group; cross-image correspondence
+    is not represented.
+caveats:
+  - >-
+    The relationship is realized by row co-location rather than by a key join: an image row's
+    region-of-interest collections are carried in that same row.
+  - >-
+    One image row carries zero or more regions and each region belongs to exactly one image row,
+    preserving the semantic rule that a region has exactly one source image.
+  - >-
+    The endpoint locator is intended for every extracted image row, and its basename supplies
+    dataset-version-scoped SOP Instance UID identity; a missing value likely reflects
+    anonymization failure.
+  - >-
+    Observed missing locator values make the physical endpoint incomplete, while row co-location
+    still expresses the image-to-region attachment; no region identity is represented.
+  - There is no separate region-of-interest table and none should be inferred.
+cites:
+  - internal-v2.roi-context#roi-attached-to-image
+  - internal-v2.roi-context#roi-serialized-collections
+  - internal-v2.roi-context#roi-identity-and-provenance
+  - internal-v2.roi-context#roi-cross-image-correspondence-absent
+relationships: [clinical.image-region-of-interest]
+source_columns:
+  - internal-v2.metadata_all_cohorts_v1c#anon_dicom_path
+target_columns:
+  - internal-v2.metadata_all_cohorts_v1c#anon_dicom_path

@@ -1,0 +1,12 @@
+kind: feature
+label: HER2 immunohistochemistry result
+definition: Coded HER2 immunohistochemistry score or workflow state for a pathology specimen.
+value_type: coded
+evidence: [release_legend, observed_source_values]
+search_terms: [HER2 IHC, HER2 status]
+caveats:
+  - The vocabulary mixes assay results with workflow and residual-disease states.
+topics: [topic.pathology]
+cites:
+  - internal-v2.magview-pathology-context#specimen-surface
+objects: [pathology_specimen, pathology_diagnosis]

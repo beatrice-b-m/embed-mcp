@@ -1,0 +1,15 @@
+kind: feature
+label: Specimen number
+definition: >-
+  Source-system specimen number scoped to a procedure-associated pathology representation.
+value_type: identifier
+evidence: [release_legend, observed_source_values]
+search_terms: [specimen number, pathology specimen identifier]
+caveats:
+  - >-
+    The value is not globally unique, is not a durable cross-release identifier, and may repeat
+    across physical rows.
+topics: [topic.identity, topic.pathology]
+cites:
+  - internal-v2.magview-pathology-context#specimen-surface
+objects: [pathology_specimen]

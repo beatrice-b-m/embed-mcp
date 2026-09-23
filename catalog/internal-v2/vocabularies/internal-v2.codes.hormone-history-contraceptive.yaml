@@ -1,0 +1,12 @@
+kind: vocabulary
+label: Reported contraceptive-history codes
+completeness: unknown
+parsing: atomic
+evidence: [maintainer_confirmed]
+caveats:
+  - These meanings apply only when exposure category is O.
+  - The confirmed codes are not asserted to exhaust every represented source value.
+codes:
+  C: Combined oral contraceptive
+  ORAL: Oral contraceptive
+  O: Other contraceptive

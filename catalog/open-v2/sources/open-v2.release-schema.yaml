@@ -3,7 +3,5 @@ label: EMBED V2 open-data Parquet footer schemas
 source_type: release_schema
 locator_type: logical_artifact
 locator: open-v2 clinical table Parquet footer schemas
-version_scope: Physical columns, types, and schema nullability for the open-v2 clinical-table release.
-notes:
-  - Footer schemas establish representation but not clinical values or empirical distributions.
-  - The registered footer verification does not inspect clinical rows.
+version_scope: >-
+  Physical columns, types, and schema nullability for the open-v2 clinical-table release.

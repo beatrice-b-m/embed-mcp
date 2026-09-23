@@ -1,0 +1,12 @@
+kind: profile_support
+evidence_status: supported
+evidence_summary: >-
+  The EMBED extraction supplies the most severe mapped inverse-severity group from the row's
+  path1 through path10 descriptors.
+evidence_caveats:
+  - >-
+    A populated descriptor alongside null severity is a data-quality error, not a supported
+    state to backfill silently.
+subject: aggregation.pathology-observation-severity
+evidence_cites:
+  - internal-v2.magview-pathology-context#path-severity-derived-occurrence

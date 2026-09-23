@@ -1,0 +1,23 @@
+kind: feature
+label: Side-level pathology severity aggregate
+definition: >-
+  Minimum, and therefore most severe, pathology-severity value among procedure-associated
+  pathology records in the breast-side aggregate group.
+value_type: aggregate
+evidence: [release_schema, observed_source_values, maintainer_confirmed]
+search_terms: [side-level pathology severity aggregate]
+caveats:
+  - Pathology severity uses inverse ordering, so the minimum value is the most severe.
+topics: [topic.breast_side, topic.pathology]
+objects: [breast_side]
+temporal: [time.pathology-report-documentation, time.downstream-availability]
+missing_states:
+  unattached_pathology:
+    representation: "null"
+    meaning: >-
+      No pathology severity is attached within the represented breast-side aggregate group; this
+      is not a diagnosis category or negative outcome.
+    caveats:
+      - >-
+        It does not establish benign disease, no cancer, complete capture, or adequate follow-up
+        for the breast side.

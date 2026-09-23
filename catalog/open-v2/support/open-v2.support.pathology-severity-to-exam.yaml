@@ -1,0 +1,17 @@
+kind: profile_support
+evidence_status: supported
+representation_status: supported
+representation_summary: >-
+  Open-v2 supplies an exam pathology-severity result concept whose verified rollup takes the
+  minimum represented severity in the applicable exam group.
+representation_caveats:
+  - >-
+    Support for the rollup does not establish pathology availability at exam time or complete
+    outcome capture.
+search_terms: [open v2 exam pathology aggregate, supported minimum severity by exam]
+subject: aggregation.pathology-severity-to-exam
+topics: [topic.exam, topic.pathology]
+evidence_cites:
+  - open-v2.pathology-procedure-context#severity-aggregation
+representation_cites:
+  - open-v2.pathology-procedure-context#severity-aggregation

@@ -1,0 +1,4 @@
+kind: profile_support
+evidence_status: supported
+subject: guardrail.risk-probability-readiness
+evidence_cites: [open-v2.risk-context#risk-semantics]

@@ -1,0 +1,13 @@
+kind: source
+label: EMBED V2 Open Data clinical legend comparison
+source_type: release_legend
+locator_type: logical_artifact
+locator: EMBED V2 Open Data clinical legend
+version_scope: >-
+  Comparison source for candidate MagView header and code meanings; it describes the curated
+  Open V2 release rather than internal V2.
+notes:
+  - >-
+    The legend is a closer comparison than the V1 dictionary but is not authoritative for
+    internal V2.
+  - Its categorical lists are not assumed exhaustive.

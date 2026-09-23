@@ -1,0 +1,27 @@
+kind: aggregation
+label: Pathology severity to imaging finding
+aggregation_status: analyst_defined
+definition: >-
+  No supplied finding-level severity aggregation is established; an analyst may declare a
+  task-specific policy such as any linked outcome, earliest linked outcome, or minimum linked
+  severity.
+ordering: >-
+  The declared policy must address optional many-to-many attribution, row multiplication, time,
+  and estimand dependence.
+search_terms:
+  - finding pathology aggregate
+  - finding cancer label
+  - analyst defined finding outcome
+  - earliest linked outcome
+  - minimum linked severity
+caveats:
+  - Do not silently deduplicate multiplied joins.
+  - The catalog does not select a finding-level outcome policy.
+  - >-
+    Incomplete linkage and multiplicity remain visible limitations even when a declared policy
+    is reasonable.
+source_object: pathology_diagnosis
+target_object: imaging_finding
+input_feature: pathology.severity
+topics: [topic.imaging, topic.pathology]
+via: [clinical.pathology-observation-diagnosis, clinical.finding-pathology-observation]

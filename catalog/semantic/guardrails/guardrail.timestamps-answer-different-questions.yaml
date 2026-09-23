@@ -1,0 +1,44 @@
+kind: guardrail
+label: Different clinical timestamps answer different questions
+category: prohibition
+priority: critical
+statement: >-
+  Select exam, procedure, specimen, pathology-report, and availability times by their clinical
+  meaning.
+  Do not coalesce them into a single event timestamp or use one as a fallback for a missing
+  value of another semantic endpoint.
+rationale: >-
+  These timestamps refer to different events or documentation stages.
+  Missingness in the selected temporal semantic remains missing; another semantic may be
+  analyzed as a separately named endpoint or sensitivity analysis, not substituted into the same
+  endpoint.
+scope: embed_general
+search_terms:
+  - diagnosis date
+  - index date
+  - candidate dates
+  - timeline
+  - fallback date
+  - coalesce procedure report exam
+  - date proxy
+  - proxy timestamp
+  - non substitutable times
+caveats:
+  - Agents and users remain responsible for task-specific anchors and windows.
+  - >-
+    A cancer-associated imaging exam remains a valid anchor when that is the explicitly named
+    estimand; it is not a replacement for a different clinical event.
+topics: [topic.exam, topic.procedure, topic.pathology, topic.report, topic.temporal]
+applies_to:
+  - imaging_exam
+  - procedure
+  - pathology_observation
+  - pathology_diagnosis
+  - exam.study_date
+  - pathology.procedure_date
+  - pathology.report_date
+  - time.exam-event
+  - time.procedure-event
+  - time.specimen-collection
+  - time.pathology-report-documentation
+  - time.downstream-availability

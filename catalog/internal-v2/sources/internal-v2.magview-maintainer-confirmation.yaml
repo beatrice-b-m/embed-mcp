@@ -1,0 +1,15 @@
+kind: source
+label: Internal V2 MagView maintainer confirmation
+source_type: maintainer_confirmed
+locator_type: logical_artifact
+locator: maintainer-confirmed:internal-v2-magview
+version_scope: >-
+  Internal EMBED V2 MagView clinical-table scope, finding-level pathology severity, absent
+  curated aggregate columns, and analyst-defined inverse-severity reduction boundary.
+notes:
+  - >-
+    Confirms the wide MagView clinical-table representation independently from the paired
+    image-metadata representation.
+  - >-
+    Confirms that downstream exam- or patient-level reductions are analyst-defined and use the
+    minimum represented severity because lower scores are more severe.

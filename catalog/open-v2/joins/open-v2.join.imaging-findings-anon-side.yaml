@@ -1,0 +1,14 @@
+kind: join
+join_type: hierarchy
+source_completeness: optional
+cardinality:
+  targets_per_source: zero_or_one
+  sources_per_target: zero_or_more
+evidence: [release_schema, inference, unresolved]
+hazards:
+  - Do not match null side values or reinterpret bilateral side without an explicit policy.
+caveats:
+  - Null side prevents an unconditional side-level relationship.
+relationships: [clinical.side-finding]
+source_columns: [open-v2.imaging_findings_anon#acc_anon, open-v2.imaging_findings_anon#side]
+target_columns: [open-v2.side_level_anon#acc_anon, open-v2.side_level_anon#side]

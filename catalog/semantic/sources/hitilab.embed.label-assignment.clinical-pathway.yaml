@@ -5,8 +5,7 @@ scope: general_clinical
 locator_type: url
 locator: https://docs.hitilab.com/datasets/embed/label-assignment#clinical-pathway
 version_scope: >-
-  General breast-imaging pathway described in the public EMBED documentation;
-  no open-v2 physical representation is asserted.
+  General breast-imaging pathway described in the public EMBED documentation; no open-v2
+  physical representation is asserted.
 notes:
   - Use for general clinical background only.
-  - The page's empirical proportions are outside this catalog's count-free scope.

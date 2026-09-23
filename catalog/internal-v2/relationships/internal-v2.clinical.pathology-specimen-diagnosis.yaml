@@ -1,0 +1,36 @@
+kind: relationship
+label: Pathology specimen supports diagnosis state
+relationship_type: derivation
+definition: >-
+  Descriptor observations and characterization co-located with a putative specimen
+  representation support a represented pathology diagnosis state.
+cardinality:
+  targets_per_source: zero_or_more
+  sources_per_target: zero_or_more
+optionality:
+  source: optional
+  target: optional
+attribution_limitations:
+  - >-
+    Specimen presence and attribution are unresolved and must not be required for
+    diagnosis-level use.
+  - >-
+    A finding can carry several procedure or putative specimen rows with different severity
+    states.
+  - Invalid severity code 6 and unexplained descriptor codes require explicit handling.
+temporal_qualification: >-
+  Diagnosis documentation is downstream of the imaging finding and procedure.
+search_terms: [specimen diagnosis, specimen pathology severity]
+caveats:
+  - No finding-level reduction across all linked rows is supplied.
+  - Current internal operations should not rely on the specimen endpoint of this relationship.
+source_object: pathology_specimen
+target_object: pathology_diagnosis
+topics: [topic.pathology, topic.procedure, topic.temporal]
+cites:
+  - internal-v2.magview-pathology-context#specimen-surface
+  - internal-v2.magview-pathology-context#path-severity-derived-occurrence
+temporal:
+  - time.procedure-event
+  - time.pathology-report-documentation
+  - time.downstream-availability

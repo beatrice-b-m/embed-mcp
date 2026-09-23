@@ -1,0 +1,144 @@
+kind: context
+label: Open-v2 pathology and procedure context
+context_type: data_representation
+definition: >-
+  Pathology findings carry procedure, report, surgery, diagnosis-slot, and severity fields with
+  non-unique links back to imaging.
+search_terms:
+  - pathology procedure lifecycle
+  - biopsy result
+  - pathology slots
+  - pathology imaging linkage
+  - path_severity
+caveats:
+  - >-
+    Procedure and pathology information may postdate imaging and must not be treated as
+    contemporaneous by default.
+  - >-
+    In the classic MagView representation, distinct procedures carry distinct
+    procedure/pathology values even when the associated finding content is otherwise duplicated.
+topics:
+  - topic.breast_side
+  - topic.imaging
+  - topic.pathology
+  - topic.procedure
+  - topic.temporal
+  - topic.workflow
+about:
+  - pathology.biopsy_type
+  - pathology.diagnosis_code_slot
+  - pathology.procedure_date
+  - pathology.report_date
+  - pathology.severity
+  - pathology.surgery_type
+  - breast_side.pathology_severity_aggregate
+  - exam.pathology_severity_aggregate
+  - open-v2.pathology_findings_anon
+  - open-v2.imaging_findings_anon
+  - open-v2.side_level_anon
+  - open-v2.join.pathology-findings-anon-exam
+  - open-v2.join.pathology-findings-anon-imaging-finding
+  - open-v2.join.pathology-findings-anon-side
+claims:
+  separate-pathology-surface:
+    statement: >-
+      Open-v2 stores pathology findings in a separate pathology-finding-grain table with
+      procedure, report, surgery, and diagnosis fields.
+    status: verified
+    caveats:
+      - The table grain does not establish a unique clinical row identity.
+    sources: [open-v2.release-schema, open-v2.release-legend]
+  imaging-link-tuple:
+    statement: >-
+      The registered pathology-to-imaging association uses accession, finding side, and finding
+      number, but is optional and can match multiple rows in either direction.
+    status: reconciled
+    caveats:
+      - Joining can multiply rows and incomplete tuples require an explicit policy.
+    sources: [open-v2.release-schema, open-v2.catalog-linkage-review]
+  finding-versus-biopsy-side:
+    statement: >-
+      The side component of the registered imaging relationship is finding side, not biopsy
+      side.
+    status: verified
+    caveats:
+      - Do not substitute bside when following the declared table relationship.
+    sources: [open-v2.release-schema, open-v2.release-legend]
+  diagnosis-slot-order:
+    statement: >-
+      Path1 through path10 are procedure-associated pathology descriptor codes, generally
+      ordered by severity group; slot position, within-group order, and duplicate occurrences
+      are not informative for decision-making.
+    status: reconciled
+    caveats:
+      - Duplicate codes are not intended but may occur and are equivalent to one occurrence.
+    sources:
+      - open-v2.release-schema
+      - open-v2.release-legend
+      - open-v2.catalog-linkage-review
+      - open-v2.maintainer-clarification-2026-07-29
+  pathology-code-mappings:
+    statement: >-
+      Pathology descriptor codes observed in open-v2 but absent from the released legend are
+      valid source-system codes with mappings that are currently unknown; there is no single
+      authoritative owner or versioned dictionary across the contributing clinical systems.
+    status: unresolved
+    caveats:
+      - >-
+        Retain unknown codes as observed; resolving one requires system-specific investigation
+        and data processing.
+    sources:
+      - open-v2.release-legend
+      - open-v2.maintainer-clarification-2026-07-29
+  severity-meaning:
+    statement: >-
+      Pathology severity is the inverse coded group of the most severe attached pathology
+      descriptor: 0 invasive cancer, 1 in-situ cancer, 2 high-risk lesion, 3 borderline lesion,
+      4 benign finding, and 5 non-breast cancer.
+    status: verified
+    caveats:
+      - >-
+        Lower values are more severe; null means no attached pathology and is not benign or
+        negative.
+    sources:
+      - open-v2.release-schema
+      - open-v2.maintainer-clarification-2026-07-29
+  severity-aggregation:
+    statement: >-
+      Exam-level and breast-side-level pathology severity are aggregated by taking the minimum,
+      and therefore most severe, value among procedure-associated pathology records in the
+      applicable group.
+    status: verified
+    caveats:
+      - >-
+        The inverse ordering means an ordinary numeric maximum would select the least severe
+        value.
+    sources:
+      - open-v2.release-schema
+      - open-v2.maintainer-clarification-2026-07-29
+  patient-aggregate-absence:
+    statement: >-
+      The registered open-v2 bindings expose pathology-severity values and side- and exam-level
+      rollups but no patient-level pathology-severity result field or supplied longitudinal
+      outcome rollup.
+    status: verified
+    caveats:
+      - >-
+        Absence of a supplied field does not prohibit an analyst-defined policy; it means the
+        catalog does not designate one.
+    sources:
+      - open-v2.release-schema
+      - open-v2.maintainer-clarification-2026-07-29
+  outcome-capture-not-established:
+    statement: >-
+      The registered open-v2 metadata and public pathology-attribution documentation do not
+      establish complete capture of breast-cancer outcomes, outside-system diagnoses, or
+      longitudinal follow-up.
+    status: unresolved
+    caveats:
+      - >-
+        This is a limitation of available evidence, not a measured estimate of missing outcomes
+        or follow-up.
+    sources:
+      - open-v2.release-schema
+      - hitilab.embed.overview.pathology-attribution

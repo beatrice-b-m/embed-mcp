@@ -1,0 +1,10 @@
+kind: feature
+label: Positive lymph nodes
+definition: Recorded number of positive lymph nodes.
+value_type: numeric
+evidence: [release_legend, observed_source_values]
+search_terms: [positive nodes, node positive count]
+topics: [topic.pathology]
+cites:
+  - internal-v2.magview-pathology-context#specimen-surface
+objects: [pathology_specimen, pathology_diagnosis]

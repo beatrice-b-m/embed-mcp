@@ -1,0 +1,13 @@
+kind: temporal
+label: Specimen collection time
+temporal_type: event_time
+definition: The clinical time at which a tissue specimen is collected.
+search_terms: [specimen date, specimen collection, tissue collection time]
+caveats:
+  - >-
+    A selected profile may not bind a specimen-collection date; inspect profile coverage before
+    choosing this time.
+  - Procedure or report date must not be relabeled as specimen time.
+topics: [topic.procedure, topic.pathology, topic.temporal]
+objects: [procedure, pathology_observation]
+relative_to: [time.procedure-event]

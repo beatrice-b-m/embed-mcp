@@ -1,0 +1,10 @@
+kind: feature
+label: Histologic grade
+definition: Recorded combined histologic-grade category for a pathology diagnosis.
+value_type: coded
+evidence: [release_legend, observed_source_values]
+search_terms: [histologic grade, tumor grade]
+topics: [topic.pathology]
+cites:
+  - internal-v2.magview-pathology-context#specimen-surface
+objects: [pathology_diagnosis]

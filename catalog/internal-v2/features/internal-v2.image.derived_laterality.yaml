@@ -1,0 +1,19 @@
+kind: feature
+label: Derived final image laterality
+definition: >-
+  Reliable pipeline-resolved breast laterality assigned to one internal V1c image row and
+  preferred for determining which breast the image represents.
+value_type: coded
+evidence: [maintainer_confirmed, observed_source_values]
+search_terms: [final image laterality, image side, derived laterality]
+caveats:
+  - Only left and right are represented; a bilateral source laterality yields no derived value.
+  - A missing value is not bilateral.
+  - >-
+    Its exact derivation and the LateralityDeriveFlag meanings remain unknown, but
+    ImageLateralityFinal itself is the maintained reliable image-side attribute.
+  - Image side is not automatically finding or procedure side.
+topics: [topic.imaging, topic.breast_side]
+cites:
+  - internal-v2.v1c-metadata-context#laterality-roles
+objects: [image]

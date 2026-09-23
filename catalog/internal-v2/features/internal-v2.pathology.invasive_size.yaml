@@ -1,0 +1,14 @@
+kind: feature
+label: Invasive carcinoma size
+definition: Recorded size of invasive carcinoma in a pathology specimen.
+value_type: numeric
+evidence: [release_legend, observed_source_values]
+search_terms: [invasive tumor size, invasive carcinoma size]
+caveats:
+  - >-
+    The available dictionaries do not document units; exceptional negative source values have
+    unresolved meanings.
+topics: [topic.pathology]
+cites:
+  - internal-v2.magview-pathology-context#specimen-surface
+objects: [pathology_specimen, pathology_diagnosis]

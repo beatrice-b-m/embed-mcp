@@ -1,0 +1,14 @@
+kind: feature
+label: Pathologic TNM primary-tumor category
+definition: Recorded pathologic primary-tumor component of TNM classification.
+value_type: coded
+evidence: [release_legend, observed_source_values]
+search_terms: [pT, TNM primary tumor]
+caveats:
+  - >-
+    The profile preserves source tokens and dictionary wording without correcting apparent
+    source-system spellings.
+topics: [topic.pathology]
+cites:
+  - internal-v2.magview-pathology-context#specimen-surface
+objects: [pathology_diagnosis]

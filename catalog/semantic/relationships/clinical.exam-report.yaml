@@ -1,0 +1,21 @@
+kind: relationship
+label: Exam has radiology report version
+relationship_type: documentation
+definition: Accession association of one or more represented report versions.
+cardinality:
+  targets_per_source: zero_or_more
+  sources_per_target: zero_or_one
+optionality:
+  source: optional
+  target: optional
+attribution_limitations:
+  - Duplicate natural tuples and missing links can occur.
+temporal_qualification: >-
+  Report versions document the exam and may evolve after initial interpretation.
+search_terms: [exam report, accession report versions]
+caveats:
+  - Joining reports to findings by accession can multiply both sides.
+source_object: imaging_exam
+target_object: radiology_report
+topics: [topic.exam, topic.report, topic.temporal]
+temporal: [time.exam-event]

@@ -1,0 +1,12 @@
+kind: source
+label: Internal V2 MagView Parquet footer schema
+source_type: release_schema
+locator_type: logical_artifact
+locator: internal-v2 MagView clinical-table Parquet footer schema
+version_scope: >-
+  Physical table name, ordered columns, Arrow types, and schema nullability for the internal V2
+  MagView clinical artifact.
+notes:
+  - >-
+    It does not establish clinical missingness, key uniqueness, attribution, value meaning, or
+    temporal availability.

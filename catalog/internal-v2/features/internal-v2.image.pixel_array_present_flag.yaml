@@ -1,0 +1,17 @@
+kind: feature
+label: Legacy pixel-array determination flag
+definition: >-
+  Obsolete pipeline field that formerly attempted to record a pixel-array determination for one
+  internal V1c image row.
+value_type: flag
+evidence: [maintainer_confirmed, observed_source_values]
+search_terms: [has pixel array, pixel data present, pixel array flag]
+caveats:
+  - The field is no longer populated because checking it substantially slowed anonymization.
+  - >-
+    Existing values and missingness are not reliable and must not be used to infer pixel-data
+    availability.
+topics: [topic.imaging, topic.technical]
+cites:
+  - internal-v2.v1c-metadata-context#locator-and-enrichment-population
+objects: [image]

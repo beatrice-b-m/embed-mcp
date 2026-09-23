@@ -1,0 +1,10 @@
+kind: feature
+label: Extensive intraductal component status
+definition: Recorded extensive intraductal component category for a pathology diagnosis.
+value_type: coded
+evidence: [release_legend, observed_source_values]
+search_terms: [EIC, extensive intraductal component]
+topics: [topic.pathology]
+cites:
+  - internal-v2.magview-pathology-context#specimen-surface
+objects: [pathology_specimen, pathology_diagnosis]

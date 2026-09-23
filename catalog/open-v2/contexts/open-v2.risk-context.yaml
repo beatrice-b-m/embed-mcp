@@ -1,0 +1,73 @@
+kind: context
+label: Open-v2 risk-assessment context
+context_type: interpretation_guardrail
+definition: >-
+  Risk outputs were calculated during clinical care in MagView and ordinary values are
+  tentatively believed to use percentage points, but the risk table, field variants, exceptional
+  values, and model versions require internal investigation.
+search_terms: [risk assessment, IBIS risk, NCI risk, risk horizon, risk temporal availability]
+caveats:
+  - >-
+    Risk output and BI-RADS assessment are different constructs and must not be substituted for
+    one another.
+  - No field is approved for modeling or release merely because it appears in risk_anon.
+topics: [topic.risk, topic.temporal, topic.workflow]
+about:
+  - risk.ibis_brca1
+  - risk.ibis_brca2
+  - risk.ibis_lifetime
+  - risk.ibis_population_lifetime
+  - risk.ibis_population_ten_year
+  - risk.ibis_td1
+  - risk.ibis_td2
+  - risk.ibis_td3
+  - risk.ibis_td4
+  - risk.ibis_ten_year
+  - risk.nci_five_year
+  - risk.nci_lifetime
+  - open-v2.risk_anon
+  - open-v2.exam_level_anon
+  - open-v2.patients_anon
+  - open-v2.join.risk-anon-exam
+  - open-v2.join.risk-anon-patient
+claims:
+  separate-risk-surface:
+    statement: >-
+      Open-v2 stores named IBIS and NCI numeric outputs at risk-assessment grain with patient,
+      accession, and study-date references.
+    status: verified
+    caveats:
+      - A released name is not a complete clinical definition.
+    sources: [open-v2.release-schema]
+  risk-semantics:
+    statement: >-
+      Ordinary NCI and IBIS outputs are tentatively believed to use percentage points, but the
+      risk table has not been validated in depth.
+      IBISPOP10, IBISPOPL, and IBIS_TD1 through IBIS_TD4 lack confirmed definitions; meanings of
+      -35, -2, and 100 and the generating model versions are also unknown.
+    status: unresolved
+    caveats:
+      - >-
+        Treat percentage-point formatting as tentative and do not infer a comparable range from
+        numeric physical type.
+    sources:
+      - open-v2.release-schema
+      - open-v2.catalog-linkage-review
+      - open-v2.maintainer-clarification-2026-07-29
+  exam-coverage:
+    statement: >-
+      The risk-to-exam relationship is optional and does not establish that every exam has a
+      risk record.
+    status: reconciled
+    sources: [open-v2.catalog-linkage-review]
+  risk-availability:
+    statement: >-
+      The released risk scores were calculated during clinical care and extracted from the
+      breast-imaging MagView EHR system.
+    status: verified
+    caveats:
+      - >-
+        Clinical-time calculation does not by itself establish the exact calculation timestamp
+        within the study episode.
+    sources:
+      - open-v2.maintainer-clarification-2026-07-29

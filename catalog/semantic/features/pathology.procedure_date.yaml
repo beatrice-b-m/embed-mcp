@@ -1,0 +1,36 @@
+kind: feature
+label: Anonymized procedure date
+definition: Anonymized procedure date.
+value_type: date
+evidence: [release_schema, release_legend, maintainer_confirmed]
+search_terms:
+  - anonymized procedure date
+  - procedure date fallback
+  - coalesce procedure report exam date
+  - proxy event date
+caveats:
+  - >-
+    The absolute calendar date is shifted and must not be interpreted literally; within-patient
+    ordering and date differences are preserved.
+  - Procedure information may be post-exam and requires a task-specific temporal anchor.
+  - >-
+    Do not coalesce this procedure-event date with specimen, pathology-report, or imaging-exam
+    dates as fallback values for the same endpoint.
+  - >-
+    If procedure-event time is the selected endpoint, a missing value remains missing; another
+    temporal semantic may be analyzed only as a separately named endpoint or sensitivity
+    analysis.
+topics: [topic.pathology, topic.procedure, topic.temporal]
+objects: [procedure]
+temporal:
+  - {id: time.procedure-event, records: true}
+missing_states:
+  missing_or_unknown:
+    representation: "null"
+    meaning: >-
+      No procedure event date is represented in this field; this does not establish that a
+      procedure did not occur.
+    caveats:
+      - >-
+        The available metadata does not distinguish source absence, extraction loss, an
+        unattached procedure, or another reason for null.

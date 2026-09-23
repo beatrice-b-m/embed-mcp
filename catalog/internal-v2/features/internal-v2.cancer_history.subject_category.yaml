@@ -1,0 +1,12 @@
+kind: feature
+label: Cancer-history patient or relative subject
+definition: Whether the history entry concerns the patient or a reported relative.
+value_type: flag
+evidence: [maintainer_confirmed]
+search_terms:
+  - CancerHist subject_category
+  - Cancer-history patient or relative subject
+topics: [topic.identity, topic.pathology, topic.workflow]
+cites:
+  - internal-v2.cancer-history-context#subject-and-relationship
+objects: [internal-v2.cancer_history_entry]

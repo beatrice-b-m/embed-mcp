@@ -1,0 +1,17 @@
+kind: join
+join_type: projection
+source_completeness: required
+cardinality:
+  targets_per_source: zero_or_one
+  sources_per_target: exactly_one
+evidence: [cross_table_check]
+hazards:
+  - This release-local technical projection is not a clinical join key.
+  - Do not assume source ordering or cross-release index stability.
+caveats:
+  - >-
+    Every normalized imaging index is represented in the wide index surface, but some wide rows
+    have no imaging counterpart.
+source_columns: [open-v2.combined_anon#__index_level_0__]
+target_columns:
+  - open-v2.imaging_findings_anon#__index_level_0__

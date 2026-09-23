@@ -1,0 +1,30 @@
+kind: relationship
+label: Imaging exam provides procedure-history recording context
+relationship_type: documentation
+definition: >-
+  A valid associated accession supplies the imaging-exam context in which the prior-procedure
+  history entry is represented.
+cardinality:
+  targets_per_source: zero_or_more
+  sources_per_target: zero_or_one
+optionality:
+  source: optional
+  target: optional
+attribution_limitations:
+  - >-
+    The accession is not the accession on which the historical procedure occurred and does not
+    supply the procedure event time.
+  - Candidate sentinel value 999 is not interpreted.
+temporal_qualification: >-
+  The exam event date is contextual and must not be substituted for historical procedure time or
+  exact history-documentation time.
+search_terms: [ProcHist accession, procedure history recording context, history collection exam]
+caveats:
+  - >-
+    Physical routes are descriptive and do not establish cross-table match coverage or
+    historical event attribution.
+source_object: imaging_exam
+target_object: internal-v2.procedure_history_entry
+topics: [topic.exam, topic.procedure, topic.temporal, topic.workflow]
+cites:
+  - internal-v2.patient-history-context#patient-and-accession-context

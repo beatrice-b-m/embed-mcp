@@ -1,0 +1,12 @@
+kind: feature
+label: Ashkenazi ancestry indicator
+definition: >-
+  Indicator of self-identified Ashkenazi Jewish heritage recorded as a breast-cancer risk
+  factor.
+value_type: flag
+evidence: [release_schema, maintainer_confirmed, unresolved]
+search_terms: [ashkenazi ancestry indicator, ancestry]
+caveats:
+  - Completeness, reliability, encoding, and null semantics are not established.
+topics: [topic.demographics]
+objects: [patient, imaging_exam]

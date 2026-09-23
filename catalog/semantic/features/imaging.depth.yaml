@@ -1,0 +1,10 @@
+kind: feature
+label: Imaging finding depth
+definition: Depth or grid-location code for an imaging finding.
+value_type: coded
+evidence: [release_schema, release_legend]
+search_terms: [imaging finding depth]
+caveats:
+  - Letter and grid representations coexist; null semantics are not documented.
+topics: [topic.imaging, topic.breast_side]
+objects: [imaging_finding]

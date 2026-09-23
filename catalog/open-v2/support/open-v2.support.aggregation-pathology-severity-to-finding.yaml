@@ -1,0 +1,5 @@
+kind: profile_support
+evidence_status: supported
+subject: aggregation.pathology-severity-to-finding
+evidence_cites:
+  - open-v2.pathology-procedure-context#imaging-link-tuple

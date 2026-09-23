@@ -1,0 +1,28 @@
+kind: guardrail
+label: Downstream clinical information may cause temporal leakage
+category: prohibition
+priority: critical
+statement: >-
+  Procedure, pathology, and later report information must not be assumed available at an earlier
+  imaging or prediction time.
+rationale: >-
+  Event, documentation, and availability times differ, and wide-row co-location does not prove
+  co-availability.
+scope: embed_general
+search_terms: [temporal leakage, post index information, known at prediction time]
+caveats:
+  - The appropriate availability boundary is analysis specific.
+topics: [topic.imaging, topic.pathology, topic.procedure, topic.temporal]
+applies_to:
+  - imaging_exam
+  - procedure
+  - pathology_observation
+  - pathology_diagnosis
+  - exam.study_date
+  - pathology.procedure_date
+  - pathology.report_date
+  - clinical.exam-pathology-observation
+  - time.exam-event
+  - time.procedure-event
+  - time.pathology-report-documentation
+  - time.downstream-availability

@@ -1,0 +1,22 @@
+kind: relationship
+label: Finding has imaging interpretation
+relationship_type: documentation
+definition: Finding-level association of assessment and recommendation.
+cardinality:
+  targets_per_source: zero_or_one
+  sources_per_target: exactly_one
+optionality:
+  source: optional
+  target: required
+attribution_limitations:
+  - >-
+    A profile may co-locate the interpretation with a finding rather than identify it
+    independently.
+temporal_qualification: No separate interpretation timestamp is represented.
+search_terms: [finding assessment recommendation, BI-RADS interpretation]
+caveats:
+  - An assessment category is not tissue diagnosis truth.
+source_object: imaging_finding
+target_object: imaging_interpretation
+topics: [topic.imaging, topic.workflow]
+temporal: [time.exam-event]

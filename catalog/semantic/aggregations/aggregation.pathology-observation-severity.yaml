@@ -1,0 +1,17 @@
+kind: aggregation
+label: Pathology observations to diagnosis severity
+aggregation_status: provided
+definition: >-
+  Select the most severe attached descriptor group across the procedure-associated pathology
+  slots.
+ordering: "Inverse severity ordering: lower numeric groups are more severe."
+search_terms: [pathology code severity, most severe descriptor, path severity]
+caveats:
+  - Duplicate descriptor occurrences are equivalent to one occurrence.
+  - Unknown descriptor mappings remain unresolved even when a severity group is represented.
+source_object: pathology_observation
+target_object: pathology_diagnosis
+input_feature: pathology.diagnosis_code_slot
+topics: [topic.pathology]
+result_feature: pathology.severity
+via: [clinical.procedure-pathology-observation, clinical.pathology-observation-diagnosis]

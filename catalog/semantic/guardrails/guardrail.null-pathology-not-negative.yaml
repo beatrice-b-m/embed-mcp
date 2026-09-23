@@ -1,0 +1,16 @@
+kind: guardrail
+label: Unattached pathology is not a negative diagnosis
+category: prohibition
+priority: critical
+statement: >-
+  Do not classify null pathology severity or absent attached pathology as benign, no cancer, or
+  adequate negative follow-up.
+rationale: >-
+  The represented null state means no pathology is attached; it does not establish disease
+  absence or outcome ascertainment.
+scope: embed_general
+search_terms: [null pathology, no pathology is not negative, unattached pathology]
+caveats:
+  - A task-specific study may measure follow-up, but the catalog does not supply that policy.
+topics: [topic.pathology, topic.temporal]
+applies_to: [pathology_diagnosis, pathology.severity]

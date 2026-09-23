@@ -1,0 +1,11 @@
+kind: vocabulary
+label: Pathology concordance statuses
+completeness: unknown
+parsing: atomic
+evidence: [release_legend, observed_source_values]
+caveats:
+  - The comparison dictionaries do not state that this code list is exhaustive.
+  - Null semantics are occurrence specific and must not be inferred from code membership.
+codes:
+  C: Concordant
+  N: Not concordant

@@ -1,0 +1,16 @@
+kind: source
+label: DICOM PS3.3 Common Image Information Entity Modules
+source_type: public_documentation
+scope: general_clinical
+locator_type: url
+locator: https://dicom.nema.org/medical/dicom/current/output/chtml/part03/sect_C.7.6.html
+version_scope: >-
+  Current DICOM PS3.3 definition of Burned In Annotation (0028,0301), including its YES, NO, and
+  absent-attribute semantics.
+notes:
+  - >-
+    Used to interpret the standard DICOM attribute rather than infer its meaning from the
+    internal column name.
+  - >-
+    Does not establish that the internal extraction verified the source declaration against
+    pixel data.

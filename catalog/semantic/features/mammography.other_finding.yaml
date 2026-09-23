@@ -1,0 +1,8 @@
+kind: feature
+label: Other mammographic finding
+definition: Other mammographic-finding code string.
+value_type: coded
+evidence: [release_schema, release_legend]
+search_terms: [other mammographic finding]
+topics: [topic.imaging, topic.mammography]
+objects: [imaging_finding]

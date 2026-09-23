@@ -1,0 +1,106 @@
+kind: context
+label: Open-v2 multimodal finding context
+context_type: data_representation
+definition: >-
+  The imaging-finding surface contains mammography, ultrasound, and MRI descriptor families
+  without proving modality presence from descriptor nulls.
+search_terms:
+  - multimodal findings
+  - mammography descriptors
+  - ultrasound descriptors
+  - MRI descriptors
+  - not applicable null
+caveats:
+  - >-
+    Descriptor presence and modality availability are separate questions represented by
+    different features.
+topics: [topic.imaging, topic.mammography, topic.mri, topic.ultrasound]
+about:
+  - breast.side
+  - breast_side.mass_aggregate
+  - exam.mass_aggregate
+  - exam.modality
+  - imaging.finding_number
+  - mammography.mass_present
+  - ultrasound.finding
+  - mri.other_finding
+  - open-v2.exam_level_anon
+  - open-v2.imaging_findings_anon
+  - open-v2.join.imaging-findings-anon-exam
+claims:
+  descriptor-families:
+    statement: >-
+      Open-v2 imaging_findings_anon exposes distinct mammography, ultrasound, and MRI descriptor
+      columns.
+    status: verified
+    caveats:
+      - A shared table surface does not make modality-specific descriptors interchangeable.
+    sources: [open-v2.release-schema, open-v2.release-legend]
+  exam-modality:
+    statement: >-
+      Exam modality is represented separately at exam grain and should remain distinct from
+      individual descriptor fields.
+    status: verified
+    caveats:
+      - Cross-field modality consistency has not been registered as a validated invariant.
+    sources: [open-v2.release-schema, open-v2.release-legend]
+  descriptor-null-semantics:
+    statement: >-
+      Modality-specific descriptor fields indicate presence or absence of particular finding
+      descriptors and do not establish whether that modality was performed or available.
+    status: verified
+    caveats:
+      - Use the separate exam/modality features for modality availability.
+    sources:
+      - open-v2.release-schema
+      - open-v2.maintainer-clarification-2026-07-29
+  mammography-aggregate-semantics:
+    statement: >-
+      Exam-level and breast-side-level mass, calcification, asymmetry, and
+      architectural-distortion fields are Boolean summaries aggregated only from mammography
+      findings, including FFDM, synthetic 2D, and DBT.
+    status: verified
+    caveats:
+      - These summaries do not aggregate ultrasound or MRI descriptors.
+    sources:
+      - open-v2.release-schema
+      - open-v2.maintainer-clarification-2026-07-29
+  synthetic-contralateral-finding:
+    statement: >-
+      After excluding finding number -9, accession and finding number identify a distinct
+      clinical finding within an accession; -9 identifies a derived synthetic contralateral
+      negative finding implied by a non-negative finding on the other breast but not explicitly
+      entered in MagView.
+    status: verified
+    caveats:
+      - Synthetic contralateral negatives are derived records.
+      - >-
+        The clinical identity can occupy multiple physical rows and is not a persistent lesion
+        identifier across accessions, episodes, or modalities.
+    sources:
+      - open-v2.release-schema
+      - open-v2.maintainer-clarification-2026-07-29
+  finding-side-null:
+    statement: >-
+      A null side attached to a clinical finding represents a bilateral finding; outside that
+      context, null generally means unknown laterality and a null biopsy or procedure side is
+      not bilateral.
+    status: verified
+    caveats:
+      - >-
+        Interpret null laterality according to the field's clinical role rather than applying a
+        catalog-wide null rule.
+    sources:
+      - open-v2.release-schema
+      - open-v2.maintainer-clarification-2026-07-29
+  field-specific-parsing:
+    statement: >-
+      Loosely structured coded fields do not share one guaranteed delimiter, ordering,
+      repetition, composition, or null convention.
+    status: verified
+    caveats:
+      - >-
+        Without field-specific evidence, preserve source strings, treat ordering as
+        non-informative, and treat null as unknown or missing.
+    sources:
+      - open-v2.maintainer-clarification-2026-07-29

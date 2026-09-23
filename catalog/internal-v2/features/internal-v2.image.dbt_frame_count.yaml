@@ -1,0 +1,28 @@
+kind: feature
+label: DBT frame count
+definition: >-
+  Number of frames or z-slices in an internal V1c DBT image, represented by the source DICOM
+  ImagesInAcquisition element.
+value_type: numeric
+evidence: [maintainer_confirmed]
+search_terms:
+  - DBT frame count
+  - tomosynthesis frame count
+  - z-slice count
+  - number of frames
+  - ImagesInAcquisition
+  - images in acquisition
+  - acquisition size
+caveats:
+  - This does not count distinct image instances in an acquisition group.
+  - >-
+    It is informative only for DBT images; values on other image types should not be interpreted
+    as frame counts.
+  - >-
+    For a represented DBT frame count, valid zero-based ROI frame indices are less than the
+    count.
+  - It is not represented on every row.
+topics: [topic.imaging, topic.technical]
+cites:
+  - internal-v2.v1c-metadata-context#dbt-frame-count-semantics
+objects: [image]

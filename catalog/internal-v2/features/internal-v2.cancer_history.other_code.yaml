@@ -1,0 +1,12 @@
+kind: feature
+label: Provisional other-history code
+definition: >-
+  Category-dependent history code provisionally interpreted using the supplied other-code
+  dictionary.
+value_type: coded
+evidence: [observed_source_values, inference]
+search_terms: [CancerHist other_code, Provisional other-history code]
+topics: [topic.identity, topic.pathology, topic.workflow]
+cites:
+  - internal-v2.cancer-history-context#provisional-code-meanings
+objects: [internal-v2.cancer_history_entry]

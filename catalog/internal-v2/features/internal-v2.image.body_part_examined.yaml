@@ -1,0 +1,15 @@
+kind: feature
+label: Source body part examined
+definition: Body part recorded on the source DICOM instance for one internal V1c image row.
+value_type: categorical
+evidence: [observed_source_values]
+search_terms: [body part examined, anatomic region]
+caveats:
+  - >-
+    Represented values vary in case and include a bilateral form, so comparison needs explicit
+    normalization.
+  - It does not carry image laterality.
+topics: [topic.imaging]
+cites:
+  - internal-v2.v1c-metadata-context#parsed-dicom-element-semantics
+objects: [image]

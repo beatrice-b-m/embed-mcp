@@ -1,0 +1,12 @@
+kind: feature
+label: MRI enhancement distribution
+definition: MRI enhancement-distribution code.
+value_type: coded
+evidence: [release_schema, release_legend, observed_source_values, unresolved]
+search_terms: [mri enhancement distribution]
+caveats:
+  - >-
+    The vocabulary binding is a case-only legend match, and the legend list is not guaranteed
+    exhaustive.
+topics: [topic.imaging, topic.mri]
+objects: [imaging_finding]

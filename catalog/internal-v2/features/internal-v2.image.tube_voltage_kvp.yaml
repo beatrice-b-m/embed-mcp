@@ -1,0 +1,10 @@
+kind: feature
+label: X-ray tube voltage
+definition: Represented source DICOM peak kilovoltage for one internal V1c image row.
+value_type: numeric
+evidence: [observed_source_values]
+search_terms: [kVp, tube voltage, exposure technique]
+topics: [topic.imaging, topic.technical]
+cites:
+  - internal-v2.v1c-metadata-context#parsed-dicom-element-semantics
+objects: [image]

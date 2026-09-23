@@ -5,45 +5,396 @@ caveats:
   - No documented natural key uniquely identifies every imaging-finding row.
 keys:
   finding_tuple:
-    columns: [acc_anon, side, numfind]
     key_type: natural
     uniqueness: not_unique
     completeness: incomplete
     evidence: [release_schema, cross_table_check]
     caveats:
       - >-
-        The apparent accession, side, and finding tuple is incomplete
-        and does not uniquely identify every imaging row.
+        The apparent accession, side, and finding tuple is incomplete and does not uniquely
+        identify every imaging row.
       - Null side and sentinel-like finding numbers require explicit handling.
+    columns: [acc_anon, side, numfind]
   export_index:
-    columns: [__index_level_0__]
     key_type: technical
     uniqueness: unique
     completeness: complete
     evidence: [release_schema, cross_table_check]
     caveats:
-      - The pandas serialization index is release-local provenance, not a clinical or cross-release key.
-# Prototype: an excerpt of 6 of the table's 54 columns, in physical order.
+      - >-
+        The pandas serialization index is release-local provenance, not a clinical or
+        cross-release key.
+    columns: [__index_level_0__]
+objects:
+  breast_imaging_episode:
+    authority: reference
+    caveats:
+      - No complete episode identity or construction rule is established.
+    object: breast_imaging_episode
+    cites:
+      - open-v2.linked-exam-context#optional-reference
+      - open-v2.linked-exam-context#link-meaning
+    columns: [acc_anon, linkedaccession_anon]
+  imaging_finding:
+    authority: preferred
+    derivation: source
+    identity_scope: >-
+      Distinct clinical finding within one accession after excluding reserved synthetic entries.
+    rows_per_instance: one_or_more
+    longitudinal_identity: false
+    caveats:
+      - The clinical identity omits side and may occupy multiple physical rows.
+    object: imaging_finding
+    cites:
+      - open-v2.multimodal-finding-context#descriptor-families
+      - open-v2.multimodal-finding-context#synthetic-contralateral-finding
+    columns: [acc_anon, side, numfind]
+    identity_columns: [acc_anon, numfind]
+    reserved_exceptions:
+      numfind=-9:
+        representation: "-9"
+        meaning: >-
+          Derived synthetic contralateral negative finding rather than an ordinary clinical
+          finding identity.
+        caveats:
+          - Exclude this reserved value when identifying ordinary distinct clinical findings.
+        column: numfind
+        cites:
+          - open-v2.multimodal-finding-context#synthetic-contralateral-finding
+  imaging_interpretation:
+    caveats:
+      - No independent interpretation row identity or timestamp exists.
+    object: imaging_interpretation
+    cites:
+      - open-v2.assessment-recommendation-context#separate-fields
+    columns: [asses, recc]
 columns:
   acc_anon:
     type: int64
     nullable: true
+    maps:
+      - {id: exam.accession_identifier, mapping: direct}
+  linkedaccession_anon:
+    type: int64
+    nullable: true
+    maps:
+      - {id: imaging.linked_accession_identifier, mapping: direct}
+  linked_study_flag:
+    type: string
+    nullable: true
+    maps:
+      - {id: imaging.linked_study_flag, mapping: direct}
   side:
     type: string
     nullable: true
+    maps:
+      - {id: breast.side, mapping: direct, vocabulary: open-v2.codes.breast-side}
+    interpretations:
+      "null":
+        representation: "null"
+        meaning: The clinical imaging finding is bilateral.
+        status: verified
+        caveats:
+          - This bilateral meaning is specific to finding-side laterality.
+        cites:
+          - open-v2.multimodal-finding-context#finding-side-null
   numfind:
     type: int8
     nullable: true
+    maps:
+      - {id: imaging.finding_number, mapping: direct}
   asses:
     type: string
     nullable: true
     maps:
       - {id: imaging.assessment, mapping: direct, vocabulary: open-v2.codes.imaging-assessment}
+  mass:
+    type: int8
+    nullable: true
+    maps:
+      - {id: mammography.mass_present, mapping: direct}
+  asymmetry:
+    type: int8
+    nullable: true
+    maps:
+      - {id: mammography.asymmetry_present, mapping: direct}
+  arch_distortion:
+    type: int8
+    nullable: true
+    maps:
+      - {id: mammography.architectural_distortion_present, mapping: direct}
+  calc:
+    type: int8
+    nullable: true
+    maps:
+      - {id: mammography.calcification_present, mapping: direct}
+  massshape:
+    type: string
+    nullable: true
+    maps:
+      - id: mammography.mass_shape
+        mapping: direct
+        vocabulary: open-v2.codes.mammography-mass-shape
+  massmargin:
+    type: string
+    nullable: true
+    maps:
+      - id: mammography.mass_margin
+        mapping: direct
+        vocabulary: open-v2.codes.mammography-mass-margin
+  massdens:
+    type: string
+    nullable: true
+    maps:
+      - id: mammography.mass_density
+        mapping: direct
+        vocabulary: open-v2.codes.mammography-mass-density
+  calcfind:
+    type: string
+    nullable: true
+    maps:
+      - id: mammography.calcification_morphology
+        mapping: direct
+        vocabulary: open-v2.codes.mammography-calcification-morphology
+  calcdistri:
+    type: string
+    nullable: true
+    maps:
+      - id: mammography.calcification_distribution
+        mapping: direct
+        vocabulary: open-v2.codes.mammography-calcification-distribution
+  calcnumber:
+    type: string
+    nullable: true
+    maps:
+      - {id: mammography.calcification_number, mapping: direct}
+  otherfind:
+    type: string
+    nullable: true
+    maps:
+      - id: mammography.other_finding
+        mapping: direct
+        vocabulary: open-v2.codes.mammography-other-finding
+  implanfind:
+    type: string
+    nullable: true
+    maps:
+      - id: mammography.implant_finding
+        mapping: direct
+        vocabulary: open-v2.codes.mammography-implant-finding
+  consistent:
+    type: string
+    nullable: true
+    maps:
+      - id: mammography.consistent_with
+        mapping: direct
+        vocabulary: open-v2.codes.mammography-consistent-with
+  mdelayed.1:
+    type: string
+    nullable: true
+    maps:
+      - id: mri.delayed_kinetics_secondary
+        mapping: direct
+        notes:
+          - Do not inherit the mdelayed vocabulary; equivalence is unresolved.
+  secondaryfindings:
+    type: string
+    nullable: true
+    maps:
+      - id: ultrasound.secondary_findings
+        mapping: direct
+        vocabulary: open-v2.codes.ultrasound-secondary-findings
+  size:
+    type: int16
+    nullable: true
+    maps:
+      - {id: imaging.finding_size, mapping: direct}
+  location:
+    type: string
+    nullable: true
+    maps:
+      - {id: imaging.location, mapping: direct, vocabulary: open-v2.codes.breast-location}
+  depth:
+    type: string
+    nullable: true
+    maps:
+      - {id: imaging.depth, mapping: direct, vocabulary: open-v2.codes.breast-depth}
+  distance:
+    type: int16
+    nullable: true
+    maps:
+      - {id: imaging.distance, mapping: direct}
+  stable:
+    type: int8
+    nullable: true
+    maps:
+      - {id: imaging.stable_flag, mapping: direct}
+  new:
+    type: int8
+    nullable: true
+    maps:
+      - {id: imaging.new_flag, mapping: direct}
+  changed:
+    type: string
+    nullable: true
+    maps:
+      - {id: imaging.change, mapping: direct, vocabulary: open-v2.codes.imaging-change}
+  USFinding:
+    type: string
+    nullable: true
+    maps:
+      - {id: ultrasound.finding, mapping: direct, vocabulary: open-v2.codes.ultrasound-finding}
+  shape:
+    type: string
+    nullable: true
+    maps:
+      - {id: ultrasound.shape, mapping: direct, vocabulary: open-v2.codes.ultrasound-shape}
+  orientation:
+    type: string
+    nullable: true
+    maps:
+      - id: ultrasound.orientation
+        mapping: direct
+        vocabulary: open-v2.codes.ultrasound-orientation
+  margins:
+    type: string
+    nullable: true
+    maps:
+      - {id: ultrasound.margins, mapping: direct, vocabulary: open-v2.codes.ultrasound-margins}
+  modifers:
+    type: string
+    nullable: true
+    maps:
+      - id: ultrasound.modifiers
+        mapping: direct
+        vocabulary: open-v2.codes.ultrasound-modifiers
+  echotexture:
+    type: string
+    nullable: true
+    maps:
+      - id: ultrasound.echotexture
+        mapping: direct
+        vocabulary: open-v2.codes.ultrasound-echotexture
+  posteriorfeatures:
+    type: string
+    nullable: true
+    maps:
+      - id: ultrasound.posterior_features
+        mapping: direct
+        vocabulary: open-v2.codes.ultrasound-posterior-features
+  vascularity:
+    type: string
+    nullable: true
+    maps:
+      - id: ultrasound.vascularity
+        mapping: direct
+        vocabulary: open-v2.codes.ultrasound-vascularity
+  surroundingtissue:
+    type: string
+    nullable: true
+    maps:
+      - id: ultrasound.surrounding_tissue
+        mapping: direct
+        vocabulary: open-v2.codes.ultrasound-surrounding-tissue
+  mfocus:
+    type: string
+    nullable: true
+    maps:
+      - {id: mri.focus, mapping: direct, vocabulary: open-v2.codes.mri-focus}
+  mshape:
+    type: string
+    nullable: true
+    maps:
+      - {id: mri.mass_shape, mapping: direct, vocabulary: open-v2.codes.mri-mass-shape}
+  mmargin:
+    type: string
+    nullable: true
+    maps:
+      - {id: mri.mass_margin, mapping: direct, vocabulary: open-v2.codes.mri-mass-margin}
+  menhance:
+    type: string
+    nullable: true
+    maps:
+      - id: mri.internal_enhancement
+        mapping: direct
+        vocabulary: open-v2.codes.mri-internal-enhancement
+  mdist:
+    type: string
+    nullable: true
+    maps:
+      - {id: mri.distribution, mapping: direct, vocabulary: open-v2.codes.mri-distribution}
+  mpattern:
+    type: string
+    nullable: true
+    maps:
+      - {id: mri.pattern, mapping: direct, vocabulary: open-v2.codes.mri-pattern}
+  msym:
+    type: string
+    nullable: true
+    maps:
+      - {id: mri.symmetry, mapping: direct, vocabulary: open-v2.codes.mri-symmetry}
+  massoc:
+    type: string
+    nullable: true
+    maps:
+      - id: mri.associated_finding
+        mapping: direct
+        vocabulary: open-v2.codes.mri-associated-finding
+  mother:
+    type: string
+    nullable: true
+    maps:
+      - {id: mri.other_finding, mapping: direct}
+  minitial:
+    type: string
+    nullable: true
+    maps:
+      - id: mri.initial_kinetics
+        mapping: direct
+        vocabulary: open-v2.codes.mri-initial-kinetics
+  mdelayed:
+    type: string
+    nullable: true
+    maps:
+      - id: mri.delayed_kinetics
+        mapping: direct
+        vocabulary: open-v2.codes.mri-delayed-kinetics
+  msize:
+    type: int8
+    nullable: true
+    maps:
+      - {id: mri.size, mapping: direct}
+  mbpe_level:
+    type: string
+    nullable: true
+    maps:
+      - id: mri.background_parenchymal_enhancement
+        mapping: direct
+        vocabulary: open-v2.codes.mri-background-parenchymal-enhancement
+  MBPE_SYM:
+    type: string
+    nullable: true
+    maps:
+      - id: mri.background_parenchymal_enhancement_symmetry
+        mapping: direct
+        vocabulary: open-v2.codes.mri-background-parenchymal-enhancement-symmetry
+  addendum_flag:
+    type: string
+    nullable: true
+    maps:
+      - {id: imaging.addendum_flag, mapping: direct}
   recc:
     type: string
     nullable: true
     maps:
-      - {id: imaging.recommendation, mapping: direct, vocabulary: open-v2.codes.imaging-recommendation}
+      - id: imaging.recommendation
+        mapping: direct
+        vocabulary: open-v2.codes.imaging-recommendation
   __index_level_0__:
     type: int64
     nullable: true
+    maps:
+      - id: technical.pandas_index
+        mapping: direct
+        notes:
+          - Technical export provenance only; not a clinical identifier.

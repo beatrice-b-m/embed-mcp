@@ -1,0 +1,8 @@
+kind: feature
+label: Ultrasound orientation
+definition: Ultrasound finding-orientation code.
+value_type: coded
+evidence: [release_schema, release_legend]
+search_terms: [ultrasound orientation]
+topics: [topic.imaging, topic.ultrasound]
+objects: [imaging_finding]

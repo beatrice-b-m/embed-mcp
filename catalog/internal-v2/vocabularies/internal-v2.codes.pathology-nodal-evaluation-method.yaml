@@ -1,0 +1,14 @@
+kind: vocabulary
+label: Nodal-evaluation methods
+completeness: unknown
+parsing: atomic
+evidence: [release_legend, observed_source_values]
+caveats:
+  - The comparison dictionaries do not state that this code list is exhaustive.
+  - Null semantics are occurrence specific and must not be inferred from code membership.
+codes:
+  L: hematoxylin and eosin, one level
+  M: hematoxylin and eosin, multiple levels
+  I: immunohistochemistry
+  N: sentinel lymph node biopsy not performed
+  O: Other

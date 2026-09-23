@@ -1,0 +1,15 @@
+kind: profile_support
+evidence_status: supported
+representation_status: unresolved
+representation_summary: >-
+  Same-episode linked accessions are represented, but no canonical episode identifier or
+  complete episode-construction surface is established.
+representation_caveats:
+  - Do not infer prior or follow-up order from the linked-accession relation.
+search_terms: [episode coverage, linked exam completeness]
+subject: breast_imaging_episode
+topics: [topic.exam, topic.imaging, topic.temporal]
+evidence_cites: [open-v2.linked-exam-context#link-meaning]
+representation_cites:
+  - open-v2.linked-exam-context#optional-reference
+  - open-v2.linked-exam-context#link-meaning

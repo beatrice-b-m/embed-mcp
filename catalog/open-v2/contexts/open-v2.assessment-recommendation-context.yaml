@@ -2,60 +2,76 @@ kind: context
 label: Open-v2 assessment and recommendation context
 context_type: interpretation_guardrail
 definition: >-
-  Assessment and recommendation are distinct finding-level fields
-  whose clinical and temporal roles must not be collapsed.
+  Assessment and recommendation are distinct finding-level fields whose clinical and temporal
+  roles must not be collapsed.
+search_terms:
+  - BI-RADS assessment
+  - asses
+  - recommendation
+  - assessment versus recommendation
+  - temporal leakage
+caveats:
+  - >-
+    Do not derive an outcome label from assessment or recommendation without a declared task and
+    temporal anchor.
+  - >-
+    Public pathway guidance does not establish that open-v2 rows form a complete
+    screening-to-diagnostic sequence.
 topics: [topic.imaging, topic.mammography, topic.temporal, topic.workflow]
 about:
-  # Prototype: also about exam.mammography_type, the combined_anon table, and
-  # the physical relationships open-v2.imaging_findings_anon.exam and
-  # open-v2.combined_anon.imaging_index_projection, which are outside this slice.
   - imaging.assessment
   - imaging.recommendation
+  - exam.mammography_type
   - open-v2.imaging_findings_anon
-search_terms: [BI-RADS assessment, asses, recommendation, assessment versus recommendation, temporal leakage]
+  - open-v2.combined_anon
+  - open-v2.join.imaging-findings-anon-exam
+  - open-v2.join.combined-anon-imaging-index-projection
 claims:
   separate-fields:
     statement: >-
-      Open-v2 represents imaging assessment and imaging recommendation
-      as separate columns at imaging-finding grain.
+      Open-v2 represents imaging assessment and imaging recommendation as separate columns at
+      imaging-finding grain.
     status: verified
-    sources: [open-v2.release-schema, open-v2.release-legend]
     caveats:
       - Physical co-location does not make the fields semantically interchangeable.
+    sources: [open-v2.release-schema, open-v2.release-legend]
   assessment-codes:
     statement: >-
-      The released assessment codes identify distinct BI-RADS states
-      and must not be reduced to one simple ordinal scale.
+      The released assessment codes identify distinct BI-RADS states and must not be reduced to
+      one simple ordinal scale.
     status: verified
-    sources: [open-v2.release-legend]
     caveats:
       - Code membership alone does not establish workflow validity for a particular exam type.
+    sources: [open-v2.release-legend]
   recommendation-composition:
     statement: >-
-      Recommendation strings come from a loose multi-site MagView reporting schema
-      with expected formatting heterogeneity.
+      Recommendation strings come from a loose multi-site MagView reporting schema with expected
+      formatting heterogeneity.
     status: reconciled
-    sources: [open-v2.release-legend, open-v2.catalog-linkage-review, open-v2.maintainer-clarification-2026-07-29]
     caveats:
       - Preserve the source string rather than imposing a canonical grammar.
+    sources:
+      - open-v2.release-legend
+      - open-v2.catalog-linkage-review
+      - open-v2.maintainer-clarification-2026-07-29
   recommendation-code-mappings:
     statement: >-
-      Mappings for valid recommendation codes absent from the released legend are currently unknown;
-      there is no single authoritative owner or versioned dictionary across the contributing clinical systems.
+      Mappings for valid recommendation codes absent from the released legend are currently
+      unknown; there is no single authoritative owner or versioned dictionary across the
+      contributing clinical systems.
     status: unresolved
-    sources: [open-v2.release-legend, open-v2.maintainer-clarification-2026-07-29]
     caveats:
       - >-
-        Resolving a code requires system-specific investigation and data processing;
-        do not guess or silently normalize undocumented recommendation codes.
+        Resolving a code requires system-specific investigation and data processing; do not
+        guess or silently normalize undocumented recommendation codes.
+    sources:
+      - open-v2.release-legend
+      - open-v2.maintainer-clarification-2026-07-29
   wide-projection-boundary:
     statement: >-
       The assessment and recommendation columns in combined_anon are convenience projections,
       not proof of value equality or contemporaneous availability.
     status: reconciled
-    sources: [open-v2.release-schema, open-v2.catalog-linkage-review]
     caveats:
       - Use the canonical imaging-finding binding when feature provenance matters.
-caveats:
-  - Do not derive an outcome label from assessment or recommendation without a declared task and temporal anchor.
-  - Public pathway guidance does not establish that open-v2 rows form a complete screening-to-diagnostic sequence.
+    sources: [open-v2.release-schema, open-v2.catalog-linkage-review]

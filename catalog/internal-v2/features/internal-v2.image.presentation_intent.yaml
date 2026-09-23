@@ -1,0 +1,17 @@
+kind: feature
+label: Source presentation intent
+definition: >-
+  Whether the source DICOM instance for one internal V1c image row is intended for presentation
+  or for further processing.
+value_type: coded
+evidence: [observed_source_values]
+search_terms: [presentation intent, for presentation, for processing]
+caveats:
+  - >-
+    Not represented for tomosynthesis-classified or screen-save classified rows, so presentation
+    intent cannot be assumed for them.
+  - The pixel-handling consequence of each represented value is not established here.
+topics: [topic.imaging]
+cites:
+  - internal-v2.v1c-metadata-context#image-type-distinctions
+objects: [image]

@@ -1,0 +1,63 @@
+kind: context
+label: Public EMBED finding and procedure recording
+context_type: data_representation
+scope: embed_general
+definition: >-
+  Public EMBED documentation distinguishes radiologist-recorded findings from later procedure
+  and pathology information in the classic clinical table.
+search_terms:
+  - finding procedure distinction
+  - retroactive pathology
+  - procedure duplication
+  - manual pathology attribution
+  - classic Magview
+caveats:
+  - >-
+    This is EMBED-specific public background, but its classic two-table row layout is not
+    authoritative for open-v2.
+  - The context records provenance and hazards, not a pathology backfill algorithm.
+topics: [topic.imaging, topic.pathology, topic.procedure, topic.temporal, topic.workflow]
+about:
+  - imaging.finding_number
+  - pathology.procedure_date
+  - pathology.report_date
+  - pathology.biopsy_type
+claims:
+  finding-versus-procedure:
+    statement: >-
+      The public classic-table documentation describes findings as radiologist-recorded
+      observations and procedures as later events linked to a finding.
+    status: reconciled
+    caveats:
+      - This statement does not assert that open-v2 stores both entities in one row.
+    sources:
+      - hitilab.embed.structure.public-representation
+  multiple-procedures:
+    statement: >-
+      In the documented classic representation, more than one linked procedure can repeat a
+      finding while procedure details differ.
+    status: reconciled
+    caveats:
+      - >-
+        Finding-row deduplication must not be transferred to open-v2 without profile-specific
+        evidence.
+    sources:
+      - hitilab.embed.structure.public-representation
+  retroactive-attribution:
+    statement: >-
+      Public EMBED documentation describes pathology as manually entered after a procedure and
+      attributed back to the originating finding.
+    status: reconciled
+    caveats:
+      - Manual attribution can be incomplete and is not a foreign-key guarantee.
+    sources:
+      - hitilab.embed.overview.pathology-attribution
+  screening-attribution-gap:
+    statement: >-
+      The public documentation warns that pathology may be recorded on a diagnostic study
+      without corresponding attribution to an earlier screening study.
+    status: reconciled
+    caveats:
+      - No frequency, temporal window, or deterministic repair rule is established.
+    sources:
+      - hitilab.embed.overview.pathology-attribution

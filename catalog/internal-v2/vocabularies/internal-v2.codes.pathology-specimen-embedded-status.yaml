@@ -1,0 +1,10 @@
+kind: vocabulary
+label: Specimen embedded source codes
+completeness: unknown
+parsing: atomic
+evidence: [release_legend, observed_source_values, unresolved]
+caveats:
+  - The comparison dictionaries label this as a yes/no field but supply no code meanings.
+  - No represented token is assigned a boolean meaning pending authoritative reconciliation.
+codes:
+  N: Unresolved internal source code

@@ -1,0 +1,10 @@
+kind: feature
+label: Imaging extraction eligibility flag
+definition: Flag identifying whether an exam qualified for imaging extraction from PACS.
+value_type: flag
+evidence: [release_schema, release_legend]
+search_terms: [imaging extraction eligibility flag]
+caveats:
+  - This is an extraction or workflow field, not a clinical finding.
+topics: [topic.exam, topic.workflow]
+objects: [imaging_exam]

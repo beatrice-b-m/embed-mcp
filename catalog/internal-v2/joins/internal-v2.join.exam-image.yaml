@@ -1,0 +1,46 @@
+kind: join
+join_type: hierarchy
+source_completeness: required
+cardinality:
+  targets_per_source: zero_or_more
+  sources_per_target: zero_or_more
+evidence: [observed_source_values, inference]
+hazards:
+  - >-
+    Both endpoints repeat the accession, so an accession join multiplies clinical association
+    rows against image rows; declare a grouping and de-duplication policy before joining.
+  - >-
+    Use the anonymized patient identifier for cross-table patient identity and as a consistency
+    check rather than as an exam-identity component; a cross-patient accession association is
+    invalid and must not be retained as a valid linkage.
+  - >-
+    Image laterality may be used only as a consistency check; it is not the imaging-finding or
+    procedure side and must not be made a join-identity component.
+  - >-
+    Do not derive an image-availability flag, a no-image cohort, or an exclusion rule from join
+    outcomes.
+caveats:
+  - >-
+    Internal V1c covers every EMBEDv1 exam and patient but is incomplete relative to internal
+    clinical V2, which contains later coverage.
+  - A clinical V2 exam can therefore have no matching V1c image row.
+  - An unmatched clinical exam is not evidence that the exam had no images.
+  - An inner join on the accession discards clinical V2 exams outside V1c coverage.
+  - Physical linkage does not establish image availability for all internal V2 exams.
+  - >-
+    Physical cardinality is many-to-many because the clinical table repeats exam rows and the
+    metadata table holds many image rows per exam; each image still belongs to one exam
+    clinically.
+  - >-
+    The clinical endpoint is taken from the MagView inventory; the shared accession namespace
+    and cross-table exam identity are maintainer confirmed.
+cites:
+  - internal-v2.v1c-metadata-context#version-boundary
+  - internal-v2.v1c-metadata-context#coverage-is-not-image-absence
+  - internal-v2.v1c-metadata-context#patient-and-exam-projection
+  - internal-v2.v1c-metadata-context#image-row-grain
+relationships: [clinical.exam-image]
+source_columns:
+  - internal-v2.magview_all_cohorts_pacs_v2_anon#acc_anon
+target_columns:
+  - internal-v2.metadata_all_cohorts_v1c#acc_anon

@@ -1,0 +1,15 @@
+kind: profile_support
+evidence_status: supported
+representation_status: supported
+representation_summary: >-
+  A physical finding-to-pathology tuple is registered, but its attribution is optional,
+  incomplete, and many-to-many.
+representation_caveats:
+  - Supported linkage metadata is not complete outcome ascertainment.
+search_terms: [finding pathology coverage, attribution completeness]
+subject: clinical.finding-pathology-observation
+topics: [topic.imaging, topic.pathology]
+evidence_cites:
+  - open-v2.pathology-procedure-context#imaging-link-tuple
+representation_cites:
+  - open-v2.pathology-procedure-context#imaging-link-tuple

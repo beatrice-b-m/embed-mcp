@@ -1,0 +1,12 @@
+kind: vocabulary
+label: Ultrasound vascularity codes
+completeness: unknown
+null_meaning: [undocumented]
+parsing: comma_composed_undocumented
+evidence: [release_legend]
+codes:
+  A: Mass is avascular.
+  H: Mass is hypervascular.
+  L: Mass is mildly vascular.
+  M: Mass is markedly hypervascular.
+  R: rim vascularity

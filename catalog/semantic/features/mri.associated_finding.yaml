@@ -1,0 +1,10 @@
+kind: feature
+label: MRI associated finding
+definition: MRI associated-finding code string.
+value_type: coded
+evidence: [release_schema, release_legend, inference]
+search_terms: [mri associated finding]
+caveats:
+  - The vocabulary binding is a case-only legend match.
+topics: [topic.imaging, topic.mri]
+objects: [imaging_finding]

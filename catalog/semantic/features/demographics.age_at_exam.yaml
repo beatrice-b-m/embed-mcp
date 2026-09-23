@@ -1,0 +1,15 @@
+kind: feature
+label: Anonymized age at exam
+definition: >-
+  Age in years at the exam, calculated from the consistently shifted patient birth date and
+  study date.
+value_type: numeric
+evidence: [release_schema, maintainer_confirmed]
+search_terms: [anonymized age at exam, age at study]
+caveats:
+  - >-
+    Age is otherwise unchanged, but values greater than or equal to 90 are top-coded to 89 for
+    deidentification.
+  - Values such as zero are data-quality errors, not documented sentinel codes.
+topics: [topic.demographics, topic.exam, topic.temporal]
+objects: [patient, imaging_exam]

@@ -1,0 +1,291 @@
+kind: context
+label: Internal V1c image-metadata representation
+context_type: data_representation
+definition: >-
+  The internal clinical V2 profile is paired with the most current internal V1c image-metadata
+  artifact, whose rows describe one extracted DICOM image instance each, carry repeated patient
+  and exam projections and serialized region-of-interest collections, and cover every EMBEDv1
+  exam and patient while remaining narrower than clinical V2.
+search_terms:
+  - internal V1c image metadata
+  - image metadata table
+  - DICOM attributes
+  - image identity
+  - image laterality
+  - derived image type
+  - acquisition group
+  - V1c coverage
+caveats:
+  - >-
+    The profile remains internal V2; the paired image metadata is the most current internal V1c
+    artifact and covers the complete EMBEDv1 exam and patient set.
+topics: [topic.imaging, topic.exam, topic.technical]
+about: [internal-v2.metadata_all_cohorts_v1c]
+claims:
+  image-row-grain:
+    statement: >-
+      One internal V1c image-metadata row represents the attributes of one extracted
+      breast-imaging DICOM image instance, with region-of-interest information serialized inside
+      that row.
+    status: reconciled
+    caveats:
+      - >-
+        The public description of an image-oriented metadata table was confirmed against the
+        internal V1c artifact rather than assumed.
+      - A row is not a region-of-interest row and is not a file inventory entry.
+    sources:
+      - internal-v2.v1c-metadata-structure-observation
+      - internal-v2.public-embed-structure
+      - internal-v2.v1c-metadata-maintainer-clarifications
+  version-boundary:
+    statement: >-
+      The internal clinical V2 profile is paired with the most current internal V1c
+      image-metadata artifact, which covers the complete EMBEDv1 exam and patient set and is
+      therefore narrower than internal clinical V2.
+    status: verified
+    caveats:
+      - >-
+        The profile remains internal V2 and is not renamed to V1c; the version boundary
+        describes the current metadata artifact and its EMBEDv1 scope.
+    sources:
+      - internal-v2.v1c-metadata-version-boundary
+  coverage-is-not-image-absence:
+    statement: >-
+      A clinical V2 exam with no matching internal V1c image-metadata row lies outside current
+      extraction coverage and is not thereby an exam without images.
+    status: verified
+    caveats:
+      - >-
+        Do not derive an image-availability indicator, a no-image cohort, or an exclusion rule
+        from unmatched exams.
+    sources:
+      - internal-v2.v1c-metadata-version-boundary
+  current-v1c-coverage:
+    statement: >-
+      The current V1c metadata covers every exam and patient in EMBEDv1 and includes DICOM
+      objects associated with those accessions after the documented secondary-capture and
+      screen-save exclusions.
+    status: verified
+    caveats:
+      - >-
+        Secondary captures and screen saves are excluded except ROI_SS and ROI_SSC images
+        retained solely to enable extraction of radiologist annotations.
+    sources:
+      - internal-v2.v1c-metadata-version-boundary
+  image-instance-identity:
+    statement: >-
+      The anonymized SOP Instance UID identifies one DICOM image durably within a dataset
+      version and is encoded as the anon_dicom_path filename without the .dcm suffix, even
+      though it is not exported as a separate metadata column.
+    status: verified
+    caveats:
+      - >-
+        Identity is durable only within the applicable dataset version; no cross-version image
+        identity is asserted.
+      - >-
+        A missing locator likely means anonymization failed before the de-identified DICOM could
+        be saved, so both the file and its exported identity representation are unavailable for
+        that row.
+      - >-
+        SeriesNumber and InstanceNumber do not replace the SOP Instance UID and do not
+        distinguish every image row within an accession.
+    sources:
+      - internal-v2.v1c-metadata-structure-observation
+      - internal-v2.v1c-metadata-maintainer-clarifications
+  locator-and-enrichment-population:
+    statement: >-
+      The PNG locator columns are legacy EMBEDv1 FFDM conversion outputs, the
+      extraction-category meaning remains unresolved, and has_pix_array is an obsolete,
+      unreliable field that is no longer populated.
+    status: verified
+    caveats:
+      - >-
+        Use the anonymized DICOM files rather than the legacy PNG conversion for current or
+        future work because the conversion can affect downstream behavior and model
+        generalizability.
+      - >-
+        Do not interpret has_pix_array values or missingness as reliable evidence about
+        pixel-data availability.
+      - The intended meaning of the extraction category remains unknown.
+    sources:
+      - internal-v2.v1c-metadata-structure-observation
+      - internal-v2.v1c-metadata-maintainer-clarifications
+  modality-surface:
+    statement: >-
+      Internal V1c extracted DICOM objects associated with every EMBEDv1 accession, then
+      excluded secondary captures and screen saves except ROI_SS and ROI_SSC annotation images
+      retained solely for ROI extraction; represented source modalities include mammography,
+      ultrasound, and other.
+    status: verified
+    caveats:
+      - The extraction boundary is the EMBEDv1 accession set, not internal clinical V2.
+      - >-
+        ROI_SS and ROI_SSC are annotation-transfer artifacts and are not intended for other
+        image analyses.
+    sources:
+      - internal-v2.v1c-metadata-structure-observation
+      - internal-v2.v1c-metadata-maintainer-clarifications
+  image-type-distinctions:
+    statement: >-
+      Source DICOM modality, the source DICOM image-type attribute, the pipeline-derived
+      image-type classification, view position, and image laterality are separate internal V1c
+      fields with separate meanings.
+    status: reconciled
+    caveats:
+      - >-
+        The derived classification only separates mammographic acquisition forms and is not a
+        modality field.
+      - >-
+        The derived two-dimensional class also covers contrast-enhanced, stereotactic, and
+        post-biopsy acquisitions that are separable only through the source DICOM image-type
+        attribute.
+      - >-
+        Equivalent source image-type tokens also occur under the residual class, so the
+        classification is not exhaustive.
+    sources:
+      - internal-v2.v1c-metadata-structure-observation
+      - internal-v2.public-embed-structure
+      - internal-v2.v1c-metadata-maintainer-clarifications
+  roi-screen-capture-purpose:
+    statement: >-
+      ROI_SS and ROI_SSC are retained secondary screen-capture images containing burned-in
+      radiologist pixel annotations; an annotation-extraction model converted those annotations
+      to coordinates that were transferred to the corresponding original images, and the screen
+      captures are not intended for any other use.
+    status: verified
+    caveats:
+      - >-
+        These pipeline classes describe annotation-transfer artifacts, not primary diagnostic
+        images or a general secondary-capture inventory.
+      - >-
+        They are one ROI annotation source; other represented ROIs came through other clinical
+        annotation workflows, including direct extraction from annotation DICOM objects without
+        pixel arrays.
+    sources:
+      - internal-v2.v1c-metadata-maintainer-clarifications
+      - internal-v2.roi-maintainer-confirmation
+  laterality-roles:
+    statement: >-
+      ImageLateralityFinal is the reliable internal V1c attribute for determining which breast
+      an image represents; it contains left or right when represented, while the derivation rule
+      and LateralityDeriveFlag meanings remain unknown.
+    status: verified
+    caveats:
+      - Image laterality is not automatically the imaging-finding side or the procedure side.
+      - A missing derived image laterality is not bilateral.
+      - >-
+        The source ImageLaterality and Laterality attributes remain standard DICOM occurrences;
+        no precedence rule is asserted for reconstructing ImageLateralityFinal.
+    sources:
+      - internal-v2.v1c-metadata-structure-observation
+      - internal-v2.public-embed-structure
+      - internal-v2.v1c-metadata-maintainer-clarifications
+  patient-and-exam-projection:
+    statement: >-
+      The clinical and image-metadata tables use the same anonymized patient and exam identifier
+      namespaces: empi_anon supports cross-table patient identity and acc_anon supports
+      cross-table exam identity, while both repeat across internal V1c image rows at their
+      patient and exam levels.
+    status: verified
+    caveats:
+      - >-
+        Each accession must associate with exactly one patient; a cross-patient accession
+        association is an invalid data-quality error that must not be retained as a valid
+        identity or linkage association.
+      - >-
+        The patient identifier may be used both for cross-table patient identity and as a
+        consistency check on an accession route, but it is not part of exam identity.
+      - Repetition across image rows is physical multiplicity, not clinical multiplicity.
+    sources:
+      - internal-v2.v1c-metadata-structure-observation
+      - internal-v2.v1c-metadata-maintainer-clarifications
+  cross-table-date-alignment:
+    statement: >-
+      Internal V1c study_date_anon represents the same exam event date as clinical
+      studydate_anon and uses the same patient-specific anonymization shift applied to every
+      anonymized EMBED date value.
+    status: verified
+    caveats:
+      - The V1c occurrence is text serialized rather than a parsed timestamp.
+    sources:
+      - internal-v2.magview-maintainer-clarifications
+      - internal-v2.v1c-metadata-maintainer-clarifications
+  parsed-dicom-element-semantics:
+    statement: >-
+      Columns parsed directly from standard DICOM data elements retain the applicable DICOM
+      element semantics; the DICOM files received no image or acquisition-attribute processing
+      beyond anonymization and sensitive-information redaction.
+    status: verified
+    caveats:
+      - >-
+        Standard element semantics do not establish internal value validity or pixel-data
+        verification.
+      - >-
+        PatientAge is top-coded to 89, PatientSex is unchanged, anonymized dates use the
+        confirmed patient-specific shift, and sensitive non-identifier/non-date attributes were
+        dropped.
+    sources:
+      - internal-v2.dicom-data-dictionary-standard
+      - internal-v2.v1c-metadata-artifact
+      - internal-v2.v1c-metadata-maintainer-clarifications
+  dbt-frame-count-semantics:
+    statement: >-
+      For DBT image rows, ImagesInAcquisition represents the number of frames or z-slices in the
+      image rather than the number of distinct image instances in an acquisition group.
+    status: verified
+    caveats:
+      - The value is informative only for DBT images and is not represented on every row.
+      - >-
+        For a represented DBT frame count, valid zero-based ROI frame indices are less than the
+        count.
+    sources:
+      - internal-v2.v1c-metadata-maintainer-clarifications
+  dicom-demographic-anonymization:
+    statement: >-
+      During DICOM anonymization PatientAge was top-coded to 89, PatientSex was not modified,
+      and sensitive non-identifier/non-date attributes were dropped.
+    status: verified
+    caveats:
+      - >-
+        This claim does not enumerate dropped physical attributes or change the confirmed
+        date-shifting and identifier-anonymization rules.
+    sources:
+      - internal-v2.v1c-metadata-maintainer-clarifications
+      - internal-v2.dicom-data-dictionary-standard
+  burned-in-annotation-semantics:
+    statement: >-
+      DICOM Burned In Annotation (0028,0301) declares whether the image contains sufficient
+      burned-in annotation to identify the patient and the date the image was acquired; YES and
+      NO are the defined values, and an absent attribute leaves that condition unknown.
+    status: reconciled
+    caveats:
+      - The attribute is a source declaration and is not a verification of the pixel data.
+      - >-
+        The catalogue does not prescribe exclusion, redaction, or another action based on this
+        attribute.
+    sources:
+      - internal-v2.dicom-image-module-standard
+      - internal-v2.v1c-metadata-structure-observation
+  acquisition-grouping:
+    statement: >-
+      acquisition_group_id is constructed as {acc_anon}_{ProtocolName with spaces replaced by
+      hyphens}_{ContentTime cast as an integer}; it is stable across reruns and globally unique
+      for simultaneous image-acquisition groups.
+    status: verified
+    caveats:
+      - Spaces are replaced only in ProtocolName as part of the documented construction.
+      - The grouping is not a region-of-interest identity or correspondence representation.
+    sources:
+      - internal-v2.v1c-metadata-structure-observation
+      - internal-v2.v1c-metadata-maintainer-clarifications
+  dicom-study-and-accession-identifiers:
+    statement: >-
+      During anonymization acc_anon is written to the DICOM AccessionNumber element; the
+      relationship between StudyID and acc_anon is unknown and StudyID is not relied upon
+      internally.
+    status: verified
+    caveats:
+      - Do not use StudyID as an exam identity or assume it equals acc_anon.
+    sources:
+      - internal-v2.v1c-metadata-maintainer-clarifications
+      - internal-v2.dicom-data-dictionary-standard

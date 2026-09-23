@@ -1,0 +1,11 @@
+kind: vocabulary
+label: Ultrasound modifier codes
+completeness: unknown
+null_meaning: [undocumented, occurrence_specific]
+parsing: comma_delimited_unordered
+legend_role: comparison_legend
+evidence: [observed_source_values, release_legend]
+codes:
+  E: heterogeneous
+  H: echogenic halo
+  O: homogeneous

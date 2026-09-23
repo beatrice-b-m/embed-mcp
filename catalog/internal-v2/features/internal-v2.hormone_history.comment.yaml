@@ -1,0 +1,11 @@
+kind: feature
+label: Reported exposure-history comment
+definition: >-
+  Free-text information recorded with a hormone, therapy, or contraceptive history entry.
+value_type: text
+evidence: [maintainer_confirmed]
+search_terms: [HormoneHist comment, hormone history free text]
+topics: [topic.procedure, topic.workflow]
+cites:
+  - internal-v2.patient-history-context#reported-history-not-current-care
+objects: [internal-v2.hormone_history_entry]

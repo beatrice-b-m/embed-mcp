@@ -1,0 +1,65 @@
+kind: context
+label: Open-v2 linked-exam references
+context_type: known_issue
+definition: >-
+  Linked accession fields identify same-episode exams linked at study time, with expected
+  data-quality and release-coverage edge cases.
+search_terms:
+  - linked accession
+  - linkedaccession_anon
+  - linked study
+  - dangling exam reference
+  - comparison exam
+caveats:
+  - Linked references describe relationship metadata and are not executable joins.
+  - >-
+    Release filtering and ordinary data-quality artifacts can leave expected link or flag
+    invariants unsatisfied in edge cases.
+topics: [topic.exam, topic.identity, topic.imaging, topic.temporal, topic.workflow]
+about:
+  - exam.accession_identifier
+  - imaging.linked_accession_identifier
+  - imaging.linked_study_flag
+  - open-v2.imaging_findings_anon
+  - open-v2.combined_anon
+  - open-v2.exam_level_anon
+  - open-v2.join.imaging-findings-anon-linked-exam
+  - open-v2.join.combined-anon-linked-exam
+claims:
+  optional-reference:
+    statement: >-
+      A linked accession is an optional reference and is not guaranteed to resolve to an open-v2
+      exam row.
+    status: reconciled
+    caveats:
+      - Treat accession identifiers as opaque and release-scoped.
+    sources: [open-v2.release-schema, open-v2.catalog-linkage-review]
+  many-source-rows:
+    statement: >-
+      Multiple imaging-finding or wide rows may reference the same linked exam, so joined exam
+      attributes can repeat at the source grain.
+    status: reconciled
+    caveats:
+      - This is a row-multiplication hazard, not an empirical frequency claim.
+    sources: [open-v2.catalog-linkage-review]
+  flag-equivalence:
+    statement: >-
+      The linked-study flag and linked-accession presence are expected to describe the same
+      same-episode linkage, but data-quality edge cases can violate row-wise equivalence.
+    status: reconciled
+    caveats:
+      - Do not use one field as a missing-value repair for the other.
+    sources:
+      - open-v2.release-schema
+      - open-v2.release-legend
+      - open-v2.catalog-linkage-review
+      - open-v2.maintainer-clarification-2026-07-29
+  link-meaning:
+    statement: >-
+      A linked accession identifies a same-episode exam linked at study time; it does not
+      designate a prior or follow-up exam.
+    status: verified
+    caveats:
+      - Use the linked exams' study dates for their temporal context.
+    sources:
+      - open-v2.maintainer-clarification-2026-07-29

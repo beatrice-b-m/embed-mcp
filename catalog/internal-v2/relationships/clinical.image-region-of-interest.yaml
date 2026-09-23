@@ -1,0 +1,33 @@
+kind: relationship
+label: Image has region of interest
+relationship_type: association
+definition: A represented region of interest is attached to one represented image.
+cardinality:
+  targets_per_source: zero_or_more
+  sources_per_target: exactly_one
+optionality:
+  source: optional
+  target: required
+attribution_limitations:
+  - >-
+    The relationship does not establish unconditional equivalence between an ROI and a clinical
+    finding; same-side attribution is reliable only when exactly one finding is represented on
+    that accession side.
+  - >-
+    Internal V1c represents no region identifier, so a region is identified only by its position
+    within one image row's collections.
+temporal_qualification: No independent ROI event or availability time is currently asserted.
+search_terms: [image ROI, ROI attached to image, image annotation relationship]
+caveats:
+  - >-
+    The internal V1c physical route is row co-location on the image-metadata table, not a join
+    to a separate region-of-interest table.
+  - Correspondence among regions on separate images of one acquisition group is not represented.
+source_object: image
+target_object: region_of_interest
+topics: [topic.imaging]
+cites:
+  - internal-v2.roi-context#roi-attached-to-image
+  - internal-v2.roi-context#roi-serialized-collections
+  - internal-v2.roi-context#roi-cross-image-correspondence-absent
+  - internal-v2.roi-context#roi-finding-attribution

@@ -1,0 +1,5 @@
+kind: profile_support
+evidence_status: supported
+subject: guardrail.timestamps-answer-different-questions
+evidence_cites:
+  - open-v2.temporal-availability-context#date-representation

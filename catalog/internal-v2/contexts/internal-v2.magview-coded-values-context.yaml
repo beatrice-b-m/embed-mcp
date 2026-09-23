@@ -2,31 +2,106 @@ kind: context
 label: Internal V2 MagView categorical and exceptional-value reconciliation
 context_type: known_issue
 definition: >-
-  Most legacy categorical systems retain V1/V2 meanings,
-  while internal source strings also contain undocumented codes, formatting variants,
-  and unresolved numeric exceptions.
-# Prototype: the exam, breast-side, ultrasound, and MRI topics are outside
-# this slice.
-topics: [topic.imaging, topic.mammography, topic.pathology, topic.procedure, topic.workflow]
-about:
-  # Prototype: also about pathology.diagnosis_code_slot and breast.side, which
-  # are outside this slice.
-  - imaging.assessment
-  - imaging.recommendation
-  - pathology.severity
-  - internal-v2.magview_all_cohorts_pacs_v2_anon
-search_terms: [internal V2 categorical values, unresolved source code, numeric sentinel, lowercase assessment, laterality null]
-claims:
-  # Prototype: an excerpt holding one of this context's claims.
-  code-normalization:
-    statement: >-
-      All alphabetic internal MagView codes may be compared after trimming surrounding whitespace and uppercasing;
-      normalization does not assign meanings to otherwise unexplained tokens.
-    status: verified
-    sources: [internal-v2.magview-maintainer-clarifications]
-    caveats:
-      - The original source representation remains part of the physical occurrence.
-      - Comma-delimited fields are split on commas; ordering and repetition do not change meaning.
+  Most legacy categorical systems retain V1/V2 meanings, while internal source strings also
+  contain undocumented codes, formatting variants, and unresolved numeric exceptions.
+search_terms:
+  - internal V2 categorical values
+  - unresolved source code
+  - numeric sentinel
+  - lowercase assessment
+  - laterality null
 caveats:
   - Observed absence is not evidence that a documented code cannot occur.
   - Schema nullability does not establish clinical missingness semantics.
+topics:
+  - topic.exam
+  - topic.breast_side
+  - topic.imaging
+  - topic.mammography
+  - topic.ultrasound
+  - topic.mri
+  - topic.procedure
+  - topic.pathology
+  - topic.workflow
+about:
+  - imaging.assessment
+  - imaging.recommendation
+  - pathology.diagnosis_code_slot
+  - pathology.severity
+  - breast.side
+  - internal-v2.magview_all_cohorts_pacs_v2_anon
+claims:
+  legend-continuity:
+    statement: >-
+      Internal V2 feature codes retain their historical MagView meanings unless a
+      profile-specific claim explicitly supersedes or invalidates a meaning.
+    status: reconciled
+    caveats:
+      - The comparison dictionaries do not establish exhaustive internal domains.
+      - >-
+        Profile-local vocabularies preserve source tokens rather than normalizing them across
+        releases.
+    sources:
+      - internal-v2.magview-maintainer-clarifications
+      - internal-v2.v1-open-dictionary-comparison
+      - internal-v2.v2-open-legend-comparison
+      - internal-v2.magview-coded-value-observation
+  code-normalization:
+    statement: >-
+      All alphabetic internal MagView codes may be compared after trimming surrounding
+      whitespace and uppercasing; normalization does not assign meanings to otherwise
+      unexplained tokens.
+    status: verified
+    caveats:
+      - The original source representation remains part of the physical occurrence.
+      - >-
+        Comma-delimited fields are split on commas; ordering and repetition do not change
+        meaning.
+    sources:
+      - internal-v2.magview-maintainer-clarifications
+  unlisted-source-codes:
+    statement: >-
+      Several internal imaging, recommendation, pathology, and specimen occurrences contain
+      represented source tokens whose meanings or formatting are absent from the comparison
+      dictionaries.
+    status: unresolved
+    caveats:
+      - >-
+        Unexplained tokens are retained as unresolved rather than guessed or silently
+        normalized.
+      - >-
+        Known comma-delimited strings may be tokenized without assigning meaning to unexplained
+        component codes.
+    sources:
+      - internal-v2.v1-open-dictionary-comparison
+      - internal-v2.v2-open-legend-comparison
+      - internal-v2.magview-coded-value-observation
+  laterality-roles:
+    statement: >-
+      Finding side and biopsy side both represent left, right, and bilateral codes; in the
+      clinical finding-side occurrence, null is equivalent to bilateral code B, while
+      biopsy-side null remains unknown and finding-side and biopsy-side values can differ.
+    status: verified
+    caveats:
+      - >-
+        Finding-side B and null both project semantically to the left and right breast-side
+        identities rather than creating a third bilateral breast-side identity.
+      - A null biopsy-side value must not be filled from finding side.
+    sources:
+      - internal-v2.magview-maintainer-clarifications
+      - internal-v2.v1-open-dictionary-comparison
+      - internal-v2.v2-open-legend-comparison
+      - internal-v2.magview-coded-value-observation
+  numeric-exceptions:
+    statement: >-
+      Several measurement-like internal occurrences contain negative source representations
+      whose sentinel or missing meanings are undocumented.
+    status: unresolved
+    caveats:
+      - >-
+        Do not interpret an exceptional representation as a physical measurement until its
+        field-specific meaning is validated.
+    sources:
+      - internal-v2.v1-open-dictionary-comparison
+      - internal-v2.v2-open-legend-comparison
+      - internal-v2.magview-coded-value-observation

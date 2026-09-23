@@ -1,0 +1,12 @@
+kind: source
+label: HITI Lab public EMBED overview
+source_type: public_documentation
+scope: embed_general
+locator_type: url
+locator: https://docs.hitilab.com/datasets/embed/overview
+version_scope: >-
+  Public documentation for the classic EMBED clinical-table representation; historical and
+  non-comprehensive for internal V2.
+notes:
+  - Used to compare classic finding/procedure grain and date descriptions.
+  - No classic-table physical or aggregation recipe is imported as internal V2 policy.

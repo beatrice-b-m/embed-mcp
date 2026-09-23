@@ -1,0 +1,30 @@
+kind: profile_support
+evidence_status: supported
+representation_status: unsupported
+representation_summary: >-
+  The registered open-v2 bindings contain event and documentation dates but no supported
+  universal timestamp for when each downstream field became available.
+representation_caveats:
+  - Do not infer field availability from wide-row co-location.
+  - >-
+    Do not coalesce or substitute event, documentation, or imaging-exam dates as fallback values
+    for one another.
+  - >-
+    A different temporal semantic may be evaluated as a separately named endpoint or sensitivity
+    analysis, not used to fill missingness in the selected endpoint.
+search_terms:
+  - data availability timestamp
+  - known at prediction time
+  - downstream information availability
+  - temporal leakage boundary
+  - fallback date
+  - coalesce procedure report exam
+  - proxy timestamp
+subject: time.downstream-availability
+topics: [topic.imaging, topic.procedure, topic.pathology, topic.report, topic.temporal]
+evidence_cites:
+  - open-v2.temporal-availability-context#wide-table-colocation
+representation_cites:
+  - open-v2.temporal-availability-context#date-representation
+  - open-v2.temporal-availability-context#wide-table-colocation
+  - open-v2.temporal-availability-context#unsupported-time-bindings

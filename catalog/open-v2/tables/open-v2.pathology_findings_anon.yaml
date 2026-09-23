@@ -1,0 +1,245 @@
+kind: table
+label: pathology_findings_anon
+grain: pathology_finding
+caveats:
+  - >-
+    Procedure and report dates do not establish a unique row identity or contemporaneous
+    availability.
+keys:
+  finding_tuple:
+    key_type: natural
+    uniqueness: not_unique
+    completeness: incomplete
+    evidence: [release_schema, cross_table_check]
+    caveats:
+      - No tested clinical tuple uniquely identifies every pathology row.
+      - Complete tuples may resolve to more than one imaging row.
+    columns: [acc_anon, side, numfind]
+  export_index:
+    key_type: technical
+    uniqueness: unique
+    completeness: complete
+    evidence: [release_schema, cross_table_check]
+    caveats:
+      - >-
+        The pandas serialization index is release-local provenance, not a durable pathology
+        identifier.
+    columns: [__index_level_0__]
+objects:
+  procedure:
+    caveats:
+      - The table does not establish a unique procedure identity.
+    object: procedure
+    cites:
+      - open-v2.pathology-procedure-context#separate-pathology-surface
+    columns: [procdate_anon, type]
+  pathology_observation:
+    caveats:
+      - Slot position and duplicates are not informative.
+    object: pathology_observation
+    cites:
+      - open-v2.pathology-procedure-context#diagnosis-slot-order
+    columns: [path1, path2, path3, path4, path5, path6, path7, path8, path9, path10]
+  pathology_diagnosis:
+    caveats:
+      - Null represents unattached pathology, not a negative diagnosis.
+    object: pathology_diagnosis
+    cites:
+      - open-v2.pathology-procedure-context#severity-meaning
+    columns: [path_severity]
+columns:
+  acc_anon:
+    type: int64
+    nullable: true
+    maps:
+      - {id: exam.accession_identifier, mapping: direct}
+  side:
+    type: string
+    nullable: true
+    maps:
+      - {id: breast.side, mapping: direct, vocabulary: open-v2.codes.breast-side}
+    interpretations:
+      "null":
+        representation: "null"
+        meaning: The associated clinical finding side is bilateral.
+        status: verified
+        caveats:
+          - This is finding-side laterality and must not be substituted for biopsy side.
+        cites:
+          - open-v2.multimodal-finding-context#finding-side-null
+          - open-v2.pathology-procedure-context#finding-versus-biopsy-side
+  numfind:
+    type: int8
+    nullable: true
+    maps:
+      - {id: imaging.finding_number, mapping: direct}
+  path_severity:
+    type: int8
+    nullable: true
+    maps:
+      - {id: pathology.severity, mapping: direct, vocabulary: open-v2.codes.pathology-severity}
+  procdate_anon:
+    type: timestamp[ns]
+    nullable: true
+    maps:
+      - {id: pathology.procedure_date, mapping: direct}
+  pdate_anon:
+    type: timestamp[ns]
+    nullable: true
+    maps:
+      - {id: pathology.report_date, mapping: direct}
+  type:
+    type: string
+    nullable: true
+    maps:
+      - id: pathology.biopsy_type
+        mapping: direct
+        vocabulary: open-v2.codes.pathology-biopsy-type
+  technique:
+    type: string
+    nullable: true
+    maps:
+      - id: pathology.biopsy_technique
+        mapping: direct
+        vocabulary: open-v2.codes.pathology-biopsy-technique
+  bside:
+    type: string
+    nullable: true
+    maps:
+      - {id: pathology.biopsy_side, mapping: direct, vocabulary: open-v2.codes.breast-side}
+    interpretations:
+      "null":
+        representation: "null"
+        meaning: Biopsy or procedure side is unknown or missing; null is not bilateral.
+        status: verified
+        caveats:
+          - Do not inherit the bilateral null meaning from the separate finding-side field.
+        cites:
+          - open-v2.multimodal-finding-context#finding-side-null
+          - open-v2.pathology-procedure-context#finding-versus-biopsy-side
+  bcomp:
+    type: string
+    nullable: true
+    maps:
+      - id: pathology.biopsy_complication
+        mapping: direct
+        vocabulary: open-v2.codes.pathology-biopsy-complication
+  surgery:
+    type: string
+    nullable: true
+    maps:
+      - id: pathology.surgery_type
+        mapping: direct
+        vocabulary: open-v2.codes.pathology-surgery-type
+  lymphsurg:
+    type: string
+    nullable: true
+    maps:
+      - id: pathology.lymph_node_surgery_type
+        mapping: direct
+        vocabulary: open-v2.codes.pathology-lymph-node-surgery-type
+  path1:
+    type: string
+    nullable: true
+    maps:
+      - id: pathology.diagnosis_code_slot
+        mapping: direct
+        vocabulary: open-v2.codes.pathology-finding-codes
+        slot: "1"
+  path2:
+    type: string
+    nullable: true
+    maps:
+      - id: pathology.diagnosis_code_slot
+        mapping: direct
+        vocabulary: open-v2.codes.pathology-finding-codes
+        slot: "2"
+  path3:
+    type: string
+    nullable: true
+    maps:
+      - id: pathology.diagnosis_code_slot
+        mapping: direct
+        vocabulary: open-v2.codes.pathology-finding-codes
+        slot: "3"
+  path4:
+    type: string
+    nullable: true
+    maps:
+      - id: pathology.diagnosis_code_slot
+        mapping: direct
+        vocabulary: open-v2.codes.pathology-finding-codes
+        slot: "4"
+  path5:
+    type: string
+    nullable: true
+    maps:
+      - id: pathology.diagnosis_code_slot
+        mapping: direct
+        vocabulary: open-v2.codes.pathology-finding-codes
+        slot: "5"
+  path6:
+    type: string
+    nullable: true
+    maps:
+      - id: pathology.diagnosis_code_slot
+        mapping: direct
+        vocabulary: open-v2.codes.pathology-finding-codes
+        slot: "6"
+  path7:
+    type: string
+    nullable: true
+    maps:
+      - id: pathology.diagnosis_code_slot
+        mapping: direct
+        vocabulary: open-v2.codes.pathology-finding-codes
+        slot: "7"
+  path8:
+    type: string
+    nullable: true
+    maps:
+      - id: pathology.diagnosis_code_slot
+        mapping: direct
+        vocabulary: open-v2.codes.pathology-finding-codes
+        slot: "8"
+  path9:
+    type: string
+    nullable: true
+    maps:
+      - id: pathology.diagnosis_code_slot
+        mapping: direct
+        vocabulary: open-v2.codes.pathology-finding-codes
+        slot: "9"
+  path10:
+    type: string
+    nullable: true
+    maps:
+      - id: pathology.diagnosis_code_slot
+        mapping: direct
+        vocabulary: open-v2.codes.pathology-finding-codes
+        slot: "10"
+  loc:
+    type: string
+    nullable: true
+    maps:
+      - id: pathology.biopsy_location
+        mapping: direct
+        vocabulary: open-v2.codes.breast-location
+  bdepth:
+    type: string
+    nullable: true
+    maps:
+      - {id: pathology.biopsy_depth, mapping: direct, vocabulary: open-v2.codes.breast-depth}
+  bdistance:
+    type: double
+    nullable: true
+    maps:
+      - {id: pathology.biopsy_distance, mapping: direct}
+  __index_level_0__:
+    type: int64
+    nullable: true
+    maps:
+      - id: technical.pandas_index
+        mapping: direct
+        notes:
+          - Technical export provenance only; not a clinical identifier.

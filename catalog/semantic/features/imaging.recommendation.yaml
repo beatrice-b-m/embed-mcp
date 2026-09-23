@@ -2,18 +2,23 @@ kind: feature
 label: Imaging recommendation
 definition: Imaging recommendation code string.
 value_type: coded
-evidence: [release_schema, release_legend, observed_source_values, maintainer_confirmed, unresolved]
-topics: [topic.imaging, topic.workflow]
-objects: [imaging_interpretation]
+evidence:
+  - release_schema
+  - release_legend
+  - observed_source_values
+  - maintainer_confirmed
+  - unresolved
 search_terms: [imaging recommendation]
 caveats:
   - >-
-    The loose MagView reporting schema permits site- and time-dependent formatting heterogeneity;
-    preserve the source string rather than imposing a canonical ordering or grammar.
+    The loose MagView reporting schema permits site- and time-dependent formatting
+    heterogeneity; preserve the source string rather than imposing a canonical ordering or
+    grammar.
   - >-
-    Codes absent from the released legend are valid source-system values
-    with unknown mappings pending investigation with the MagView reporting teams.
-  - Recommendations may encode post-assessment information and require a task-specific temporal anchor.
-  # The former "legend list is not guaranteed exhaustive" and "Null semantics
-  # are not documented…" caveats are now the `completeness` and `null_meaning`
-  # fields of each profile's recommendation vocabulary.
+    Codes absent from the released legend are valid source-system values with unknown mappings
+    pending investigation with the MagView reporting teams.
+  - >-
+    Recommendations may encode post-assessment information and require a task-specific temporal
+    anchor.
+topics: [topic.imaging, topic.workflow]
+objects: [imaging_interpretation]

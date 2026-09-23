@@ -1,0 +1,16 @@
+kind: feature
+label: Reported exposure-end age
+definition: Reported patient age when the historical exposure ended.
+value_type: numeric
+evidence: [maintainer_confirmed]
+search_terms: [HormoneHist last_age, age stopped hormone, exposure end age]
+caveats:
+  - >-
+    The age is a reported temporal representation and is not subordinate to or preferred over
+    partial calendar components.
+topics: [topic.demographics, topic.procedure, topic.temporal]
+cites:
+  - internal-v2.patient-history-context#hormone-history-timing
+objects: [internal-v2.hormone_history_entry]
+temporal:
+  - {id: internal-v2.time.reported-exposure-end, records: true}

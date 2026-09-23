@@ -1,0 +1,12 @@
+kind: feature
+label: Specimen integrity
+definition: Recorded integrity category for a pathology specimen.
+value_type: coded
+evidence: [release_legend, observed_source_values]
+search_terms: [specimen integrity, fragmented specimen]
+caveats:
+  - The represented N code is absent from the comparison dictionaries and remains unresolved.
+topics: [topic.pathology]
+cites:
+  - internal-v2.magview-coded-values-context#unlisted-source-codes
+objects: [pathology_specimen]

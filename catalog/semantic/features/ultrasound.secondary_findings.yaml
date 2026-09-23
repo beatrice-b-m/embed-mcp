@@ -1,0 +1,8 @@
+kind: feature
+label: Ultrasound secondary findings
+definition: Ultrasound secondary-finding code string.
+value_type: coded
+evidence: [release_schema, release_legend]
+search_terms: [ultrasound secondary findings]
+topics: [topic.imaging, topic.ultrasound]
+objects: [imaging_finding]

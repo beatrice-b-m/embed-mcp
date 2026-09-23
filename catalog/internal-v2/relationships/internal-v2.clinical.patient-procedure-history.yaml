@@ -1,0 +1,27 @@
+kind: relationship
+label: Patient has reported prior-procedure history entry
+relationship_type: hierarchy
+definition: >-
+  Patient ownership of each represented prior gynecological or breast procedure history entry
+  through the established longitudinal patient identity.
+cardinality:
+  targets_per_source: zero_or_more
+  sources_per_target: exactly_one
+optionality:
+  source: optional
+  target: required
+attribution_limitations:
+  - No stable history-entry identity or semantic deduplication rule is established.
+temporal_qualification: >-
+  The relationship is longitudinal patient ownership and does not date the historical procedure.
+search_terms:
+  - patient procedure history
+  - patient breast surgery history
+  - patient gynecological history
+caveats:
+  - Repeated reports must not be silently treated as either distinct procedures or duplicates.
+source_object: patient
+target_object: internal-v2.procedure_history_entry
+topics: [topic.identity, topic.procedure, topic.temporal]
+cites:
+  - internal-v2.patient-history-context#patient-and-accession-context

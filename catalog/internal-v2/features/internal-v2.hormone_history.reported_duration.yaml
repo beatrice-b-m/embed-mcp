@@ -1,0 +1,14 @@
+kind: feature
+label: Reported exposure duration
+definition: Reported duration value for a historical exposure, with no established unit.
+value_type: numeric
+evidence: [maintainer_confirmed]
+search_terms: [HormoneHist duration, hormone duration, therapy duration, contraceptive duration]
+caveats:
+  - >-
+    Do not interpret the value as days, months, or years; no consistency rule with interval
+    fields is established.
+topics: [topic.procedure, topic.temporal]
+cites:
+  - internal-v2.patient-history-context#hormone-history-timing
+objects: [internal-v2.hormone_history_entry]

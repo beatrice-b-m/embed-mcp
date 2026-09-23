@@ -1,0 +1,16 @@
+kind: join_path
+definition: >-
+  Traverse from each candidate pathology row's accession to its associated candidate exam, then
+  from that exam to the patient before comparing the candidate with qualifying index exams for
+  the same patient.
+caveats:
+  - >-
+    The path is descriptive binding metadata, not an executable join or a guarantee of complete
+    longitudinal outcome capture.
+  - Do not require the candidate pathology accession to equal the index exam accession.
+relationship: clinical.patient-pathology-observation
+cites:
+  - open-v2.pathology-procedure-context#separate-pathology-surface
+joins:
+  - open-v2.join.pathology-findings-anon-exam
+  - open-v2.join.exam-level-anon-patient

@@ -1,0 +1,16 @@
+kind: feature
+label: Source DICOM image modality
+definition: Modality recorded on the source DICOM instance for one internal V1c image row.
+value_type: coded
+evidence: [observed_source_values]
+search_terms: [image modality, DICOM modality, source modality]
+caveats:
+  - >-
+    This image-level modality is separate from the exam-level modality description bound on the
+    clinical table.
+  - It is not the derived mammographic image-type classification.
+topics: [topic.imaging, topic.exam]
+cites:
+  - internal-v2.v1c-metadata-context#modality-surface
+  - internal-v2.v1c-metadata-context#image-type-distinctions
+objects: [image]

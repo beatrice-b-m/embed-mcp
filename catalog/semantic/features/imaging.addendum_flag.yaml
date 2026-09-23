@@ -1,0 +1,18 @@
+kind: feature
+label: Addendum flag
+definition: Processing-derived flag intended to identify an addended exam.
+value_type: flag
+evidence: [release_schema, release_legend, maintainer_confirmed, unresolved]
+search_terms: [addendum flag]
+caveats:
+  - >-
+    This flag was added during EMBED data processing rather than extracted directly from
+    MagView.
+  - >-
+    Null reflects processing behavior and is not inherently informative; do not interpret null
+    as No.
+  - >-
+    Its exact encoding and overlap with report-version sequence have not been directly
+    validated.
+topics: [topic.imaging, topic.report, topic.workflow]
+objects: [imaging_finding]

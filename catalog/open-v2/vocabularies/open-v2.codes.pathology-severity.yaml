@@ -1,0 +1,16 @@
+kind: vocabulary
+label: Pathology severity groups
+completeness: closed
+parsing: atomic
+evidence: [maintainer_confirmed]
+caveats:
+  - "The scale is inverse: lower values represent more severe pathology."
+  - Null means no pathology is attached and is not a benign or negative category.
+  - Internal raw value 6 is not retained in the canonical exported context.
+codes:
+  "0": Invasive breast cancer
+  "1": In-situ breast cancer
+  "2": High-risk lesion
+  "3": Borderline lesion
+  "4": Benign finding
+  "5": Non-breast cancer

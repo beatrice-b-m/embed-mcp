@@ -1,0 +1,30 @@
+kind: relationship
+label: Procedure has pathology specimen
+relationship_type: association
+definition: Putative procedure-associated representation of a tissue specimen.
+cardinality:
+  targets_per_source: zero_or_more
+  sources_per_target: zero_or_more
+optionality:
+  source: optional
+  target: optional
+attribution_limitations:
+  - >-
+    Procedure-level information is reliable, but specimen-level presence, completeness,
+    identity, and cardinality remain unresolved.
+  - No unique specimen identifier proves one-to-one attribution.
+temporal_qualification: >-
+  The specimen is downstream of tissue sampling or surgery; specimen-collection time is
+  unsupported.
+search_terms: [procedure specimen, biopsy specimen, surgical pathology specimen]
+caveats:
+  - The relationship is unresolved and must not be used as a specimen-matching rule.
+source_object: procedure
+target_object: pathology_specimen
+topics: [topic.procedure, topic.pathology, topic.temporal]
+cites:
+  - internal-v2.magview-pathology-context#specimen-surface
+temporal:
+  - time.procedure-event
+  - time.pathology-report-documentation
+  - time.downstream-availability

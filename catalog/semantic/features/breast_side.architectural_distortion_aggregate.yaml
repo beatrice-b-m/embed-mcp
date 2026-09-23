@@ -1,0 +1,15 @@
+kind: feature
+label: Side-level architectural distortion aggregate
+definition: >-
+  Breast-side-level Boolean summary of mammography finding-level architectural-distortion
+  presence.
+value_type: aggregate
+evidence: [release_schema, observed_source_values, maintainer_confirmed]
+search_terms:
+  - side-level architectural distortion aggregate
+caveats:
+  - >-
+    This summary is aggregated only from mammography findings, including FFDM, synthetic 2D, and
+    DBT; it does not summarize non-mammography modalities.
+topics: [topic.breast_side, topic.mammography]
+objects: [breast_side]

@@ -1,0 +1,10 @@
+kind: feature
+label: Breast tissue density
+definition: Breast tissue density code.
+value_type: coded
+evidence: [release_schema, release_legend]
+search_terms: [breast tissue density, breast density]
+caveats:
+  - Do not place every listed code on one ordinal scale; null has no documented code meaning.
+topics: [topic.exam, topic.mammography]
+objects: [imaging_exam]

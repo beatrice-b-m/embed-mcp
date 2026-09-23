@@ -1,0 +1,12 @@
+kind: clinical_object
+label: Breast-imaging episode
+definition: >-
+  A clinically related set of one or more breast-imaging exams, potentially represented through
+  same-episode accession links.
+grain: one clinical imaging episode
+search_terms: [breast imaging episode, same episode, linked exams]
+caveats:
+  - >-
+    Episode identity and boundaries can remain incomplete when a representation relies on
+    optional links among exams.
+topics: [topic.exam, topic.imaging, topic.temporal, topic.workflow]

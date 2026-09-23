@@ -1,0 +1,16 @@
+kind: join
+join_type: hierarchy
+source_completeness: required
+cardinality:
+  targets_per_source: zero_or_one
+  sources_per_target: zero_or_more
+evidence: [release_schema, inference, unresolved]
+hazards:
+  - Joining exam attributes to findings repeats exam values at finding grain.
+caveats:
+  - >-
+    The accession relationship is expected, but complete referential coverage was not retained
+    as a portable claim.
+relationships: [clinical.exam-finding]
+source_columns: [open-v2.imaging_findings_anon#acc_anon]
+target_columns: [open-v2.exam_level_anon#acc_anon]

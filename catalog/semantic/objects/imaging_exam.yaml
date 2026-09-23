@@ -2,11 +2,11 @@ kind: clinical_object
 label: Breast-imaging exam
 definition: A breast-imaging study or accession at exam grain.
 grain: one imaging exam or accession
-topics: [topic.exam, topic.imaging, topic.temporal]
 search_terms: [exam, study, accession, breast imaging exam]
-cites:
-  - clinical.screening-diagnostic-pathway#screening-role
-  - clinical.screening-diagnostic-pathway#direct-diagnostic-entry
 caveats:
   - An exam row does not by itself establish a screening, diagnostic, or follow-up cohort role.
   - Linked exams may be part of the same episode without being earlier or later follow-up.
+topics: [topic.exam, topic.imaging, topic.temporal]
+cites:
+  - clinical.screening-diagnostic-pathway#screening-role
+  - clinical.screening-diagnostic-pathway#direct-diagnostic-entry

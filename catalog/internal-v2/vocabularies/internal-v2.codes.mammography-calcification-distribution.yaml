@@ -1,0 +1,14 @@
+kind: vocabulary
+label: Calcification distribution codes
+completeness: unknown
+null_meaning: [undocumented, occurrence_specific]
+parsing: atomic
+legend_role: comparison_legend
+evidence: [observed_source_values, release_legend]
+codes:
+  C: Clustered
+  D: Diffuse/scattered
+  G: Grouped
+  L: Linear
+  R: Regional
+  S: Segmental

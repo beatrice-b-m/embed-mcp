@@ -1,0 +1,20 @@
+kind: vocabulary
+label: Mammographic mass-shape codes
+completeness: unknown
+null_meaning: [undocumented]
+parsing: atomic
+evidence: [release_legend]
+codes:
+  A: Architectural distortion
+  B: Global asymmetry
+  F: Focal asymetry
+  G: Generic
+  N: Intramammary lymph node
+  O: Oval
+  Q: Questioned architectural distortion
+  R: Round
+  S: Asymmetry
+  T: Asymmectric tubular structure/solitary dilated duct
+  V: Developing asymmestry
+  X: Irregular
+  Y: Lumph Node

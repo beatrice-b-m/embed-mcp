@@ -1,0 +1,28 @@
+kind: vocabulary
+label: MRI associated-finding codes
+completeness: unknown
+null_meaning: [undocumented]
+parsing: comma_composed_undocumented
+evidence: [release_legend]
+codes:
+  "#": fat necrosis
+  A: architectural distortion
+  B: abnormal lymph node
+  C: chest wall invasion
+  E: edema
+  F: fluid filled dilated duct
+  G: high signal in duct on pre-contrast scan
+  H: hematoma
+  I: nipple retraction
+  K: direct skin invasion
+  L: Axillary adenopathy
+  M: hamartoma
+  N: nipple retraction
+  O: post operative changes
+  P: pectoralis muscle invasion
+  S: skin retraction
+  T: skin thickening
+  V: abnormal signal void
+  W: normal lymph node
+  Y: cyst
+  Z: inflammatory breast cancer invasion

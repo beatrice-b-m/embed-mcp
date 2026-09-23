@@ -1,0 +1,13 @@
+kind: feature
+label: Region-of-interest count on an image
+definition: Represented number of regions of interest carried by one internal V1c image row.
+value_type: numeric
+evidence: [observed_source_values, inference]
+search_terms: [number of ROIs, ROI count, regions per image]
+caveats:
+  - The count describes the row's serialized collections and is not a clinical finding count.
+  - Zero is represented and accompanies empty collections.
+topics: [topic.imaging]
+cites:
+  - internal-v2.roi-context#roi-serialized-collections
+objects: [image]

@@ -1,0 +1,14 @@
+kind: feature
+label: HER2 in-situ hybridization result
+definition: Coded FISH/CISH HER2 result or workflow state for a pathology specimen.
+value_type: coded
+evidence: [release_legend, observed_source_values]
+search_terms: [HER2 FISH, HER2 CISH, HER2 ISH]
+caveats:
+  - >-
+    The vocabulary mixes polarity, copy-number or ratio categories, workflow states, and
+    residual-disease states.
+topics: [topic.pathology]
+cites:
+  - internal-v2.magview-pathology-context#specimen-surface
+objects: [pathology_specimen, pathology_diagnosis]

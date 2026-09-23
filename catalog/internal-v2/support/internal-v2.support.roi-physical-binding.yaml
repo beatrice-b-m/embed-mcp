@@ -1,0 +1,28 @@
+kind: profile_support
+representation_status: supported
+representation_summary: >-
+  Internal V1c region-of-interest information is physically cataloged as tandem-generated
+  aligned collections: coordinates use inclusive [y_min, x_min, y_max, x_max] DICOM pixel-array
+  bounds, frames are informative for DBT, the depth flag marks model-inferred DBT z coordinates,
+  and the underlying radiologist annotations come through multiple clinical annotation
+  workflows.
+representation_caveats:
+  - The image-metadata table is not one row per region of interest.
+  - >-
+    Curated ROI coordinates are expected within the attached image bounds; residual
+    out-of-bounds values may be safely clipped.
+  - >-
+    ROI_SS and ROI_SSC are not the exclusive ROI annotation source; annotation DICOM objects
+    without pixel arrays also supplied coordinates directly.
+  - Stable per-region identity and cross-image correspondence are not represented.
+  - >-
+    Finding attribution remains conditional on exactly one finding being represented on the same
+    accession side.
+search_terms: [internal V2 ROI binding, ROI table, ROI columns, ROI serialization]
+subject: internal-v2.roi-context
+topics: [topic.imaging]
+representation_cites:
+  - internal-v2.roi-context#roi-attached-to-image
+  - internal-v2.roi-context#roi-serialized-collections
+  - internal-v2.roi-context#roi-coordinate-geometry
+  - internal-v2.roi-context#roi-identity-and-provenance

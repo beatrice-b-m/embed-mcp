@@ -1,0 +1,17 @@
+kind: feature
+label: Breast implant present attribute
+definition: >-
+  Represented source DICOM indication of whether a breast implant is present for one internal
+  V1c image row.
+value_type: coded
+evidence: [observed_source_values]
+search_terms: [breast implant present, implant]
+caveats:
+  - >-
+    This is an image-level acquisition attribute and is not a clinical implant finding or
+    history.
+  - It is not represented on every row.
+topics: [topic.imaging, topic.mammography]
+cites:
+  - internal-v2.v1c-metadata-context#parsed-dicom-element-semantics
+objects: [image]

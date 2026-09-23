@@ -1,11 +1,11 @@
 kind: clinical_object
 label: Pathology diagnosis state
 definition: >-
-  The represented diagnostic severity group derived from
-  attached procedure-associated pathology descriptors.
+  The represented diagnostic severity group derived from attached procedure-associated pathology
+  descriptors.
 grain: one represented pathology diagnosis state
-topics: [topic.pathology]
 search_terms: [pathology diagnosis, breast cancer outcome, malignancy, pathology severity]
 caveats:
   - The six coded states exclude the separate state in which no pathology is attached.
   - A represented diagnosis does not establish complete outcome capture or follow-up.
+topics: [topic.pathology]

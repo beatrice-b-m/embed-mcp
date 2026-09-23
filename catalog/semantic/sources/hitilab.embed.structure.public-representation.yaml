@@ -1,0 +1,12 @@
+kind: source
+label: HITI Lab EMBED clinical and metadata hierarchy
+source_type: public_documentation
+scope: embed_general
+locator_type: url
+locator: https://docs.hitilab.com/datasets/embed/structure#clinicalmetadata-hierarchies
+version_scope: >-
+  Public EMBED documentation for the classic clinical and image-metadata tables; not verified as
+  the open-v2 physical schema.
+notes:
+  - Use for the documented finding and procedure distinction.
+  - The two-table layout must not be treated as an open-v2 contract.

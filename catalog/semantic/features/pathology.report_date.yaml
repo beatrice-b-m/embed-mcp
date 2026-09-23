@@ -1,0 +1,36 @@
+kind: feature
+label: Anonymized pathology report date
+definition: Anonymized pathology-report date.
+value_type: date
+evidence: [release_schema, release_legend, maintainer_confirmed]
+search_terms:
+  - anonymized pathology report date
+  - pathology report date fallback
+  - coalesce procedure report exam date
+  - proxy diagnosis date
+caveats:
+  - >-
+    The absolute calendar date is shifted and must not be interpreted literally; within-patient
+    ordering and date differences are preserved.
+  - Pathology-report information may be post-exam and requires a task-specific temporal anchor.
+  - >-
+    Do not coalesce this documentation date with procedure, specimen, or imaging-exam dates as
+    fallback values for the same endpoint.
+  - >-
+    If pathology-report documentation time is the selected endpoint, a missing value remains
+    missing; another temporal semantic may be analyzed only as a separately named endpoint or
+    sensitivity analysis.
+topics: [topic.pathology, topic.report, topic.temporal]
+objects: [pathology_observation, pathology_diagnosis]
+temporal:
+  - {id: time.pathology-report-documentation, records: true}
+missing_states:
+  missing_or_unknown:
+    representation: "null"
+    meaning: >-
+      No pathology documentation date is represented in this field; this does not establish that
+      a pathology report or diagnosis did not exist.
+    caveats:
+      - >-
+        The available metadata does not distinguish source absence, extraction loss, an
+        unattached report, or another reason for null.

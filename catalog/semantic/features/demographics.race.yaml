@@ -1,0 +1,12 @@
+kind: feature
+label: Patient race
+definition: Patient race as represented in the release.
+value_type: categorical
+evidence: [release_schema, release_legend]
+search_terms: [patient race]
+caveats:
+  - >-
+    Collection method, category completeness, and the distinction between null and explicit
+    unknown values are unresolved.
+topics: [topic.demographics, topic.social_determinants_of_health]
+objects: [patient]

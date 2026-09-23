@@ -1,0 +1,154 @@
+kind: context
+label: Internal history packet representation review
+context_type: data_representation
+definition: >-
+  Reviewed topology packets and the complete-inventory clarification support history table
+  inventories and existing HormoneHist and ProcHist mappings, while preserving unresolved row
+  identity, conditional code discrepancies, and time semantics.
+search_terms:
+  - HormoneHist
+  - ProcHist
+  - ProcedureHist_anon
+  - history topology
+  - history grain
+  - ORAL TAXOL category discrepancy
+  - FA,SF historical result
+caveats:
+  - >-
+    Topology is observation evidence for the supplied input, not a clinical entity model or an
+    analysis policy.
+topics: [topic.identity, topic.procedure, topic.technical, topic.temporal, topic.workflow]
+about:
+  - internal-v2.hormone_history.exposure_category
+  - internal-v2.hormone_history.hormone_code
+  - internal-v2.hormone_history.therapy_code
+  - internal-v2.hormone_history.contraceptive_code
+  - internal-v2.hormone_history.continuous_status
+  - internal-v2.hormone_history.current_status
+  - internal-v2.hormone_history.reported_duration
+  - internal-v2.hormone_history.reported_start_age
+  - internal-v2.hormone_history.reported_start_month
+  - internal-v2.hormone_history.reported_start_year
+  - internal-v2.hormone_history.reported_end_age
+  - internal-v2.hormone_history.reported_end_month
+  - internal-v2.hormone_history.reported_end_year
+  - internal-v2.hormone_history.comment
+  - internal-v2.procedure_history.procedure_category
+  - internal-v2.procedure_history.gynecological_procedure_code
+  - internal-v2.procedure_history.breast_procedure_code
+  - internal-v2.procedure_history.reported_result
+  - internal-v2.procedure_history.reported_breast_side
+  - internal-v2.hormonehist_anon
+  - internal-v2.procedurehist_anon
+  - internal-v2.cancerhist_anon
+claims:
+  physical-inventories:
+    statement: >-
+      The packet columns plus the maintainer-confirmed comment field form the complete column
+      inventories of HormoneHist_anon, ProcedureHist_anon, and CancerHist_anon.
+      Packet str is cataloged as string and int64 as int64; comment is assessed as string from
+      its free-text description.
+      Every column is conservatively nullable because pandas dtypes and observed levels do not
+      declare source-schema nullability.
+    status: reconciled
+    sources:
+      - internal-v2.hormone-history-topology-packet
+      - internal-v2.procedure-history-topology-packet
+      - internal-v2.cancer-history-topology-packet
+      - internal-v2.history-inventory-maintainer-confirmation
+  tested-groupings:
+    statement: >-
+      In each reviewed packet, the tested PATIENT (empi_anon) grouping is coarser than EXAM
+      (acc_anon), and empi_anon is constant within acc_anon.
+      HormoneHist and ProcHist history attributes vary within the tested patient and exam
+      groupings, except the blank HormoneHist side field.
+      Neither grouping identifies a history row.
+    status: reconciled
+    caveats:
+      - >-
+        The graph describes only tested groupings; unplaced features can belong to an untested
+        or unresolved finer entry grain.
+      - >-
+        Within-table dependency does not verify cross-table matches, sentinel meanings, or a
+        durable clinical history-entry identifier.
+    sources:
+      - internal-v2.hormone-history-topology-packet
+      - internal-v2.procedure-history-topology-packet
+      - internal-v2.cancer-history-topology-packet
+  hormone-blank-side:
+    statement: >-
+      HormoneHist side is represented by a blank string in the reviewed vocabulary.
+      Its placement at PATIENT reflects constancy of that blank representation, not a
+      patient-level laterality feature.
+    status: reconciled
+    caveats:
+      - No breast-side feature or side identity is mapped from this occurrence.
+    sources:
+      - internal-v2.hormone-history-topology-packet
+  hormone-category-discrepancies:
+    statement: >-
+      After comparing the padded source tokens with the existing category-specific dictionaries,
+      the packet represents ORAL under H and T and TAXOL under H.
+      Their meanings in those category occurrences remain unresolved; the supported ORAL
+      contraceptive and TAXOL therapy meanings do not establish these additional occurrences.
+    status: unresolved
+    caveats:
+      - >-
+        The observed H/C and O/C paths support retaining separate category-dependent meanings
+        for C.
+      - >-
+        A documented code absent from this packet is not invalidated, and vocabulary
+        completeness remains unknown.
+      - No recategorization or cross-category fallback is supplied.
+    sources:
+      - internal-v2.hormone-history-topology-packet
+      - internal-v2.patient-history-maintainer-confirmation
+  hormone-status-representation:
+    statement: >-
+      HormoneHist current and continuous have Y, N, and blank string representations in the
+      packet.
+      Their reported-status concepts remain applicable, but the packet alone does not establish
+      a blank-as-N rule or exact interval endpoints.
+    status: reconciled
+    sources:
+      - internal-v2.hormone-history-topology-packet
+      - internal-v2.patient-history-maintainer-confirmation
+  procedure-category-reconciliation:
+    statement: >-
+      The ProcHist type/pcode census agrees with the existing breast (B) and gynecological (G)
+      procedure-code dictionaries after comparing padded source tokens.
+      This supports the conditional mappings without establishing clinical verification of the
+      reported procedure.
+    status: reconciled
+    sources:
+      - internal-v2.procedure-history-topology-packet
+      - internal-v2.patient-history-maintainer-confirmation
+  procedure-result-representation:
+    statement: >-
+      ProcHist result includes a blank string and the comma-bearing token FA,SF alongside
+      supported individual result tokens.
+      The meaning of the combined occurrence and its delimiter, order, and repetition semantics
+      remain unresolved for this table.
+    status: unresolved
+    caveats:
+      - >-
+        Do not import MagView comma-splitting behavior into ProcHist without occurrence-specific
+        evidence.
+      - >-
+        Blank is not the literal NONE code and is not established as a negative result or
+        equivalent governed missing state.
+    sources:
+      - internal-v2.procedure-history-topology-packet
+      - internal-v2.patient-history-maintainer-confirmation
+  procedure-time-candidates:
+    statement: >-
+      ProcHist physically represents age, pdatealt, month, and year as strings.
+      Their historical-event interpretation, parsing, relationship to one another, and
+      exact-date support remain unresolved.
+    status: unresolved
+    caveats:
+      - >-
+        Column names and observed temporal-looking values do not establish an event date or a
+        reconciliation rule.
+    sources:
+      - internal-v2.procedure-history-topology-packet

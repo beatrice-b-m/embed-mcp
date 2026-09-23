@@ -1,0 +1,5 @@
+kind: profile_support
+evidence_status: supported
+subject: guardrail.downstream-temporal-leakage
+evidence_cites:
+  - open-v2.temporal-availability-context#wide-table-colocation

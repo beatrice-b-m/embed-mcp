@@ -1,0 +1,25 @@
+kind: vocabulary
+label: Mammographic mass-shape codes
+completeness: unknown
+null_meaning: [undocumented, occurrence_specific]
+parsing: atomic
+legend_role: comparison_legend
+evidence: [observed_source_values, release_legend]
+codes:
+  A: Architectural distortion
+  B: Global asymmetry
+  F: Focal asymetry
+  G: Generic
+  N: Intramammary lymph node
+  O: Oval
+  Q: Questioned architectural distortion
+  R: Round
+  S: Asymmetry
+  T: Asymmectric tubular structure/solitary dilated duct
+  V: Developing asymmestry
+  X: Irregular
+  Y: Lumph Node
+  "9": Unresolved internal source code
+  D: Unresolved internal source code
+  L: Unresolved internal source code
+  M: Unresolved internal source code

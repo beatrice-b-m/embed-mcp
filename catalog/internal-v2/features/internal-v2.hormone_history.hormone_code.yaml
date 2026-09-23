@@ -1,0 +1,19 @@
+kind: feature
+label: Reported hormone-history code
+definition: >-
+  Hormone or hormone-regimen code for an exposure-history entry whose category is hormone.
+value_type: coded
+evidence: [maintainer_confirmed]
+search_terms:
+  - HormoneHist hormone code
+  - estrogen history
+  - progesterone history
+  - tamoxifen history
+  - raloxifene history
+caveats:
+  - This meaning is conditional on exposure category H.
+topics: [topic.procedure]
+cites:
+  - internal-v2.patient-history-context#reported-history-not-current-care
+  - internal-v2.history-topology-context#hormone-category-discrepancies
+objects: [internal-v2.hormone_history_entry]

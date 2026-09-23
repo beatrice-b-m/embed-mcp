@@ -1,0 +1,14 @@
+kind: feature
+label: Estrogen-receptor percentage
+definition: Recorded estrogen-receptor percentage for a pathology specimen.
+value_type: numeric
+evidence: [release_legend, observed_source_values]
+search_terms: [estrogen percentage, ER percent]
+caveats:
+  - >-
+    Range, measurement method, and exceptional-value semantics are not established by the
+    dictionaries.
+topics: [topic.pathology]
+cites:
+  - internal-v2.magview-pathology-context#specimen-surface
+objects: [pathology_specimen, pathology_diagnosis]

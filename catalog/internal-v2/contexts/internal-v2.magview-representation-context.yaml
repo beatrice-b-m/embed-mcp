@@ -1,0 +1,193 @@
+kind: context
+label: Internal V2 MagView wide-table representation
+context_type: data_representation
+definition: >-
+  The internal MagView artifact is a finding-oriented but denormalized clinical table that
+  co-locates repeated patient and exam data with findings, interpretations, procedures,
+  pathology, and specimen observations.
+search_terms:
+  - internal V2 MagView
+  - wide clinical table
+  - finding procedure repetition
+  - candidate key
+  - linked accession
+caveats:
+  - No unique durable physical row key is established.
+  - >-
+    The table inventory retains unmapped columns whose meanings are not governed by applicable
+    evidence.
+topics:
+  - topic.identity
+  - topic.exam
+  - topic.breast_side
+  - topic.imaging
+  - topic.procedure
+  - topic.pathology
+  - topic.workflow
+about:
+  - identity.patient_identifier
+  - exam.accession_identifier
+  - imaging.finding_number
+  - imaging.linked_accession_identifier
+  - internal-v2.exam.accession_source_type
+  - internal-v2.technical.cancer_registry_record_identifier
+  - internal-v2.magview_all_cohorts_pacs_v2_anon
+  - internal-v2.join.patient-exam
+  - internal-v2.join.exam-finding
+  - internal-v2.join.finding-procedure
+  - internal-v2.join.linked-accession-reference
+claims:
+  authoritative-artifact:
+    statement: >-
+      The internal clinical artifact is the physical table magview_all_cohorts_PACS_v2_anon.
+    status: verified
+    sources:
+      - internal-v2.magview-maintainer-confirmation
+      - internal-v2.magview-footer-schema
+  wide-association-grain:
+    statement: >-
+      One internal MagView row is a denormalized clinical association rather than one patient,
+      exam, finding, procedure, or diagnosis object.
+    status: reconciled
+    caveats:
+      - Patient- and exam-level attributes repeat at the wider row grain.
+      - Co-location does not establish contemporaneous availability or one-to-one attribution.
+    sources:
+      - internal-v2.magview-maintainer-confirmation
+      - internal-v2.magview-footer-schema
+      - internal-v2.magview-grain-observation
+      - hitilab.embed.structure.public-representation
+  finding-procedure-repetition:
+    statement: >-
+      A represented accession-plus-finding-number identity can occupy multiple rows while
+      procedure, pathology, putative specimen, or finding-descriptor values differ.
+    status: reconciled
+    caveats:
+      - The tuple is a clinical locator, not a unique physical-row key.
+      - Repeated rows must not be silently deduplicated.
+    sources:
+      - internal-v2.magview-grain-observation
+      - hitilab.embed.structure.public-representation
+      - hitilab.embed.overview.pathology-attribution
+  finding-identity-scope:
+    statement: >-
+      Accession and finding number provide the supported internal clinical finding identity;
+      side is a finding attribute rather than part of that identity, and repeated physical rows
+      may represent the same finding.
+    status: verified
+    caveats:
+      - >-
+        Cross-side reuse or other conflicts for one accession-plus-finding-number identity are
+        data-quality issues rather than distinct supported identities.
+      - >-
+        Finding number -9 is a synthetic contralateral negative finding rather than an ordinary
+        source finding identity.
+    sources:
+      - internal-v2.magview-maintainer-clarifications
+      - internal-v2.magview-grain-observation
+      - internal-v2.magview-footer-schema
+  finding-number-scope-disagreement:
+    statement: >-
+      Public structure documentation and internal maintainer knowledge agree that finding number
+      is unique within an exam; source rows that reuse one finding number across conflicting
+      sides are treated as data-quality exceptions.
+    status: reconciled
+    caveats:
+      - >-
+        Physical rows may still repeat the accession-plus-finding-number identity across
+        procedure or pathology attachments.
+      - >-
+        Conflicting repeated attributes remain data-quality issues without a supplied repair
+        rule.
+    sources:
+      - internal-v2.magview-maintainer-clarifications
+      - internal-v2.magview-grain-observation
+      - hitilab.embed.structure.public-representation
+  synthetic-contralateral-negative-finding:
+    statement: >-
+      Finding number -9 identifies a synthetic contralateral BI-RADS 1 negative finding added
+      when a bilateral exam contains a unilateral non-negative finding and no explicit finding
+      row for the imaged contralateral breast.
+    status: verified
+    caveats:
+      - >-
+        The row represents an implied contralateral negative finding, not an originally
+        documented source finding.
+      - >-
+        It is equivalent to the negative BI-RADS 1 or N state only in this synthetic
+        contralateral context.
+    sources:
+      - internal-v2.magview-maintainer-clarifications
+  linked-accession-surface:
+    statement: >-
+      A populated linked accession explicitly identifies a co-occurring exam in the same imaging
+      episode, such as paired diagnostic mammography and ultrasound; it never represents a prior
+      or follow-up exam.
+    status: reconciled
+    caveats:
+      - >-
+        The referenced accession may be absent from the assessed MagView artifact even though
+        the source link is meaningful.
+      - Do not use linked accessions for longitudinal prior-or-subsequent exam search.
+    sources:
+      - internal-v2.magview-maintainer-clarifications
+      - internal-v2.magview-footer-schema
+      - internal-v2.v2-open-legend-comparison
+      - internal-v2.magview-grain-observation
+  linked-study-flag-meaning:
+    statement: >-
+      The linked-study flag is believed to indicate whether an exam has any linked same-episode
+      study, while linkedaccession_anon supplies the explicit linked accession when populated.
+    status: unverified
+    caveats:
+      - >-
+        Do not infer or repair one field solely from the other until the flag semantics are
+        verified.
+    sources:
+      - internal-v2.magview-maintainer-clarifications
+      - internal-v2.magview-grain-observation
+  patient-attribute-variation:
+    statement: >-
+      Repeated patient attributes can differ across time because a patient attribute may change
+      or because of data quality; selecting the most recent value requires an explicit as-of
+      time and must not leak future information into an earlier analysis.
+    status: reconciled
+    caveats:
+      - The catalog does not select a universal latest-row policy.
+      - >-
+        A task-specific current-value analysis may use the latest value available by its
+        declared as-of time.
+    sources:
+      - internal-v2.magview-maintainer-clarifications
+      - internal-v2.magview-grain-observation
+  exam-attribute-inconsistency:
+    statement: >-
+      Every exam-level field is invariant across repeated rows for one accession; disagreements
+      are data-quality errors rather than alternative exam values.
+    status: verified
+    caveats:
+      - >-
+        A conflicting repeated value must not be treated as a valid alternative value for the
+        exam.
+    sources:
+      - internal-v2.magview-maintainer-clarifications
+      - internal-v2.magview-grain-observation
+  cancer-registry-reference:
+    statement: >-
+      The cancer_outcome_registry_id column is a patient-local one-based sequence for entries in
+      a separate Georgia cancer-registry-derived pathology table and is meaningful only together
+      with empi_anon; it is not itself a cancer diagnosis or outcome.
+    status: verified
+    caveats:
+      - >-
+        The separate registry table and its physical relationship are not yet included in the
+        profile binding.
+      - >-
+        The first represented registry entry for a patient has identifier 1 and each subsequent
+        entry increments that patient's identifier by one.
+      - >-
+        Registry linkage can identify represented Georgia diagnoses that were not necessarily
+        diagnosed at Emory.
+    sources:
+      - internal-v2.magview-maintainer-clarifications
+      - internal-v2.magview-footer-schema

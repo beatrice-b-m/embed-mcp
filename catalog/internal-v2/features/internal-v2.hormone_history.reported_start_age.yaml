@@ -1,0 +1,16 @@
+kind: feature
+label: Reported exposure-start age
+definition: Reported patient age when the historical exposure began.
+value_type: numeric
+evidence: [maintainer_confirmed]
+search_terms: [HormoneHist first_age, age started hormone, exposure start age]
+caveats:
+  - >-
+    The age is a reported temporal representation and is not subordinate to or preferred over
+    partial calendar components.
+topics: [topic.demographics, topic.procedure, topic.temporal]
+cites:
+  - internal-v2.patient-history-context#hormone-history-timing
+objects: [internal-v2.hormone_history_entry]
+temporal:
+  - {id: internal-v2.time.reported-exposure-start, records: true}

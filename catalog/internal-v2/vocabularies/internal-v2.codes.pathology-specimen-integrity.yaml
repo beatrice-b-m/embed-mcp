@@ -1,0 +1,14 @@
+kind: vocabulary
+label: Specimen integrity categories
+completeness: unknown
+parsing: atomic
+evidence: [release_legend, observed_source_values, unresolved]
+caveats:
+  - The represented N code is absent from both comparison dictionaries and remains unresolved.
+  - Null and blank meanings remain occurrence specific.
+codes:
+  Y: Single intact
+  M: Multiple designated
+  F: Fragmented
+  O: Other
+  N: Unresolved internal source code

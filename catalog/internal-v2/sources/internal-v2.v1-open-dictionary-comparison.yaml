@@ -1,0 +1,10 @@
+kind: source
+label: EMBED V1 Open Data clinical dictionary comparison
+source_type: public_documentation
+scope: embed_general
+locator_type: logical_artifact
+locator: EMBED V1 Open Data clinical dictionary
+version_scope: Historical comparison source for classic MagView field and code meanings.
+notes:
+  - The dictionary is non-comprehensive and does not automatically describe internal V2.
+  - Historical names and encodings were reconciled against the internal physical representation.

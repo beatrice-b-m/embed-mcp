@@ -1,0 +1,18 @@
+kind: join
+join_type: hierarchy
+source_completeness: optional
+cardinality:
+  targets_per_source: zero_or_one
+  sources_per_target: zero_or_more
+evidence: [release_schema, inference, unresolved]
+hazards:
+  - >-
+    Do not join pathology bside to the side table; the relationship tuple uses the finding side
+    field.
+caveats:
+  - The physical side field may be absent and does not substitute for biopsy side.
+cites:
+  - open-v2.pathology-procedure-context#finding-versus-biopsy-side
+relationships: [clinical.side-pathology-observation]
+source_columns: [open-v2.pathology_findings_anon#acc_anon, open-v2.pathology_findings_anon#side]
+target_columns: [open-v2.side_level_anon#acc_anon, open-v2.side_level_anon#side]

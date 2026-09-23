@@ -1,0 +1,12 @@
+kind: profile_support
+representation_status: unresolved
+representation_summary: >-
+  Internal MagView represents source-system pathology descriptor codes whose meanings are absent
+  from the comparison dictionaries.
+representation_caveats:
+  - Preserve unexplained codes without guessing or silently normalizing them.
+search_terms: [internal pathology code meaning, unresolved pathology descriptor]
+subject: pathology.diagnosis_code_slot
+topics: [topic.pathology]
+representation_cites:
+  - internal-v2.magview-coded-values-context#unlisted-source-codes

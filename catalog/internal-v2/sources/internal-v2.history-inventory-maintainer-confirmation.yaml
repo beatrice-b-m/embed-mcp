@@ -1,0 +1,7 @@
+kind: source
+label: Internal history table inventory clarification
+source_type: maintainer_confirmed
+locator_type: logical_artifact
+locator: maintainer-confirmed:history-packet-inventories
+version_scope: >-
+  Column completeness of the reviewed HormoneHist, ProcedureHist, and CancerHist packets.

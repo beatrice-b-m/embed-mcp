@@ -1,0 +1,17 @@
+kind: profile_support
+evidence_status: supported
+evidence_summary: >-
+  The exam-to-image relationship is physically bound between the internal MagView clinical table
+  and the internal V1c image-metadata extraction through the accession, with physical
+  many-to-many cardinality and incomplete V1c coverage of clinical V2 exams.
+evidence_caveats:
+  - >-
+    A clinical V2 exam can have no matching V1c image row, and an unmatched exam is not an exam
+    without images.
+  - An inner join on the accession discards clinical V2 exams outside V1c coverage.
+  - Physical linkage does not establish image availability for all internal V2 exams.
+subject: clinical.exam-image
+evidence_cites:
+  - internal-v2.v1c-metadata-context#version-boundary
+  - internal-v2.v1c-metadata-context#coverage-is-not-image-absence
+  - internal-v2.v1c-metadata-context#patient-and-exam-projection

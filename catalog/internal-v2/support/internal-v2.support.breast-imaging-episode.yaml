@@ -1,0 +1,13 @@
+kind: profile_support
+evidence_status: unresolved
+evidence_summary: >-
+  Linked accessions identify explicitly linked co-occurring exams in one imaging episode, but no
+  canonical internal episode identity or complete episode construction is established.
+evidence_caveats:
+  - >-
+    The link can dangle; conflicting values across repeated rows are data-quality errors, and
+    the link must never be interpreted as a prior-or-follow-up exam relationship.
+  - The separate linked-study flag meaning remains unverified.
+subject: breast_imaging_episode
+evidence_cites:
+  - internal-v2.magview-representation-context#linked-accession-surface

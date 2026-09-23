@@ -1,0 +1,21 @@
+kind: vocabulary
+label: MRI other-finding source codes
+completeness: unknown
+parsing: comma_delimited_unordered
+evidence: [observed_source_values, unresolved]
+caveats:
+  - Neither comparison dictionary assigns meanings to the represented source codes.
+  - Codes are preserved without inferred normalization or clinical meaning.
+codes:
+  B: Unresolved internal source code
+  C: Unresolved internal source code
+  G: Unresolved internal source code
+  H: Unresolved internal source code
+  I: Unresolved internal source code
+  L: Unresolved internal source code
+  M: Unresolved internal source code
+  N: Unresolved internal source code
+  O: Unresolved internal source code
+  P: Unresolved internal source code
+  R: Unresolved internal source code
+  Y: Unresolved internal source code

@@ -1,0 +1,19 @@
+kind: profile_support
+evidence_status: unsupported
+evidence_summary: No internal exam-level pathology-severity aggregate feature is supplied.
+evidence_caveats:
+  - Any minimum reduction is analyst defined, not a supplied internal feature.
+representation_status: unsupported
+representation_summary: >-
+  The internal MagView table has no supplied exam-level pathology-severity aggregate column.
+representation_caveats:
+  - >-
+    If an analysis declares an exam grouping, its most-severe reduction uses the minimum
+    represented severity; it is not a supplied feature or default.
+search_terms: [internal exam pathology aggregate, exam severity column]
+subject: aggregation.pathology-severity-to-exam
+topics: [topic.exam, topic.pathology]
+evidence_cites:
+  - internal-v2.magview-pathology-context#no-curated-severity-aggregates
+representation_cites:
+  - internal-v2.magview-pathology-context#no-curated-severity-aggregates

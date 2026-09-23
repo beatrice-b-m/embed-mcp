@@ -1,0 +1,14 @@
+kind: profile_support
+representation_status: supported
+representation_summary: >-
+  CancerHist_anon has a complete physical column inventory, including the confirmed free-text
+  comment field, with conservative nullable parse types.
+representation_caveats:
+  - >-
+    A physical inventory does not establish verified cancer, genetic-test results, complete
+    clinical capture, or a unique relative identifier.
+search_terms: [CancerHist, cancer history, family history, relative identity, BRCA history]
+subject: internal-v2.cancer-history-context
+topics: [topic.identity, topic.pathology, topic.technical, topic.temporal]
+representation_cites:
+  - internal-v2.history-topology-context#physical-inventories

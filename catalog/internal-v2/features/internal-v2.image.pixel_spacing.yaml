@@ -1,0 +1,17 @@
+kind: feature
+label: Pixel spacing attribute
+definition: Serialized source DICOM pixel-spacing attribute for one internal V1c image row.
+value_type: text
+evidence: [observed_source_values]
+search_terms: [pixel spacing, imager pixel spacing, image resolution]
+caveats:
+  - >-
+    The value is a serialized pair; delimiter and unit semantics are not documented in the
+    extraction.
+  - >-
+    Two separate spacing attributes are occurrences of this concept and are not reconciled with
+    one another.
+topics: [topic.imaging, topic.technical]
+cites:
+  - internal-v2.v1c-metadata-context#parsed-dicom-element-semantics
+objects: [image]

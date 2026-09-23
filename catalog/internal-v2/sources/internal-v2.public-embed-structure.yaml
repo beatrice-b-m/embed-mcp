@@ -1,0 +1,17 @@
+kind: source
+label: HITI Lab public EMBED dataset-structure page
+source_type: public_documentation
+scope: embed_general
+locator_type: url
+locator: https://docs.hitilab.com/datasets/embed/structure
+version_scope: >-
+  Public documentation of the classic image-oriented metadata table, its accession and
+  laterality linkage, and its image-type filtering; historical and non-comprehensive for
+  internal V1c.
+notes:
+  - >-
+    Used only as a hypothesis source; every applicable statement was checked against the
+    internal V1c artifact.
+  - >-
+    No public field name, parsing rule, or filtering recipe is imported as internal profile
+    policy.

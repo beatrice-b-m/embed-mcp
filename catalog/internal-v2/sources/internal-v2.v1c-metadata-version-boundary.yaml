@@ -1,0 +1,15 @@
+kind: source
+label: Internal V2 clinical to V1c image-metadata version boundary
+source_type: maintainer_confirmed
+locator_type: logical_artifact
+locator: maintainer-confirmed:internal-v2-v1c-image-metadata-boundary
+version_scope: >-
+  Current pairing of the internal clinical V2 profile with the most recent internal V1c
+  image-metadata artifact, which covers the complete EMBEDv1 exam and patient set.
+notes:
+  - >-
+    The V1c artifact is the most current image-metadata file and covers the full set of EMBEDv1
+    exams and patients.
+  - >-
+    V1c remains narrower than internal clinical V2 because the clinical table contains later
+    dataset coverage.

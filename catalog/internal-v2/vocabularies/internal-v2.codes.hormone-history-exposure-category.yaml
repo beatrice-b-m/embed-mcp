@@ -1,0 +1,14 @@
+kind: vocabulary
+label: Reported exposure-history categories
+completeness: unknown
+parsing: atomic
+evidence: [maintainer_confirmed]
+caveats:
+  - >-
+    The category determines which code vocabulary applies; the same source token can have
+    different meanings in different categories.
+  - The confirmed codes are not asserted to exhaust every represented source value.
+codes:
+  H: Hormone
+  T: Therapy
+  O: Contraceptive

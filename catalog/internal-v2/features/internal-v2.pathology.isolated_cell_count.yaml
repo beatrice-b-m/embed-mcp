@@ -1,0 +1,12 @@
+kind: feature
+label: Isolated cell count
+definition: Recorded number of isolated cells in the represented pathology characterization.
+value_type: numeric
+evidence: [release_legend, observed_source_values]
+search_terms: [isolated cells, isolated cell count]
+caveats:
+  - The comparison legend does not establish the isolated cell type.
+topics: [topic.pathology]
+cites:
+  - internal-v2.magview-pathology-context#specimen-surface
+objects: [pathology_specimen, pathology_diagnosis]

@@ -1,0 +1,24 @@
+kind: guardrail
+label: Physical co-location does not imply clinical co-availability
+category: prohibition
+priority: critical
+statement: >-
+  Do not infer that values projected into the same wide row were observed or available at the
+  same clinical time.
+rationale: >-
+  Denormalization combines fields from different events and documentation stages without
+  establishing their availability boundary.
+scope: embed_general
+search_terms: [wide row contemporaneous, denormalized availability, co-location]
+caveats:
+  - The wide table's construction and field-level co-availability remain unresolved.
+topics: [topic.imaging, topic.pathology, topic.technical, topic.temporal]
+applies_to:
+  - imaging_exam
+  - imaging_finding
+  - procedure
+  - pathology_diagnosis
+  - exam.study_date
+  - pathology.procedure_date
+  - pathology.report_date
+  - time.downstream-availability

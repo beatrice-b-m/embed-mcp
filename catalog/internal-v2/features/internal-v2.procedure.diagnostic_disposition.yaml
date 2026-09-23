@@ -1,0 +1,14 @@
+kind: feature
+label: Diagnostic disposition
+definition: >-
+  Recorded internal-versus-external diagnostic handling for a procedure-associated pathology
+  record.
+value_type: coded
+evidence: [release_legend, observed_source_values]
+search_terms: [diagnostic disposition, external pathology facility]
+caveats:
+  - The field does not identify a facility or prove transfer completeness.
+topics: [topic.procedure, topic.pathology, topic.workflow]
+cites:
+  - internal-v2.magview-pathology-context#specimen-surface
+objects: [procedure, pathology_specimen]

@@ -1,0 +1,12 @@
+kind: feature
+label: NCI lifetime output
+definition: NCI lifetime risk output calculated during clinical care and extracted from MagView.
+value_type: model_output
+evidence: [release_schema, observed_source_values, maintainer_confirmed, unresolved]
+search_terms: [nci lifetime output, risk model]
+caveats:
+  - >-
+    The exact model version, percentage-point formatting, and meanings of -35, -2, and 100 are
+    not validated.
+topics: [topic.risk]
+objects: [risk_assessment]

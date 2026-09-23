@@ -1,0 +1,33 @@
+kind: profile_support
+evidence_status: supported
+evidence_summary: >-
+  The image object is bound to internal V1c at one row per extracted DICOM image instance; the
+  anonymized SOP Instance UID in the anon_dicom_path basename provides dataset-version-scoped
+  identity, and DICOM-derived attributes remain distinct from pipeline-derived and legacy
+  fields.
+evidence_caveats:
+  - >-
+    Coverage is the complete EMBEDv1 exam and patient set and is narrower than internal clinical
+    V2.
+  - >-
+    A missing anon_dicom_path likely reflects anonymization failure and makes the de-identified
+    file and exported SOP Instance UID representation unavailable.
+representation_status: supported
+representation_summary: >-
+  The anon_dicom_path filename without .dcm is the anonymized SOP Instance UID and provides
+  durable image identity within one dataset version, although the UID is not exported as a
+  separate metadata column.
+representation_caveats:
+  - >-
+    A missing anon_dicom_path makes the file and exported identity unavailable for that row and
+    likely reflects an anonymization failure.
+  - No identity stability across dataset versions is asserted.
+search_terms: [image identity, SOP instance identifier, image key, image locator]
+subject: image
+topics: [topic.imaging, topic.identity, topic.technical]
+evidence_cites:
+  - internal-v2.v1c-metadata-context#image-row-grain
+  - internal-v2.v1c-metadata-context#image-instance-identity
+  - internal-v2.v1c-metadata-context#version-boundary
+representation_cites:
+  - internal-v2.v1c-metadata-context#image-instance-identity

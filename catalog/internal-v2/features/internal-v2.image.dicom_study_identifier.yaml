@@ -1,0 +1,16 @@
+kind: feature
+label: Source DICOM study identifier
+definition: Technical study identifier carried on an internal V1c image row.
+value_type: technical
+evidence: [observed_source_values, inference]
+search_terms: [study id, DICOM study identifier]
+caveats:
+  - >-
+    This is a short study identifier attribute, not a study instance identifier; its
+    relationship to acc_anon is unknown and it is rarely, if ever, used internally.
+  - During anonymization acc_anon is written to the distinct DICOM AccessionNumber element.
+  - It does not distinguish one image row.
+topics: [topic.imaging, topic.technical]
+cites:
+  - internal-v2.v1c-metadata-context#parsed-dicom-element-semantics
+  - internal-v2.v1c-metadata-context#dicom-study-and-accession-identifiers

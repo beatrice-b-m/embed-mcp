@@ -1,0 +1,24 @@
+kind: join
+join_type: hierarchy
+source_completeness: optional
+cardinality:
+  targets_per_source: zero_or_more
+  sources_per_target: zero_or_more
+evidence: [release_schema, observed_source_values]
+hazards:
+  - >-
+    Repeated wide rows multiply co-located object occurrences; do not treat row multiplicity as
+    clinical multiplicity without declared grouping.
+caveats:
+  - No independent interpretation identity proves a one-to-one procedure recommendation.
+cites:
+  - internal-v2.magview-representation-context#finding-procedure-repetition
+relationships: [clinical.interpretation-procedure]
+source_columns:
+  - internal-v2.magview_all_cohorts_pacs_v2_anon#acc_anon
+  - internal-v2.magview_all_cohorts_pacs_v2_anon#side
+  - internal-v2.magview_all_cohorts_pacs_v2_anon#numfind
+target_columns:
+  - internal-v2.magview_all_cohorts_pacs_v2_anon#acc_anon
+  - internal-v2.magview_all_cohorts_pacs_v2_anon#side
+  - internal-v2.magview_all_cohorts_pacs_v2_anon#numfind

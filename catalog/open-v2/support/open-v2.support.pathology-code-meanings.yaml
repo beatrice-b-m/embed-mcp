@@ -1,0 +1,16 @@
+kind: profile_support
+evidence_status: supported
+representation_status: unresolved
+representation_summary: >-
+  Some valid source-system pathology codes have no mapping in the released legend or a single
+  authoritative cross-system dictionary.
+representation_caveats:
+  - Retain unknown codes without guessing or silently normalizing them.
+search_terms: [unknown pathology code, pathology vocabulary coverage]
+subject: pathology.diagnosis_code_slot
+topics: [topic.pathology]
+evidence_cites:
+  - open-v2.pathology-procedure-context#diagnosis-slot-order
+  - open-v2.pathology-procedure-context#pathology-code-mappings
+representation_cites:
+  - open-v2.pathology-procedure-context#pathology-code-mappings

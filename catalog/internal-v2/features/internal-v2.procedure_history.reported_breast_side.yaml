@@ -1,0 +1,22 @@
+kind: feature
+label: Reported historical breast-procedure side
+definition: Reported breast laterality for a prior breast-procedure history entry.
+value_type: coded
+evidence: [maintainer_confirmed]
+search_terms: [ProcHist side, prior procedure laterality, historical breast side]
+caveats:
+  - >-
+    The concept is breast-specific and should not be forced onto gynecological procedure
+    entries.
+topics: [topic.breast_side, topic.procedure]
+cites:
+  - internal-v2.patient-history-context#reported-history-not-current-care
+objects: [internal-v2.procedure_history_entry]
+missing_states:
+  unspecified-or-unknown:
+    representation: blank
+    meaning: >-
+      Breast laterality is unspecified or unknown; blank is expected for a gynecological
+      procedure and does not by itself make the entry malformed.
+    cites:
+      - internal-v2.patient-history-context#reported-history-not-current-care

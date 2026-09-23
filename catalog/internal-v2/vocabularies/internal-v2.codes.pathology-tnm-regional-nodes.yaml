@@ -1,0 +1,20 @@
+kind: vocabulary
+label: Pathologic TNM regional-node source codes
+completeness: unknown
+parsing: atomic
+evidence: [release_legend, observed_source_values, unresolved]
+caveats:
+  - >-
+    Both comparison dictionaries repeat primary-tumor code meanings for this regional-node
+    field.
+  - Represented pN tokens remain uninterpreted pending authoritative reconciliation.
+codes:
+  PN0: Unresolved internal pN source code
+  PN0I+: Unresolved internal pN source code
+  PN0I-: Unresolved internal pN source code
+  PN0M+: Unresolved internal pN source code
+  PN1A: Unresolved internal pN source code
+  PN1MI: Unresolved internal pN source code
+  PN2A: Unresolved internal pN source code
+  PN3A: Unresolved internal pN source code
+  PNX: Unresolved internal pN source code

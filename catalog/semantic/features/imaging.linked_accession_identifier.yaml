@@ -1,0 +1,18 @@
+kind: feature
+label: Linked exam accession identifier
+definition: Anonymized accession reference for a same-episode exam linked at study time.
+value_type: identifier
+evidence: [release_schema, cross_table_check, maintainer_confirmed]
+search_terms: [linked exam accession identifier, linked study, linked accession]
+caveats:
+  - >-
+    Treat identifiers as opaque; do not expose values or assume stability beyond the documented
+    release.
+  - >-
+    A non-null reference is expected to identify a same-episode exam, but release and
+    data-quality edge cases may not resolve to the exported exam table.
+  - >-
+    The reference does not identify a prior or follow-up exam; compare study dates when temporal
+    context is needed.
+topics: [topic.identity, topic.imaging]
+objects: [imaging_finding]

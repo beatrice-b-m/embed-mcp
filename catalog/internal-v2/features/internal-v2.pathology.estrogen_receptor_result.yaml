@@ -1,0 +1,15 @@
+kind: feature
+label: Estrogen-receptor result
+definition: >-
+  Coded estrogen-receptor immunoreactivity result or workflow state for a pathology specimen.
+value_type: coded
+evidence: [release_legend, observed_source_values]
+search_terms: [estrogen receptor, ER result]
+caveats:
+  - >-
+    The vocabulary mixes result polarity, low expression, and workflow or residual-disease
+    states.
+topics: [topic.pathology]
+cites:
+  - internal-v2.magview-pathology-context#specimen-surface
+objects: [pathology_specimen, pathology_diagnosis]

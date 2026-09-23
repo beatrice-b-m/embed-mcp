@@ -1,0 +1,28 @@
+kind: relationship
+label: Procedure produces pathology observation
+relationship_type: derivation
+definition: Procedure-associated tissue observation recorded in a pathology descriptor slot.
+cardinality:
+  targets_per_source: zero_or_more
+  sources_per_target: zero_or_one
+optionality:
+  source: optional
+  target: optional
+attribution_limitations:
+  - >-
+    Procedure and pathology fields share a physical row but do not have separately proven
+    identities.
+temporal_qualification: Pathology observation is downstream of tissue sampling or surgery.
+search_terms: [procedure pathology observations, biopsy pathology code]
+caveats:
+  - Row co-location must not be promoted to one-to-one clinical cardinality.
+source_object: procedure
+target_object: pathology_observation
+topics: [topic.procedure, topic.pathology, topic.temporal]
+cites:
+  - clinical.screening-diagnostic-pathway#pathology-follows-sampling
+temporal:
+  - time.procedure-event
+  - time.specimen-collection
+  - time.pathology-report-documentation
+  - time.downstream-availability

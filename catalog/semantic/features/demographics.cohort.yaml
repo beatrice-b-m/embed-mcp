@@ -1,0 +1,10 @@
+kind: feature
+label: Patient cohort
+definition: Patient cohort number.
+value_type: categorical
+evidence: [release_schema, release_legend]
+search_terms: [patient cohort]
+caveats:
+  - Cohort construction and intended interpretation are not documented.
+topics: [topic.demographics]
+objects: [patient]

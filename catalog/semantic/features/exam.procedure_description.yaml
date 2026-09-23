@@ -1,0 +1,12 @@
+kind: feature
+label: Procedure description
+definition: Description of the procedure.
+value_type: text
+evidence: [release_schema, release_legend]
+search_terms: [procedure description]
+caveats:
+  - >-
+    Treat the field as potentially sensitive text-like content and avoid exposing raw values
+    without a use-specific policy.
+topics: [topic.exam, topic.procedure]
+objects: [imaging_exam]

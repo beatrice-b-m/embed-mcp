@@ -1,0 +1,15 @@
+kind: feature
+label: Exam accession identifier
+definition: Anonymized exam or accession identifier.
+value_type: identifier
+evidence: [release_schema, release_legend, inference, unresolved]
+search_terms: [exam accession identifier, accession, exam id, acc]
+caveats:
+  - >-
+    Treat identifiers as opaque; do not expose values or assume stability beyond the documented
+    release.
+  - >-
+    The meaning is inferred from the legend's unsuffixed acc and accession headers rather than
+    an exact header match.
+topics: [topic.identity, topic.exam]
+objects: [imaging_exam]

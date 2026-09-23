@@ -1,0 +1,10 @@
+kind: clinical_object
+label: Patient
+definition: >-
+  A person represented in EMBED and associated with clinical imaging, report, risk, procedure,
+  or pathology records.
+grain: one patient
+search_terms: [patient, person, longitudinal patient]
+caveats:
+  - The catalog does not establish complete longitudinal care or outside-system follow-up.
+topics: [topic.identity, topic.demographics]

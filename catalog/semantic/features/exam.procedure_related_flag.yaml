@@ -1,0 +1,10 @@
+kind: feature
+label: Procedure-related exam flag
+definition: Flag identifying an exam related to a procedure, derived from the exam description.
+value_type: flag
+evidence: [release_schema, release_legend]
+search_terms: [procedure-related exam flag]
+caveats:
+  - Null is not documented as meaning No, and procedure timing is unresolved.
+topics: [topic.exam, topic.procedure, topic.workflow]
+objects: [imaging_exam]

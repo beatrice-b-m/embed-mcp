@@ -1,0 +1,17 @@
+kind: profile_support
+evidence_status: supported
+representation_status: supported
+representation_summary: >-
+  Open-v2 supplies a breast-side pathology-severity result concept whose verified rollup takes
+  the minimum represented severity in the applicable side group.
+representation_caveats:
+  - >-
+    Support for the rollup does not remove laterality-attribution or unattached-pathology
+    limitations.
+search_terms: [open v2 side pathology aggregate, supported minimum severity by breast]
+subject: aggregation.pathology-severity-to-side
+topics: [topic.breast_side, topic.pathology]
+evidence_cites:
+  - open-v2.pathology-procedure-context#severity-aggregation
+representation_cites:
+  - open-v2.pathology-procedure-context#severity-aggregation

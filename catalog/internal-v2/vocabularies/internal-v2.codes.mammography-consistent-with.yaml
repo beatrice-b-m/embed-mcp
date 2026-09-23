@@ -1,0 +1,47 @@
+kind: vocabulary
+label: Consistent-with codes
+completeness: unknown
+null_meaning: [undocumented, occurrence_specific]
+parsing: comma_delimited_unordered
+legend_role: comparison_legend
+evidence: [observed_source_values, release_legend]
+caveats:
+  - >-
+    Parse comma-delimited tokens; ordering and repetition do not change meaning, and preserve
+    unexplained component codes.
+codes:
+  ">": Postsurgical Fluid Collection
+  A: Abscess
+  ABT: Accessory breast tissue
+  AE: Augmentation then explantation
+  C: Cyst
+  CF: Calcified fibroadenoma
+  D: Fibrocystic change
+  DE: Ectatic duct
+  DF: Diabetic fibrous mastopathy
+  DFA: Degenerating fibroadenoma
+  E: Hematoma
+  F: Fibroadenoma
+  FB: Foreign body
+  FS: Free silicone
+  FV: Fibroadenoma or variant
+  G: Fat lobules
+  H: Hamartoma
+  I: Hyalinized fibroadenoma
+  J: Fibrosis
+  L: Lipoma
+  LA: Lactating adenoma
+  M: Milk of Calcium, benign
+  MG: Male gynecomastia
+  N: Benign asymmetry
+  O: Oil cyst
+  PM: Plasma cell mastitis
+  PR: Prior reduction mammoplasty
+  PT: Phyllodes Tumor
+  S: Seroma
+  SA: Fibrocystic change or sclerosing adenosis
+  SP: Sclerotic papilloma
+  T: Fat necrosis
+  Y: Lymph node
+  B: Unresolved internal source code
+  U: Unresolved internal source code

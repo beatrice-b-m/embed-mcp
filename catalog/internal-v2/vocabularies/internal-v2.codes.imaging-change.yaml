@@ -1,0 +1,26 @@
+kind: vocabulary
+label: Finding-change codes
+completeness: unknown
+null_meaning: [undocumented, occurrence_specific]
+parsing: comma_delimited_unordered
+legend_role: comparison_legend
+evidence: [observed_source_values, release_legend]
+caveats:
+  - >-
+    Parse comma-delimited tokens; ordering and repetition do not change meaning, and preserve
+    unexplained component codes.
+codes:
+  "-": decrease in size
+  +: increase in size
+  C: Calcifications have become more coarse which is consistent with a benign process.
+  D: decrease in number of calcifications
+  G: The finding does not persist upon additional diagnostic evaluation.
+  I: increase in number of calcifications
+  M: The finding is more prominent.
+  N: no significant changes
+  O: more defined
+  P: partially removed
+  R: completely removed with no sign of recurrence
+  S: not seen
+  U: The finding is less prominent.
+  X: less defined

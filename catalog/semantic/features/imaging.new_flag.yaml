@@ -1,0 +1,10 @@
+kind: feature
+label: New finding flag
+definition: Indicator of whether an imaging finding is new.
+value_type: flag
+evidence: [release_schema, release_legend, unresolved]
+search_terms: [new finding flag]
+caveats:
+  - The legend does not explicitly define the numeric flag encoding.
+topics: [topic.imaging]
+objects: [imaging_finding]

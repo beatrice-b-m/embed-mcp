@@ -1,0 +1,12 @@
+kind: feature
+label: Ki-67 coded result
+definition: Coded Ki-67 result category for a pathology specimen.
+value_type: coded
+evidence: [release_legend, observed_source_values]
+search_terms: [Ki-67, proliferation index]
+caveats:
+  - This source field is a mixed coded category, not one scalar percentage.
+topics: [topic.pathology]
+cites:
+  - internal-v2.magview-pathology-context#specimen-surface
+objects: [pathology_specimen, pathology_diagnosis]

@@ -1,0 +1,21 @@
+kind: clinical_object
+label: Reported hormone and treatment history entry
+definition: >-
+  One represented report of a patient's hormone, treatment, or contraceptive exposure history.
+grain: one represented exposure-history entry for one patient
+search_terms:
+  - HormoneHist
+  - hormone history
+  - therapy history
+  - contraceptive history
+  - tamoxifen history
+  - raloxifene history
+caveats:
+  - >-
+    The entry is reported or previously documented history, not proof that treatment occurred
+    during the associated imaging exam.
+  - No stable entry identifier or semantic deduplication rule is established.
+topics: [topic.demographics, topic.procedure, topic.temporal, topic.workflow]
+cites:
+  - internal-v2.patient-history-context#reported-history-not-current-care
+  - internal-v2.patient-history-context#hormone-history-timing

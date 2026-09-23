@@ -1,0 +1,12 @@
+kind: feature
+label: Biopsy site slot
+definition: Source-system biopsy site designation recorded as a lettered site slot.
+value_type: coded
+evidence: [release_legend, observed_source_values]
+search_terms: [biopsy site, biopsy site slot]
+caveats:
+  - The lettered slot is not an anatomic breast-location code.
+topics: [topic.procedure, topic.pathology]
+cites:
+  - internal-v2.magview-pathology-context#specimen-surface
+objects: [procedure]

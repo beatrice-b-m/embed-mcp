@@ -1,0 +1,9 @@
+kind: vocabulary
+label: Biopsy-type codes
+completeness: unknown
+null_meaning: [undocumented]
+parsing: atomic
+evidence: [release_legend]
+codes:
+  B: Needle biopsy pathology
+  S: Surgical pathology

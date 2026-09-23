@@ -1,0 +1,16 @@
+kind: source
+label: DICOM PS3.6 Data Dictionary
+source_type: public_documentation
+scope: general_clinical
+locator_type: url
+locator: https://dicom.nema.org/medical/dicom/current/output/html/part06.html
+version_scope: >-
+  Current standard names and value representations for parsed DICOM data elements inventoried in
+  internal V1c image metadata.
+notes:
+  - >-
+    Parsed-out DICOM elements retain their standard element semantics unless an internal
+    extraction claim documents a transformation.
+  - >-
+    This source does not assign standard semantics to pipeline-derived fields or establish
+    extraction completeness, value validity, or pixel-data verification.

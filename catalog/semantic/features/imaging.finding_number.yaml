@@ -1,0 +1,25 @@
+kind: feature
+label: Finding number
+definition: Finding identifier within an accession, except for reserved synthetic entries.
+value_type: identifier
+evidence: [release_schema, release_legend, observed_source_values, maintainer_confirmed]
+search_terms:
+  - finding number
+  - one row per finding
+  - finding key
+  - clinical finding identity
+  - finding row multiplicity
+caveats:
+  - >-
+    The reserved value -9 identifies a derived synthetic contralateral negative finding implied
+    by a non-negative finding on the other breast but not explicitly entered in MagView.
+  - Synthetic contralateral negatives are derived records rather than manually entered findings.
+  - >-
+    After excluding the reserved -9 synthetic records, (acc_anon, numfind) identifies a distinct
+    clinical finding within an accession; side is not part of that clinical identity.
+  - >-
+    One clinical finding can occupy multiple physical rows because of attached procedures or
+    later table construction and merges.
+  - The tuple is not a persistent lesion identifier across accessions, episodes, or modalities.
+topics: [topic.identity, topic.imaging]
+objects: [imaging_finding]

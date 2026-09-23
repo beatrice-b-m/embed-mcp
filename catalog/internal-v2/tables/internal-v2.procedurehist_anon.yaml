@@ -1,0 +1,219 @@
+kind: table
+label: ProcedureHist_anon
+grain: >-
+  one source history record; clinical-entry identity and rows per historical event remain
+  unresolved
+caveats:
+  - >-
+    Physical types are packet-reported pandas parse types, with str represented as string;
+    comment is assessed as string from maintainer description rather than packet observation.
+  - >-
+    No embedded schema or nullability contract is supplied; every column is conservatively
+    nullable, independently of observed missingness.
+  - >-
+    Text padding and blank strings are physical representations, not global missing-value or
+    normalization rules.
+  - >-
+    The packet tests groupings only and does not establish unique row identity, deduplication,
+    or cross-table match coverage.
+keys:
+  patient-grouping:
+    key_type: technical
+    uniqueness: not_unique
+    completeness: unknown
+    evidence: [observed_source_values]
+    caveats:
+      - >-
+        A tested grouping with varying attributes, not a unique history-row or clinical-entry
+        identity; missing values were retained as levels.
+      - >-
+        No completeness, sentinel, or longitudinal history-identity assertion follows from the
+        topology export.
+    columns: [empi_anon]
+  exam-grouping:
+    key_type: technical
+    uniqueness: not_unique
+    completeness: unknown
+    evidence: [observed_source_values]
+    caveats:
+      - >-
+        A tested grouping with varying attributes, not a unique history-row or clinical-entry
+        identity; missing values were retained as levels.
+      - >-
+        No completeness, sentinel, or longitudinal history-identity assertion follows from the
+        topology export.
+    columns: [acc_anon]
+objects:
+  patient:
+    completeness: partial
+    authority: reference
+    derivation: projected
+    caveats:
+      - >-
+        This is a repeated contextual projection; no history-entry or historical-event identity
+        is asserted.
+    object: patient
+    cites:
+      - internal-v2.patient-history-context#patient-and-accession-context
+      - internal-v2.history-topology-context#tested-groupings
+    columns: [empi_anon]
+  imaging_exam:
+    completeness: partial
+    authority: reference
+    derivation: projected
+    caveats:
+      - >-
+        This is a repeated contextual projection; no history-entry or historical-event identity
+        is asserted.
+    object: imaging_exam
+    cites:
+      - internal-v2.patient-history-context#patient-and-accession-context
+      - internal-v2.history-topology-context#tested-groupings
+    columns: [acc_anon]
+  internal-v2.procedure_history_entry:
+    completeness: partial
+    authority: reference
+    derivation: source
+    caveats:
+      - >-
+        The table carries reported history; no instance identity, event uniqueness, or
+        deduplication rule is established.
+      - >-
+        Complete physical inventory does not imply complete clinical capture or that every
+        column has a supported semantic mapping.
+    object: internal-v2.procedure_history_entry
+    cites:
+      - internal-v2.patient-history-context#reported-history-not-current-care
+      - internal-v2.history-topology-context#physical-inventories
+      - internal-v2.history-topology-context#tested-groupings
+    columns:
+      - type
+      - pcode
+      - side
+      - age
+      - pdatealt
+      - month
+      - year
+      - result
+      - empi_anon
+      - acc_anon
+      - comment
+columns:
+  type:
+    type: string
+    nullable: true
+    maps:
+      - id: internal-v2.procedure_history.procedure_category
+        mapping: direct
+        vocabulary: internal-v2.codes.procedure-history-procedure-category
+  pcode:
+    type: string
+    nullable: true
+    maps:
+      - id: internal-v2.procedure_history.gynecological_procedure_code
+        mapping: conditional
+        vocabulary: internal-v2.codes.procedure-history-gynecological-procedure
+        category_column: type
+        category_value: G
+      - id: internal-v2.procedure_history.breast_procedure_code
+        mapping: conditional
+        vocabulary: internal-v2.codes.procedure-history-breast-procedure
+        category_column: type
+        category_value: B
+    interpretations:
+      category-specific padded procedure token:
+        representation: category-specific padded procedure token
+        meaning: >-
+          Existing reviewed code meaning applies within the represented procedure category
+        status: reconciled
+        cites:
+          - internal-v2.history-topology-context#procedure-category-reconciliation
+        feature: internal-v2.procedure_history.gynecological_procedure_code
+      category-specific padded procedure token@internal-v2.procedure_history.breast_procedure_code:
+        representation: category-specific padded procedure token
+        meaning: >-
+          Existing reviewed code meaning applies within the represented procedure category
+        status: reconciled
+        cites:
+          - internal-v2.history-topology-context#procedure-category-reconciliation
+        feature: internal-v2.procedure_history.breast_procedure_code
+  side:
+    type: string
+    nullable: true
+    maps:
+      - id: internal-v2.procedure_history.reported_breast_side
+        mapping: conditional
+        vocabulary: internal-v2.codes.procedure-history-breast-side
+        category_column: type
+        category_value: B
+  age:
+    type: string
+    nullable: true
+  pdatealt:
+    type: string
+    nullable: true
+  month:
+    type: string
+    nullable: true
+  year:
+    type: string
+    nullable: true
+  result:
+    type: string
+    nullable: true
+    maps:
+      - id: internal-v2.procedure_history.reported_result
+        mapping: direct
+        vocabulary: internal-v2.codes.procedure-history-result
+    interpretations:
+      "FA,SF":
+        representation: FA,SF
+        meaning: Comma-bearing historical result with unresolved composition semantics
+        status: unresolved
+        cites:
+          - internal-v2.history-topology-context#procedure-result-representation
+      blank string:
+        representation: blank string
+        meaning: >-
+          Unspecified source representation; equivalence to NONE or a negative result is not
+          established
+        status: unresolved
+        cites:
+          - internal-v2.history-topology-context#procedure-result-representation
+  empi_anon:
+    type: int64
+    nullable: true
+    maps:
+      - {id: identity.patient_identifier, mapping: direct}
+    interpretations:
+      represented identifier:
+        representation: represented identifier
+        meaning: Established patient namespace for the history owner
+        status: verified
+        caveats:
+          - >-
+            Candidate accession sentinel behavior and cross-table match coverage remain
+            unresolved.
+        cites:
+          - internal-v2.patient-history-context#patient-and-accession-context
+  acc_anon:
+    type: int64
+    nullable: true
+    maps:
+      - {id: exam.accession_identifier, mapping: direct}
+    interpretations:
+      represented identifier:
+        representation: represented identifier
+        meaning: >-
+          Associated imaging-accession recording context, not the historical event accession or
+          date
+        status: verified
+        caveats:
+          - >-
+            Candidate accession sentinel behavior and cross-table match coverage remain
+            unresolved.
+        cites:
+          - internal-v2.patient-history-context#patient-and-accession-context
+  comment:
+    type: string
+    nullable: true

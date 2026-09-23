@@ -1,0 +1,25 @@
+kind: relationship
+label: Breast side may be attributed pathology observation
+relationship_type: attribution
+definition: Laterality association between a pathology record and breast side.
+cardinality:
+  targets_per_source: zero_or_more
+  sources_per_target: zero_or_more
+optionality:
+  source: optional
+  target: optional
+attribution_limitations:
+  - The registered relationship uses finding side rather than biopsy side and may be incomplete.
+temporal_qualification: >-
+  The pathology observation is downstream of the exam-side finding context.
+search_terms: [side pathology, left right pathology]
+caveats:
+  - Do not substitute procedure-side fields for finding-side linkage.
+source_object: breast_side
+target_object: pathology_observation
+topics: [topic.breast_side, topic.pathology]
+temporal:
+  - time.exam-event
+  - time.procedure-event
+  - time.pathology-report-documentation
+  - time.downstream-availability

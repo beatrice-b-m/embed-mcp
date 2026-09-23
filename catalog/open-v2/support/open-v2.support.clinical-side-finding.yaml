@@ -1,0 +1,5 @@
+kind: profile_support
+evidence_status: supported
+subject: clinical.side-finding
+evidence_cites:
+  - open-v2.multimodal-finding-context#finding-side-null

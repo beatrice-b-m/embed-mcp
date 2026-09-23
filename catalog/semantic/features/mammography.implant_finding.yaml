@@ -1,0 +1,8 @@
+kind: feature
+label: Implant finding
+definition: Breast-implant finding code string.
+value_type: coded
+evidence: [release_schema, release_legend]
+search_terms: [implant finding]
+topics: [topic.imaging, topic.mammography]
+objects: [imaging_finding]

@@ -1,0 +1,14 @@
+kind: feature
+label: Pathology specimen size
+definition: Recorded size of a pathology specimen.
+value_type: numeric
+evidence: [release_legend, observed_source_values]
+search_terms: [specimen size, pathology specimen measurement]
+caveats:
+  - >-
+    The available dictionaries do not document units; similarly named secondary physical columns
+    remain unmapped.
+topics: [topic.pathology]
+cites:
+  - internal-v2.magview-pathology-context#specimen-surface
+objects: [pathology_specimen]

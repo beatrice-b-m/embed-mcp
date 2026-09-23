@@ -1,0 +1,12 @@
+kind: feature
+label: DCIS size
+definition: Recorded size of ductal carcinoma in situ in a pathology specimen.
+value_type: numeric
+evidence: [release_legend, observed_source_values]
+search_terms: [DCIS size, in-situ tumor size]
+caveats:
+  - The available dictionaries do not document units.
+topics: [topic.pathology]
+cites:
+  - internal-v2.magview-pathology-context#specimen-surface
+objects: [pathology_specimen, pathology_diagnosis]

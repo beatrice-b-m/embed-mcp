@@ -1,0 +1,15 @@
+kind: source
+label: HITI Lab public EMBED region-of-interest page
+source_type: public_documentation
+scope: embed_general
+locator_type: url
+locator: https://docs.hitilab.com/datasets/embed/rois
+version_scope: >-
+  Public documentation of a count, coordinate, and frame region-of-interest representation, a
+  rectangular coordinate order, and positional frame alignment; historical and non-comprehensive
+  for internal V1c.
+notes:
+  - Used only as a hypothesis source for internal V1c region-of-interest structure.
+  - >-
+    Its coordinate-order and tomosynthesis-only frame statements were not confirmed for internal
+    V1c and are recorded as such.

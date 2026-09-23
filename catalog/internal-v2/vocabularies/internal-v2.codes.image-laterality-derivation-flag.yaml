@@ -1,0 +1,22 @@
+kind: vocabulary
+label: Image-laterality derivation indicator values
+completeness: unknown
+parsing: atomic
+evidence: [observed_source_values, unresolved]
+caveats:
+  - >-
+    Only structural association with the source and derived laterality fields was observed; no
+    intended meaning is established.
+  - >-
+    The indicator is itself sometimes absent, including on rows whose derived laterality is
+    represented.
+codes:
+  "0.0": >-
+    value occurring with rows whose image-level source laterality attribute is represented;
+    intended meaning not established
+  "1.0": >-
+    value occurring with rows where neither source laterality attribute is represented; intended
+    meaning not established
+  "2.0": >-
+    value occurring with rows for which no derived final image laterality is represented;
+    intended meaning not established

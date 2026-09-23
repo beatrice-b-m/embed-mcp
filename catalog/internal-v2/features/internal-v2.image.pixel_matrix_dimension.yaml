@@ -1,0 +1,15 @@
+kind: feature
+label: Pixel matrix dimension
+definition: Size of one axis of the pixel matrix of an internal V1c image row.
+value_type: numeric
+evidence: [observed_source_values]
+search_terms: [image rows, image columns, image size, pixel matrix]
+caveats:
+  - >-
+    The row and column axes are separate occurrences of this concept and are distinguished by an
+    axis qualifier.
+  - Region-of-interest rectangles are not guaranteed to lie inside these dimensions.
+topics: [topic.imaging, topic.technical]
+cites:
+  - internal-v2.v1c-metadata-context#parsed-dicom-element-semantics
+objects: [image]

@@ -1,0 +1,11 @@
+kind: profile_support
+evidence_status: unresolved
+evidence_summary: >-
+  Internal pdate_anon is believed to represent pathology-report documentation time, but the
+  interpretation remains provisional because maintainer confidence is limited.
+evidence_caveats:
+  - Do not substitute this provisional occurrence for procedure or specimen-collection time.
+subject: time.pathology-report-documentation
+evidence_cites:
+  - internal-v2.magview-temporal-context#pathology-report-date-provisional
+  - internal-v2.magview-temporal-context#patient-date-shift

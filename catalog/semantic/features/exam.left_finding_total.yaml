@@ -1,0 +1,12 @@
+kind: feature
+label: Left finding total
+definition: Count of distinct findings recorded on the left breast during the exam.
+value_type: aggregate
+evidence: [release_schema, maintainer_confirmed]
+search_terms: [left finding total]
+caveats:
+  - >-
+    This exam-wide side-specific total is stored on breast-side-grain rows; repeated storage
+    does not change its meaning.
+topics: [topic.exam, topic.breast_side, topic.imaging]
+objects: [imaging_exam]

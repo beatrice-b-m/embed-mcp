@@ -1,0 +1,10 @@
+kind: vocabulary
+label: Cancer-history subject flag
+completeness: unknown
+parsing: atomic
+evidence: [maintainer_confirmed, observed_source_values]
+caveats:
+  - This is a subject flag, not a patient or relative identifier.
+codes:
+  "0": Relative
+  "1": Patient

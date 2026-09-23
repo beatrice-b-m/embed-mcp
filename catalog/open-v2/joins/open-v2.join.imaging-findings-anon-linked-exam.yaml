@@ -1,0 +1,18 @@
+kind: join
+join_type: reference
+source_completeness: optional
+cardinality:
+  targets_per_source: zero_or_one
+  sources_per_target: zero_or_more
+evidence: [cross_table_check]
+hazards:
+  - Treat this as an optional reference with possible dangling values, not a foreign key.
+caveats:
+  - Some non-null linked accessions did not resolve to the open-v2 exam surface.
+cites:
+  - open-v2.linked-exam-context#optional-reference
+  - open-v2.linked-exam-context#link-meaning
+relationships: [clinical.episode-exam]
+source_columns:
+  - open-v2.imaging_findings_anon#linkedaccession_anon
+target_columns: [open-v2.exam_level_anon#acc_anon]

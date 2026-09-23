@@ -1,0 +1,21 @@
+kind: profile_support
+evidence_status: unsupported
+evidence_summary: >-
+  No internal patient-level pathology-severity result or longitudinal rollup is supplied.
+evidence_caveats:
+  - Any patient-level minimum requires an explicit grouping, attribution, and time policy.
+representation_status: unsupported
+representation_summary: >-
+  The internal MagView table has no supplied patient-level pathology-severity result or
+  longitudinal outcome rollup.
+representation_caveats:
+  - >-
+    Any patient-level operation must declare grouping, time, multiplicity, and attribution
+    before selecting a minimum severity.
+search_terms: [internal patient pathology aggregate, patient outcome field]
+subject: aggregation.pathology-severity-to-patient
+topics: [topic.identity, topic.pathology, topic.temporal]
+evidence_cites:
+  - internal-v2.magview-pathology-context#no-curated-severity-aggregates
+representation_cites:
+  - internal-v2.magview-pathology-context#no-curated-severity-aggregates

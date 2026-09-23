@@ -1,0 +1,43 @@
+kind: vocabulary
+label: Breast location codes
+completeness: unknown
+null_meaning: [undocumented, occurrence_specific]
+parsing: comma_delimited_unordered
+legend_role: comparison_legend
+evidence: [observed_source_values, release_legend]
+caveats:
+  - >-
+    Parse comma-delimited tokens; ordering and repetition do not change meaning, and preserve
+    unexplained component codes.
+codes:
+  "1": 1 o'clock
+  "2": 2 o'clock
+  "3": 3 o'clock
+  "4": 4 o'clock
+  "5": 5 o'clock
+  "6": 6 o'clock
+  "7": 7 o'clock
+  "8": 8 o'clock
+  "9": 9 o'clock
+  "10": 10 o'clock
+  "11": 11 o'clock
+  "12": 12 o'clock
+  A: Axillary Tail
+  AN: Anterior
+  C: Central
+  D: Medial
+  I: Inferior
+  IN: Inner
+  L: Lateral
+  LO: Lower
+  MD: Middle
+  OU: Outer
+  S: Sub-areolar
+  T: Axillary Tail
+  U: Superior
+  UP: Upper
+  W: Upper outer
+  X: Upper inner
+  Y: Lower outer
+  Z: Lower inner
+  O: Unresolved internal source code

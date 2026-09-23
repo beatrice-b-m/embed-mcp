@@ -1,0 +1,13 @@
+kind: vocabulary
+label: MRI enhancement-distribution codes
+completeness: unknown
+null_meaning: [undocumented]
+parsing: atomic
+evidence: [release_legend]
+codes:
+  D: ductal
+  F: focal area of
+  I: diffuse
+  L: linear
+  R: regional
+  S: segmental

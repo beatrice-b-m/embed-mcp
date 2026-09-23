@@ -1,0 +1,11 @@
+kind: profile_support
+evidence_status: supported
+evidence_summary: >-
+  Every anonymized date value across EMBED tables and dataset versions uses one consistent
+  patient-specific shift, preserving within-patient ordering and time differences while
+  obscuring absolute dates.
+evidence_caveats:
+  - Repeated patient attributes can still vary or contain data-quality errors.
+subject: demographics.birth_date
+evidence_cites:
+  - internal-v2.magview-temporal-context#patient-date-shift

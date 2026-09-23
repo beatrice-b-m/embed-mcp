@@ -1,0 +1,11 @@
+kind: feature
+label: Anonymized pregnancy age
+definition: Age in years associated with an unspecified pregnancy event.
+value_type: numeric
+evidence: [release_schema, observed_source_values, maintainer_confirmed, unresolved]
+search_terms: [anonymized pregnancy age]
+caveats:
+  - The represented pregnancy event is unresolved.
+  - Values such as zero are data-quality errors, not documented sentinel codes.
+topics: [topic.demographics, topic.temporal]
+objects: [patient, imaging_exam]

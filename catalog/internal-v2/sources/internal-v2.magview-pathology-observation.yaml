@@ -1,0 +1,8 @@
+kind: source
+label: Internal V2 MagView targeted pathology and specimen observation
+source_type: supporting_internal
+locator_type: logical_artifact
+locator: internal-v2 MagView targeted pathology-severity and specimen review
+version_scope: >-
+  Question scope: descriptor-slot derivation, severity occurrence, procedure/pathology
+  optionality, specimen representation, and unsupported aggregate columns.

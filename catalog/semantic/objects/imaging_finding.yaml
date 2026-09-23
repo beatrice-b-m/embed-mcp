@@ -1,14 +1,13 @@
 kind: clinical_object
 label: Imaging finding
 definition: >-
-  A radiologist-recorded breast-imaging observation
-  with modality-specific descriptors and optional later clinical attribution.
+  A radiologist-recorded breast-imaging observation with modality-specific descriptors and
+  optional later clinical attribution.
 grain: one represented imaging finding
-# Prototype: the ultrasound and MRI topics are outside this slice.
-topics: [topic.imaging, topic.mammography]
 search_terms: [imaging finding, lesion, mass, calcification, observation]
-# Prototype: cites embed.finding-procedure-recording#finding-versus-procedure,
-# which is outside this slice.
 caveats:
   - Finding numbers are not globally unique and include a documented synthetic sentinel.
   - A finding is not equivalent to a later procedure or pathology diagnosis.
+topics: [topic.imaging, topic.mammography, topic.ultrasound, topic.mri]
+cites:
+  - embed.finding-procedure-recording#finding-versus-procedure

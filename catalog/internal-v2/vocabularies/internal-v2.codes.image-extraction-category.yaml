@@ -1,0 +1,17 @@
+kind: vocabulary
+label: Extraction category values
+completeness: open
+parsing: atomic
+evidence: [observed_source_values, unresolved]
+caveats:
+  - >-
+    These are pipeline-assigned labels whose intended meaning is not established for internal
+    V1c.
+  - >-
+    The represented values are strongly associated with the derived image-type classification
+    rather than distributed across it.
+codes:
+  uncategorized: default extraction category; no specific category was assigned to the image row
+  no image: >-
+    non-default extraction category assigned by the extraction; it must not be read as evidence
+    that no image exists for the row, and its intended meaning is not established

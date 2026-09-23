@@ -1,0 +1,12 @@
+kind: profile_support
+representation_status: unsupported
+representation_summary: >-
+  Specimen collection is clinically meaningful, but the registered open-v2 bindings contain no
+  supported specimen-collection date feature.
+representation_caveats:
+  - Do not substitute procedure date or pathology-report date.
+search_terms: [specimen date availability, missing specimen timestamp]
+subject: time.specimen-collection
+topics: [topic.procedure, topic.pathology, topic.temporal]
+representation_cites:
+  - open-v2.temporal-availability-context#unsupported-time-bindings

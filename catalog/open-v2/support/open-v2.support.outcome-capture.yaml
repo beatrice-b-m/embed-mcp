@@ -1,0 +1,13 @@
+kind: profile_support
+representation_status: unresolved
+representation_summary: >-
+  The available metadata does not establish complete capture of breast-cancer outcomes,
+  outside-system diagnoses, or longitudinal follow-up.
+representation_caveats:
+  - Absence of a represented diagnosis is not proof of disease absence.
+search_terms: [outcome capture, follow-up completeness, censoring, cancer ascertainment]
+subject: open-v2.pathology-procedure-context
+topics: [topic.pathology, topic.temporal, topic.workflow]
+representation_cites:
+  - embed.finding-procedure-recording#screening-attribution-gap
+  - open-v2.pathology-procedure-context#outcome-capture-not-established

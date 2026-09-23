@@ -1,0 +1,12 @@
+kind: feature
+label: Source pixel representation
+definition: Represented source DICOM pixel-representation value for one internal V1c image row.
+value_type: coded
+evidence: [observed_source_values]
+search_terms: [pixel representation, signed pixels, unsigned pixels]
+caveats:
+  - The signedness implied by the represented value is not asserted here.
+topics: [topic.imaging, topic.technical]
+cites:
+  - internal-v2.v1c-metadata-context#parsed-dicom-element-semantics
+objects: [image]

@@ -1,0 +1,19 @@
+kind: feature
+label: Reported breast-procedure history code
+definition: Breast procedure code for a prior-procedure history entry whose category is breast.
+value_type: coded
+evidence: [maintainer_confirmed]
+search_terms:
+  - ProcHist breast code
+  - prior core biopsy
+  - prior lumpectomy
+  - prior mastectomy
+  - breast reconstruction history
+caveats:
+  - >-
+    This meaning is conditional on procedure category B and does not establish a current-exam
+    procedure.
+topics: [topic.procedure]
+cites:
+  - internal-v2.patient-history-context#reported-history-not-current-care
+objects: [internal-v2.procedure_history_entry]

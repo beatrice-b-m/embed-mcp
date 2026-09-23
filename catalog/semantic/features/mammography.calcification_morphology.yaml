@@ -1,0 +1,8 @@
+kind: feature
+label: Calcification morphology
+definition: Mammographic calcification morphology or finding code string.
+value_type: coded
+evidence: [release_schema, release_legend, observed_source_values, unresolved]
+search_terms: [calcification morphology]
+topics: [topic.imaging, topic.mammography]
+objects: [imaging_finding]

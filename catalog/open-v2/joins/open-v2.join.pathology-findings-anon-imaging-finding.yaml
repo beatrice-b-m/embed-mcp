@@ -1,0 +1,25 @@
+kind: join
+join_type: reference
+source_completeness: optional
+cardinality:
+  targets_per_source: zero_or_more
+  sources_per_target: zero_or_more
+evidence: [cross_table_check]
+hazards:
+  - This tuple is not a one-to-one key and can multiply rows in either direction.
+  - Null side and sentinel-like finding numbers require an explicit matching policy.
+caveats:
+  - >-
+    Complete pathology tuples resolve to imaging tuples, but duplicate imaging matches occur and
+    incomplete tuples exist.
+cites:
+  - open-v2.pathology-procedure-context#imaging-link-tuple
+relationships: [clinical.finding-procedure, clinical.finding-pathology-observation]
+source_columns:
+  - open-v2.pathology_findings_anon#acc_anon
+  - open-v2.pathology_findings_anon#side
+  - open-v2.pathology_findings_anon#numfind
+target_columns:
+  - open-v2.imaging_findings_anon#acc_anon
+  - open-v2.imaging_findings_anon#side
+  - open-v2.imaging_findings_anon#numfind

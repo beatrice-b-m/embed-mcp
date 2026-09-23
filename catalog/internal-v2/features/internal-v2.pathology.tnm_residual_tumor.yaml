@@ -1,0 +1,12 @@
+kind: feature
+label: TNM residual-tumor category
+definition: Recorded residual-tumor category in TNM staging context.
+value_type: coded
+evidence: [release_legend, observed_source_values]
+search_terms: [TNM residual tumor, R category]
+caveats:
+  - Internal source tokens use uppercase forms of the lowercase comparison-dictionary codes.
+topics: [topic.pathology]
+cites:
+  - internal-v2.magview-pathology-context#specimen-surface
+objects: [pathology_diagnosis]

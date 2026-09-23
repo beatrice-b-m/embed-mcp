@@ -1,0 +1,10 @@
+kind: feature
+label: Lymph-node surgery type
+definition: Lymph-node surgery type code.
+value_type: coded
+evidence: [release_schema, release_legend]
+search_terms: [lymph-node surgery type]
+caveats:
+  - Surgery may be post-exam and requires a task-specific temporal anchor.
+topics: [topic.pathology, topic.procedure]
+objects: [procedure]

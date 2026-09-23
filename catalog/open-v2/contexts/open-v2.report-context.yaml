@@ -1,0 +1,79 @@
+kind: context
+label: Open-v2 report lifecycle context
+context_type: interpretation_guardrail
+definition: >-
+  Reports are accession-linked records whose sequence orders successive MagView report versions;
+  source heterogeneity can produce duplicate natural tuples and the addendum-flag relationship
+  remains unverified.
+search_terms: [report lifecycle, report sequence, rseq, addendum, report multiplicity]
+caveats:
+  - >-
+    Use minimum and maximum rseq for earliest and latest represented report versions; do not
+    rely on tuple uniqueness.
+  - >-
+    Treat report text as potentially sensitive and do not expose raw values through this context
+    service.
+topics: [topic.imaging, topic.report, topic.temporal, topic.workflow]
+about:
+  - imaging.addendum_flag
+  - report.sequence
+  - report.text
+  - open-v2.reports_anon
+  - open-v2.exam_level_anon
+  - open-v2.imaging_findings_anon
+  - open-v2.join.reports-anon-exam
+  - open-v2.join.reports-anon-patient
+claims:
+  separate-report-surface:
+    statement: >-
+      Open-v2 stores anonymized accession-linked radiology report text with the associated
+      imaging-exam study date and MagView report-version sequence.
+    status: verified
+    sources:
+      - open-v2.release-schema
+      - open-v2.maintainer-clarification-2026-07-29
+  natural-key-limit:
+    statement: >-
+      No tested natural tuple uniquely identifies every report row in the registered open-v2
+      review.
+    status: reconciled
+    caveats:
+      - The technical export index is not a documented durable report identifier.
+    sources: [open-v2.catalog-linkage-review]
+  sequence-meaning:
+    statement: >-
+      MagView increments rseq when a new report version is created; within an accession the
+      minimum represented sequence is earliest and the maximum is latest.
+    status: reconciled
+    caveats:
+      - >-
+        The specific origin of rseq zero is unknown, but zero participates in the same
+        minimum-to-maximum chronology.
+      - Ordinary source-system and site heterogeneity can produce duplicate natural tuples.
+    sources:
+      - open-v2.release-schema
+      - open-v2.catalog-linkage-review
+      - open-v2.maintainer-clarification-2026-07-29
+  addendum-link:
+    statement: >-
+      Reports with rseq greater than the accession minimum are expected to be later report
+      versions and generally addendums, but real-world exceptions and the relationship to the
+      processing-derived imaging addendum_flag have not been directly validated.
+    status: unresolved
+    caveats:
+      - >-
+        A later report version may not constitute an addendum in the strict clinical sense; do
+        not infer that one flag identifies a particular report revision.
+    sources:
+      - open-v2.release-schema
+      - open-v2.release-legend
+      - open-v2.catalog-linkage-review
+      - open-v2.maintainer-clarification-2026-07-29
+  finding-join-multiplication:
+    statement: >-
+      Joining report rows to finding-grain tables by accession can multiply both report and
+      finding rows.
+    status: reconciled
+    caveats:
+      - Aggregate or select reports only under an explicit report policy.
+    sources: [open-v2.catalog-linkage-review]

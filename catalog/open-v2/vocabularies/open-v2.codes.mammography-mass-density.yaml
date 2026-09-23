@@ -1,0 +1,11 @@
+kind: vocabulary
+label: Mammographic mass-density codes
+completeness: unknown
+null_meaning: [undocumented]
+parsing: atomic
+evidence: [release_legend]
+codes:
+  "0": Fat containing
+  "-": Low density
+  +: High density
+  =: Isodense

@@ -1,0 +1,34 @@
+kind: guardrail
+label: History accession is recording context, not historical event time
+category: prohibition
+priority: high
+statement: >-
+  Use a valid HormoneHist or ProcHist acc_anon only as the associated imaging-accession context;
+  do not use that accession or its exam date as the exposure start, exposure end, or historical
+  procedure event.
+rationale: >-
+  The established accession namespace identifies an imaging exam, but the history association
+  does not make that exam the occurrence of the historical exposure or procedure and does not
+  supply exact documentation time.
+search_terms:
+  - HormoneHist accession date
+  - ProcHist procedure date
+  - history recording time
+  - historical event accession
+caveats:
+  - >-
+    Candidate sentinel value 999 remains uninterpreted and must not be treated as a valid
+    accession or a governed missing sentinel without further evidence.
+topics: [topic.exam, topic.procedure, topic.temporal, topic.workflow]
+cites:
+  - internal-v2.patient-history-context#patient-and-accession-context
+applies_to:
+  - imaging_exam
+  - internal-v2.hormone_history_entry
+  - internal-v2.procedure_history_entry
+  - internal-v2.clinical.exam-hormone-history-recording-context
+  - internal-v2.clinical.exam-procedure-history-recording-context
+  - internal-v2.time.reported-exposure-start
+  - internal-v2.time.reported-exposure-end
+  - internal-v2.support.history-recording-time
+  - internal-v2.support.historical-procedure-event-time

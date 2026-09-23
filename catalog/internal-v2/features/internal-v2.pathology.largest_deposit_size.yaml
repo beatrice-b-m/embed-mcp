@@ -1,0 +1,14 @@
+kind: feature
+label: Largest pathology deposit size
+definition: >-
+  Recorded size of the largest deposit in the represented pathology characterization, in
+  millimeters.
+value_type: numeric
+evidence: [release_legend, observed_source_values]
+search_terms: [largest pathology deposit, largest deposit size]
+caveats:
+  - The comparison legend does not establish the deposit type or anatomic scope.
+topics: [topic.pathology]
+cites:
+  - internal-v2.magview-pathology-context#specimen-surface
+objects: [pathology_specimen, pathology_diagnosis]

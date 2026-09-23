@@ -1,0 +1,12 @@
+kind: profile_support
+evidence_status: supported
+evidence_summary: >-
+  Procedure-level information is a reliable internal V2 surface; within a patient, each complete
+  procedure-date, procedure-type, and biopsy-side tuple identifies one unique procedure.
+evidence_caveats:
+  - >-
+    The tuple is incomplete when any component is absent, is not durable across releases, and
+    does not establish a universal one-to-one pathology attachment.
+subject: procedure
+evidence_cites:
+  - internal-v2.magview-pathology-context#procedure-pathology-attachment

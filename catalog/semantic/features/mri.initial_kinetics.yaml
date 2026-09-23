@@ -1,0 +1,10 @@
+kind: feature
+label: MRI initial kinetics
+definition: MRI initial-enhancement kinetics code.
+value_type: coded
+evidence: [release_schema, release_legend, inference]
+search_terms: [mri initial kinetics]
+caveats:
+  - The vocabulary binding is a case-only legend match.
+topics: [topic.imaging, topic.mri]
+objects: [imaging_finding]

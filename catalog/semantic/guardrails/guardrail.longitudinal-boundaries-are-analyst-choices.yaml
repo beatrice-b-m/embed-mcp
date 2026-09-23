@@ -1,0 +1,41 @@
+kind: guardrail
+label: Longitudinal boundaries and tie-breaking require declared choices
+category: analyst_choice
+priority: high
+statement: >-
+  Declare whether subsequent excludes same-day events, whether separate same-day procedures
+  remain distinct, how episodes are defined, and how equally near candidates are handled.
+rationale: >-
+  These choices determine temporal membership and multiplicity but are not representation
+  failures, and the catalog does not select them.
+scope: embed_general
+search_terms:
+  - same day boundary
+  - strictly subsequent
+  - episode definition
+  - nearest event tie
+  - tie breaking
+  - same day procedures
+  - analyst choice
+caveats:
+  - >-
+    A study request may itself fix one of these policies; otherwise it should be declared by the
+    analyst.
+topics: [topic.exam, topic.pathology, topic.procedure, topic.temporal]
+cites:
+  - clinical.screening-diagnostic-pathway#pathology-follows-sampling
+applies_to:
+  - patient
+  - breast_imaging_episode
+  - imaging_exam
+  - procedure
+  - pathology_observation
+  - exam.study_date
+  - pathology.procedure_date
+  - pathology.report_date
+  - clinical.patient-exam
+  - clinical.episode-exam
+  - clinical.patient-pathology-observation
+  - time.exam-event
+  - time.procedure-event
+  - time.pathology-report-documentation

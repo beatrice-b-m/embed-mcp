@@ -1,0 +1,11 @@
+kind: vocabulary
+label: Reported procedure-history categories
+completeness: unknown
+parsing: atomic
+evidence: [maintainer_confirmed, observed_source_values]
+caveats:
+  - The category determines which procedure-code vocabulary applies.
+  - The confirmed codes are not asserted to exhaust every represented source value.
+codes:
+  G: Gynecological procedure
+  B: Breast procedure

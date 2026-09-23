@@ -1,0 +1,8 @@
+kind: feature
+label: Visit type
+definition: Visit type code.
+value_type: coded
+evidence: [release_schema, release_legend]
+search_terms: [visit type]
+topics: [topic.exam, topic.workflow]
+objects: [imaging_exam]

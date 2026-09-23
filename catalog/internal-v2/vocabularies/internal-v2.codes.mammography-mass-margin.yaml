@@ -1,0 +1,13 @@
+kind: vocabulary
+label: Mammographic mass-margin codes
+completeness: unknown
+null_meaning: [undocumented, occurrence_specific]
+parsing: atomic
+legend_role: comparison_legend
+evidence: [observed_source_values, release_legend]
+codes:
+  D: Circumscribed
+  I: Indistinct
+  M: Microlobulated
+  S: Spiculated
+  U: Obscured

@@ -1,0 +1,13 @@
+kind: profile_support
+representation_status: unsupported
+representation_summary: >-
+  No exact HormoneHist or ProcHist documentation or collection timestamp is supported.
+representation_caveats:
+  - >-
+    The associated imaging exam date is context and must not be silently substituted as exact
+    history-recording time.
+search_terms: [history recording date, HormoneHist collection time, ProcHist documentation time]
+subject: internal-v2.patient-history-context
+topics: [topic.exam, topic.temporal, topic.workflow]
+representation_cites:
+  - internal-v2.patient-history-context#patient-and-accession-context

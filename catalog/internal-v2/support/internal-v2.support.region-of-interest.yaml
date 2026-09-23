@@ -1,0 +1,28 @@
+kind: profile_support
+evidence_status: supported
+evidence_summary: >-
+  Regions of interest are physically represented as serialized per-image collections on the
+  internal V1c image-metadata table, with a count and positionally aligned coordinate,
+  frame-index, and depth-derivation collections.
+evidence_caveats:
+  - >-
+    One physical row can carry several regions, so the table is not one row per region and
+    positional order is not region identity.
+  - >-
+    Coordinates use inclusive [y_min, x_min, y_max, x_max] bounds in the attached DICOM
+    pixel-array space; curated coordinates are expected in bounds, and residual out-of-bounds
+    coordinates may be safely clipped.
+  - >-
+    Routine-clinical radiologist annotations were obtained through multiple workflows, including
+    annotation DICOM objects without pixel arrays and ROI_SS/ROI_SSC screen captures.
+  - >-
+    Stable per-region identity, cross-image correspondence, and multi-finding attribution remain
+    unsupported.
+subject: region_of_interest
+evidence_cites:
+  - internal-v2.roi-context#roi-attached-to-image
+  - internal-v2.roi-context#roi-serialized-collections
+  - internal-v2.roi-context#roi-coordinate-geometry
+  - internal-v2.roi-context#roi-frame-depth-semantics
+  - internal-v2.roi-context#roi-identity-and-provenance
+  - internal-v2.roi-context#roi-finding-attribution

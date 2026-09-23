@@ -1,0 +1,10 @@
+kind: feature
+label: Pathology focality
+definition: Recorded focality category for a pathology specimen.
+value_type: coded
+evidence: [release_legend, observed_source_values]
+search_terms: [tumor focality, single focus, multiple foci]
+topics: [topic.pathology]
+cites:
+  - internal-v2.magview-pathology-context#specimen-surface
+objects: [pathology_specimen]

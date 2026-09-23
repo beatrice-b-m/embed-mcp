@@ -1,0 +1,8 @@
+kind: feature
+label: Ultrasound shape
+definition: Ultrasound finding-shape code.
+value_type: coded
+evidence: [release_schema, release_legend]
+search_terms: [ultrasound shape]
+topics: [topic.imaging, topic.ultrasound]
+objects: [imaging_finding]

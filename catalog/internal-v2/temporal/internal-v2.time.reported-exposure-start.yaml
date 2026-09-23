@@ -1,0 +1,22 @@
+kind: temporal
+label: Reported historical exposure start
+temporal_type: event_time
+definition: >-
+  Reported beginning of a hormone, treatment, or contraceptive exposure, represented through an
+  age and/or partial calendar month and year rather than a supported exact date.
+search_terms:
+  - hormone start date
+  - therapy start age
+  - contraceptive start year
+  - HormoneHist first
+caveats:
+  - >-
+    Age and calendar components may be alternative or complementary representations; no
+    precedence or consistency rule is established.
+  - >-
+    Do not construct an exact date from partial components or substitute the associated exam
+    date.
+topics: [topic.procedure, topic.temporal]
+cites:
+  - internal-v2.patient-history-context#hormone-history-timing
+objects: [internal-v2.hormone_history_entry]

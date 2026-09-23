@@ -1,0 +1,5 @@
+kind: profile_support
+evidence_status: supported
+subject: clinical.exam-finding
+evidence_cites:
+  - open-v2.multimodal-finding-context#synthetic-contralateral-finding

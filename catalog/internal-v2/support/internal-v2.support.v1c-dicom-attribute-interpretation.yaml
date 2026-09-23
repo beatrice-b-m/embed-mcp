@@ -1,0 +1,24 @@
+kind: profile_support
+representation_status: unresolved
+representation_summary: >-
+  Inventoried internal V1c columns parsed directly from DICOM retain standard element semantics
+  and received no processing beyond anonymization; many acquisition, dose, detector, collimator,
+  geometry, windowing, icon-image, order-number, and time-of-day attributes remain physically
+  inventoried without dedicated catalogue concepts.
+representation_caveats:
+  - >-
+    An unmapped parsed DICOM column is not semantically unknowable: it can be mapped using the
+    standard element meaning when a dedicated catalogue concept is needed.
+  - >-
+    Pipeline-derived fields require separate evidence, and anonymization of DICOM time-of-day
+    attributes remains unknown.
+search_terms:
+  - unmapped DICOM attributes
+  - acquisition parameters
+  - DICOM time of day
+  - uninterpreted image columns
+subject: internal-v2.v1c-metadata-context
+topics: [topic.imaging, topic.technical]
+representation_cites:
+  - internal-v2.v1c-metadata-context#parsed-dicom-element-semantics
+  - internal-v2.v1c-metadata-context#dicom-demographic-anonymization

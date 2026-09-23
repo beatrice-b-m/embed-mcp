@@ -1,0 +1,17 @@
+kind: vocabulary
+label: Estrogen-receptor result categories
+completeness: unknown
+parsing: atomic
+evidence: [release_legend, observed_source_values]
+caveats:
+  - The comparison dictionaries do not state that this code list is exhaustive.
+  - Null semantics are occurrence specific and must not be inferred from code membership.
+codes:
+  +: Positive - immunoreactive tumor cells present
+  L: Less than 1% immunoreactive cells present
+  "-": Negative - no immunoreactive tumor cells present
+  U: Result unknown
+  N: Not performed
+  A: Performed on another specimen
+  P: Pending
+  R: No residual invasive carcinoma after presurgical therapy

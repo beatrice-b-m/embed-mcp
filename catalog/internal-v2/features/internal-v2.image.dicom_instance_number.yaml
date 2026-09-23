@@ -1,0 +1,11 @@
+kind: feature
+label: Source DICOM instance number
+definition: Technical instance number carried on an internal V1c image row.
+value_type: technical
+evidence: [observed_source_values]
+search_terms: [instance number, DICOM instance]
+caveats:
+  - Series and instance numbers together do not distinguish one image row within an accession.
+topics: [topic.imaging, topic.technical]
+cites:
+  - internal-v2.v1c-metadata-context#image-instance-identity

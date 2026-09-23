@@ -1,0 +1,23 @@
+kind: feature
+label: Pathology diagnosis code slot
+definition: Procedure-associated slot containing one of up to ten pathology descriptor codes.
+value_type: coded
+evidence: [release_schema, release_legend, observed_source_values, maintainer_confirmed]
+search_terms: [pathology diagnosis code slot, pathology finding]
+caveats:
+  - >-
+    Codes are generally ordered from more severe to less severe by pathology-severity group, but
+    within-group order, slot position, and the number of populated slots are not informative for
+    decision-making.
+  - >-
+    Duplicate codes are not intended but may occur and must be treated as equivalent to one
+    occurrence of that code.
+  - >-
+    In the classic MagView representation, each distinct procedure produces its own
+    procedure/pathology values even when the associated finding is otherwise duplicated.
+  - >-
+    All observed codes are valid source-system values; codes absent from the released legend
+    have unknown mappings pending internal investigation.
+topics: [topic.pathology]
+objects: [pathology_observation]
+temporal: [time.pathology-report-documentation, time.downstream-availability]

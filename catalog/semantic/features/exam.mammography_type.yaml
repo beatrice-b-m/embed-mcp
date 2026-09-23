@@ -1,0 +1,8 @@
+kind: feature
+label: Mammography exam type
+definition: Exam type derived from the exam description.
+value_type: coded
+evidence: [release_schema, release_legend]
+search_terms: [mammography exam type]
+topics: [topic.exam, topic.mammography]
+objects: [imaging_exam]

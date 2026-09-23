@@ -1,0 +1,24 @@
+kind: join
+join_type: hierarchy
+source_completeness: required
+cardinality:
+  targets_per_source: zero_or_one
+  sources_per_target: zero_or_more
+evidence: [release_schema, inference, unresolved]
+hazards:
+  - >-
+    Pathology timing may follow the imaging exam and must not be treated as contemporaneous by
+    default.
+  - >-
+    Do not equate pathology acc_anon to the index accession as a longitudinal-search shortcut;
+    traverse from the candidate exam to the patient, then compare against qualifying index exams
+    for that patient.
+  - This pathology-to-exam edge alone does not implement clinical.patient-pathology-observation.
+caveats:
+  - The expected accession hierarchy is not an enforced foreign-key claim.
+  - >-
+    The pathology row's acc_anon identifies its own associated candidate exam, not necessarily
+    an analysis's index exam.
+relationships: [clinical.exam-pathology-observation]
+source_columns: [open-v2.pathology_findings_anon#acc_anon]
+target_columns: [open-v2.exam_level_anon#acc_anon]

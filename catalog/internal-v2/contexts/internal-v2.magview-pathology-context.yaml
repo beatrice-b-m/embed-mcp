@@ -1,0 +1,153 @@
+kind: context
+label: Internal V2 MagView procedure, pathology, and specimen representation
+context_type: data_representation
+definition: >-
+  Procedure-associated descriptor slots, a descriptor-derived row-level pathology severity,
+  specimen characteristics, staging, biomarkers, margins, and nodal observations share the wide
+  finding-oriented table.
+search_terms:
+  - internal V2 pathology severity
+  - pathology specimen
+  - finding procedure pathology
+  - TNM conflict
+  - minimum severity
+caveats:
+  - >-
+    Physical co-location does not establish a unique specimen, procedure, diagnosis, or
+    contemporaneous availability.
+  - The profile records representation and uncertainty rather than an outcome-labeling workflow.
+topics: [topic.imaging, topic.procedure, topic.pathology, topic.temporal, topic.workflow]
+about:
+  - pathology.severity
+  - pathology.diagnosis_code_slot
+  - internal-v2.pathology.specimen_number
+  - internal-v2.pathology.histologic_grade
+  - internal-v2.pathology.tnm_regional_nodes
+  - internal-v2.magview_all_cohorts_pacs_v2_anon
+  - internal-v2.join.finding-procedure
+  - internal-v2.join.finding-pathology
+  - internal-v2.join.procedure-specimen
+  - internal-v2.join.specimen-observation
+  - internal-v2.join.specimen-diagnosis
+claims:
+  procedure-pathology-attachment:
+    statement: >-
+      Procedure-level information is a reliable internal V2 surface: within a patient, each
+      complete procedure-date, procedure-type, and biopsy-side tuple identifies one unique
+      procedure, and repeated finding rows can attach several such procedures to one finding.
+    status: verified
+    caveats:
+      - Finding side and biopsy side can differ and retain distinct roles.
+      - >-
+        The tuple is release scoped, incomplete when any component is absent, and not a durable
+        cross-release procedure identifier.
+      - No universal one-to-one pathology attachment is established.
+    sources:
+      - internal-v2.magview-maintainer-clarifications
+      - internal-v2.magview-pathology-observation
+      - hitilab.embed.overview.pathology-attribution
+      - hitilab.embed.structure.public-representation
+  specimen-surface:
+    statement: >-
+      Internal MagView contains columns labeled as specimen, staging, biomarker, margin, and
+      nodal information, but available evidence does not establish that specimen-level
+      representation is present reliably or completely enough for specimen-level operations.
+    status: unresolved
+    caveats:
+      - >-
+        Do not rely on the specimen number or specimen-associated fields as a complete specimen
+        representation.
+      - >-
+        No complete durable specimen identity, specimen cardinality, or specimen-collection
+        timestamp is established.
+    sources:
+      - internal-v2.magview-maintainer-clarifications
+      - internal-v2.magview-footer-schema
+      - internal-v2.v1-open-dictionary-comparison
+      - internal-v2.v2-open-legend-comparison
+      - internal-v2.magview-pathology-observation
+  path-severity-derived-occurrence:
+    statement: >-
+      Internal path_severity is produced by the EMBED extraction through a fixed mapping from
+      the path1 through path10 descriptor slots to pathology-type groups, selecting the most
+      severe mapped pathology group linked to the finding and projecting that inverse-severity
+      value onto the finding/procedure association row.
+    status: verified
+    caveats:
+      - >-
+        The occurrence is not a supplied reduction across every procedure row linked to a
+        finding.
+      - >-
+        A null severity alongside any populated path1 through path10 descriptor is a
+        data-quality error rather than a supported attachment state.
+    sources:
+      - internal-v2.magview-maintainer-confirmation
+      - internal-v2.public-embed-overview
+      - internal-v2.magview-pathology-observation
+  path-severity-six:
+    statement: >-
+      Internal pathology severity value 6 is invalid, has no expected clinical meaning, and is
+      not a historical internal category; the governed internal scale is the canonical
+      0-through-5 vocabulary.
+    status: verified
+    caveats:
+      - >-
+        Exclude or explicitly flag code 6 as invalid data rather than ordering or grouping it
+        clinically.
+      - Null remains the separate unattached-pathology state.
+    sources:
+      - internal-v2.magview-maintainer-clarifications
+      - internal-v2.v2-open-legend-comparison
+      - internal-v2.public-embed-overview
+      - internal-v2.magview-pathology-observation
+  path-severity-five-six-disagreement:
+    statement: >-
+      Historical public documentation assigns classic severity code 5 to negative or normal
+      tissue and code 6 to non-breast cancer, while internal maintainer knowledge and descriptor
+      associations establish code 5 as non-breast cancer and code 6 as invalid with no expected
+      meaning.
+    status: reconciled
+    caveats:
+      - Code 5 is the supported non-breast-cancer category.
+      - Code 6 must not be normalized into any clinical severity category.
+    sources:
+      - internal-v2.magview-maintainer-clarifications
+      - internal-v2.public-embed-overview
+      - internal-v2.open-v2-profile-comparison
+      - internal-v2.v1-open-dictionary-comparison
+      - internal-v2.v2-open-legend-comparison
+      - internal-v2.magview-pathology-observation
+  no-curated-severity-aggregates:
+    statement: >-
+      The internal MagView table supplies finding-associated path_severity but no side-, exam-,
+      or patient-level pathology-severity aggregate columns.
+    status: verified
+    caveats:
+      - Open V2 aggregate bindings must not be copied into this profile.
+    sources:
+      - internal-v2.magview-maintainer-confirmation
+      - internal-v2.magview-footer-schema
+  analyst-defined-severity-reduction:
+    statement: >-
+      A downstream exam- or patient-level most-severe reduction is analyst defined: it must
+      declare grouping and attribution and select the minimum represented severity because lower
+      scores are more severe.
+    status: verified
+    caveats:
+      - This is not a supplied internal feature, executable workflow, or universal default.
+      - >-
+        Null severity with any populated descriptor and code 6 are data-quality errors rather
+        than values to order silently.
+    sources:
+      - internal-v2.magview-maintainer-confirmation
+  tnmpn-dictionary-conflict:
+    statement: >-
+      Both comparison dictionaries label tnmpn as regional-node TNM but attach the primary-tumor
+      code list, while internal tnmpn uses distinct pN-like source tokens.
+    status: contradicted
+    caveats:
+      - The physical occurrence remains mapped as unresolved; no pN code meanings are guessed.
+    sources:
+      - internal-v2.v1-open-dictionary-comparison
+      - internal-v2.v2-open-legend-comparison
+      - internal-v2.magview-coded-value-observation

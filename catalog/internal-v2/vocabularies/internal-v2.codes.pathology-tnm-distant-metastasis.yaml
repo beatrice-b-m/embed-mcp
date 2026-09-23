@@ -1,0 +1,12 @@
+kind: vocabulary
+label: TNM distant-metastasis categories
+completeness: unknown
+parsing: atomic
+evidence: [release_legend, observed_source_values]
+caveats:
+  - The comparison dictionaries do not state that this code list is exhaustive.
+  - Null semantics are occurrence specific and must not be inferred from code membership.
+codes:
+  CMO: no clinical or radiographic evidence of distant metastasis
+  NA: not applicable
+  PM1: distant detectable metastasis as determined by classic clinical and radiographic means

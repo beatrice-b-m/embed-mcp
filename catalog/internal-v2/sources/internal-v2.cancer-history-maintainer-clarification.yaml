@@ -1,0 +1,12 @@
+kind: source
+label: CancerHist subject and relationship clarification
+source_type: maintainer_confirmed
+locator_type: logical_artifact
+locator: maintainer-confirmed:cancer-history-subject
+version_scope: Internal CancerHist representation in the internal-v2 working profile.
+notes:
+  - "patient is a self-versus-relative flag: 1 denotes the patient and 0 denotes a relative."
+  - >-
+    rel is a relationship category rather than a unique relative identifier and is populated
+    only for patient=0; a relative entry can still have blank rel.
+  - No BRCA1 or BRCA2 code mappings have been found.

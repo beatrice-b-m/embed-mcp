@@ -1,0 +1,12 @@
+kind: vocabulary
+label: Breast tissue-density codes
+completeness: unknown
+null_meaning: [undocumented]
+parsing: atomic
+evidence: [release_legend]
+codes:
+  "1": The breasts are almost entirely fat
+  "2": Scattered fibroglandular densities
+  "3": Heterogeneously dense
+  "4": Extremely dense
+  "5": Normal male

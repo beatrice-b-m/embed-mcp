@@ -1,0 +1,16 @@
+kind: source
+label: Internal V1c image-metadata artifact inventory
+source_type: supporting_internal
+locator_type: logical_artifact
+locator: internal-v1c image-metadata delimited-text artifact
+version_scope: >-
+  Internal EMBED V1c image-metadata artifact paired with the internal clinical V2 profile; exact
+  column names and column order taken from the artifact header.
+notes:
+  - >-
+    The artifact is delimited text and carries no embedded column schema, so it declares neither
+    physical types nor nullability.
+  - Recorded physical types are assessed parse types, not an embedded source schema.
+  - >-
+    The artifact is the current image-metadata companion for internal clinical V2 and is itself
+    internal V1c.

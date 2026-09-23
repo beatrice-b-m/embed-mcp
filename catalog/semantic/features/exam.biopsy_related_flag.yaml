@@ -1,0 +1,11 @@
+kind: feature
+label: Biopsy-related exam flag
+definition: >-
+  Flag identifying an exam related to a biopsy procedure, derived from the exam description.
+value_type: flag
+evidence: [release_schema, release_legend]
+search_terms: [biopsy-related exam flag]
+caveats:
+  - Null is not documented as meaning No, and biopsy timing is unresolved.
+topics: [topic.exam, topic.pathology, topic.workflow]
+objects: [imaging_exam]

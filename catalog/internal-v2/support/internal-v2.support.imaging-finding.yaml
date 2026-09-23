@@ -1,0 +1,17 @@
+kind: profile_support
+evidence_status: supported
+evidence_summary: >-
+  The table represents imaging findings through accession-plus-finding-number identity that can
+  occupy multiple physical rows; side is an attribute rather than an identity component.
+evidence_caveats:
+  - >-
+    The identity is not persistent across accessions and does not uniquely identify a physical
+    row.
+  - >-
+    Conflicting repeated side values are data-quality errors rather than distinct finding
+    identities.
+subject: imaging_finding
+evidence_cites:
+  - internal-v2.magview-representation-context#wide-association-grain
+  - internal-v2.magview-representation-context#finding-identity-scope
+  - internal-v2.magview-representation-context#finding-procedure-repetition

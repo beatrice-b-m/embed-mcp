@@ -1,0 +1,25 @@
+kind: source
+label: Internal V2 patient-history maintainer confirmation
+source_type: maintainer_confirmed
+locator_type: logical_artifact
+locator: maintainer-confirmed:internal-v2-patient-history
+version_scope: >-
+  Internal V2 HormoneHist and ProcHist clinical meaning, controlled code meanings, patient and
+  recording-accession context, and interpretation boundaries.
+notes:
+  - >-
+    Confirms the listed HormoneHist exposure-category, hormone, therapy, and contraceptive code
+    meanings and the listed ProcHist procedure-category, procedure, result, and laterality code
+    meanings.
+  - >-
+    Confirms that empi_anon uses the established longitudinal patient namespace and that a valid
+    acc_anon uses the established imaging-accession namespace as the history record's context,
+    not as the accession or time when the historical exposure or procedure occurred.
+  - >-
+    Confirms that these are reported or previously documented history records rather than
+    current-exam procedures, verified procedure-associated pathology, or finding-level
+    attribution.
+  - >-
+    Does not establish exhaustive represented vocabularies, physical schemas, row identity, a
+    deduplication rule, the duration unit, timing-field precedence, result provenance, or
+    acc_anon sentinel behavior.

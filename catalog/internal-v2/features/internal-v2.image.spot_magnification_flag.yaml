@@ -1,0 +1,16 @@
+kind: feature
+label: Derived spot or magnification indicator
+definition: >-
+  Pipeline-derived indicator marking an internal V1c image row as a spot-compression or
+  magnification acquisition.
+value_type: flag
+evidence: [observed_source_values, inference]
+search_terms: [spot compression, magnification, spot mag flag]
+caveats:
+  - >-
+    Only the affirmative state is represented, and the affirmative state does not occur on
+    tomosynthesis-classified rows.
+  - A missing value is not a negative determination.
+  - The flag does not distinguish spot compression from magnification.
+topics: [topic.imaging, topic.mammography]
+objects: [image]

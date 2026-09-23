@@ -1,0 +1,20 @@
+kind: relationship
+label: Exam includes breast side
+relationship_type: hierarchy
+definition: Laterality-specific component of a breast-imaging exam.
+cardinality:
+  targets_per_source: one_or_more
+  sources_per_target: exactly_one
+optionality:
+  source: required
+  target: required
+attribution_limitations:
+  - Unilateral and bilateral exams create different numbers of represented sides.
+temporal_qualification: The side is part of the same exam event.
+search_terms: [exam breast sides, left right exam]
+caveats:
+  - Finding laterality and procedure laterality have different null semantics.
+source_object: imaging_exam
+target_object: breast_side
+topics: [topic.exam, topic.breast_side]
+temporal: [time.exam-event]

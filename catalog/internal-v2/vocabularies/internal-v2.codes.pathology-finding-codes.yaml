@@ -1,0 +1,237 @@
+kind: vocabulary
+label: Pathology finding codes
+completeness: unknown
+null_meaning: [undocumented, occurrence_specific]
+parsing: shared_slot_dictionary
+legend_role: comparison_legend
+evidence: [maintainer_confirmed, observed_source_values, release_legend, unresolved]
+caveats:
+  - >-
+    All observed source-system codes are preserved as represented, but codes absent from the
+    release legend retain unknown mappings pending internal investigation.
+  - >-
+    The shared dictionary applies to procedure-associated path1 through path10 slots; slot
+    position and duplicate occurrences are not decision-making signals.
+  - >-
+    Unresolved internal source codes are preserved without inferred normalization or clinical
+    meaning.
+codes:
+  AB: Abscess
+  AD: Adenosis
+  ADC: Adenoid cystic carcinoma
+  ADE: Adenocarcinoma
+  ADH: Atypical ductal hyperplasia
+  ADM: Adenoma
+  AL: Adenolipoma
+  ALH: Atypical lobular hyperplasia
+  AM: Apocrine metaplasia
+  AME: Adenomyoepithelloma
+  AMY: Amyloid (tumor)
+  AN: Normal axillary node
+  ANA: Angiolipoma
+  ANC: Axillary node with calcifications
+  ANG: Angiomatosis
+  ANH: Axillary node hyperplasia
+  ANL: Axillary node with lymphoma
+  ANM: Axillary nodal metastases
+  AP: Apocrine carcinoma
+  APA: Atypical papilloma
+  APC: Apocrine cyst
+  APH: Atypical Lymphoid Hyperplasia
+  AS: Angiosarcoma
+  ASI: Asynchronous involution
+  B: Breast Cancer
+  BBP: Benign breast tissue
+  BC: Benign cyst
+  BCB: Benign cyst with blood
+  BCL: Benign calcifications
+  BCN: Basal cell carcinoma of the nipple
+  BEN: Benign
+  BP: Breast parenchyma
+  BVI: Blood vessel (vascular) Invasion
+  BXC: Biopsy site changes
+  CC: Colloid (mucinous) carcinoma
+  CCC: Columnar cell change
+  CCH: Carcinoma in children
+  CDS: Chondrosarcoma
+  CEB: Carcinoma in ectopic breast
+  CED: Carcinoma with endocrine differentiation
+  CH: Chondroma
+  CI: Comedocarcinoma (intraductal)
+  CL: Calcified lymph node
+  CM: Carcinoma in males
+  CMT: Carcinoma with metaplasia
+  COT: Cartilaginous and osseous change
+  CP: Intracystic papilloma
+  CPL: Carcinoma in pregnancy and lactation
+  CS: Carcinosarcoma
+  CSL: Complex sclerosing lesion
+  DA: Ductal adenoma
+  DC: DCIS
+  DCC: DCIS with comedonecrosis
+  DCH: DCIS, high grade
+  DCL: DCIS, low grade
+  DE: Ductal ectasia
+  DF: Diabetic fibrous mastopathy
+  DHU: Ductal hyperplasia, Usual
+  DMP: DCIS micro-papillary
+  DS: Ductal carcinoma in-situ (DCIS)
+  EAD: Extra abdominal desmoid
+  EBT: Ectopic (accessory) breast tissue
+  EC: Epidermal inclusion cyst
+  ED: Edema
+  FA: Fibroadenoma
+  FAC: Fibroademotoid change
+  FAH: Fibroadenomatoid hyperplasia
+  FAL: Fibroadenolipoma/hamartoma
+  FB: Foreign body (reaction)
+  FBS: Fibrosis
+  FC: Fibrocystic
+  FEA: Flat epithelial atypia
+  FEL: Fibroepithelial lesion
+  FF: Focal fibrosis
+  FM: Fibromatosis
+  FN: Fat necrosis
+  FS: Fibrosarcoma
+  GA: Galactocele
+  GC: Granular cell tumor
+  GCR: Giant cell reaction
+  GF: Giant fibroadenoma
+  GM: Granulomatous Mastitis
+  GRC: Glycogen-rich carcinoma
+  GYN: Gynecomastia
+  HA: Hamartoma
+  HAP: Hemanglopericytoma
+  HE: Hematoma
+  HEM: Hemorrhage
+  HES: Hemangioma - nonparenchymal, subcutaneous
+  HEV: Hemangioma - venous
+  HL: Hodgkin's Lymphoma
+  HM: Hemangioma
+  HY: Hyperplasia, usual
+  I: Invasive mammary carcinoma
+  IC: Intracystic carcinoma
+  ICC: Invasive cribriform carcinoma
+  ICP: Intracystic papillary carcinoma
+  ID: Invasive ductal carcinoma
+  IDC: Invasive ductal adenocarcinoma
+  IF: Inflammation
+  II: Invasive and in-situ carcinoma
+  IL: Invasive lobular carcinoma
+  IMC: Invasive Mucinous Carcinoma
+  IMN: Intramammary lymph node
+  IN: Infarct
+  INC: Inflammatory carcinoma
+  IPC: Invasive papillary carcinoma
+  JF: Juvenile fibroadenoma
+  JP: Juvenile papillomatosis
+  LA: Lactating adenoma
+  LB: Lipoma of the breast
+  LC: Lactational change
+  LH: Lobular hyperplasia
+  LI: Leukemic infiltration
+  LM: Leiomyoma
+  LMS: Leiomyosarcoma
+  LN: Lymph node
+  LP: Large duct papilloma
+  LPS: Liposarcoma
+  LRC: lipid-rich (lipid-secreting) carcinoma
+  LS: Lobular carcinoma in-situ (LCIS)
+  LVI: Lymphatic vessel invasion
+  LY: Lymphoma
+  MAS: Mastitis
+  MB: Metastatic cancer to the breast
+  MBC: Metastatic cancer to the breast from the colon
+  MBL: Metastatic cancer to the breast from the lung
+  MBM: Metastatic melanoma to the breast
+  MBO: Metastatic cancer to the breast from the ovary
+  MBS: Metastatic sarcoma to the breast
+  MC: Medullary carcinoma
+  MD: Mondor's disease (thrombophlebitis)
+  MDC: Multifocal intraductal carcinoma
+  MDN: Metastatic disease to axillary node
+  MFB: Myofibroblastoma
+  MFH: Malignant fibrous histiocytoma
+  MGA: Microglandular adenosls
+  MH: Malingnant fibrous hystiocytoma
+  MIC: Multifocal invaslve ductal carcinoma
+  MIM: Metastasis to an intramammary lymph node
+  MIP: Multiple intraductal papillomas
+  MMN: Malignant melanoma of the nipple
+  MP: Microscopic Papilloma
+  NA: No abnormality
+  NBT: Normal breast tissue
+  ND: Non-diagnostic
+  NFA: Neurofibroma
+  NFS: Neurofibromatosis
+  NHL: Non-Hodgkin lymphoma
+  NMS: Neoplasm of the mammary skin
+  NOS: Not otherwise specified
+  NPA: Nipple adenoma
+  OC: Oil cyst (fat necrosis cyst)
+  OS: Osteogenic sarcoma
+  PA: Papilloma
+  PC: Papillary carcinoma in-situ
+  PD: Paget's disease (of the nipple)
+  PDP: Peripheral duct papillomas
+  PL: Pleomorphic adenoma
+  PLS: Plasmacytoma
+  PRM: Post reduction mammoplasty
+  PSH: Pseudoangiomatous stromal hyperplasia
+  PT: Phylloides tumor
+  PTM: Phylloides tumor - malignant
+  RM: Recurrent malignancy
+  RS: Radial scar
+  SA: Sclerosing adenosis
+  SBT: Sclerotic breast tissue
+  SC: Signet cell carcinoma
+  SCL: Sclerosis
+  SCN: Squamous cell carcinoma of the nipple
+  SCT: Spindle cell tumor
+  SE: Seroma
+  SF: Stromal fibrosis
+  SG: Silicone granuloma
+  SJC: Secretory (juvenile) carcinoma
+  SQ: Squamous carcinoma
+  ST: Scar tissue
+  TA: Tubular adenoma
+  TC: Tubular carcinoma
+  TR: Treatment effect
+  VGH: Virginal hyperplasia
+  AA: Unresolved internal source code
+  AC: Unresolved internal source code
+  ACG: Unresolved internal source code
+  ADN: Unresolved internal source code
+  ADT: Unresolved internal source code
+  AG: Unresolved internal source code
+  AIE: Unresolved internal source code
+  ASL: Unresolved internal source code
+  CCA: Unresolved internal source code
+  CYC: Unresolved internal source code
+  ESC: Unresolved internal source code
+  FAT: Unresolved internal source code
+  FL: Unresolved internal source code
+  FMC: Unresolved internal source code
+  HF: Unresolved internal source code
+  HFS: Unresolved internal source code
+  IFC: Unresolved internal source code
+  IMP: Unresolved internal source code
+  IVC: Unresolved internal source code
+  LNR: Unresolved internal source code
+  LPI: Unresolved internal source code
+  MCA: Unresolved internal source code
+  MCI: Unresolved internal source code
+  MCS: Unresolved internal source code
+  MEL: Unresolved internal source code
+  MF: Unresolved internal source code
+  MLL: Unresolved internal source code
+  PAC: Unresolved internal source code
+  PAL: Unresolved internal source code
+  PAP: Unresolved internal source code
+  PEH: Unresolved internal source code
+  PN: Unresolved internal source code
+  PS: Unresolved internal source code
+  RLH: Unresolved internal source code
+  RR: Unresolved internal source code
+  RSL: Unresolved internal source code
+  SMN: Unresolved internal source code

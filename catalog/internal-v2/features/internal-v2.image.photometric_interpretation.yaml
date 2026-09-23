@@ -1,0 +1,19 @@
+kind: feature
+label: Source photometric interpretation
+definition: >-
+  Represented source DICOM photometric interpretation governing the displayed polarity of one
+  internal V1c image row's pixel data.
+value_type: coded
+evidence: [observed_source_values]
+search_terms: [photometric interpretation, monochrome, pixel polarity]
+caveats:
+  - >-
+    Both represented monochrome values occur, so display polarity must be resolved per image
+    rather than assumed.
+  - >-
+    The polarity implied by each value is not asserted here and must be resolved against the
+    DICOM standard before rendering.
+topics: [topic.imaging, topic.technical]
+cites:
+  - internal-v2.v1c-metadata-context#parsed-dicom-element-semantics
+objects: [image]

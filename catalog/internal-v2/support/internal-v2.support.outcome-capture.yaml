@@ -1,0 +1,14 @@
+kind: profile_support
+representation_status: unresolved
+representation_summary: >-
+  The available internal profile evidence does not establish complete outcome capture,
+  outside-system diagnosis capture, or longitudinal follow-up.
+representation_caveats:
+  - >-
+    Absence of represented pathology is not proof of disease absence or adequate negative
+    follow-up.
+search_terms: [internal outcome capture, follow-up completeness]
+subject: internal-v2.magview-pathology-context
+topics: [topic.pathology, topic.temporal, topic.workflow]
+representation_cites:
+  - embed.finding-procedure-recording#screening-attribution-gap

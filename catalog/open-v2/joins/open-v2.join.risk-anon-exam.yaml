@@ -1,0 +1,19 @@
+kind: join
+join_type: hierarchy
+source_completeness: required
+cardinality:
+  targets_per_source: zero_or_one
+  sources_per_target: zero_or_one
+evidence: [release_schema, observed_source_values, inference, unresolved]
+hazards:
+  - Do not assume every exam has a risk row.
+  - >-
+    Clinical-time calculation does not establish the exact calculation timestamp within the
+    study episode.
+caveats:
+  - >-
+    Accession uniqueness supports an optional one-to-one expectation, but referential coverage
+    is unresolved.
+relationships: [clinical.exam-risk-assessment]
+source_columns: [open-v2.risk_anon#acc_anon]
+target_columns: [open-v2.exam_level_anon#acc_anon]

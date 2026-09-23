@@ -1,0 +1,19 @@
+kind: relationship
+label: Patient has radiology report
+relationship_type: association
+definition: Patient reference carried by the report representation.
+cardinality:
+  targets_per_source: zero_or_more
+  sources_per_target: zero_or_one
+optionality:
+  source: optional
+  target: optional
+attribution_limitations:
+  - The patient-report tuple is not a proven unique clinical key.
+temporal_qualification: Reports occur within the patient's represented imaging timeline.
+search_terms: [patient reports, patient radiology text]
+caveats:
+  - Report content is not exposed by this context service.
+source_object: patient
+target_object: radiology_report
+topics: [topic.identity, topic.report]

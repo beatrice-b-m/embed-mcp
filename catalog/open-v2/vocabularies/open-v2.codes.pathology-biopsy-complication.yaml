@@ -1,0 +1,13 @@
+kind: vocabulary
+label: Biopsy-complication codes
+completeness: unknown
+null_meaning: [undocumented]
+parsing: atomic
+evidence: [release_legend]
+codes:
+  H: Hematoma requiring surgery
+  I: Infection requiring antibiotics
+  L: Lymphoedema
+  N: Numbness
+  P: Pain
+  X: Pneumothorax

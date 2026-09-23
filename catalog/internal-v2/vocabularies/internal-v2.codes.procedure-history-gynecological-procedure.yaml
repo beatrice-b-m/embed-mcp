@@ -1,0 +1,13 @@
+kind: vocabulary
+label: Reported gynecological-procedure history codes
+completeness: unknown
+parsing: atomic
+evidence: [maintainer_confirmed, observed_source_values]
+caveats:
+  - These meanings apply only when procedure category is G.
+  - One-ovary and ovaries-removed codes retain their different reported detail.
+codes:
+  HYST: Hysterectomy
+  H: Partial hysterectomy
+  O: One ovary removed
+  OS: Ovaries removed

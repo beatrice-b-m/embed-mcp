@@ -1,0 +1,20 @@
+kind: profile_support
+evidence_status: unsupported
+evidence_summary: No universal downstream information-availability timestamp is bound.
+evidence_caveats:
+  - Wide-row co-location is not evidence of availability at imaging time.
+representation_status: unsupported
+representation_summary: >-
+  The assessed internal V2 MagView table contains no supported universal timestamp for
+  downstream information availability.
+representation_caveats:
+  - Physical co-location must not be treated as contemporaneous availability.
+search_terms: [internal V2 downstream availability time]
+subject: time.downstream-availability
+topics: [topic.temporal, topic.workflow]
+evidence_cites:
+  - internal-v2.magview-temporal-context#unsupported-time-bindings
+  - internal-v2.magview-temporal-context#wide-colocation-not-availability
+representation_cites:
+  - internal-v2.magview-temporal-context#unsupported-time-bindings
+  - internal-v2.magview-temporal-context#wide-colocation-not-availability

@@ -1,0 +1,80 @@
+kind: table
+label: reports_anon
+grain: report
+caveats:
+  - No tested natural key uniquely identifies all report rows.
+  - Report content was not read during the registered investigation.
+keys:
+  accession_sequence:
+    key_type: natural
+    uniqueness: not_unique
+    completeness: complete
+    evidence: [release_schema, observed_source_values]
+    caveats:
+      - Accession plus report sequence does not uniquely identify every report row.
+      - >-
+        Minimum rseq is the earliest represented report version and maximum rseq is the latest;
+        the specific origin of zero is unknown.
+    columns: [acc_anon, rseq]
+  full_clinical_tuple:
+    key_type: natural
+    uniqueness: not_unique
+    completeness: complete
+    evidence: [release_schema, observed_source_values]
+    caveats:
+      - Adding patient and anonymized study date still does not yield a unique clinical key.
+    columns: [empi_anon, acc_anon, studydate_anon, rseq]
+  export_index:
+    key_type: technical
+    uniqueness: unique
+    completeness: complete
+    evidence: [release_schema, observed_source_values]
+    caveats:
+      - >-
+        This pandas serialization index is not current row position or a documented durable
+        report identifier.
+    columns: [__index_level_0__]
+objects:
+  radiology_report:
+    authority: preferred
+    derivation: source
+    caveats:
+      - No tested natural tuple is unique for every row.
+    object: radiology_report
+    cites:
+      - open-v2.report-context#separate-report-surface
+    columns: [acc_anon, rseq, report_anon]
+columns:
+  empi_anon:
+    type: int64
+    nullable: true
+    maps:
+      - {id: identity.patient_identifier, mapping: direct}
+  acc_anon:
+    type: int64
+    nullable: true
+    maps:
+      - {id: exam.accession_identifier, mapping: direct}
+  studydate_anon:
+    type: timestamp[ns]
+    nullable: true
+    maps:
+      - {id: exam.study_date, mapping: direct}
+  rseq:
+    type: int8
+    nullable: true
+    maps:
+      - {id: report.sequence, mapping: direct}
+  report_anon:
+    type: string
+    nullable: true
+    maps:
+      - {id: report.text, mapping: direct}
+  __index_level_0__:
+    type: int64
+    nullable: true
+    maps:
+      - id: technical.pandas_index
+        mapping: direct
+        notes:
+          - Technical export provenance only; not a clinical identifier.

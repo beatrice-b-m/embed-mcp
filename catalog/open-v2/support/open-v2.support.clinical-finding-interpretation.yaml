@@ -1,0 +1,5 @@
+kind: profile_support
+evidence_status: supported
+subject: clinical.finding-interpretation
+evidence_cites:
+  - open-v2.assessment-recommendation-context#separate-fields

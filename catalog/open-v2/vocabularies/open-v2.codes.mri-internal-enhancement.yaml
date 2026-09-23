@@ -1,0 +1,13 @@
+kind: vocabulary
+label: MRI internal-enhancement codes
+completeness: unknown
+null_meaning: [undocumented]
+parsing: atomic
+evidence: [release_legend]
+codes:
+  C: central enhancement
+  D: Non-enhancing internal septations
+  E: enhancing internal septations
+  M: homogeneous enhancement
+  R: rim enhancement
+  T: heterogeneous enhancement

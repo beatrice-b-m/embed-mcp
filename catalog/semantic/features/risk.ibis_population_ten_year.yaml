@@ -1,0 +1,12 @@
+kind: feature
+label: IBIS population ten-year-like output
+definition: Clinical-time MagView risk output named IBISPOP10.
+value_type: model_output
+evidence: [release_schema, observed_source_values, maintainer_confirmed, unresolved]
+search_terms: [ibis population ten-year-like output, risk model]
+caveats:
+  - >-
+    The exact population-relative meaning, model version, percentage-point formatting, and
+    exceptional-value semantics require internal investigation.
+topics: [topic.risk]
+objects: [risk_assessment]

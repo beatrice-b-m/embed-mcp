@@ -1,0 +1,22 @@
+kind: profile_support
+representation_status: unresolved
+representation_summary: >-
+  The inventoried specimen, TNM, stage, concordance, biomarker, margin, and nodal columns are
+  not commonly used and have not been validated as a reliable specimen or staging surface.
+representation_caveats:
+  - >-
+    Do not rely on these columns for TNM staging or specimen-level operations without new
+    field-specific validation.
+  - >-
+    Unknown meanings remain unknown; the profile does not manufacture definitions for
+    infrequently used fields.
+search_terms:
+  - internal specimen reliability
+  - internal TNM staging
+  - internal biomarker reliability
+  - internal nodal fields
+subject: internal-v2.magview-pathology-context
+topics: [topic.pathology, topic.procedure, topic.workflow]
+representation_cites:
+  - internal-v2.magview-pathology-context#specimen-surface
+  - internal-v2.magview-pathology-context#tnmpn-dictionary-conflict

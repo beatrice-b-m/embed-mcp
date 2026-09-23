@@ -1,0 +1,19 @@
+kind: profile_support
+representation_status: supported
+representation_summary: >-
+  Internal V1c covers DICOM objects associated with the complete EMBEDv1 accession set after
+  excluding secondary captures and screen saves, except ROI_SS and ROI_SSC images retained
+  solely for ROI extraction.
+representation_caveats:
+  - >-
+    This supported coverage statement is scoped to EMBEDv1, not the later exams and patients
+    represented by internal clinical V2.
+  - >-
+    ROI_SS and ROI_SSC images are annotation-extraction artifacts and are not intended for other
+    uses.
+search_terms: [ultrasound images, MRI images, image modality coverage, V1c extraction coverage]
+subject: internal-v2.v1c-metadata-context
+topics: [topic.imaging, topic.exam]
+representation_cites:
+  - internal-v2.v1c-metadata-context#modality-surface
+  - internal-v2.v1c-metadata-context#current-v1c-coverage

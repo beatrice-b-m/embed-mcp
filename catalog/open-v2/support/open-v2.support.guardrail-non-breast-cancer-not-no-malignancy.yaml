@@ -1,0 +1,5 @@
+kind: profile_support
+evidence_status: supported
+subject: guardrail.non-breast-cancer-not-no-malignancy
+evidence_cites:
+  - open-v2.pathology-procedure-context#severity-meaning

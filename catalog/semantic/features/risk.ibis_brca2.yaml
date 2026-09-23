@@ -1,0 +1,12 @@
+kind: feature
+label: IBIS BRCA2 output
+definition: IBIS BRCA2 risk output calculated during clinical care and extracted from MagView.
+value_type: model_output
+evidence: [release_schema, observed_source_values, maintainer_confirmed, unresolved]
+search_terms: [ibis brca2 output, risk model]
+caveats:
+  - >-
+    The exact model version, percentage-point formatting, and meanings of exceptional values
+    such as 100 are not validated.
+topics: [topic.risk]
+objects: [risk_assessment]

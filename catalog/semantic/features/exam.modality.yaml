@@ -1,0 +1,8 @@
+kind: feature
+label: Imaging modality
+definition: Imaging modality for the exam.
+value_type: coded
+evidence: [release_schema, release_legend]
+search_terms: [imaging modality]
+topics: [topic.exam, topic.imaging]
+objects: [imaging_exam]

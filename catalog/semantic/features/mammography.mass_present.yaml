@@ -1,0 +1,10 @@
+kind: feature
+label: Mass presence
+definition: Indicator for the presence of a mammographic mass.
+value_type: flag
+evidence: [release_schema, release_legend, unresolved]
+search_terms: [mass presence]
+caveats:
+  - The legend describes presence but does not explicitly define the numeric flag encoding.
+topics: [topic.imaging, topic.mammography]
+objects: [imaging_finding]

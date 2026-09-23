@@ -1,0 +1,10 @@
+kind: feature
+label: Samples per pixel
+definition: Represented number of samples per pixel for an internal V1c image row.
+value_type: numeric
+evidence: [observed_source_values]
+search_terms: [samples per pixel, channels]
+topics: [topic.imaging, topic.technical]
+cites:
+  - internal-v2.v1c-metadata-context#parsed-dicom-element-semantics
+objects: [image]

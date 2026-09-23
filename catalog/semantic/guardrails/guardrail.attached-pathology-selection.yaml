@@ -1,0 +1,41 @@
+kind: guardrail
+label: Attached pathology conditions on represented tissue sampling
+category: interpretation_limit
+priority: high
+statement: >-
+  Restricting observations to attached pathology defines a tissue-sampled or pathology-observed
+  estimand rather than a neutral outcome-availability filter.
+rationale: >-
+  Tissue sampling occurs downstream of clinical selection and is not performed for every
+  patient, exam, side, or finding, so pathology-observed groups can differ systematically from
+  unsampled groups; such a cohort is not inherently invalid, but its generalizability and causal
+  interpretation require care.
+scope: embed_general
+search_terms:
+  - attached pathology selection
+  - tissue sampling selection
+  - procedure conditioned cohort
+  - ascertainment bias
+caveats:
+  - >-
+    The catalog identifies the selection mechanism but does not prescribe an inclusion,
+    exclusion, weighting, or causal-analysis policy.
+  - >-
+    Accurately name conclusions as applying to the represented tissue-sampled or
+    pathology-observed population.
+topics: [topic.imaging, topic.procedure, topic.pathology, topic.workflow]
+cites:
+  - clinical.screening-diagnostic-pathway#pathology-follows-sampling
+  - embed.finding-procedure-recording#multiple-procedures
+applies_to:
+  - patient
+  - imaging_exam
+  - imaging_finding
+  - procedure
+  - pathology_observation
+  - pathology_diagnosis
+  - pathology.severity
+  - clinical.interpretation-procedure
+  - clinical.finding-procedure
+  - clinical.procedure-pathology-observation
+  - time.procedure-event

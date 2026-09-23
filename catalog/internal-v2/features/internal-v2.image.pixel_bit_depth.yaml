@@ -1,0 +1,15 @@
+kind: feature
+label: Pixel bit-depth attribute
+definition: >-
+  Represented source DICOM bit-depth attribute of an internal V1c image row's pixel data.
+value_type: numeric
+evidence: [observed_source_values]
+search_terms: [bits allocated, bits stored, high bit, bit depth]
+caveats:
+  - >-
+    Three separate bit-depth attributes are occurrences of this concept and are distinguished by
+    an attribute qualifier.
+topics: [topic.imaging, topic.technical]
+cites:
+  - internal-v2.v1c-metadata-context#parsed-dicom-element-semantics
+objects: [image]

@@ -1,0 +1,29 @@
+kind: source
+label: Internal V2 ROI model maintainer confirmation
+source_type: maintainer_confirmed
+locator_type: logical_artifact
+locator: maintainer-confirmed:internal-v2-roi-model
+version_scope: >-
+  Internal EMBED V1c region-of-interest geometry, clinical provenance, frame-depth derivation,
+  collection invariants, and finding-attribution limitations within the internal-v2 working
+  profile.
+notes:
+  - >-
+    Confirms that every ROI originates on exactly one source image and cannot exist without that
+    source-image attachment.
+  - >-
+    Confirms y-minimum, x-minimum, y-maximum, x-maximum pixel-array coordinate order with
+    inclusive minimum and maximum bounds; direct target-image pixel-array coordinates; expected
+    in-bounds curation; and safe clipping of residual out-of-bounds coordinates.
+  - >-
+    Confirms radiologist-origin clinical provenance through multiple annotation sources and
+    workflows, including annotation DICOM objects without pixel arrays whose coordinates were
+    extracted directly and ROI_SS/ROI_SSC screen captures whose burned-in annotations were
+    extracted and transferred to original images.
+  - >-
+    Confirms DBT frame-index and inferred-depth semantics, tandem collection generation, and the
+    absence of stable ROI identity or cross-image correspondence.
+  - >-
+    Confirms that accession-and-side attribution is generally safe only when exactly one
+    clinical finding is represented on that side; multiple findings on one side cannot be
+    reliably distinguished from the represented ROIs.

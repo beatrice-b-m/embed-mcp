@@ -1,0 +1,304 @@
+kind: table
+label: risk_anon
+grain: risk_assessment
+caveats:
+  - >-
+    Risk-to-exam referential coverage remains unresolved; risk scores were calculated during
+    clinical care and extracted from MagView.
+keys:
+  accession_identifier:
+    key_type: natural
+    uniqueness: unique
+    completeness: complete
+    evidence: [release_schema, observed_source_values]
+    caveats:
+      - >-
+        Open-v2 has at most one represented risk row per accession, but no durable uniqueness
+        constraint is documented.
+    columns: [acc_anon]
+  patient_identifier:
+    key_type: natural
+    uniqueness: not_unique
+    completeness: complete
+    evidence: [release_schema, observed_source_values]
+    caveats:
+      - A patient may have risk rows for multiple accessions.
+    columns: [empi_anon]
+  export_index:
+    key_type: technical
+    uniqueness: unknown
+    completeness: complete
+    evidence: [release_schema]
+    caveats:
+      - >-
+        Parquet metadata identifies a pandas index; its uniqueness and stability were not
+        established for relationship use.
+    columns: [__index_level_0__]
+objects:
+  risk_assessment:
+    authority: preferred
+    derivation: source
+    caveats:
+      - Several risk-field definitions and sentinel meanings remain unresolved.
+    object: risk_assessment
+    cites:
+      - open-v2.risk-context#separate-risk-surface
+    columns: [empi_anon, acc_anon]
+columns:
+  empi_anon:
+    type: int64
+    nullable: true
+    maps:
+      - {id: identity.patient_identifier, mapping: direct}
+  acc_anon:
+    type: int64
+    nullable: true
+    maps:
+      - {id: exam.accession_identifier, mapping: direct}
+  studydate_anon:
+    type: timestamp[ns]
+    nullable: true
+    maps:
+      - {id: exam.study_date, mapping: direct}
+  NCILIFE:
+    type: double
+    nullable: true
+    maps:
+      - {id: risk.nci_lifetime, mapping: direct}
+    interpretations:
+      "-35":
+        representation: "-35"
+        meaning: >-
+          Exceptional value with unresolved meaning; it is not validated as a probability-like
+          prediction.
+        status: unresolved
+        caveats:
+          - Exclude or otherwise handle only under a declared policy after validation.
+        cites: [open-v2.risk-context#risk-semantics]
+      "-2":
+        representation: "-2"
+        meaning: >-
+          Exceptional value with unresolved meaning; it is not validated as a probability-like
+          prediction.
+        status: unresolved
+        caveats:
+          - Exclude or otherwise handle only under a declared policy after validation.
+        cites: [open-v2.risk-context#risk-semantics]
+      "100":
+        representation: "100"
+        meaning: >-
+          Exceptional or boundary value with unresolved meaning; it is not validated as a
+          probability-like prediction.
+        status: unresolved
+        caveats:
+          - Do not assume this is a valid 100-percent probability.
+        cites: [open-v2.risk-context#risk-semantics]
+  IBISLIFE:
+    type: double
+    nullable: true
+    maps:
+      - {id: risk.ibis_lifetime, mapping: direct}
+    interpretations:
+      "100":
+        representation: "100"
+        meaning: >-
+          Exceptional or boundary value with unresolved meaning; it is not validated as a
+          probability-like prediction.
+        status: unresolved
+        caveats:
+          - Do not assume this is a valid 100-percent probability.
+        cites: [open-v2.risk-context#risk-semantics]
+  IBISBRCA1:
+    type: double
+    nullable: true
+    maps:
+      - {id: risk.ibis_brca1, mapping: direct}
+    interpretations:
+      "100":
+        representation: "100"
+        meaning: >-
+          Exceptional or boundary value with unresolved meaning; it is not validated as a
+          probability-like prediction.
+        status: unresolved
+        caveats:
+          - Do not assume this is a valid 100-percent probability.
+        cites: [open-v2.risk-context#risk-semantics]
+  IBISBRCA2:
+    type: double
+    nullable: true
+    maps:
+      - {id: risk.ibis_brca2, mapping: direct}
+    interpretations:
+      "100":
+        representation: "100"
+        meaning: >-
+          Exceptional or boundary value with unresolved meaning; it is not validated as a
+          probability-like prediction.
+        status: unresolved
+        caveats:
+          - Do not assume this is a valid 100-percent probability.
+        cites: [open-v2.risk-context#risk-semantics]
+  IBIS10:
+    type: double
+    nullable: true
+    maps:
+      - {id: risk.ibis_ten_year, mapping: direct}
+    interpretations:
+      "100":
+        representation: "100"
+        meaning: >-
+          Exceptional or boundary value with unresolved meaning; it is not validated as a
+          probability-like prediction.
+        status: unresolved
+        caveats:
+          - Do not assume this is a valid 100-percent probability.
+        cites: [open-v2.risk-context#risk-semantics]
+  IBISPOP10:
+    type: double
+    nullable: true
+    maps:
+      - {id: risk.ibis_population_ten_year, mapping: direct}
+    interpretations:
+      exceptional numeric value:
+        representation: exceptional numeric value
+        meaning: >-
+          The meaning of an exceptional numeric value in this field is unresolved; it is not
+          validated as a probability-like prediction.
+        status: unresolved
+        caveats:
+          - >-
+            The available evidence does not establish which exceptional values occur in this
+            specific field; validate its observed representation before defining a handling
+            policy.
+        cites: [open-v2.risk-context#risk-semantics]
+  IBISPOPL:
+    type: double
+    nullable: true
+    maps:
+      - {id: risk.ibis_population_lifetime, mapping: direct}
+    interpretations:
+      exceptional numeric value:
+        representation: exceptional numeric value
+        meaning: >-
+          The meaning of an exceptional numeric value in this field is unresolved; it is not
+          validated as a probability-like prediction.
+        status: unresolved
+        caveats:
+          - >-
+            The available evidence does not establish which exceptional values occur in this
+            specific field; validate its observed representation before defining a handling
+            policy.
+        cites: [open-v2.risk-context#risk-semantics]
+  NCI5:
+    type: double
+    nullable: true
+    maps:
+      - {id: risk.nci_five_year, mapping: direct}
+    interpretations:
+      "-35":
+        representation: "-35"
+        meaning: >-
+          Exceptional value with unresolved meaning; it is not validated as a probability-like
+          prediction.
+        status: unresolved
+        caveats:
+          - Exclude or otherwise handle only under a declared policy after validation.
+        cites: [open-v2.risk-context#risk-semantics]
+      "-2":
+        representation: "-2"
+        meaning: >-
+          Exceptional value with unresolved meaning; it is not validated as a probability-like
+          prediction.
+        status: unresolved
+        caveats:
+          - Exclude or otherwise handle only under a declared policy after validation.
+        cites: [open-v2.risk-context#risk-semantics]
+      "100":
+        representation: "100"
+        meaning: >-
+          Exceptional or boundary value with unresolved meaning; it is not validated as a
+          probability-like prediction.
+        status: unresolved
+        caveats:
+          - Do not assume this is a valid 100-percent probability.
+        cites: [open-v2.risk-context#risk-semantics]
+  IBIS_TD1:
+    type: double
+    nullable: true
+    maps:
+      - {id: risk.ibis_td1, mapping: direct}
+    interpretations:
+      exceptional numeric value:
+        representation: exceptional numeric value
+        meaning: >-
+          The meaning of an exceptional numeric value in this field is unresolved; it is not
+          validated as a probability-like prediction.
+        status: unresolved
+        caveats:
+          - >-
+            The available evidence does not establish which exceptional values occur in this
+            specific field; validate its observed representation before defining a handling
+            policy.
+        cites: [open-v2.risk-context#risk-semantics]
+  IBIS_TD2:
+    type: double
+    nullable: true
+    maps:
+      - {id: risk.ibis_td2, mapping: direct}
+    interpretations:
+      exceptional numeric value:
+        representation: exceptional numeric value
+        meaning: >-
+          The meaning of an exceptional numeric value in this field is unresolved; it is not
+          validated as a probability-like prediction.
+        status: unresolved
+        caveats:
+          - >-
+            The available evidence does not establish which exceptional values occur in this
+            specific field; validate its observed representation before defining a handling
+            policy.
+        cites: [open-v2.risk-context#risk-semantics]
+  IBIS_TD3:
+    type: double
+    nullable: true
+    maps:
+      - {id: risk.ibis_td3, mapping: direct}
+    interpretations:
+      exceptional numeric value:
+        representation: exceptional numeric value
+        meaning: >-
+          The meaning of an exceptional numeric value in this field is unresolved; it is not
+          validated as a probability-like prediction.
+        status: unresolved
+        caveats:
+          - >-
+            The available evidence does not establish which exceptional values occur in this
+            specific field; validate its observed representation before defining a handling
+            policy.
+        cites: [open-v2.risk-context#risk-semantics]
+  IBIS_TD4:
+    type: double
+    nullable: true
+    maps:
+      - {id: risk.ibis_td4, mapping: direct}
+    interpretations:
+      exceptional numeric value:
+        representation: exceptional numeric value
+        meaning: >-
+          The meaning of an exceptional numeric value in this field is unresolved; it is not
+          validated as a probability-like prediction.
+        status: unresolved
+        caveats:
+          - >-
+            The available evidence does not establish which exceptional values occur in this
+            specific field; validate its observed representation before defining a handling
+            policy.
+        cites: [open-v2.risk-context#risk-semantics]
+  __index_level_0__:
+    type: int64
+    nullable: true
+    maps:
+      - id: technical.pandas_index
+        mapping: direct
+        notes:
+          - Technical export provenance only; not a clinical identifier.

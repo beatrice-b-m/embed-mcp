@@ -1,0 +1,12 @@
+kind: feature
+label: IBIS TD3 output
+definition: Clinical-time MagView risk output named IBIS_TD3.
+value_type: model_output
+evidence: [release_schema, observed_source_values, maintainer_confirmed, unresolved]
+search_terms: [ibis td3 output, risk model]
+caveats:
+  - >-
+    The TD3 variant meaning, model version, percentage-point formatting, and exceptional-value
+    semantics require internal investigation.
+topics: [topic.risk]
+objects: [risk_assessment]

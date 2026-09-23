@@ -1,0 +1,22 @@
+kind: relationship
+label: Episode contains imaging exam
+relationship_type: hierarchy
+definition: Clinical grouping of exams into a breast-imaging episode.
+cardinality:
+  targets_per_source: one_or_more
+  sources_per_target: zero_or_one
+optionality:
+  source: required
+  target: optional
+attribution_limitations:
+  - Profile bindings based on same-episode links can be optional and incomplete.
+  - Unlinked exams may still be clinically related.
+temporal_qualification: >-
+  Linked accessions identify same-episode exams, not prior or follow-up direction.
+search_terms: [episode exams, same episode linked accession]
+caveats:
+  - No deterministic episode-construction algorithm is supplied.
+source_object: breast_imaging_episode
+target_object: imaging_exam
+topics: [topic.exam, topic.imaging, topic.temporal]
+temporal: [time.exam-event]

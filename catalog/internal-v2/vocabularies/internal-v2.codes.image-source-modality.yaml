@@ -1,0 +1,16 @@
+kind: vocabulary
+label: Source DICOM image modality codes
+completeness: open
+parsing: atomic
+evidence: [observed_source_values, inference, maintainer_confirmed]
+caveats:
+  - >-
+    The represented set is scoped to the complete EMBEDv1 accession extraction after the
+    documented secondary-capture exclusions.
+  - >-
+    A code absent here is not thereby absent from internal clinical V2 or from the imaging
+    archive.
+codes:
+  MG: mammography
+  US: ultrasound
+  OT: other; a modality the source instance did not classify further

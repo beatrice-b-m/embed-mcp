@@ -1,0 +1,15 @@
+kind: vocabulary
+label: Provisional cancer-history category labels
+completeness: unknown
+parsing: atomic
+evidence: [observed_source_values, inference]
+caveats:
+  - >-
+    Candidate meanings from a work-in-progress internal-dictionary reconciliation; not final
+    verified CancerHist code definitions.
+  - >-
+    Meaning is category-specific; no severity or malignancy rule follows from category
+    membership.
+codes:
+  B: Breast history (provisional)
+  O: Other history (provisional)

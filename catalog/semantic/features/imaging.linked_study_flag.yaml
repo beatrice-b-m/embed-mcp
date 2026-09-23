@@ -1,0 +1,12 @@
+kind: feature
+label: Linked study flag
+definition: Flag identifying a linked exam.
+value_type: flag
+evidence: [release_schema, release_legend, observed_source_values, maintainer_confirmed]
+search_terms: [linked study flag]
+caveats:
+  - >-
+    The flag is expected to identify a linked same-episode exam, but data-quality edge cases
+    mean it must not be used to repair a missing linked-accession value.
+topics: [topic.imaging, topic.workflow]
+objects: [imaging_finding]

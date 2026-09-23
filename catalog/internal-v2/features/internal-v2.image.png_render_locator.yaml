@@ -1,0 +1,19 @@
+kind: feature
+label: Rendered image locator component
+definition: >-
+  Legacy technical reference component for a PNG conversion originally generated for EMBEDv1
+  FFDM images.
+value_type: technical
+evidence: [observed_source_values]
+search_terms: [png path, rendered image path, image render locator]
+caveats:
+  - >-
+    This legacy conversion should not be used for current or future work; use the anonymized
+    DICOM file instead.
+  - >-
+    The historical PNG conversion can affect downstream applications, including model
+    generalizability.
+  - A missing component is not evidence that no source DICOM image exists.
+topics: [topic.imaging, topic.technical]
+cites:
+  - internal-v2.v1c-metadata-context#locator-and-enrichment-population

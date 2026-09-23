@@ -1,0 +1,14 @@
+kind: feature
+label: Pathologic TNM regional-node category
+definition: Recorded pathologic regional-lymph-node component of TNM classification.
+value_type: coded
+evidence: [release_legend, observed_source_values, unresolved]
+search_terms: [pN, TNM regional nodes]
+caveats:
+  - >-
+    Both comparison legends attach an incompatible primary-tumor dictionary to this field;
+    represented pN token meanings remain unresolved.
+topics: [topic.pathology]
+cites:
+  - internal-v2.magview-pathology-context#tnmpn-dictionary-conflict
+objects: [pathology_diagnosis]

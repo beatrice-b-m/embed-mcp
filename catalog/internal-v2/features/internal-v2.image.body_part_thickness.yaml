@@ -1,0 +1,14 @@
+kind: feature
+label: Compressed body part thickness
+definition: >-
+  Represented source DICOM compressed thickness of the imaged body part for one internal V1c
+  image row.
+value_type: numeric
+evidence: [observed_source_values]
+search_terms: [body part thickness, compressed breast thickness]
+caveats:
+  - The unit is not documented in the extraction.
+topics: [topic.imaging, topic.mammography]
+cites:
+  - internal-v2.v1c-metadata-context#parsed-dicom-element-semantics
+objects: [image]

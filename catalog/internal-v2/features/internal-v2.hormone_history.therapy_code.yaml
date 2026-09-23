@@ -1,0 +1,18 @@
+kind: feature
+label: Reported therapy-history code
+definition: Treatment code for an exposure-history entry whose category is therapy.
+value_type: coded
+evidence: [maintainer_confirmed]
+search_terms:
+  - HormoneHist therapy code
+  - chemotherapy history
+  - radiation therapy history
+  - endocrine therapy history
+  - Taxol history
+caveats:
+  - This meaning is conditional on exposure category T.
+topics: [topic.procedure]
+cites:
+  - internal-v2.patient-history-context#reported-history-not-current-care
+  - internal-v2.history-topology-context#hormone-category-discrepancies
+objects: [internal-v2.hormone_history_entry]

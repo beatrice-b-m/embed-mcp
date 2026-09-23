@@ -1,0 +1,16 @@
+kind: feature
+label: Reported exposure-history category
+definition: Category identifying a reported hormone, therapy, or contraceptive history entry.
+value_type: coded
+evidence: [maintainer_confirmed]
+search_terms:
+  - HormoneHist type
+  - hormone history category
+  - therapy history category
+  - contraceptive history category
+caveats:
+  - The category selects the applicable category-specific code meaning.
+topics: [topic.procedure, topic.workflow]
+cites:
+  - internal-v2.patient-history-context#reported-history-not-current-care
+objects: [internal-v2.hormone_history_entry]

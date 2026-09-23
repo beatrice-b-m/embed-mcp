@@ -1,0 +1,11 @@
+kind: profile_support
+evidence_status: unresolved
+evidence_summary: >-
+  Specimen-labeled columns exist, but specimen-level presence, completeness, reliability,
+  identity, and cardinality are not established for internal V2 operations.
+evidence_caveats:
+  - Do not rely on specimen-level fields for current internal V2 operations.
+  - Specimen number is source scoped and can repeat across rows.
+subject: pathology_specimen
+evidence_cites:
+  - internal-v2.magview-pathology-context#specimen-surface

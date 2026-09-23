@@ -1,0 +1,24 @@
+kind: feature
+label: Anonymized exam date
+definition: Anonymized exam date.
+value_type: date
+evidence: [release_schema, release_legend, maintainer_confirmed]
+search_terms: [anonymized exam date, study date]
+caveats:
+  - >-
+    The absolute calendar date is shifted and must not be interpreted literally; within-patient
+    ordering and date differences are preserved.
+topics: [topic.exam, topic.temporal]
+objects: [imaging_exam]
+temporal:
+  - {id: time.exam-event, records: true}
+missing_states:
+  missing_or_unknown:
+    representation: "null"
+    meaning: >-
+      No exam event date is represented in this field; this does not establish that an imaging
+      exam did not occur.
+    caveats:
+      - >-
+        The available metadata does not distinguish source absence, extraction loss, or another
+        reason for null.

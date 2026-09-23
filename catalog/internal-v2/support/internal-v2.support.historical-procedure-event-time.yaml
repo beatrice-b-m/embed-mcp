@@ -1,0 +1,14 @@
+kind: profile_support
+representation_status: unresolved
+representation_summary: >-
+  ProcHist age, pdatealt, month, and year are inventoried as strings, but their historical-event
+  interpretation and exact-date support remain unresolved.
+representation_caveats:
+  - Do not substitute the associated imaging accession date or a current procedure date.
+  - No supported exact historical-procedure timestamp or date reconstruction is supplied.
+search_terms: [ProcHist procedure date, prior biopsy date, historical surgery time]
+subject: internal-v2.procedure_history_entry
+topics: [topic.procedure, topic.temporal]
+representation_cites:
+  - internal-v2.patient-history-context#patient-and-accession-context
+  - internal-v2.history-topology-context#procedure-time-candidates
