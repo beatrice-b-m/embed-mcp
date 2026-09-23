@@ -37,6 +37,12 @@ class EditorSchemaTests(CatalogTestCase):
     def errors(self, text: str):
         return list(self.validator().iter_errors(self.editor_parse(text)))
 
+    def test_schema_is_itself_valid(self):
+        # Editors reject an invalid schema outright and then offer no
+        # completions at all, so the schema must pass the draft-07
+        # meta-schema even when a link type has no targets yet.
+        jsonschema.Draft7Validator.check_schema(build_schema(self.load()))
+
     def test_accepts_valid_documents(self):
         for path in sorted((self.root / "catalog").rglob("*.yaml")):
             self.assertEqual(list(self.validator().iter_errors(self.editor_parse(path.read_text()))), [], path.name)

@@ -37,7 +37,9 @@ class RepositoryCatalogTests(unittest.TestCase):
                 json.dumps(view(self.catalog, address))
 
     def test_editor_schema_accepts_every_document(self):
-        validator = jsonschema.Draft7Validator(build_schema(self.catalog))
+        schema = build_schema(self.catalog)
+        jsonschema.Draft7Validator.check_schema(schema)
+        validator = jsonschema.Draft7Validator(schema)
         yaml = YAML(typ="safe", pure=True)
         for path in sorted((REPOSITORY / "catalog").rglob("*.yaml")):
             with self.subTest(path=path.name):

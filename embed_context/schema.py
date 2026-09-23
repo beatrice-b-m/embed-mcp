@@ -28,11 +28,19 @@ def build_schema(catalog: Catalog) -> dict[str, Any]:
     for name, kind in model.kinds.items():
         definitions[name] = _kind_schema(catalog, kind)
     for link in model.links.values():
-        if not link.local:
-            nodes = [node for node in catalog.nodes.values() if link.allows_target(node.kind)]
+        if link.local:
+            continue
+        nodes = [node for node in catalog.nodes.values() if link.allows_target(node.kind)]
+        if nodes:
             definitions[_targets_ref(link)] = _enum(
                 [node.address for node in nodes], [f"{node.label} ({node.kind})" for node in nodes]
             )
+        else:
+            # An empty `enum` makes the whole schema invalid, and editors then
+            # drop every completion, so a link type with no targets yet takes
+            # any ID until its first target document exists.
+            targets = link.targets if isinstance(link.targets, str) else ", ".join(link.targets)
+            definitions[_targets_ref(link)] = {"type": "string", "description": f"No {targets} documents exist yet."}
     top_level = ["module", *model.document_kinds]
     return {
         "$schema": "http://json-schema.org/draft-07/schema#",
