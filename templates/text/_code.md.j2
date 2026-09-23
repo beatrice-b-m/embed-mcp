@@ -1,0 +1,20 @@
+{#- Code lookup (embed_context.query.lookup_code). -#}
+{{ d.value }} in {{ d.address }}
+{% for c in d.codes %}
+{% if c.meaning is not none %}
+- {{ c.meaning }} — {{ c.vocabulary }}{% if c.column %} (column {{ c.column }}){% endif %}
+
+{% else %}
+- Not in {{ c.vocabulary }}{% if c.column %} (column {{ c.column }}){% endif %}{% if c.similar_codes %}; differs only in case or spacing from: {{ c.similar_codes | join(", ") }}{% endif %}
+
+{% endif %}
+{% endfor %}
+{% for i in d.interpretations %}
+- Column interpretation ({{ i.status }}): {{ i.meaning }} — {{ i.id }}
+{% endfor %}
+{% for m in d.missing_states %}
+- Missing state: {{ m.meaning }} — {{ m.id }}
+{% endfor %}
+{% if not d.codes and not d.interpretations and not d.missing_states %}
+No code list, interpretation, or missing state applies.
+{% endif %}
