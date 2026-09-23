@@ -4,6 +4,10 @@
 > closes when the prototype passes its exit criteria (section 4.9). Last
 > updated 2026-09-23.
 >
+> From the start of the slice 1 prototype, this document is maintained on the
+> `rebuild` branch together with the work it describes. The copy on `main`
+> is not updated again until cutover.
+>
 > This is a short-lived working document (see `AGENTS.md`, "Working
 > documents"). When the rebuild is complete, its durable content moves into
 > `docs/` and this file is deleted.
@@ -555,8 +559,9 @@ reconsidered after slice 5. The existing curator stays on `main` until cutover.
 - The CLI command and MCP server keep the invocation name `embed-context`.
 - The repository and its documentation call the project `embed-mcp`.
 - The rebuild branch and worktree are named `rebuild`.
-- The Python distribution is published today as `embedv2-agent-context`. Slice
-  7 confirms whether it stays that way or is renamed to match the command.
+- The Python distribution is renamed from `embedv2-agent-context` to
+  `embed-context`, matching the command. The rebuild's package uses the new
+  name from the start; `main` keeps the old name until cutover.
 
 **D1.23 Patterns contain no executable code. Accepted.**
 
@@ -849,8 +854,8 @@ Resolved on 2026-09-23:
 - **Q1.3 File granularity.** One document per file (D1.2).
 - **Q1.4 Curator viewer.** Retired (D1.20).
 - **Q1.5 Editor support.** Yes: generate an editor schema (D1.21).
-- **Q1.6 Worktree and naming.** Branch `rebuild`; command `embed-context`;
-  project `embed-mcp` (D1.22).
+- **Q1.6 Worktree and naming.** Branch `rebuild`; command and distribution
+  `embed-context`; project `embed-mcp` (D1.22).
 - **Q1.8 Feature layer.** Kept (D1.19).
 - **Q1.9 Pattern content.** No executable code; pseudocode allowed (D1.23).
   How patterns relate to existing `aggregation` documents is settled in slice 2.
@@ -924,3 +929,5 @@ Slice 1 is complete when:
   - Accepted the portable feature layer.
   - Kept Q1.7 open for an in-depth joint review in slice 6.
   - Moved the example pattern to the semantic module.
+- 2026-09-23: Renamed the distribution to `embed-context` (D1.22). The
+  contract moves to the `rebuild` branch from the slice 1 prototype onward.
