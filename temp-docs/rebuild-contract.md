@@ -1251,9 +1251,33 @@ so the converter is not rerun after hand edits begin.
 - 53 tests pass. The repository tests (no findings, every node renders, and the
   editor schema accepts every file) now run on the full catalog.
 
+**D3.8 Post-migration prose rewrites; catalog/ is now the source. Accepted.**
+
+The maintainer approved rewriting prose that described the catalog rather
+than EMBED. Every change is recorded in
+[`prose-rewrites.md`](prose-rewrites.md):
+
+- 29 EMBED facts phrased through the investigation now state the fact
+  directly, dropping process-only clauses. For example, "cross-table match
+  coverage was not tested by these packets" becomes "cross-table match
+  coverage is not established".
+- 15 "the catalog does not select/define/prescribe …" statements become
+  dataset-focused disclaimers that no single choice or definition is
+  authoritative, keeping their meaning that the dataset prescribes no one
+  choice.
+- 21 sentences where "retained" or "catalog" is an EMBED fact, or that belong
+  to source provenance, are kept.
+
+44 sentences were rewritten, 58 occurrences in 38 files, directly in
+`catalog/`. From now on `catalog/` is the source of truth. The converter
+refuses to run unless given `--discard-hand-edits`. The parity report
+describes the catalog as migrated, before these rewrites.
+
 ### 6.4 Open items
 
-1. **Prose that describes the catalog rather than EMBED.** The parity report
+1. **Prose that describes the catalog rather than EMBED.** Resolved
+   (D3.8): 44 sentences were rewritten, and the 21 false positives were kept.
+   The original description follows. The parity report
    lists 81 remaining sentences for review. They fall into three groups:
    - EMBED facts phrased through the investigation, for example "The packet
      tests (acc_anon, patient, rel) …" or "cross-table match coverage was not
@@ -1320,3 +1344,5 @@ so the converter is not rerun after hand edits begin.
   - Recorded D3.1–D3.7 and the content principle that the catalog describes
     EMBED, not itself.
   - Migrated the full legacy catalog.
+- 2026-09-23: Applied the maintainer-approved prose rewrites (D3.8), and
+  guarded the converter against overwriting hand edits.

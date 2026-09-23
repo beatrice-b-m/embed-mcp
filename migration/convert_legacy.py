@@ -12,8 +12,13 @@ unaccounted. It writes:
 
 This file and legacy/ are removed at cutover.
 
+catalog/ has been edited by hand since the migration (for example the prose
+rewrites recorded in temp-docs/prose-rewrites.md). Rerunning the converter
+regenerates catalog/ from legacy/ and discards those edits, so it requires an
+explicit flag.
+
 Usage:
-    uv run --locked python migration/convert_legacy.py --replace
+    uv run --locked python migration/convert_legacy.py --discard-hand-edits
 """
 
 from __future__ import annotations
@@ -875,11 +880,19 @@ def _prose(data: Any, path: str = "") -> list[tuple[str, str]]:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
-    parser.add_argument("--replace", action="store_true", help="replace the existing catalog/ directory")
+    parser.add_argument(
+        "--discard-hand-edits",
+        action="store_true",
+        help="regenerate catalog/ from legacy/, discarding every edit made to catalog/ since the migration",
+    )
     args = parser.parse_args()
     target = ROOT / "catalog"
-    if target.exists() and any(target.iterdir()) and not args.replace:
-        print("catalog/ is not empty; pass --replace to regenerate it", file=sys.stderr)
+    if target.exists() and any(target.iterdir()) and not args.discard_hand_edits:
+        print(
+            "catalog/ holds hand edits made since the migration; regenerating it would discard them. "
+            "Pass --discard-hand-edits only if that is intended.",
+            file=sys.stderr,
+        )
         return 2
     converter = Converter()
     converter.run()
