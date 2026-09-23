@@ -1,7 +1,7 @@
 # Catalog rebuild contract
 
-> **Status:** Draft. Slices 1–4 are closed. Slice 5 (output) is complete and
-> awaiting maintainer review; see section 8. Last updated 2026-09-23.
+> **Status:** Draft. Slices 1–5 are closed. Slice 6 (CLI and MCP adapters)
+> is in progress; see section 9. Last updated 2026-09-23.
 >
 > This is a short-lived working document (see `AGENTS.md`, "Working
 > documents"). When the rebuild is complete, its durable content moves into
@@ -1493,9 +1493,14 @@ checks that every link on every page resolves.
 
 1. **MCP response format (Q1.7).** Text, JSON, or both, to be reviewed in
    depth with the maintainer in slice 6. Both forms exist now.
-2. **Labels were not scanned for catalog-process wording.** For example,
-   the context label "Internal history packet representation review" still
-   describes a review. The earlier scan covered prose fields only.
+2. **Labels were not scanned for catalog-process wording.** Resolved: four
+   labels were rewritten under D3.2 and D3.8, and are listed in
+   [`prose-rewrites.md`](prose-rewrites.md). For example, "Internal history
+   packet representation review" became "Internal patient-history table
+   representation". Source labels are kept, because they name the cited
+   document.
+
+The maintainer closed slice 5 on 2026-09-23. Item 1 moves to slice 6.
 
 ## Change log
 
@@ -1552,3 +1557,5 @@ checks that every link on every page resolves.
   summarized reads, and the retrieval evaluation.
 - 2026-09-23: Slice 5. Recorded D5.1–D5.6, and added the compact view model,
   link facts and the legend, per-kind templates, and review pages.
+- 2026-09-23: Rewrote four labels that described the catalog's own process
+  (8.4, item 2). The maintainer closed slice 5.

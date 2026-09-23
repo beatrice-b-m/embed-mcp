@@ -57,3 +57,16 @@
 | `open-v2.multimodal-finding-context` | Interpret null laterality according to the field's clinical role rather than applying a catalog-wide null rule. | Interpret null laterality according to the field's clinical role; no single null rule applies to every field. |
 | `open-v2.pathology-procedure-context` | Absence of a supplied field does not prohibit an analyst-defined policy; it means the catalog does not designate one. | Absence of a supplied field does not prohibit an analyst-defined policy; no single policy is authoritative. |
 | `open-v2.temporal-availability-context` | Task-specific cohort, follow-up, label, and modality-inclusion choices are analysis policies rather than dataset claims; agents must choose and defend them outside the portable catalog. | Cohort, follow-up, label, and modality-inclusion choices are task-specific; no single choice is authoritative. |
+
+## Group 3: labels
+
+Labels were scanned separately (rebuild contract, section 8.4, item 2).
+Source labels are kept, because they name the cited document itself, which is
+source provenance (D3.8).
+
+| Where | Before | After |
+|---|---|---|
+| `internal-v2.history-topology-context` | Internal history packet representation review | Internal patient-history table representation |
+| `internal-v2.magview-coded-values-context` | Internal V2 MagView categorical and exceptional-value reconciliation | Internal V2 MagView categorical and exceptional values |
+| `internal-v2.guardrail.hormone-history-timing-needs-explicit-reconciliation` | Hormone-history timing fields have no supplied reconciliation rule | Hormone-history timing fields have no established reconciliation rule |
+| `internal-v2` module | Internal EMBED V2 working profile | Internal EMBED V2 |

@@ -1,5 +1,5 @@
 kind: context
-label: Internal V2 MagView categorical and exceptional-value reconciliation
+label: Internal V2 MagView categorical and exceptional values
 context_type: known_issue
 definition: >-
   Most legacy categorical systems retain V1/V2 meanings, while internal source strings also

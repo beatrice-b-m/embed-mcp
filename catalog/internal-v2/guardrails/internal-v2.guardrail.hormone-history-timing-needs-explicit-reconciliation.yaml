@@ -1,5 +1,5 @@
 kind: guardrail
-label: Hormone-history timing fields have no supplied reconciliation rule
+label: Hormone-history timing fields have no established reconciliation rule
 category: analyst_choice
 priority: high
 statement: >-

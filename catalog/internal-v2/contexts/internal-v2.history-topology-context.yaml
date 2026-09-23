@@ -1,5 +1,5 @@
 kind: context
-label: Internal history packet representation review
+label: Internal patient-history table representation
 context_type: data_representation
 definition: >-
   How the HormoneHist, ProcedureHist, and CancerHist tables represent patient history: their
