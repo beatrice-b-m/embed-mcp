@@ -5,7 +5,7 @@
 > legacy record family and field under `legacy/catalog/` a disposition in the
 > new model (`model/kinds.yaml`, `model/links.yaml`, `model/values.yaml`).
 > Slice 3's converter implements it, and its parity report checks it.
-> Last updated 2026-09-23.
+> Last updated 2026-09-23 (slice 3).
 
 ## How to read this ledger
 
@@ -58,7 +58,8 @@ and find-and-replace stays safe.
 | Vocabularies | `<profile>.codes.<rest>`, with `.` and `_` in the rest turned into `-` | `open-v2.codes.imaging-assessment` |
 | Relationship bindings | `<profile>.join.<last segment>` | `internal-v2.join.exam-finding` |
 | Relationship binding paths | `<profile>.join-path.<last two segments>` | `open-v2.join-path.pathology_findings_anon-patient` |
-| Qualifications and coverage | `<profile>.support.<subject with . and _ as ->` | `open-v2.support.imaging-assessment` |
+| Coverage records | `<profile>.support.<coverage ID without its coverage.<profile>. prefix, . and _ as ->` | `internal-v2.support.patient-history-row-identity` |
+| Qualifications without a matching single coverage record | `<profile>.support.<subject with . and _ as ->` | `open-v2.support.imaging-assessment` |
 | Feature bindings, object bindings, qualification IDs | **dropped**; they become entries or merge into other records | — |
 
 Slice 3 writes a full old→new ID map and checks that no two legacy IDs map to
@@ -130,7 +131,7 @@ source.
 | `objects` | link | `objects` |
 | `relative_to` | link | `relative_to` |
 | `claim_refs` | link | `cites` |
-| `feature_refs` | dropped | Every pair is also written as the feature's `temporal` link. The maintainer chose a single link type, so the explicit "this feature's value *is* this time" marker (9 of 17 feature–time links) is no longer recorded. It could return as an optional link qualifier. |
+| `feature_refs` | link | Every pair is also written as the feature's `temporal` link, which now carries the optional qualifier `records: true` for these pairs: the feature's value *is* this time (D3.3). |
 
 ### Aggregations → `aggregation`
 
@@ -178,9 +179,14 @@ D2.1).
 | coverage `domains` | link | `topics` |
 | qualification `id`, coverage `scope`, `profiles`, `availability` | dropped / module | — |
 
-Subjects with both records (6 in open-v2, 6 in internal-v2) get one document
-with both statuses. In open-v2, three of them record different answers to the
-two questions (`breast_imaging_episode`, `pathology.diagnosis_code_slot`,
+Each coverage record becomes one support document. In internal-v2, four
+contexts each have several coverage records that assess different aspects of
+the topic, and guardrails cite those records individually. A qualification
+joins the coverage document of its subject when that subject has exactly one
+coverage record; otherwise it becomes its own document (D3.4). Twelve subjects
+have both records (6 in open-v2, 6 in internal-v2) and get one document with
+both statuses. In open-v2, three of them record different answers to the two
+questions (`breast_imaging_episode`, `pathology.diagnosis_code_slot`,
 `time.downstream-availability`). Both answers are kept.
 
 ### Sources → `source`
@@ -193,7 +199,7 @@ two questions (`breast_imaging_episode`, `pathology.diagnosis_code_slot`,
 | `locator_kind` | renamed | `locator_type` |
 | `scope` | kept or module | as for guardrails |
 | `profiles` | module | — |
-| `notes` | kept, except authoring notes | `notes`; see [Authoring notes](#authoring-notes) |
+| `notes` | kept, except catalog-development notes | `notes`; see [Catalog-development notes](#catalog-development-notes) |
 
 ### Contexts → `context`
 
@@ -301,8 +307,8 @@ with new kinds in `kinds.yaml` when one exists.
 
 Each conversion applies only where its condition holds. Slice 3 keeps the
 sentence, and reports it, anywhere the condition fails. The legacy data meets
-every condition except one (the feature-level "Preserve the source string"
-caveat; see open item 5).
+every condition. The feature-level "Preserve the source string" caveat, which
+failed its condition, is dropped by maintainer decision instead (D3.1).
 
 | Legacy sentence | Occurrences | Replacement | Condition |
 |---|---|---|---|
@@ -311,60 +317,63 @@ caveat; see open item 5).
 | "Null semantics are not documented and must not be inferred from the code meanings." | 96 vocabulary caveats, 45 feature caveats | `null_meaning: [undocumented]` on the vocabulary | For a feature caveat: every mapping of the feature, in every profile, has a vocabulary with `undocumented` |
 | "Null and blank meanings remain physical-occurrence specific." | 48 internal-v2 vocabulary caveats | `null_meaning` includes `occurrence_specific` | — |
 | "The Open V2 legend is a comparison source and is not assumed exhaustive for internal V2." | 48 internal-v2 vocabulary caveats | `legend_role: comparison_legend` | — |
-| "Preserve the source string; delimiter, ordering, repetition, and composition semantics are not documented." | 16 vocabulary caveats, 16 feature caveats | `parsing: comma_composed_undocumented`, whose meaning renders the same statement | The vocabulary's parsing is that value; for a feature caveat, every vocabulary of its mappings. **Fails for all 16 feature caveats**: internal-v2 records their vocabularies as `comma_delimited_unordered`. Until open item 5 is decided, the feature caveats stay. |
+| "Preserve the source string; delimiter, ordering, repetition, and composition semantics are not documented." | 16 vocabulary caveats, 16 feature caveats | `parsing: comma_composed_undocumented`, whose meaning renders the same statement | The vocabulary's parsing is that value. The 16 feature caveats are dropped instead (D3.1): internal-v2 documents those columns as `comma_delimited_unordered`, and each profile's vocabulary states its own parsing. |
 | "Transfers canonical feature context only; value equality, derivation, observed domain, and occurrence-specific missingness were not established." | 101 notes on `combined_anon` mappings | One table caveat on `open-v2.combined_anon`: "Its column mappings transfer canonical feature context only; value equality, derivation, observed domain, and occurrence-specific missingness were not established." | The note appears on every `combined_anon` mapping |
 | "Slot number records physical position only; semantic ordering is unresolved." | 20 mapping notes | The `slot` qualifier's description in `links.yaml` | The mapping has a `slot` qualifier |
 | "Open V2 evidence qualifies this portable semantic record." | 52 qualification summaries | Dropped; restates `evidence_status: supported` | The status is `supported` |
 | "The catalog describes representation and does not prescribe care." | 1 guardrail caveat | A notice in `catalog/semantic/module.yaml` | — |
 
-## Authoring notes
+## Catalog-development notes
 
-The maintainer chose to drop source notes that describe how the catalog was
-authored rather than how to use the data (D2.4). The rule: a note is dropped
-when it says what the catalog retains or what an investigation inspected. A
-note is kept when it says what the source establishes, or states a fact about
-the data.
+The catalog describes EMBED, not its own development (maintainer decisions
+D2.4 and D3.2). Notes about how the catalog was built, or what an
+investigation inspected or retained, go stale as investigation methods change,
+so they are dropped. The converter drops each sentence below wherever it
+appears, and the parity report counts the drops.
 
-Dropped (13):
+Dropped:
 
-| Source | Note |
+| Where | Sentence |
 |---|---|
-| `hitilab.embed.label-assignment.clinical-pathway` | The page's empirical proportions are outside this catalog's count-free scope. |
-| `hitilab.embed.overview.clinical-primer` | The page's empirical proportions are outside this catalog's count-free scope. |
+| Two public-documentation sources | The page's empirical proportions are outside this catalog's count-free scope. |
 | `open-v2.release-schema` | The registered footer verification does not inspect clinical rows. |
+| `open-v2.release-schema` | Footer schemas establish representation but not clinical values or empirical distributions. |
+| `internal-v2.magview-footer-schema` | Footer metadata establishes the physical inventory only. |
 | `internal-v2.magview-grain-observation` | No rows, identifiers, dates, text, counts, frequencies, or distributions are retained in the catalog. |
 | `internal-v2.magview-pathology-observation` | The review inspected only pathology, procedure, specimen, and opaque grouping columns needed to answer the named questions. |
 | `internal-v2.magview-pathology-observation` | No clinical rows, identifiers, dates, text, empirical counts, or distributions are retained. |
-| `internal-v2.v1c-metadata-structure-observation` | Only the columns and invariants needed to answer named catalog questions were read; no rows, identifiers, locator values, dates, counts, or distributions were retained. |
-| `internal-v2.hormone-history-topology-packet`, `internal-v2.procedure-history-topology-packet`, `internal-v2.cancer-history-topology-packet` | Missing values were retained as levels; topology omits counts, frequencies, and association strengths, and ordering does not indicate prevalence. (once each) |
-| the same three packets | Only count-free representation conclusions and reconciled controlled values are retained; packets, ages, calendar values, durations, identifiers, and source text are not copied into the catalog. (once each) |
-
-Kept for now; they mix authoring detail with what the source establishes.
-Confirm or drop (open item 4):
-
-| Source | Note |
-|---|---|
-| `open-v2.release-schema` | Footer schemas establish representation but not clinical values or empirical distributions. |
-| `internal-v2.magview-footer-schema` | Footer metadata establishes the physical inventory only. |
+| `internal-v2.v1c-metadata-structure-observation` | Only the columns and invariants needed to answer named catalog questions were read; … |
+| Three history topology packets | Missing values were retained as levels; topology omits counts, frequencies, and association strengths, and ordering does not indicate prevalence. |
+| Three history topology packets | Only count-free representation conclusions and reconciled controlled values are retained; … |
 | `internal-v2.history-inventory-maintainer-confirmation` | Each packet includes every source-table column except comment, a messy free-text field present on all three tables. |
 | `internal-v2.history-inventory-maintainer-confirmation` | This establishes inventory completeness, not a source-declared dtype or nullability contract; no comment content was inspected. |
+| `open-v2.report-context` claim caveat | Report content was not read while authoring the catalog. |
+| `open-v2.risk-context` claim caveat | No empirical coverage measurement belongs in this catalog. |
+| `open-v2.support.outcome-capture` | No empirical capture rate belongs in the portable catalog. |
+| `internal-v2.hormone_history.comment` | The catalogue describes the field but contains and exposes no source text. |
+| `internal-v2.history-topology-context` claim caveat | No ages, calendar values, or candidate dates are retained as catalog values. |
+| `open-v2.catalog-linkage-review` | This versioned record preserves reviewed implementation conclusions, including unresolved relationship behavior, without making the active catalog self-citing. |
+| Three history tables | The delimited-text artifact is outside the footer-only Parquet verifier; no clinical source rows or free text are included in the catalog. |
+| Three history tables | Inventory provenance: …-history-topology-packet and internal-v2.history-inventory-maintainer-confirmation; the packet omits only the maintainer-confirmed free-text comment column. |
 
-Kept as data facts, although they mention retention: the
+Kept, because they state facts about EMBED despite mentioning retention: the
 `internal-v2.v1c-metadata-maintainer-clarifications` notes on `acc_anon` as the
-exam identifier, and on which DICOM objects were extracted.
+exam identifier and on which DICOM objects were extracted, and the ROI_SS and
+ROI_SSC descriptions.
 
-Slice 3 rescans every note with the same rule and reports any further matches
-for review, rather than dropping them silently.
+The parity report lists the remaining sentences that mention the catalog or
+its development, for review (D3.2).
 
 ## Deliberate information changes
 
 These are the only changes to what the catalog records, as opposed to where or
 how it records it:
 
-1. Temporal `feature_refs` is dropped (see Temporal semantics).
-2. 13 authoring notes are dropped (see Authoring notes).
+1. 29 catalog-development notes are dropped (see Catalog-development notes).
+2. 16 portable feature caveats contradicted by internal-v2 are dropped (D3.1).
 3. 52 open-v2 qualification summaries that restated the status are dropped.
-4. All derived IDs change (see ID scheme). Slice 3 publishes the old→new map.
+4. All derived IDs change (see ID scheme). `migration/id-map.json` maps every
+   changed legacy ID to its new address.
 
 Every other conversion keeps the information, either in the same field or in
 a typed field that renders the same statement.
@@ -383,14 +392,12 @@ These do not block slice 3:
 3. **Column references in qualifiers.** `category_column`, `subject_column`,
    and `composite_with` name another column as text, so `check` does not
    verify them. They could become local link qualifiers.
-4. **Borderline authoring notes.** Confirm or drop the four listed above.
-5. **A portable caveat contradicted by internal-v2.** Sixteen portable
-   features, for example `ultrasound.shape` and `mammography.consistent_with`,
-   say that delimiter, ordering, repetition, and composition semantics are
-   not documented. Internal-v2 documents those same columns as
-   comma-delimited, with order and repetition carrying no meaning
-   (`comma_delimited_unordered`). Open-v2's vocabularies already state the
-   caveat through their own `parsing` value. The recommended fix is to
-   remove it from the 16 portable features. Each profile's vocabulary then
-   states its own parsing, and nothing is lost. This is a meaning change to
-   portable documents, so it waits for the maintainer.
+4. **Borderline authoring notes.** Resolved: dropped (D3.2).
+5. **A portable caveat contradicted by internal-v2.** Resolved: removed from
+   the 16 portable features (D3.1).
+6. **Prose that describes the catalog rather than EMBED.** The parity report
+   lists 81 remaining sentences that mention the catalog or its development.
+   Most are EMBED facts phrased through the investigation that found them.
+   Others are "the catalog does not select/define/prescribe …" boundary
+   statements, and some are false positives. These are reviewed as a content
+   edit after migration (contract section 6.4).

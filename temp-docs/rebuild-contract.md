@@ -1,7 +1,7 @@
 # Catalog rebuild contract
 
-> **Status:** Draft. Slice 1 (encoding) is closed (2026-09-23). Slice 2
-> (field-level model and parity ledger) is in progress. Last updated
+> **Status:** Draft. Slices 1 and 2 are closed. Slice 3 (full migration) is
+> complete and awaiting maintainer review; see section 6. Last updated
 > 2026-09-23.
 >
 > This is a short-lived working document (see `AGENTS.md`, "Working
@@ -102,6 +102,10 @@ must read and edit it, rather than modifying the existing code.
   procedures the lab uses internally for feature aggregation and processing.
   They are presented as examples with their interpretation limits, never as
   required or canonical definitions.
+- **The catalog describes EMBED, not itself (D3.2).** Documents state the
+  interpretation and context of EMBED data. They do not record how the catalog
+  was built, what an investigation inspected, or what the catalog retains:
+  such notes go stale as investigation methods change.
 - **Patterns are conceptual, not code (D1.23).** A pattern describes
   conceptual handling, feature cleaning, or aggregation in prose steps or
   pseudocode. It contains no executable code. It may link to features,
@@ -1162,6 +1166,111 @@ It is flagged in the ledger as open item 2.
 Slice 2 is complete when the maintainer has reviewed the ledger. Its drafted
 value meanings and qualifier descriptions may be revised in place later.
 
+The maintainer reviewed the ledger and closed slice 2 on 2026-09-23, resolving
+open items 4 and 5 (D3.1, D3.2).
+
+## 6. Slice 3: converter, full migration, and parity check
+
+### 6.1 Scope
+
+Convert every legacy record in `legacy/catalog/` into documents that conform
+to the model, according to the parity ledger. Check that every legacy value is
+accounted for, and that the converted catalog loads with no findings.
+Internal-v2 is converted first (D2.3).
+
+### 6.2 Decisions
+
+**D3.1 The contradicted portable caveat is removed. Accepted.**
+
+The caveat "Preserve the source string; delimiter, ordering, repetition, and
+composition semantics are not documented." is removed from the 16 portable
+features that carried it. Internal-v2, which is actively developed while
+open-v2 is paused for public release, documents those columns as
+`comma_delimited_unordered`. Each profile's vocabulary states its own parsing.
+
+**D3.2 Catalog-development notes are removed. Accepted.**
+
+The four borderline notes from the ledger are dropped along with the other
+authoring notes, and so are other sentences found during migration that only
+describe the catalog's construction: 29 in all, listed in the ledger. This is
+now a content principle (section 2). Sentences that carry EMBED information in
+process wording are kept until reviewed (6.4).
+
+**D3.3 An optional `records` marker restores the time distinction. Accepted.**
+
+A feature's `temporal` link may carry `records: true`, meaning the feature's
+value *is* that time (for example, `exam.study_date` → `time.exam-event`).
+This restores the legacy `feature_refs` information on the one link type;
+nothing about time links is lost.
+
+**D3.4 Each coverage record is its own support document. Accepted (required by the data).**
+
+In internal-v2, four contexts each have several coverage records, one per
+aspect of the topic, and guardrails cite them individually. A support
+document is therefore one coverage record, named after it. A qualification
+joins it when its subject has exactly one coverage record, and stands alone
+otherwise. This refines D2.1.
+
+**D3.5 A join may represent no clinical relationship. Accepted (required by the data).**
+
+Eight legacy joins are projections between tables (for example, open-v2
+`combined_anon` projections) with no semantic relationship. The `relationships`
+link on joins is optional.
+
+**D3.6 One writer formats every document. Accepted.**
+
+`embed_context/yamlout.py` writes the house style:
+
+- model order: plain fields, then links (required single links first), then
+  nested entry sections;
+- short lists and link entries on one line;
+- long prose folded one sentence per line;
+- quotes only where YAML would misread a value;
+- flags as plain booleans.
+
+It parses its own output back and refuses to write anything that would read
+differently. It is the basis for a future `fmt` command.
+
+**D3.7 The converter is temporary and self-auditing. Accepted.**
+
+`migration/convert_legacy.py` records a disposition for every legacy value
+and fails if any value is unaccounted for. It writes `migration/id-map.json`
+(old ID → new address) and `migration/parity-report.md`. The converter,
+`migration/`, and `legacy/` are removed at cutover. Until then, content edits
+made directly to `catalog/` would be overwritten by rerunning the converter,
+so the converter is not rerun after hand edits begin.
+
+### 6.3 Result
+
+- 649 documents, 926 entries, and 3,754 links across the semantic,
+  internal-v2, and open-v2 modules.
+- `check` reports no findings and takes under two seconds.
+- Every legacy value is accounted for. The parity report gives counts per
+  disposition and per drop reason.
+- Every conditional boilerplate conversion held.
+- 53 tests pass. The repository tests (no findings, every node renders, and the
+  editor schema accepts every file) now run on the full catalog.
+
+### 6.4 Open items
+
+1. **Prose that describes the catalog rather than EMBED.** The parity report
+   lists 81 remaining sentences for review. They fall into three groups:
+   - EMBED facts phrased through the investigation, for example "The packet
+     tests (acc_anon, patient, rel) …" or "cross-table match coverage was not
+     tested by these packets". Rewriting them states the fact directly.
+   - Boundary statements such as "The catalog does not select a finding-level
+     outcome policy". About a dozen repeat the same disclaimer, which could be
+     stated once as a module notice or carried by guardrail categories.
+   - False positives, where "retained" is an EMBED fact (ROI_SS images are
+     retained for ROI extraction).
+2. **Presentation, for slice 5.** `show` lists a mapping's vocabulary both
+   inside the mapping and as its own link group, and shows qualifier values
+   without their names.
+3. **`rename` is still unbuilt.** New IDs contain no other document's ID, but
+   some kept legacy IDs contain an object ID as a segment (for example
+   `breast_side.pathology_severity_aggregate`), so find-and-replace is still
+   not a safe rename for every ID.
+
 ## Change log
 
 - 2026-09-23: Created. Rebuild-wide contract, slice plan, and slice 1
@@ -1206,3 +1315,8 @@ value meanings and qualifier descriptions may be revised in place later.
 - 2026-09-23: Slice 2. Recorded decisions D2.1–D2.12, the parity ledger, and
   the finalized model. D2.5 supersedes the prototype's column-level
   vocabulary link. The demonstration topic nesting was removed for parity.
+- 2026-09-23: Slice 3.
+  - The maintainer closed slice 2.
+  - Recorded D3.1–D3.7 and the content principle that the catalog describes
+    EMBED, not itself.
+  - Migrated the full legacy catalog.
