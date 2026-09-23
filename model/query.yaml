@@ -136,6 +136,11 @@ codes:
   column_feature_link: maps                 # link from a column to the features it records
   interpretation_field: interpretations     # a column's meanings for specific values
   missing_state_field: missing_states       # a feature's meanings for missing values
+  represented_values_field: represented_values  # the values an interpretation or missing state covers
+  # An interpretation or missing state matches a value equal to its
+  # representation or among its represented values. A column's other
+  # interpretations are listed too, because a representation that
+  # describes values without listing them may still cover the value.
   parsing_field: parsing                    # the vocabulary field saying how values combine codes
   # Parsing values whose represented values are delimited codes, with the
   # delimiter. A value that is not itself a code is split there and each

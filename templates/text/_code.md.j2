@@ -9,6 +9,19 @@
 {%- if c.mapping.qualifiers is defined %}{% for name, value in c.mapping.qualifiers.items() %}{% if value is sameas true %} · {{ name }}{% elif value is string %} · {{ name | replace("_", " ") }} {{ value }}{% elif value is not sameas false %} · {{ name | replace("_", " ") }}: {{ value | join("; ") }}{% endif %}{% endfor %}{% endif %}
 {%- endif %}
 {%- endmacro -%}
+{%- macro entry(e) -%}
+{% if e.represented_values is defined %}
+
+  represented values: {% for v in e.represented_values %}"{{ v }}"{{ ", " if not loop.last }}{% endfor %}
+{%- endif %}
+{% if e.caveats is defined %}
+{% for c in e.caveats %}
+
+  caveat: {{ c }}
+{%- endfor %}
+{% endif %}
+{% for c in e.mappings | default([]) %}{{ mapping({"mapping": c}) }}{% endfor %}
+{%- endmacro -%}
 {{ d.value }} in {{ d.address }}
 {% set meanings = d.codes | rejectattr("match", "equalto", "none") | list %}
 {% if meanings | length > 1 %}
@@ -29,12 +42,19 @@
 {% endif %}
 {% endfor %}
 {% for i in d.interpretations %}
-- Column interpretation ({{ i.status }}): {{ i.meaning }} — {{ i.id }}
+- Column interpretation{% if i.status is defined %} ({{ i.status }}){% endif %}{% if i.match == "listed" %} of "{{ i.representation }}", which lists {{ d.value }}{% endif %}: {{ i.meaning }} — {{ ref(i.id) }}{{ entry(i) }}
 {% endfor %}
 {% for s in d.missing_states %}
-- Missing state: {{ s.meaning }} — {{ s.id }}
+- Missing state{% if s.match == "listed" %} "{{ s.representation }}", which lists {{ d.value }}{% endif %}: {{ s.meaning }} — {{ ref(s.id) }}{{ entry(s) }}
 {% endfor %}
 {% if not d.codes and not d.interpretations and not d.missing_states %}
-No code list, interpretation, or missing state applies.
+No code list, interpretation, or missing state names {{ d.value }}.
+{% endif %}
+{% if d.other_interpretations is defined %}
+
+Other interpretations of {{ "the column" if d.other_interpretations | map(attribute="column") | unique | list | length == 1 else "the columns" }}, which do not name {{ d.value }}; one whose representation describes values without listing them may still cover it:
+{% for i in d.other_interpretations %}
+- "{{ i.representation }}"{% if i.status is defined %} ({{ i.status }}){% endif %}: {{ i.meaning }} — {{ ref(i.id) }}{{ entry(i) }}
+{% endfor %}
 {% endif %}
 {{ m.legend(d) }}

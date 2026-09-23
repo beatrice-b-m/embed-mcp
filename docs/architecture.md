@@ -141,7 +141,8 @@ states for it.
   when a value has a meaning in several code lists, text says that each
   applies only under its own mapping. The meanings of the qualifiers'
   controlled values are in the result's legend.
-- Given a feature, only the columns' mappings to that feature apply.
+- Given a feature, only the columns' mappings to that feature, and only
+  that feature's missing states, apply.
 - A value that is not itself a code of a code list is split when the list's
   `parsing` value is one that `codes.delimited_parsing` in `model/query.yaml`
   names, at the delimiter given there, and each part is looked up on its own,
@@ -149,6 +150,16 @@ states for it.
   Other parsing values never split a value. Whenever a value is not a code,
   the result names the code list's `parsing` value, with its meaning in the
   legend, so a reader sees how the list's values combine codes.
+- An interpretation or missing state matches a value that equals its
+  `representation` or is among its `represented_values`, the literal values
+  a descriptive representation such as "Y, N, or blank string" covers. Each
+  interpretation carries the column mappings of the features it names, so a
+  conditional mapping's qualifiers appear with it; given a feature,
+  interpretations that name another feature are left out.
+- A column's other interpretations are listed after the matches, as
+  interpretations that do not name the value, because a representation that
+  describes values without listing them ("represented identifier") may
+  still cover it.
 
 ## Operations
 

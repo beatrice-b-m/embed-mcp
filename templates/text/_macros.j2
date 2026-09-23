@@ -38,7 +38,7 @@
 {% elif f.texts is defined %}
 {{ indent }}{{ f.name }}:
 {% for t in f.texts %}
-{{ indent }}  - {{ t }}
+{{ indent }}  - {{ t if t else '""' }}
 {% endfor %}
 {% else %}
 {{ indent }}{{ f.name }}: {{ inline(f) }}

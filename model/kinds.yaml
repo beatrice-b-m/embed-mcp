@@ -110,6 +110,12 @@ missing_state:
   entry: true
   fields:
     representation: {type: text, required: true}
+    represented_values:
+      type: text
+      many: true
+      description: >-
+        The literal values this entry covers, when its representation describes them rather
+        than being one value. Write a blank string as "".
     meaning: {type: text, required: true}
     caveats: {type: text, many: true}
 
@@ -294,6 +300,12 @@ interpretation:
   entry: true
   fields:
     representation: {type: text, required: true}
+    represented_values:
+      type: text
+      many: true
+      description: >-
+        The literal values this entry covers, when its representation describes them rather
+        than being one value. Write a blank string as "".
     meaning: {type: text, required: true}
     status: {type: value, of: claim_statuses, required: true}
     caveats: {type: text, many: true}

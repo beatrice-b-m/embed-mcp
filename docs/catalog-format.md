@@ -129,7 +129,15 @@ columns:
 ```
 
 The column above is `open-v2.imaging_findings_anon#asses`, and other documents
-can link to it by that address. An entry inside another entry is addressed as
+can link to it by that address.
+
+A column's `interpretations` and a feature's `missing_states` name the value
+they explain in `representation`. When the representation describes values
+rather than being one (`Y, N, or blank string`), `represented_values` lists
+the literal values it covers, with a blank string written as `""`, so `code`
+matches each of them. A representation that describes values that cannot be
+listed, such as `represented identifier`, needs no `represented_values`;
+`code` lists it among the column's other interpretations. An entry inside another entry is addressed as
 `document#entry/sub-entry`. Physical column names keep their source case,
 because they are keys inside a table file, not document IDs.
 

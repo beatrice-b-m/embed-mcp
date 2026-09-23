@@ -426,7 +426,13 @@ def lookup_code(catalog: Catalog, address: str, value: str, config: QueryConfig 
     carries the mapping it comes from (the feature and the mapping's
     qualifiers), because a column may use a different code list under each
     mapping's conditions. For a feature, only the columns' mappings to that
-    feature apply."""
+    feature apply.
+
+    An interpretation or missing state matches a value equal to its
+    representation or among its represented values; an interpretation
+    carries the column mappings of the features it names. A column's other
+    interpretations are returned too, because a representation that
+    describes values without listing them may still cover the value."""
     config = config or load_query_config(catalog)
     names = config.codes
     node = catalog.nodes.get(address)
@@ -439,16 +445,16 @@ def lookup_code(catalog: Catalog, address: str, value: str, config: QueryConfig 
     columns: list[Node] = []
     features: set[str] = set()
     vocabularies: list[tuple[Node, Node | None, Link | None]] = []  # (vocabulary, column, mapping)
+    feature = None  # set when the address is a feature
     if names.get("code_field") in catalog.model.kinds[node.kind].fields:
         vocabularies.append((node, None, None))
     else:
-        feature = None
         if any(link.spec.name == feature_link for link in catalog.outgoing(node.address)):
             columns = [node]  # a column
         else:
             sources = [link.source for link in catalog.incoming(node.address) if link.spec.name == feature_link]
             columns = [catalog.nodes[source] for source in dict.fromkeys(sources)]
-            feature = node.address  # a feature
+            feature = node.address
             features.add(feature)
         for column in columns:
             for link in catalog.outgoing(column.address):
@@ -489,22 +495,65 @@ def lookup_code(catalog: Catalog, address: str, value: str, config: QueryConfig 
             matches.append({**entry, "code": value, "meaning": None, "match": "tokens", "delimiter": delimiter, "tokens": tokens})
         else:
             matches.append({**entry, "code": value, "meaning": None, "match": "none", "similar_codes": _similar(codes, value)})
-    interpretations = []
+    interpretations, others = [], []
     for column in columns:
+        mapped = [link for link in catalog.outgoing(column.address) if link.spec.name == feature_link]
         for entry in catalog.entries_of(column.address):
-            if entry.path[-2] == names.get("interpretation_field") and entry.data.get("representation") == value:
-                interpretations.append({"id": entry.address, "column": column.address, **{k: v for k, v in entry.data.items() if isinstance(v, str)}})
+            if entry.path[-2] != names.get("interpretation_field"):
+                continue
+            linked = {link.target for link in catalog.outgoing(entry.address)} & {link.target for link in mapped}
+            if feature is not None and linked and feature not in linked:
+                continue  # it belongs to another feature the column records
+            item = {"id": entry.address, "column": column.address, **_entry_facts(catalog, entry, legend)}
+            conditions = [_mapping_facts(catalog, link, vocabulary_spec, legend) for link in mapped if link.target in linked]
+            if conditions:
+                item["mappings"] = conditions
+            match = _entry_match(entry, value, names)
+            if match:
+                interpretations.append({**item, "match": match})
+            else:
+                others.append(item)
     missing = []
-    for column in columns:
-        features.update(link.target for link in catalog.outgoing(column.address) if link.spec.name == feature_link)
-    for feature in sorted(features):
-        for entry in catalog.entries_of(feature):
-            if entry.path[-2] == names.get("missing_state_field") and entry.data.get("representation") == value:
-                missing.append({"id": entry.address, "feature": feature, **{k: v for k, v in entry.data.items() if isinstance(v, str)}})
+    if feature is None:
+        for column in columns:
+            features.update(link.target for link in catalog.outgoing(column.address) if link.spec.name == feature_link)
+    for recorded in sorted(features):
+        for entry in catalog.entries_of(recorded):
+            match = _entry_match(entry, value, names) if entry.path[-2] == names.get("missing_state_field") else None
+            if match:
+                missing.append({"id": entry.address, "feature": recorded, **_entry_facts(catalog, entry, legend), "match": match})
     result = {"address": address, "value": value, "codes": matches, "interpretations": interpretations, "missing_states": missing}
+    if others:
+        result["other_interpretations"] = others
     if legend:
         result["legend"] = legend
     return result
+
+
+def _entry_match(entry: Node, value: str, names: dict[str, Any]) -> str | None:
+    """How an interpretation or missing state matches ``value``: its
+    representation is the value (`exact`), or lists it among the values it
+    describes (`listed`)."""
+    if entry.data.get("representation") == value:
+        return "exact"
+    if value in entry.data.get(names.get("represented_values_field", ""), []):
+        return "listed"
+    return None
+
+
+def _entry_facts(catalog: Catalog, entry: Node, legend: dict[str, dict[str, str]]) -> dict[str, Any]:
+    """An entry's own text and controlled-value fields, with value meanings in the legend."""
+    facts: dict[str, Any] = {}
+    for name, spec in catalog.model.kinds[entry.kind].fields.items():
+        if name not in entry.data or spec.type not in ("text", "value"):
+            continue
+        facts[name] = entry.data[name]
+        if spec.type == "value":
+            for item in entry.data[name] if spec.many else [entry.data[name]]:
+                meaning = catalog.model.values[spec.of].get(item)
+                if meaning:
+                    legend.setdefault(f"{entry.kind}.{name}", {})[item] = meaning
+    return facts
 
 
 def _similar(codes: dict[str, str], value: str) -> list[str]:

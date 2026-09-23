@@ -116,7 +116,15 @@ class FixtureCodeLookupTests(CatalogTestCase):
             parsing: joined
             terms: {A: first, B: second}
             """)
-        self.write("catalog/base/measure.color.yaml", "kind: measure\nlabel: Color\n")
+        self.write("catalog/base/measure.color.yaml", """
+            kind: measure
+            label: Color
+            gaps:
+              blank:
+                representation: blank or dash
+                represented_values: ["", "-"]
+                meaning: not recorded
+            """)
         self.write("catalog/base/measure.shape.yaml", "kind: measure\nlabel: Shape\n")
         self.write("catalog/base/sheet.yaml", """
             kind: sheet
@@ -125,6 +133,21 @@ class FixtureCodeLookupTests(CatalogTestCase):
               kind_of:
                 records: []
               value:
+                readings:
+                  x:
+                    representation: X
+                    meaning: crossed out
+                    status: closed
+                  yes-or-no:
+                    representation: Y or N
+                    represented_values: [Y, N]
+                    meaning: answered
+                    status: open
+                    caveats: [Answers may be stale.]
+                    measure: measure.shape
+                  described:
+                    representation: any other letter
+                    meaning: unexplained
                 records:
                   - {id: measure.color, status: open, list: list.colors, when_cell: kind_of, when_value: C}
                   - {id: measure.shape, status: open, list: list.shapes, when_cell: kind_of, when_value: S}
@@ -139,11 +162,39 @@ class FixtureCodeLookupTests(CatalogTestCase):
         result = self.lookup("sheet#value", "R")
         self.assertEqual([(c["meaning"], c["mapping"]["feature"]) for c in result["codes"]], [("red", "measure.color"), ("round", "measure.shape")])
         self.assertEqual(result["codes"][0]["mapping"]["qualifiers"], {"status": "open", "when_cell": "kind_of", "when_value": "C"})
-        self.assertEqual(result["legend"], {"records.status": {"open": "Still open."}})
+        self.assertEqual(result["legend"]["records.status"], {"open": "Still open."})
 
     def test_a_feature_uses_only_its_own_mappings(self):
         result = self.lookup("measure.shape", "R")
         self.assertEqual([c["vocabulary"] for c in result["codes"]], ["list.shapes"])
+
+    def test_an_interpretation_matches_its_representation_or_a_listed_value(self):
+        self.assertEqual([(i["id"], i["match"]) for i in self.lookup("sheet#value", "X")["interpretations"]], [("sheet#value/x", "exact")])
+        result = self.lookup("sheet#value", "N")
+        [listed] = result["interpretations"]
+        self.assertEqual((listed["id"], listed["match"], listed["caveats"]), ("sheet#value/yes-or-no", "listed", ["Answers may be stale."]))
+        self.assertEqual(result["legend"]["reading.status"], {"open": "Still open.", "closed": "Finished."})
+
+    def test_an_interpretation_carries_the_mapping_of_the_feature_it_names(self):
+        [listed] = self.lookup("sheet#value", "Y")["interpretations"]
+        self.assertEqual([m["feature"] for m in listed["mappings"]], ["measure.shape"])
+        self.assertEqual(listed["mappings"][0]["qualifiers"]["when_value"], "S")
+
+    def test_the_columns_other_interpretations_are_listed(self):
+        result = self.lookup("sheet#value", "Q")
+        self.assertEqual(result["interpretations"], [])
+        self.assertEqual([i["id"] for i in result["other_interpretations"]], ["sheet#value/x", "sheet#value/yes-or-no", "sheet#value/described"])
+        self.assertNotIn("other_interpretations", self.lookup("list.colors", "Q"))
+
+    def test_a_feature_leaves_out_interpretations_of_other_features(self):
+        self.assertEqual([i["id"] for i in self.lookup("measure.color", "Q")["other_interpretations"]], ["sheet#value/x", "sheet#value/described"])
+        self.assertEqual(self.lookup("measure.color", "Y")["interpretations"], [])
+        self.assertEqual([i["id"] for i in self.lookup("measure.shape", "Y")["interpretations"]], ["sheet#value/yes-or-no"])
+
+    def test_a_missing_state_matches_a_listed_value(self):
+        self.assertEqual([(s["id"], s["match"]) for s in self.lookup("sheet#value", "")["missing_states"]], [("measure.color#blank", "listed")])
+        self.assertEqual(self.lookup("sheet#value", "blank or dash")["missing_states"][0]["match"], "exact")
+        self.assertEqual(self.lookup("measure.shape", "")["missing_states"], [])
 
     def test_a_delimited_value_is_split_and_each_part_looked_up(self):
         match = self.lookup("list.listed", "B ; a;;C")["codes"][0]
@@ -166,7 +217,10 @@ class FixtureCodeLookupTests(CatalogTestCase):
         self.assertIn("`listd` is not a value of any `parsing` field", raised.exception.message)
 
     def test_text_carries_every_fact_of_a_lookup(self):
-        lookups = [("sheet#value", "R"), ("sheet#value", "S"), ("list.colors", "r"), ("list.listed", "B;a;C"), ("list.joined", "A;B")]
+        lookups = [
+            ("sheet#value", "R"), ("sheet#value", "S"), ("sheet#value", "N"), ("sheet#value", "-"), ("sheet#value", "Q"),
+            ("list.colors", "r"), ("list.listed", "B;a;C"), ("list.joined", "A;B"),
+        ]
         for address, value in lookups:
             with self.subTest(address=address, value=value):
                 data = self.lookup(address, value)

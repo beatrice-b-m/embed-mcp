@@ -69,7 +69,10 @@ reading:
   entry: true
   fields:
     representation: {type: text, required: true}
+    represented_values: {type: text, many: true}
     meaning: {type: text, required: true}
+    status: {type: value, of: statuses}
+    caveats: {type: text, many: true}
 
 measure:
   description: What cells record.
@@ -81,6 +84,7 @@ gap:
   entry: true
   fields:
     representation: {type: text, required: true}
+    represented_values: {type: text, many: true}
     meaning: {type: text, required: true}
 """
 
@@ -131,6 +135,13 @@ records:
       backlink: used_by
     when_cell: {type: text}
     when_value: {type: text}
+
+reading_measure:
+  field: measure
+  owners: [reading]
+  targets: [measure]
+  many: false
+  backlink: readings
 """
 
 FIXTURE_VALUES = """
@@ -177,6 +188,7 @@ codes:
   column_feature_link: records
   interpretation_field: readings
   missing_state_field: gaps
+  represented_values_field: represented_values
   parsing_field: parsing
   delimited_parsing: {listed: ";"}
 """
