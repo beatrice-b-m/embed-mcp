@@ -51,6 +51,7 @@ codelist:
   description: A code list.
   fields:
     label: {type: text, required: true}
+    parsing: {type: value, of: parsings}
     terms: {type: map, required: true}
 
 sheet:
@@ -140,6 +141,10 @@ module_types:
 statuses:
   open: Still open.
   closed: Finished.
+parsings:
+  single: One code.
+  listed: Codes separated by semicolons.
+  joined: Codes joined in an undocumented way.
 """
 
 FIXTURE_QUERY = """
@@ -172,6 +177,8 @@ codes:
   column_feature_link: records
   interpretation_field: readings
   missing_state_field: gaps
+  parsing_field: parsing
+  delimited_parsing: {listed: ";"}
 """
 
 

@@ -142,6 +142,13 @@ states for it.
   applies only under its own mapping. The meanings of the qualifiers'
   controlled values are in the result's legend.
 - Given a feature, only the columns' mappings to that feature apply.
+- A value that is not itself a code of a code list is split when the list's
+  `parsing` value is one that `codes.delimited_parsing` in `model/query.yaml`
+  names, at the delimiter given there, and each part is looked up on its own,
+  in written order, with surrounding spaces trimmed and empty parts dropped.
+  Other parsing values never split a value. Whenever a value is not a code,
+  the result names the code list's `parsing` value, with its meaning in the
+  legend, so a reader sees how the list's values combine codes.
 
 ## Operations
 

@@ -17,8 +17,15 @@
 {% for c in d.codes %}
 {% if c.meaning is not none %}
 - {{ c.meaning }} — {{ ref(c.vocabulary) }} ({{ c.vocabulary_label }}){% if c.column %}, column {{ ref(c.column) }}{% endif %}{{ mapping(c) }}
+{% elif c.match == "tokens" %}
+- Not a single code of {{ ref(c.vocabulary) }} ({{ c.vocabulary_label }}){% if c.column %}, column {{ ref(c.column) }}{% endif %}; parsing {{ c.parsing }}, so each part between "{{ c.delimiter }}" is looked up:
+{%- for t in c.tokens %}
+
+    {{ t.code }}: {% if t.meaning is not none %}{{ t.meaning }}{% else %}not in this code list{% if t.similar_codes is defined %}; differs only in case or spacing from: {{ t.similar_codes | join(", ") }}{% endif %}{% endif %}
+{%- endfor %}
+{{ mapping(c) }}
 {% else %}
-- Not in {{ ref(c.vocabulary) }} ({{ c.vocabulary_label }}){% if c.column %}, column {{ ref(c.column) }}{% endif %}{% if c.similar_codes %}; differs only in case or spacing from: {{ c.similar_codes | join(", ") }}{% endif %}{{ mapping(c) }}
+- Not in {{ ref(c.vocabulary) }} ({{ c.vocabulary_label }}){% if c.column %}, column {{ ref(c.column) }}{% endif %}{% if c.parsing is defined %}; parsing {{ c.parsing }}{% endif %}{% if c.similar_codes %}; differs only in case or spacing from: {{ c.similar_codes | join(", ") }}{% endif %}{{ mapping(c) }}
 {% endif %}
 {% endfor %}
 {% for i in d.interpretations %}

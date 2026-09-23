@@ -89,7 +89,7 @@ class QueryConfig:
     topic_parent_link: str
     summaries: dict[str, tuple[str, ...]]
     link_facts: dict[str, tuple[str, ...]] = field(default_factory=dict)
-    codes: dict[str, str] = field(default_factory=dict)
+    codes: dict[str, Any] = field(default_factory=dict)
 
     @property
     def view_options(self) -> ViewOptions:
@@ -140,6 +140,16 @@ def load_query_config(catalog: Catalog) -> QueryConfig:
             if name not in model.kinds[kind].fields:
                 raise _error(doc, ("read", "link_facts", kind), f"`{kind}` has no field `{name}`")
         link_facts[kind] = tuple(fields)
+    codes = dict(codes)
+    parsing = codes.get("parsing_field")
+    parsing_values = {v for kind in model.kinds.values() if (spec := kind.fields.get(parsing)) and spec.type == "value" for v in model.values[spec.of]}
+    delimiters = _mapping(doc, codes.get("delimited_parsing", {}), ("codes", "delimited_parsing"))
+    for name, delimiter in delimiters.items():
+        if name not in parsing_values:
+            raise _error(doc, ("codes", "delimited_parsing", name), f"`{name}` is not a value of any `{parsing}` field")
+        if not isinstance(delimiter, str) or not delimiter:
+            raise _error(doc, ("codes", "delimited_parsing", name), "expected a delimiter")
+    codes["delimited_parsing"] = dict(delimiters)
     return QueryConfig(
         stopwords=stopwords,
         field_weights=weights,
@@ -161,7 +171,7 @@ def load_query_config(catalog: Catalog) -> QueryConfig:
         topic_parent_link=search["topic_parent_link"],
         summaries=summaries,
         link_facts=link_facts,
-        codes=dict(codes),
+        codes=codes,
     )
 
 
@@ -462,6 +472,21 @@ def lookup_code(catalog: Catalog, address: str, value: str, config: QueryConfig 
             entry["mapping"] = _mapping_facts(catalog, mapping, vocabulary_spec, legend)
         if value in codes:
             matches.append({**entry, "code": value, "meaning": codes[value], "match": "exact"})
+            continue
+        parsing = vocabulary.data.get(names.get("parsing_field", ""))
+        if isinstance(parsing, str):
+            entry["parsing"] = parsing
+            spec = catalog.model.kinds[vocabulary.kind].fields[names["parsing_field"]]
+            meaning = catalog.model.values[spec.of].get(parsing)
+            if meaning:
+                legend.setdefault(f"{vocabulary.kind}.{spec.name}", {})[parsing] = meaning
+        delimiter = names.get("delimited_parsing", {}).get(parsing)
+        if delimiter and delimiter in value:
+            # Each part is looked up on its own; parts are kept in their written order.
+            parts = [part.strip() for part in value.split(delimiter) if part.strip()]
+            tokens = [{"code": part, "meaning": codes.get(part), "similar_codes": [] if part in codes else _similar(codes, part)} for part in parts]
+            tokens = [{key: v for key, v in token.items() if v != []} for token in tokens]
+            matches.append({**entry, "code": value, "meaning": None, "match": "tokens", "delimiter": delimiter, "tokens": tokens})
         else:
             matches.append({**entry, "code": value, "meaning": None, "match": "none", "similar_codes": _similar(codes, value)})
     interpretations = []

@@ -104,6 +104,18 @@ class FixtureCodeLookupTests(CatalogTestCase):
             label: Shapes
             terms: {R: round, S: square}
             """)
+        self.write("catalog/base/list.listed.yaml", """
+            kind: codelist
+            label: Listed
+            parsing: listed
+            terms: {A: first, B: second, "A;B": both}
+            """)
+        self.write("catalog/base/list.joined.yaml", """
+            kind: codelist
+            label: Joined
+            parsing: joined
+            terms: {A: first, B: second}
+            """)
         self.write("catalog/base/measure.color.yaml", "kind: measure\nlabel: Color\n")
         self.write("catalog/base/measure.shape.yaml", "kind: measure\nlabel: Shape\n")
         self.write("catalog/base/sheet.yaml", """
@@ -133,8 +145,29 @@ class FixtureCodeLookupTests(CatalogTestCase):
         result = self.lookup("measure.shape", "R")
         self.assertEqual([c["vocabulary"] for c in result["codes"]], ["list.shapes"])
 
+    def test_a_delimited_value_is_split_and_each_part_looked_up(self):
+        match = self.lookup("list.listed", "B ; a;;C")["codes"][0]
+        self.assertEqual((match["match"], match["delimiter"], match["parsing"]), ("tokens", ";", "listed"))
+        self.assertEqual(match["tokens"], [{"code": "B", "meaning": "second"}, {"code": "a", "meaning": None, "similar_codes": ["A"]}, {"code": "C", "meaning": None}])
+        self.assertEqual(self.lookup("list.listed", "B;a")["legend"], {"codelist.parsing": {"listed": "Codes separated by semicolons."}})
+
+    def test_a_delimited_value_that_is_a_code_is_not_split(self):
+        self.assertEqual(self.lookup("list.listed", "A;B")["codes"][0]["meaning"], "both")
+
+    def test_other_parsings_never_split(self):
+        match = self.lookup("list.joined", "A;B")["codes"][0]
+        self.assertEqual((match["match"], match["parsing"]), ("none", "joined"))
+        self.assertNotIn("tokens", match)
+
+    def test_delimited_parsing_must_name_a_parsing_value(self):
+        self.write("model/query.yaml", (self.root / "model/query.yaml").read_text().replace("{listed:", "{listd:"))
+        with self.assertRaises(YamlError) as raised:
+            load_query_config(self.load())
+        self.assertIn("`listd` is not a value of any `parsing` field", raised.exception.message)
+
     def test_text_carries_every_fact_of_a_lookup(self):
-        for address, value in [("sheet#value", "R"), ("sheet#value", "S"), ("list.colors", "r")]:
+        lookups = [("sheet#value", "R"), ("sheet#value", "S"), ("list.colors", "r"), ("list.listed", "B;a;C"), ("list.joined", "A;B")]
+        for address, value in lookups:
             with self.subTest(address=address, value=value):
                 data = self.lookup(address, value)
                 text = render_named(self.root, "_code", data)

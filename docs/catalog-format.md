@@ -263,7 +263,9 @@ Everything that shapes search and reads, with comments for each setting:
   example, show only their type and mappings until read by address);
 - `link_facts`: the fields shown on every link to a kind, such as a
   guardrail's `priority` or a claim's `status`;
-- the field names `code` lookup uses.
+- the field names `code` lookup uses, and `delimited_parsing`: the
+  vocabulary parsing values whose represented values are delimited codes,
+  with the delimiter `code` splits them at.
 
 `tests/retrieval_cases.yaml` checks that search stays useful; rerun it after
 editing this file.

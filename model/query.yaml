@@ -136,3 +136,9 @@ codes:
   column_feature_link: maps                 # link from a column to the features it records
   interpretation_field: interpretations     # a column's meanings for specific values
   missing_state_field: missing_states       # a feature's meanings for missing values
+  parsing_field: parsing                    # the vocabulary field saying how values combine codes
+  # Parsing values whose represented values are delimited codes, with the
+  # delimiter. A value that is not itself a code is split there and each
+  # part looked up; other parsing values never split a value.
+  delimited_parsing:
+    comma_delimited_unordered: ","
