@@ -59,7 +59,7 @@ Most edits need only an editor and `check`:
 | Add a controlled value | One line in `model/values.yaml` |
 | Add a link type | One entry in `model/links.yaml` |
 | Add a kind | One entry in `model/kinds.yaml`, then its files; the default template displays it, and a dedicated template is optional |
-| Rename an ID | Rename the file, then fix each broken link that `check` reports. Do not use a project-wide find-and-replace: some IDs, such as `image`, appear inside other IDs and in prose |
+| Rename an ID or entry | `embed-context rename OLD NEW` (add `--dry-run` to preview). Do not use a project-wide find-and-replace: some IDs, such as `image`, appear inside other IDs and in prose |
 
 Before adding a document, search for an existing object, feature, concept,
 claim, source, or vocabulary that already says it, and reuse it when the
@@ -103,6 +103,7 @@ Focused tests while iterating:
 | Area | Tests |
 |---|---|
 | Loading and checking | `tests.test_check`, `tests.test_yamlio`, `tests.test_yamlout` |
+| Rename | `tests.test_rename` |
 | Views and templates | `tests.test_view` |
 | Search, read, and code | `tests.test_query`, `tests.test_retrieval` |
 | Operations and CLI | `tests.test_operations`, `tests.test_cli` |

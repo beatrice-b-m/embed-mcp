@@ -44,7 +44,8 @@ these goals:
 | `mcp_server.py` | The optional MCP server (`embed-context serve`) |
 | `pages.py` | Linked Markdown review pages (`embed-context render`) |
 | `schema.py` | The generated editor schema |
-| `yamlout.py` | Writes documents in the house style; the basis for mechanical edits |
+| `rename.py` | Renames a document or entry and every link to it (`embed-context rename`) |
+| `yamlout.py` | Writes documents in the house style |
 
 ## Loading
 
@@ -185,6 +186,26 @@ with the cardinality of the relationships that use it, and consecutive joins in
 a join path must share a table. A rule that encodes specific catalog content,
 rather than structure, is not allowed.
 
+## Renaming
+
+`embed-context rename OLD NEW` renames a document (its file and every link to
+it) or an entry (its key and every link to it). A project-wide find-and-replace
+is not safe, because some IDs appear inside others (`image` inside
+`internal-v2.image.*`) and in prose. `rename` instead:
+
+- edits only the character spans of link values, which the YAML reader records
+  for every scalar, so comments, layout, and prose are untouched;
+- matches whole IDs, and rewrites every form a link takes: a full address,
+  `#entry` within a document, and a local link type's bare key;
+- reloads the catalog and restores every file if the result has errors or has
+  lost a link;
+- lists plain-text values equal to the old name, such as a qualifier that names
+  a column, a retrieval case, or an entry in the legacy ID map, for a manual
+  check.
+
+It needs a checkout, loads every module, and refuses a catalog that already has
+errors. `--dry-run` lists the edits without writing them.
+
 ## Tests
 
 - Engine tests use a small fixture model (`tests/helpers.py`), so they test
@@ -245,10 +266,7 @@ These are known and deliberately left for later:
 4. **Column references in qualifiers.** `category_column`, `subject_column`,
    and `composite_with` name another column as text, so `check` does not verify
    them. They could become local link qualifiers.
-5. **Safe renames.** There is no `rename` command yet. Some IDs appear inside
-   others (`image`, `breast_side`, and `procedure`), so a project-wide
-   find-and-replace is not a safe rename.
-6. **Source verification scripts.** 0.10's Parquet footer verifier
+5. **Source verification scripts.** 0.10's Parquet footer verifier
    (`scripts/validate_source_profile.py`) and fieldwork topology runners
    were removed with the old implementation and remain in git history at the
    `v0.10.0` tag; they read the old catalog format.

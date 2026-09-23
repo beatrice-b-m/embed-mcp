@@ -85,6 +85,7 @@ class Link:
     file: Path
     line: int
     where: str
+    value_path: tuple = ()  # where the written target ID sits in its file
 
 
 @dataclass
@@ -404,14 +405,15 @@ class _Loader:
         if not isinstance(target, str):
             self._error(source.file, line, where, "a link must be an ID or a mapping with `id:`")
             return None
-        return Link(owner.address, spec, self._resolve_target(owner, spec, target), note, qualifiers, source.file, line, where)
+        value_path = (*path, "id") if isinstance(item, dict) else path
+        return Link(owner.address, spec, self._resolve_target(owner, spec, target), note, qualifiers, source.file, line, where, value_path)
 
     def _qualifier_link(self, owner: Node, spec: LinkSpec, value: Any, path: tuple) -> None:
         source = owner.source
         if not isinstance(value, str):
             self._error(source.file, source.line(path), _where(path), "expected a single ID")
             return
-        link = Link(owner.address, spec, self._resolve_target(owner, spec, value), None, {}, source.file, source.line(path), _where(path))
+        link = Link(owner.address, spec, self._resolve_target(owner, spec, value), None, {}, source.file, source.line(path), _where(path), path)
         self.pending.append((link, owner.module))
 
     def _resolve_target(self, owner: Node, spec: LinkSpec, target: str) -> str:

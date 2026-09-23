@@ -65,9 +65,11 @@ objects: [imaging_interpretation]
 - The first line is always `kind: <kind>`. The kind is never inferred from the
   folder, so moving a file never changes its meaning.
 - IDs are lowercase letters, digits, `.`, `-`, and `_`, and are unique across
-  the whole catalog. A document's ID never contains another document's ID, so
-  derived IDs such as `<profile>.codes.*`, `<profile>.join.*`, and
-  `<profile>.support.*` are independent names.
+  the whole catalog. New IDs never embed another document's ID, so names such
+  as `<profile>.codes.*`, `<profile>.join.*`, and `<profile>.support.*` stand
+  on their own. Some older IDs do contain another (`image` inside
+  `internal-v2.image.*`), so rename with `embed-context rename OLD NEW`, which
+  updates every link, rather than with find-and-replace.
 - Every kind uses `label` and `definition`. Fields whose meaning genuinely
   differs keep their own names, such as a guardrail's `statement` and
   `rationale`.

@@ -23,6 +23,7 @@ from .operations import ArgumentError, Interface, Session, Surface, call, choice
 from .pages import DEFAULT_PATH as PAGES_PATH
 from .pages import write_pages
 from .query import QueryConfig, QueryError, load_query_config
+from .rename import RenameError, apply_rename, plan_rename
 from .schema import DEFAULT_PATH, write_schema
 from .view import UnknownID
 from .yamlio import YamlError
@@ -30,9 +31,9 @@ from .yamlio import YamlError
 _DESCRIPTION = "Human-editable clinical-semantic context for EMBED data."
 # Maintainer commands work on the whole catalog; the others load the
 # default modules from model/operations.yaml unless --module is given.
-_ALL_MODULE_COMMANDS = {"check", "render", "schema"}
+_ALL_MODULE_COMMANDS = {"check", "render", "schema", "rename"}
 # Commands that write files, which the read-only bundled copy cannot take.
-_WRITING_COMMANDS = {"render", "schema"}
+_WRITING_COMMANDS = {"render", "schema", "rename"}
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -69,6 +70,8 @@ def main(argv: list[str] | None = None) -> int:
         return 2
     if args.command == "check":
         return _check(catalog, write=not args.no_schema and not bundled)
+    if args.command == "rename":
+        return _rename(catalog, args.old, args.new, args.dry_run)
     if args.command == "schema":
         path = write_schema(catalog, args.output)
         print(f"Wrote {path.relative_to(catalog.root)}")
@@ -110,7 +113,7 @@ def _global_options(parser: argparse.ArgumentParser) -> None:
         "--module",
         dest="modules",
         action="append",
-        help="load only this module and the modules it requires; repeatable (default: default_modules in model/operations.yaml; check, render, and schema load every module)",
+        help="load only this module and the modules it requires; repeatable (default: default_modules in model/operations.yaml; check, render, schema, and rename load every module)",
     )
 
 
@@ -149,6 +152,16 @@ def _parser(catalog: Catalog, interface: Interface, session: Session | None) -> 
     schema = commands.add_parser("schema", help="write the editor schema")
     schema.add_argument("--output", type=Path, default=DEFAULT_PATH, help=f"path relative to the root (default: {DEFAULT_PATH})")
 
+    rename = commands.add_parser(
+        "rename",
+        help="rename a document or entry and every link to it",
+        description="Rename a document (its file and every link to it) or an entry (its key and every link to it). "
+        "Only link values change, never prose. The catalog is checked afterwards, and every file is restored if the result has errors.",
+    )
+    rename.add_argument("old", help="the current ID, or an entry address such as internal-v2.cancerhist_anon#rel")
+    rename.add_argument("new", help="the new ID; for an entry, its new key or full address")
+    rename.add_argument("--dry-run", action="store_true", help="list the changes without writing them")
+
     commands.add_parser("serve", help="run the MCP server on standard input and output")
     return parser
 
@@ -164,6 +177,33 @@ def _help(argument: Any, session: Session | None) -> str:
 
 def _first_sentence(text: str) -> str:
     return text.split(". ", 1)[0].rstrip(".")
+
+
+def _rename(catalog: Catalog, old: str, new: str, dry_run: bool) -> int:
+    try:
+        plan = plan_rename(catalog, old, new)
+        if not dry_run:
+            apply_rename(catalog, plan)
+    except RenameError as error:
+        print(f"embed-context: {error}", file=sys.stderr)
+        return 1
+
+    def rel(path: Path) -> str:
+        return str(path.relative_to(catalog.root))
+
+    files = {edit.file for edit in plan.edits}
+    verb = "Would rename" if dry_run else "Renamed"
+    print(f"{verb} {plan.old} to {plan.new}: {plan.links} links, {len(files)} files edited")
+    if plan.move:
+        print(f"  file: {rel(plan.move[0])} -> {rel(plan.move[1])}")
+    if dry_run:
+        for edit in sorted(plan.edits, key=lambda e: (str(e.file), e.start)):
+            print(f"  {rel(edit.file)}:{edit.line}: {edit.old} -> {edit.new}")
+    if plan.unchanged:
+        print("Not links, so not changed; check these by hand:")
+        for file, line, text in plan.unchanged:
+            print(f"  {rel(file)}{f':{line}' if line else ''}: {text}")
+    return 0
 
 
 def _check(catalog: Catalog, write: bool) -> int:

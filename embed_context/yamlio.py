@@ -8,7 +8,7 @@ that every file reads the same way to a human and to the engine.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
@@ -40,6 +40,11 @@ class YamlDocument:
     file: Path
     data: Any
     lines: dict[Path_, int]
+    # Character offsets (start, end) of each scalar value, and of each
+    # mapping key by the path of its value; mechanical edits such as
+    # `rename` change exactly these spans and nothing else.
+    spans: dict[Path_, tuple[int, int]] = field(default_factory=dict)
+    key_spans: dict[Path_, tuple[int, int]] = field(default_factory=dict)
 
     def line(self, path: Path_) -> int:
         """Line of the value at ``path``, or of its nearest enclosing value."""
@@ -62,8 +67,10 @@ def parse_yaml(text: str, file: Path) -> YamlDocument:
         mark = error.problem_mark or error.context_mark
         raise YamlError(file, (mark.line + 1) if mark else 1, _describe(error)) from None
     lines: dict[Path_, int] = {}
-    data = _convert(node, (), lines, file) if node is not None else {}
-    return YamlDocument(file, data, lines)
+    spans: dict[Path_, tuple[int, int]] = {}
+    key_spans: dict[Path_, tuple[int, int]] = {}
+    data = _convert(node, (), lines, file, spans=spans, key_spans=key_spans) if node is not None else {}
+    return YamlDocument(file, data, lines, spans, key_spans)
 
 
 def _reject_unsupported_syntax(yaml: YAML, text: str, file: Path) -> None:
@@ -81,7 +88,17 @@ def _reject_unsupported_syntax(yaml: YAML, text: str, file: Path) -> None:
             raise YamlError(file, line, f"explicit tags such as `{tag}` are not supported; the model decides every type")
 
 
-def _convert(node: Any, path: Path_, lines: dict[Path_, int], file: Path, line: int | None = None) -> Any:
+def _convert(
+    node: Any,
+    path: Path_,
+    lines: dict[Path_, int],
+    file: Path,
+    line: int | None = None,
+    spans: dict[Path_, tuple[int, int]] | None = None,
+    key_spans: dict[Path_, tuple[int, int]] | None = None,
+) -> Any:
+    spans = {} if spans is None else spans
+    key_spans = {} if key_spans is None else key_spans
     # A mapping value is located at its key's line, which is where a human
     # looks, even when the value itself starts on the next line.
     lines[path] = line if line is not None else node.start_mark.line + 1
@@ -93,10 +110,12 @@ def _convert(node: Any, path: Path_, lines: dict[Path_, int], file: Path, line: 
             key = key_node.value
             if key in result:
                 raise YamlError(file, key_node.start_mark.line + 1, f"duplicate key `{key}`")
-            result[key] = _convert(value_node, (*path, key), lines, file, key_node.start_mark.line + 1)
+            key_spans[(*path, key)] = (key_node.start_mark.index, key_node.end_mark.index)
+            result[key] = _convert(value_node, (*path, key), lines, file, key_node.start_mark.line + 1, spans, key_spans)
         return result
     if isinstance(node, SequenceNode):
-        return [_convert(item, (*path, index), lines, file) for index, item in enumerate(node.value)]
+        return [_convert(item, (*path, index), lines, file, None, spans, key_spans) for index, item in enumerate(node.value)]
+    spans[path] = (node.start_mark.index, node.end_mark.index)
     if node.style is None and node.value in _NULL_SPELLINGS:
         raise YamlError(
             file,
