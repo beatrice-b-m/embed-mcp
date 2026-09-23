@@ -120,6 +120,14 @@ read:
   # address (for example `internal-v2.hormonehist_anon#code`) for everything.
   summaries:
     column: [type, maps]
+    object_binding: [object, identity_columns, rows_per_instance, longitudinal_identity]
+
+  # Fields shown with every link to a document of these kinds, so a reader
+  # can triage links without opening them.
+  link_facts:
+    claim: [status]
+    guardrail: [priority]
+    profile_support: [evidence_status, representation_status]
 
 codes:
   # How `code` finds the meaning of a represented value.

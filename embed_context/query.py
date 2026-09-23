@@ -23,7 +23,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from .catalog import Catalog, Node
-from .view import UnknownID, view
+from .view import UnknownID, ViewOptions, facts_for, view
 from .yamlio import YamlDocument, YamlError, read_yaml
 
 _TOKEN = re.compile(r"[a-z0-9]+(?:[-_.][a-z0-9]+)*")
@@ -65,7 +65,12 @@ class QueryConfig:
     topic_link: str
     topic_parent_link: str
     summaries: dict[str, tuple[str, ...]]
+    link_facts: dict[str, tuple[str, ...]] = field(default_factory=dict)
     codes: dict[str, str] = field(default_factory=dict)
+
+    @property
+    def view_options(self) -> ViewOptions:
+        return ViewOptions(summaries=self.summaries, link_facts=self.link_facts)
 
 
 def load_query_config(catalog: Catalog) -> QueryConfig:
@@ -108,6 +113,14 @@ def load_query_config(catalog: Catalog) -> QueryConfig:
         if kind not in model.kinds or not model.kinds[kind].entry:
             raise _error(doc, ("read", "summaries", kind), f"`{kind}` is not an entry kind")
         summaries[kind] = tuple(fields)
+    link_facts = {}
+    for kind, fields in _mapping(doc, read.get("link_facts", {}), ("read", "link_facts")).items():
+        if kind not in model.kinds:
+            raise _error(doc, ("read", "link_facts", kind), f"unknown kind `{kind}`")
+        for name in fields:
+            if name not in model.kinds[kind].fields:
+                raise _error(doc, ("read", "link_facts", kind), f"`{kind}` has no field `{name}`")
+        link_facts[kind] = tuple(fields)
     return QueryConfig(
         stopwords=stopwords,
         field_weights=weights,
@@ -128,6 +141,7 @@ def load_query_config(catalog: Catalog) -> QueryConfig:
         topic_link=search["topic_link"],
         topic_parent_link=search["topic_parent_link"],
         summaries=summaries,
+        link_facts=link_facts,
         codes=dict(codes),
     )
 
@@ -210,15 +224,19 @@ class Searcher:
             floor = scored[0][0] * config.min_relative_score
             scored = [item for item in scored if item[0] >= floor]
         limit = limit or config.limit
-        results = [self._result(doc, score, matched) for score, _, doc, matched in scored[:limit]]
+        legend: dict[str, dict[str, str]] = {}
+        results = [self._result(doc, score, matched, legend) for score, _, doc, matched in scored[:limit]]
         unmatched = [term for term in terms if term not in self.idf and not any(e in self.idf for e in config.expansions.get(term, ()))]
-        return {
+        filters = {"kinds": kinds or [], "topics": topics or [], "modules": modules or []}
+        response = {
             "query": text,
-            "filters": {"kinds": kinds or [], "topics": topics or [], "modules": modules or []},
+            "filters": {name: values for name, values in filters.items() if values},
             "total": len(scored),
             "results": results,
             "unmatched_terms": unmatched,
+            "legend": legend,
         }
+        return {key: value for key, value in response.items() if value not in ([], {}, None) or key in ("results", "total")}
 
     def _score(self, doc: _Indexed, terms: list[str], phrase: str) -> tuple[float, set[str]]:
         config = self.config
@@ -259,26 +277,33 @@ class Searcher:
             return False
         return all(node.data.get(key) in values for key, values in boost.conditions.items())
 
-    def _result(self, doc: _Indexed, score: float, matched: set[str]) -> dict[str, Any]:
+    def _result(self, doc: _Indexed, score: float, matched: set[str], legend: dict[str, dict[str, str]]) -> dict[str, Any]:
         node = doc.node
-        links = []
+        options = self.config.view_options
+        grouped: dict[str, list[dict[str, Any]]] = {}
         for link in self.catalog.incoming(node.address):
             if link.spec.backlink in self.config.result_links:
                 source = self.catalog.nodes[link.source]
-                links.append({"name": link.spec.backlink, "id": source.address, "kind": source.kind, "label": source.label})
-        grouped: dict[str, list[dict[str, str]]] = {}
-        for item in links:
-            grouped.setdefault(item.pop("name"), []).append(item)
-        return {
+                item: dict[str, Any] = {"id": source.address, "kind": source.kind, "label": source.label}
+                facts, used = facts_for(self.catalog, source, options)
+                if facts:
+                    item["facts"] = facts
+                    _merge(legend, used)
+                grouped.setdefault(link.spec.backlink, []).append(item)
+        facts, used = facts_for(self.catalog, node, options)
+        _merge(legend, used)
+        result = {
             "id": node.address,
             "kind": node.kind,
             "label": node.label,
             "module": node.module,
             "score": round(score, 2),
             "summary": _summary(node, self.config.summary_fields),
+            "facts": facts,
             "matched": sorted(matched),
             "links": [{"name": name, "links": items} for name, items in grouped.items()],
         }
+        return {key: value for key, value in result.items() if value not in ([], {}, None)}
 
     def _index(self, node: Node) -> _Indexed:
         config = self.config
@@ -360,7 +385,7 @@ class Searcher:
 
 def read(catalog: Catalog, address: str, config: QueryConfig | None = None) -> dict[str, Any]:
     config = config or load_query_config(catalog)
-    return view(catalog, address, summaries=config.summaries)
+    return view(catalog, address, config.view_options)
 
 
 def lookup_code(catalog: Catalog, address: str, value: str, config: QueryConfig | None = None) -> dict[str, Any]:
@@ -420,6 +445,11 @@ def lookup_code(catalog: Catalog, address: str, value: str, config: QueryConfig 
 
 
 # Helpers --------------------------------------------------------------------------
+
+
+def _merge(legend: dict[str, dict[str, str]], used: dict[str, dict[str, str]]) -> None:
+    for key, meanings in used.items():
+        legend.setdefault(key, {}).update(meanings)
 
 
 def _suggest(value: str, candidates: list[str] | tuple[str, ...]) -> str:

@@ -51,6 +51,7 @@ class LinkSpec:
     local: bool = False
     description: str | None = None
     qualifiers: dict[str, FieldSpec] = field(default_factory=dict)
+    qualifier_of: str | None = None  # set for a link-valued qualifier: the link type it qualifies
 
     def owned_by(self, kind: KindSpec) -> bool:
         if self.owners == ANY:
@@ -214,6 +215,7 @@ def _parse_qualifier(
         backlink=raw["backlink"],
         many=False,
         description=raw.get("description"),
+        qualifier_of=link_name,
     )
     return FieldSpec(
         name=name,

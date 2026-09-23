@@ -9,6 +9,8 @@ from pathlib import Path
 from typing import Any
 
 from .catalog import Catalog, find_root, load_catalog
+from .pages import DEFAULT_PATH as PAGES_PATH
+from .pages import write_pages
 from .query import QueryError, Searcher, load_query_config, lookup_code, read
 from .render import render, render_named
 from .schema import DEFAULT_PATH, write_schema
@@ -42,6 +44,9 @@ def main(argv: list[str] | None = None) -> int:
     code.add_argument("value", help="the represented value, for example B or s")
     code.add_argument("--json", action="store_true", help="print JSON instead of text")
 
+    pages = commands.add_parser("render", help="write linked Markdown review pages for every document")
+    pages.add_argument("--output", type=Path, default=PAGES_PATH, help=f"directory relative to the root (default: {PAGES_PATH}); replaced on each run")
+
     schema = commands.add_parser("schema", help="write the editor schema")
     schema.add_argument("--output", type=Path, default=DEFAULT_PATH, help=f"path relative to the root (default: {DEFAULT_PATH})")
 
@@ -64,6 +69,10 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     try:
         config = load_query_config(catalog)
+        if args.command == "render":
+            target = write_pages(catalog, config, args.output)
+            print(f"Wrote {len(catalog.documents) + 1} pages to {target.relative_to(catalog.root)}; start at index.md")
+            return 0
         if args.command == "show":
             data, text = _show(catalog, args.id, config)
         elif args.command == "search":
