@@ -25,15 +25,20 @@ class UnknownID(KeyError):
         self.message = f"unknown ID `{address}`{hint}"
 
 
-def view(catalog: Catalog, address: str) -> dict[str, Any]:
+def view(catalog: Catalog, address: str, summaries: dict[str, tuple[str, ...]] | None = None) -> dict[str, Any]:
+    """The view of ``address``. Entries whose kind is in ``summaries`` are
+    shown with only the listed fields and links, and no backlinks."""
     node = catalog.nodes.get(address)
     if node is None:
         matches = difflib.get_close_matches(address, list(catalog.nodes), n=1, cutoff=0.6)
         raise UnknownID(address, matches[0] if matches else None)
-    return _node_view(catalog, node, top=True)
+    return _node_view(catalog, node, top=True, summaries=summaries or {})
 
 
-def _node_view(catalog: Catalog, node: Node, top: bool = False) -> dict[str, Any]:
+def _node_view(catalog: Catalog, node: Node, top: bool = False, summaries: dict[str, tuple[str, ...]] | None = None) -> dict[str, Any]:
+    summaries = summaries or {}
+    if not top and node.kind in summaries:
+        return _summary_view(catalog, node, summaries[node.kind])
     kind = catalog.model.kinds[node.kind]
     result: dict[str, Any] = {
         "id": node.address,
@@ -64,12 +69,28 @@ def _node_view(catalog: Catalog, node: Node, top: bool = False) -> dict[str, Any
                 {
                     "name": name,
                     "description": spec.description,
-                    "nodes": [_node_view(catalog, child) for child in children],
+                    "nodes": [_node_view(catalog, child, summaries=summaries) for child in children],
                 }
             )
         else:
             result["fields"].append(_field_view(catalog, spec, node.data[name]))
     return result
+
+
+def _summary_view(catalog: Catalog, node: Node, names: tuple[str, ...]) -> dict[str, Any]:
+    kind = catalog.model.kinds[node.kind]
+    fields = [_field_view(catalog, kind.fields[name], node.data[name]) for name in names if name in kind.fields and name in node.data]
+    links = [link for link in catalog.outgoing(node.address) if link.spec.field in names and "." not in link.spec.name]
+    return {
+        "id": node.address,
+        "kind": node.kind,
+        "label": node.label,
+        "summary": True,
+        "fields": fields,
+        "entries": [],
+        "links": _link_groups(catalog, links, node, outgoing=True),
+        "backlinks": [],
+    }
 
 
 def _field_view(catalog: Catalog, spec: FieldSpec, value: Any) -> dict[str, Any]:

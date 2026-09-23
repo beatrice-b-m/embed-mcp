@@ -1,0 +1,130 @@
+# Search and read tuning. The engine contains no search vocabulary or
+# weights of its own; everything that shapes results is here.
+#
+# tests/retrieval_cases.yaml checks that results stay useful. Rerun it after
+# editing this file:
+#   uv run --locked python -m unittest tests.test_retrieval
+
+search:
+  # Words ignored in queries and documents.
+  stopwords: [a, all, an, and, anon, are, as, at, be, by, does, everything, feature, features, find, for,
+    from, how, in, is, it, its, known, most, not, of, on, one, or, per, relevant, show, that, the, this,
+    to, what, when, which, with]
+
+  # How much a query term counts when it appears in a field. Field names are
+  # the model's field names, and the link or backlink names, which contribute
+  # the linked documents' labels and IDs.
+  field_weights:
+    id: 4
+    label: 5
+    search_terms: 5
+    definition: 3
+    statement: 3
+    meaning: 2
+    rationale: 2
+    grain: 2
+    columns: 4
+    caveats: 1
+    applies_to: 1.5
+    objects: 1
+    default: 0.5
+
+  # The same for text inside a document's nested entries, by section name.
+  # A table's columns are many, so they count little toward the table itself;
+  # a feature is found by its columns through the `columns` backlink above.
+  entry_weights:
+    claims: 2
+    missing_states: 1.5
+    workflow_steps: 1
+    columns: 0.2
+    default: 0.5
+
+  # Extra terms searched when a query uses a word, at `expansion_weight`
+  # of a direct match. Use this to connect how analysts phrase questions
+  # with how the catalog describes the data.
+  expansion_weight: 0.6
+  expansions:
+    nearest: [longitudinal, prior, subsequent, candidate, timeline]
+    subsequent: [longitudinal, candidate, timeline]
+    prior: [longitudinal, candidate, history, timeline]
+    recent: [longitudinal, prior]
+    cancer: [malignancy, malignant, pathology]
+    fallback: [substitute, substitution, proxy, interchangeable, coalesce]
+    coalesce: [substitute, substitution, fallback, interchangeable]
+    calibration: [probability, readiness, scale]
+    brier: [calibration, probability]
+    probability: [calibration, readiness]
+    key: [identity, locator, unique]
+    row: [identity, multiplicity, instance]
+    bside: [biopsy, laterality, side]
+    laterality: [side, bilateral]
+    binary: [outcome, endpoint, capture]
+    endpoint: [outcome, capture]
+    birads: [assessment]
+    aggregate: [aggregation, attribution, rollup]
+
+  # Multiply the score of documents that match a condition. A condition names
+  # the kind and field values; a list matches any of its values.
+  boosts:
+    - when: {kind: guardrail, priority: critical}
+      factor: 1.5
+    - when: {kind: guardrail, priority: high}
+      factor: 1.3
+    - when: {kind: profile_support, representation_status: [unsupported, unresolved]}
+      factor: 1.2
+    # Code lists and tables hold many terms; rank them below the features
+    # and objects they represent, which link to them.
+    - when: {kind: vocabulary}
+      factor: 0.6
+    - when: {kind: table}
+      factor: 0.7
+
+  # Documents that match only some query terms score lower: the score is
+  # multiplied by (matched terms / query terms) raised to this power. A term
+  # matched only through an expansion counts as half a match.
+  coverage_power: 1.5
+
+  # A term's contribution grows with how many weighted fields mention it,
+  # but levels off: `saturation` is the weighted count at which it reaches
+  # half its maximum.
+  saturation: 5
+
+  # Documents whose label or search terms contain the whole query phrase
+  # score this much higher (0.5 means 50% higher).
+  phrase_bonus: 0.5
+
+  # Results scoring below this fraction of the best result are dropped.
+  min_relative_score: 0.08
+  limit: 10
+
+  # Kinds that search returns. Entries (claims, columns, ...) are found
+  # through the document that holds them.
+  kinds: [clinical_object, relationship, concept, feature, temporal, aggregation, guardrail, pattern,
+    context, profile_support, table, join, join_path, vocabulary, source, topic]
+
+  # Backlink groups listed with each result, so a guardrail or profile
+  # support note is visible without a second read.
+  result_links: [guardrails, profile_support]
+
+  # Each result's one-line summary is the first sentence of the first of
+  # these fields that the document has.
+  summary_fields: [definition, statement, meaning, representation_summary, evidence_summary, version_scope, grain]
+
+  # Topic filters include narrower topics through this link type.
+  topic_link: topics
+  topic_parent_link: topic_broader
+
+read:
+  # Entry kinds shown in summary form when their parent document is read:
+  # only these fields and links, without backlinks. Read the entry's own
+  # address (for example `internal-v2.hormonehist_anon#code`) for everything.
+  summaries:
+    column: [type, maps]
+
+codes:
+  # How `code` finds the meaning of a represented value.
+  code_field: codes                         # the vocabulary field holding codes
+  column_vocabulary_link: maps.vocabulary   # link from a column to its code lists
+  column_feature_link: maps                 # link from a column to the features it records
+  interpretation_field: interpretations     # a column's meanings for specific values
+  missing_state_field: missing_states       # a feature's meanings for missing values
