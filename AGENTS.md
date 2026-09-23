@@ -18,6 +18,22 @@ version `2`, registered public profile `open-v2`, and optional MCP SDK
 dependency `2.0.0`. The optional `embedv2-agent-context-curator` companion is
 versioned in lockstep with the core distribution.
 
+## Working documents
+
+`temp-docs/` holds short-lived working documents, such as the current
+implementation plan or a draft of one. They record in-progress decisions and
+open questions; they are not long-term reference documentation.
+
+- A working document governs only the in-progress work it describes. It never
+  overrides the structured catalog, the implementation, or `docs/`.
+- Keep its decisions and open questions current as work proceeds, and record
+  every change in its change log.
+- When the work finishes, move durable content into `docs/`, the README, or
+  this file, then delete the working document.
+- Active: `temp-docs/rebuild-contract.md` is the contract for rebuilding the
+  catalog encoding and engine from the ground up. Read it before any rebuild
+  work.
+
 ## Canonical-source hierarchy
 
 - `catalog/semantic/catalog.json` is the source of truth for shared clinical

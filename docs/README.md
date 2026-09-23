@@ -63,6 +63,10 @@ representations. `catalog/catalog-set.json` selects bundled defaults. Their
 version-matched JSON Schemas are structural contracts. Markdown explains those
 sources but does not override them.
 
+Short-lived working documents, such as a current implementation plan, live in
+[`temp-docs/`](../temp-docs/) rather than here. The active one is the
+[catalog rebuild contract](../temp-docs/rebuild-contract.md).
+
 ## Review evidence
 
 These pages preserve authoring provenance. They are not onboarding guides or
