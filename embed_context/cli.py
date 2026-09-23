@@ -3,8 +3,8 @@
 The shared operations (search, read, code) are generated from
 ``model/operations.yaml`` (see ``embed_context.operations``), so the CLI and
 the MCP server take the same arguments and print the same text. The
-maintainer commands (check, render, schema) and ``serve``, which starts the
-MCP server, are CLI-only.
+maintainer commands (check, render, schema, rename, graph) and ``serve``,
+which starts the MCP server, are CLI-only.
 
 The catalog is loaded before the full parser is built, because the help
 lists the loaded modules, the searchable kinds, and the modules' notices.
@@ -13,12 +13,14 @@ lists the loaded modules, the searchable kinds, and the modules' notices.
 from __future__ import annotations
 
 import argparse
+import json
 import sys
 from pathlib import Path
 from typing import Any
 
 from . import package_version
 from .catalog import Catalog, find_root, is_bundled, load_catalog
+from .graph import export_graph
 from .operations import ArgumentError, Interface, Session, Surface, call, choices, load_interface
 from .pages import DEFAULT_PATH as PAGES_PATH
 from .pages import write_pages
@@ -31,7 +33,7 @@ from .yamlio import YamlError
 _DESCRIPTION = "Human-editable clinical-semantic context for EMBED data."
 # Maintainer commands work on the whole catalog; the others load the
 # default modules from model/operations.yaml unless --module is given.
-_ALL_MODULE_COMMANDS = {"check", "render", "schema", "rename"}
+_ALL_MODULE_COMMANDS = {"check", "render", "schema", "rename", "graph"}
 # Commands that write files, which the read-only bundled copy cannot take.
 _WRITING_COMMANDS = {"render", "schema", "rename"}
 
@@ -76,6 +78,12 @@ def main(argv: list[str] | None = None) -> int:
         path = write_schema(catalog, args.output)
         print(f"Wrote {path.relative_to(catalog.root)}")
         return 0
+    if args.command == "graph":
+        if catalog.errors:
+            print(f"embed-context: the catalog has {len(catalog.errors)} errors; run `embed-context check`", file=sys.stderr)
+            return 1
+        sys.stdout.write(json.dumps(export_graph(catalog), indent=1, ensure_ascii=False) + "\n")
+        return 0
     if session is None:
         print(f"embed-context: configuration error: {config_error}", file=sys.stderr)
         return 2
@@ -113,7 +121,7 @@ def _global_options(parser: argparse.ArgumentParser) -> None:
         "--module",
         dest="modules",
         action="append",
-        help="load only this module and the modules it requires; repeatable (default: default_modules in model/operations.yaml; check, render, schema, and rename load every module)",
+        help="load only this module and the modules it requires; repeatable (default: default_modules in model/operations.yaml; check, render, schema, rename, and graph load every module)",
     )
 
 
@@ -161,6 +169,14 @@ def _parser(catalog: Catalog, interface: Interface, session: Session | None) -> 
     rename.add_argument("old", help="the current ID, or an entry address such as internal-v2.cancerhist_anon#rel")
     rename.add_argument("new", help="the new ID; for an entry, its new key or full address")
     rename.add_argument("--dry-run", action="store_true", help="list the changes without writing them")
+
+    commands.add_parser(
+        "graph",
+        help="print the catalog's nodes and typed links as JSON",
+        description="Print every node (documents and their entries) and every link of the loaded modules as JSON, "
+        "with the kinds, link types, and modules they use, for drawing the catalog or joining agent traces to it. "
+        "Labels are the only field content; read a node for the rest.",
+    )
 
     commands.add_parser("serve", help="run the MCP server on standard input and output")
     return parser

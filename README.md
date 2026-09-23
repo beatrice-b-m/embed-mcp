@@ -161,6 +161,19 @@ document = read(catalog, results["results"][0]["id"])
 Results are the same views the CLI prints with `--format json`; see
 [Architecture](docs/architecture.md#views) for their shape.
 
+## Export the graph
+
+To draw the catalog or analyze its structure, export every document, entry,
+and typed link as JSON:
+
+```bash
+embed-context graph > graph.json
+```
+
+The export loads every module unless `--module` is given, and carries labels
+but no other field content; [Architecture](docs/architecture.md#graph-export)
+describes its shape.
+
 ## What the catalog will not decide
 
 The catalog supplies context for designing an analysis; it does not design the

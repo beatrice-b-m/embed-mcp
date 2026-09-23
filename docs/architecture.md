@@ -46,6 +46,7 @@ these goals:
 | `pages.py` | Linked Markdown review pages (`embed-context render`) |
 | `schema.py` | The generated editor schema |
 | `rename.py` | Renames a document or entry and every link to it (`embed-context rename`) |
+| `graph.py` | The catalog's nodes and typed links as JSON (`embed-context graph`) |
 | `yamlout.py` | Writes documents in the house style |
 
 ## Loading
@@ -80,7 +81,8 @@ editor schema, and `render` and `schema` refuse it.
 
 `default_modules` in `model/operations.yaml` (currently `internal-v2`, which
 also loads `semantic`) applies to `search`, `read`, `code`, and `serve`.
-`--module` overrides it. `check`, `render`, and `schema` load every module.
+`--module` overrides it. `check`, `render`, `schema`, `rename`, and `graph`
+load every module.
 
 ## Views
 
@@ -142,7 +144,7 @@ surfaces, with near-match suggestions.
 - The **CLI** builds its subcommands, options, and help from the table. It
   loads the catalog before building the parser, so the help lists the
   searchable kinds, the loaded modules, and the modules' notices. `check`,
-  `render`, `schema`, and `serve` are CLI-only.
+  `render`, `schema`, `rename`, `graph`, and `serve` are CLI-only.
 - The **MCP server** registers one tool per operation, with a closed input
   schema (`additionalProperties: false`; enums for kinds, modules, and
   formats) and read-only annotations.
@@ -192,6 +194,24 @@ The engine keeps only rules the model cannot express:
 
 A rule that encodes specific catalog content, rather than structure, is not
 allowed.
+
+## Graph export
+
+`embed-context graph` prints the loaded modules as one JSON graph, for drawing
+the catalog and for joining agent traces to it:
+
+- `nodes`: every document and entry, with its `id`, `kind`, `label`, and
+  `module`, and an entry's `parent` document;
+- `links`: every resolved link, with its `source`, `target`, and link `type`
+  (a link-valued qualifier is its own link, such as `maps.vocabulary`), and its
+  text qualifiers;
+- `kinds`, `link_types` (with each backlink name), and `modules`: the parts
+  of the model the nodes and links use.
+
+Labels are the only field content, so the export is small and holds nothing
+a read would not show. Nodes and links are sorted, so the same catalog always
+exports the same file and a layout computed from it is reproducible. The
+command refuses a catalog with errors.
 
 ## Renaming
 

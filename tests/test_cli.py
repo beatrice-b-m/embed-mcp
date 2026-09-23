@@ -61,7 +61,7 @@ class CliTests(CatalogTestCase):
         out = io.StringIO()
         with contextlib.redirect_stdout(out), self.assertRaises(SystemExit):
             main(["--root", str(self.root), "--help"])
-        self.assertIn("{search,read,code,check,render,schema,rename,serve}", out.getvalue())
+        self.assertIn("{search,read,code,check,render,schema,rename,graph,serve}", out.getvalue())
         self.assertIn("Base notice.", out.getvalue())
         out = io.StringIO()
         with contextlib.redirect_stdout(out), self.assertRaises(SystemExit):
