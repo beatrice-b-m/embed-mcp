@@ -145,6 +145,22 @@ For the Open Data V2 representation, register a second server with
 `embed-context --module open-v2 serve`. If a desktop client does not inherit
 your shell `PATH`, use the absolute path that `uv tool dir --bin` prints.
 
+### Record agent traces
+
+To study how an agent navigates the catalog, start the server with a trace
+file:
+
+```bash
+claude mcp add --transport stdio --scope user embed-context -- embed-context serve --trace /absolute/path/trace.jsonl
+```
+
+The server appends one JSON line when it starts and one for every tool call:
+the arguments, the node IDs the call returned and the other IDs its response
+showed, the length of the returned text, and any error. IDs match
+[`embed-context graph`](#export-the-graph). Records name no model or task, so
+give each run its own file. Keep traces outside the checkout, or under the
+ignored `reference_files/`.
+
 ## Use it from Python
 
 Install the package as a normal dependency of your project, then:

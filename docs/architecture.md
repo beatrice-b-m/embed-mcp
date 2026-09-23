@@ -47,6 +47,7 @@ these goals:
 | `schema.py` | The generated editor schema |
 | `rename.py` | Renames a document or entry and every link to it (`embed-context rename`) |
 | `graph.py` | The catalog's nodes and typed links as JSON (`embed-context graph`) |
+| `trace.py` | JSON-line records of MCP tool calls (`embed-context serve --trace`) |
 | `yamlout.py` | Writes documents in the house style |
 
 ## Loading
@@ -173,6 +174,19 @@ the interface that prints them: "use --limit" on the CLI, "use limit" in MCP.
   its first sentence). Other guardrails reach the agent as backlinks, with
   their priority, on every document they apply to. No clinical wording is in
   code.
+- **Traces.** `serve --trace PATH` appends JSON lines to PATH (see
+  `embed_context/trace.py`): a `start` record with a random `session` ID, the
+  version, and the loaded modules, then a `call` record per tool call with
+  its `seq`, `time`, `tool`, `arguments`, and `chars` (the length of the text
+  returned). A successful call adds `returned`, the IDs it answered with (the
+  node read, the code lookup's address, or the search results in rank
+  order), and `shown`, every other node ID its response names: the links
+  the agent could follow next. Field content is not scanned, so prose that
+  happens to equal an ID is not counted. A failed call, including an
+  unknown tool, adds its `error`. The trace file is opened after the server
+  is built, and a file that cannot be opened is a startup error on standard
+  error. `operations.execute` returns the result data with its text, so the
+  trace records what the client received without formatting it twice.
 
 ## What stays in code
 

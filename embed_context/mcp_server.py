@@ -12,6 +12,9 @@ The server instructions are rendered from the catalog by
 documents that ``server.instructions`` selects. Nothing clinical is written
 here.
 
+With ``--trace``, every call is also recorded as a JSON line (see
+``embed_context.trace``).
+
 The ``mcp`` package is optional and imported only when a server is built.
 Startup errors go to standard error, because standard output carries the
 protocol.
@@ -20,11 +23,13 @@ protocol.
 from __future__ import annotations
 
 import sys
+from pathlib import Path
 from typing import Any
 
 from . import package_version
-from .operations import ArgumentError, Operation, Session, Surface, call, choices, instructions
+from .operations import ArgumentError, Operation, Session, Surface, choices, execute, instructions
 from .query import QueryError
+from .trace import Trace
 from .view import UnknownID
 
 MCP_INSTALL_HINT = (
@@ -57,7 +62,7 @@ def input_schema(session: Session, operation: Operation) -> dict[str, Any]:
     return schema
 
 
-def build_server(session: Session) -> Any:
+def build_server(session: Session, trace: Trace | None = None) -> Any:
     try:
         import mcp_types as types
         from mcp.server import Server
@@ -77,15 +82,25 @@ def build_server(session: Session) -> Any:
         return types.ListToolsResult(tools=tools)
 
     async def call_tool(context: Any, params: Any) -> Any:
+        arguments = dict(params.arguments or {})
         if params.name not in interface.operations:
-            raise MCPError(types.INVALID_PARAMS, f"unknown tool `{params.name}`; tools: {', '.join(interface.operations)}")
+            message = f"unknown tool `{params.name}`; tools: {', '.join(interface.operations)}"
+            if trace is not None:
+                trace.failure(params.name, arguments, message)
+            raise MCPError(types.INVALID_PARAMS, message)
         try:
-            text = call(session, surface, params.name, dict(params.arguments or {}))
+            data, text = execute(session, surface, params.name, arguments)
         except UnknownID as error:
-            return _error(types, error.message)
+            message = error.message
         except (QueryError, ArgumentError) as error:
-            return _error(types, str(error))
-        return types.CallToolResult(content=[types.TextContent(text=text)])
+            message = str(error)
+        else:
+            if trace is not None:
+                trace.call(params.name, arguments, data, text)
+            return types.CallToolResult(content=[types.TextContent(text=text)])
+        if trace is not None:
+            trace.failure(params.name, arguments, message)
+        return _error(types, message)
 
     return Server(
         SERVER_NAME,
@@ -96,8 +111,10 @@ def build_server(session: Session) -> Any:
     )
 
 
-def serve(session: Session) -> int:
-    """Run the server on standard input and output until the client disconnects."""
+def serve(session: Session, trace_path: Path | None = None) -> int:
+    """Run the server on standard input and output until the client disconnects.
+
+    With a trace path, append a record of every call to that file."""
     if session.catalog.errors:
         print(f"embed-context: the catalog has {len(session.catalog.errors)} errors; run `embed-context check` before serving", file=sys.stderr)
         return 2
@@ -106,6 +123,16 @@ def serve(session: Session) -> int:
     except RuntimeError as error:
         print(f"embed-context: {error}", file=sys.stderr)
         return 2
+    # The first build checks for the mcp package, so a server that cannot
+    # start leaves no trace file behind.
+    trace = None
+    if trace_path is not None:
+        try:
+            trace = Trace(trace_path, session.catalog)
+        except OSError as error:
+            print(f"embed-context: cannot write the trace file: {error}", file=sys.stderr)
+            return 2
+        server = build_server(session, trace)
     import anyio
     from mcp.server.stdio import stdio_server
 
@@ -113,7 +140,11 @@ def serve(session: Session) -> int:
         async with stdio_server() as (read_stream, write_stream):
             await server.run(read_stream, write_stream, server.create_initialization_options())
 
-    anyio.run(run)
+    try:
+        anyio.run(run)
+    finally:
+        if trace is not None:
+            trace.close()
     return 0
 
 

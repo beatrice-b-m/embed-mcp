@@ -94,7 +94,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "serve":
         from .mcp_server import serve
 
-        return serve(session)
+        return serve(session, args.trace.expanduser() if args.trace else None)
 
     operation = interface.operations[args.command]
     arguments = {a.name: getattr(args, a.name) for a in operation.arguments if getattr(args, a.name) is not None}
@@ -178,7 +178,13 @@ def _parser(catalog: Catalog, interface: Interface, session: Session | None) -> 
         "Labels are the only field content; read a node for the rest.",
     )
 
-    commands.add_parser("serve", help="run the MCP server on standard input and output")
+    serve = commands.add_parser("serve", help="run the MCP server on standard input and output")
+    serve.add_argument(
+        "--trace",
+        type=Path,
+        metavar="PATH",
+        help="append a JSON line to PATH for every tool call: its arguments, the node IDs it returned and showed, and its size",
+    )
     return parser
 
 

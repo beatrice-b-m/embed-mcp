@@ -109,6 +109,7 @@ Focused tests while iterating:
 | Search, read, and code | `tests.test_query`, `tests.test_retrieval` |
 | Operations and CLI | `tests.test_operations`, `tests.test_cli`, `tests.test_graph` |
 | MCP | `tests.test_mcp_server` (needs the `mcp` extra) |
+| Traces | `tests.test_trace` |
 | Editor schema | `tests.test_schema` |
 | The real catalog | `tests.test_repository_catalog` |
 

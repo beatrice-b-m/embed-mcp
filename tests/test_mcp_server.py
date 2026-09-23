@@ -104,6 +104,25 @@ class McpServerTests(ServerFixture):
         self.assertIn("Alpha note (n1 · note)", text)  # server.instructions selects closed notes
         self.assertNotIn("Alpha open note", text)
 
+    def test_trace_records_each_call(self):
+        from embed_context.mcp_server import build_server
+        from embed_context.trace import Trace
+
+        path = self.root / "trace.jsonl"
+        trace = Trace(path, self.session_.catalog)
+        self.server = build_server(self.session_, trace)
+
+        async def calls(client):
+            await client.call_tool("read", {"id": "n1"})
+            await client.call_tool("read", {"id": "topic.b"})
+
+        self.run_client(calls)
+        trace.close()
+        records = [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines()]
+        self.assertEqual([r["event"] for r in records], ["start", "call", "call"])
+        self.assertEqual(records[1]["returned"], ["n1"])
+        self.assertIn("did you mean `topic.a`?", records[2]["error"])
+
     def test_serve_refuses_a_catalog_with_errors_on_stderr_only(self):
         from embed_context.mcp_server import serve
 
@@ -114,6 +133,17 @@ class McpServerTests(ServerFixture):
         self.assertEqual(code, 2)
         self.assertEqual(out.getvalue(), "")
         self.assertIn("run `embed-context check`", err.getvalue())
+
+
+    def test_serve_reports_an_unwritable_trace_on_stderr_only(self):
+        from embed_context.mcp_server import serve
+
+        out, err = io.StringIO(), io.StringIO()
+        with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
+            code = serve(self.session(), self.root / "missing" / "trace.jsonl")
+        self.assertEqual(code, 2)
+        self.assertEqual(out.getvalue(), "")
+        self.assertIn("cannot write the trace file", err.getvalue())
 
 
 class McpOptionalDependencyTests(ServerFixture):

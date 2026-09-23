@@ -139,6 +139,11 @@ _HANDLERS: dict[str, tuple[Callable[..., dict[str, Any]], str | None]] = {
 
 def call(session: Session, surface: Surface, operation: str, arguments: dict[str, Any]) -> str:
     """Check the arguments, run the operation, and format its result."""
+    return execute(session, surface, operation, arguments)[1]
+
+
+def execute(session: Session, surface: Surface, operation: str, arguments: dict[str, Any]) -> tuple[dict[str, Any], str]:
+    """Like ``call``, but also returns the result data the text was formatted from."""
     spec = session.interface.operations[operation]
     values = check_arguments(session, spec, arguments)
     output = values.pop(FORMAT_ARGUMENT, "text")
@@ -146,13 +151,13 @@ def call(session: Session, surface: Surface, operation: str, arguments: dict[str
     data = handler(session, **values)
     if output == "json":
         if surface.name == "cli":
-            return json.dumps(data, indent=1, ensure_ascii=False) + "\n"
-        return json.dumps(data, separators=(",", ":"), ensure_ascii=False)
+            return data, json.dumps(data, indent=1, ensure_ascii=False) + "\n"
+        return data, json.dumps(data, separators=(",", ":"), ensure_ascii=False)
     root = session.catalog.root
     functions = surface.template_functions()
     if template is None:
-        return render(root, data, functions=functions)
-    return render_named(root, template, data, functions=functions)
+        return data, render(root, data, functions=functions)
+    return data, render_named(root, template, data, functions=functions)
 
 
 def check_arguments(session: Session, operation: Operation, arguments: dict[str, Any]) -> dict[str, Any]:
