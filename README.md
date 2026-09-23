@@ -84,6 +84,11 @@ To learn what a represented value means where it is used:
 embed-context code imaging.assessment B
 ```
 
+Each meaning names the column mapping it comes from, with that mapping's
+conditions, since one column may use a different code list per category. A
+value that joins several codes, such as `Q,D`, is split when its code list
+says its values are delimited, and each part is explained.
+
 Every command prints text by default. Add `--format json` for the same facts as
 JSON. `embed-context --help` and `embed-context <command> --help` describe
 every option.

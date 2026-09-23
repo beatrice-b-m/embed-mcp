@@ -87,9 +87,11 @@ operations:
 
   code:
     description: >-
-      Explain a represented value: its meaning in every code list that applies, codes that
-      differ from it only in case or spacing, the columns' interpretations of it, and the
-      feature's missing states for it.
+      Explain a represented value: its meaning in every code list that applies, each with
+      the column mapping and conditions it holds under; the meaning of each part of a
+      delimited value; codes that differ from it only in case or spacing; the columns'
+      interpretations of it, followed by their other interpretations; and the features'
+      missing states for it.
     arguments:
       id:
         type: string
