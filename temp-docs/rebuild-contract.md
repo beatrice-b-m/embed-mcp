@@ -1012,7 +1012,22 @@ What the prototype established:
 - **The editor schema lists each link type's target IDs once.** It is 78 KB
   for the prototype. It was validated with `jsonschema` using editor-style
   YAML typing (every document accepted; wrong values, unknown fields, and
-  unknown IDs rejected). It has not yet been tried inside VS Code itself.
+  unknown IDs rejected).
+- **The first editor trial found two faults, both fixed.** The maintainer
+  reported no autocompletion in VS Code. Driving the installed Red Hat YAML
+  language server (1.24.0) directly showed two causes:
+  - Link types with no target documents yet (concepts, temporal meanings)
+    produced empty `enum` lists. These are invalid in draft-07, so the
+    extension rejected the whole schema. Such link types now accept any ID
+    until a target exists, and a test checks the schema against the draft-07
+    meta-schema.
+  - The glob `catalog/**/*.yaml` did not match files in the worktree,
+    because `**` does not descend into dot-directories such as `.claude/`.
+    The settings add a second pattern for `.claude/worktrees/*/catalog/`.
+  After both fixes, the same language server completes field names,
+  controlled values, and link IDs filtered by target kind, flags mistakes
+  inline, and leaves `model/` files unmatched. Confirmation inside the VS Code
+  window is still the maintainer's to give.
 - **Module selection.** `check` and `show` load every module by default;
   `--module` restricts the set to a module and what it requires. The
   default public module set is decided in slice 4 or 7.
