@@ -59,6 +59,21 @@ Keep physical facts on their table's columns and interpretations on the column
 or mapping they qualify. A document may link only within its module and the
 modules its module requires.
 
+## Content principles
+
+`docs/project-scope.md` is normative; these principles from it shape every
+catalog edit:
+
+- The catalog describes EMBED, not itself. Do not write how the catalog was
+  built, what an investigation inspected, or what the catalog retains.
+- Guardrails constrain interpretation of the data, not downstream use.
+- Data-handling patterns are examples with their limits, never canonical
+  definitions, and contain no executable code; pseudocode is allowed.
+- Clinical knowledge concepts are documents; features link to them, and
+  columns link only to features.
+- One fact lives in one place: prefer a typed field or a module notice to a
+  repeated sentence.
+
 ## Clinical-source investigation boundary
 
 The catalog and normal test suite remain count-free and require no EMBED data.

@@ -176,12 +176,14 @@ checkout. The workflow never accesses EMBED data or `reference_files/`.
 ## Pull request checklist
 
 - Clinical meaning and instance grain are independent of storage.
+- Documents describe EMBED, not how the catalog was built.
 - Claims have the narrowest correct scope, evidence, and review status.
 - Targeted source-data findings are reconciled with applicable current and
   historical references without copying raw data or empirical summaries.
 - Missing states, attribution, temporal meaning, aggregation, guardrails, and
   profile support stay explicit.
-- Guardrails have the correct category and priority.
+- Guardrails constrain interpretation, with the correct category and priority.
+- Patterns are examples with their limits, and contain no executable code.
 - Physical facts live on their table's columns; features do not repeat them.
 - `check` reports no findings, and the full baseline passes.
 - The README and `docs/` agree with changed files, commands, and IDs.
