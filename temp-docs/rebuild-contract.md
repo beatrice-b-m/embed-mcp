@@ -1052,6 +1052,116 @@ Not built yet, by plan:
 - MCP (slice 6);
 - packaging of the data directories (slice 7).
 
+## 5. Slice 2: field-level model and parity ledger
+
+### 5.1 Scope
+
+Complete `model/kinds.yaml`, `model/links.yaml`, and `model/values.yaml` so
+that every legacy record family and field has a home. Record each one's
+disposition in the parity ledger ([`parity-ledger.md`](parity-ledger.md)),
+which slice 3's converter implements.
+
+### 5.2 Decisions
+
+**D2.1 Profile support carries two separate statuses. Accepted.**
+
+Legacy qualifications and coverage answer different questions:
+
+- Does the profile's evidence support the portable meaning?
+- Does the profile represent the subject in usable columns?
+
+One `profile_support` document per profile and subject records both, as
+`evidence_*` and `representation_*` fields, each with its own claims and
+caveats. The three open-v2 subjects whose legacy records disagree keep both
+answers.
+
+**D2.2 Features keep a single temporal link type. Accepted.**
+
+The feature's `temporal` link is the only one; the temporal side's
+`feature_refs` is dropped. This removes the explicit marker that a feature's
+value *is* the time meaning (as opposed to depending on it). The ledger
+records the loss, and it can return as an optional qualifier.
+
+**D2.3 Vocabularies stay per profile; internal-v2 comes first. Accepted.**
+
+Code lists are not shared between profiles. Development prioritizes
+internal-v2, and open-v2 is brought to parity with it later. Slice 3 migrates
+internal-v2 first.
+
+**D2.4 Authoring notes are dropped. Accepted.**
+
+Source notes that say what the catalog retains, or what an investigation
+inspected, are dropped. Thirteen are listed in the ledger. Four borderline
+notes are kept until the maintainer confirms them.
+
+**D2.5 Vocabulary is chosen per column mapping. Accepted (required by the data).**
+
+Three internal-v2 history columns (`HormoneHist_anon.code`,
+`ProcedureHist_anon.pcode`, and `CancerHist_anon.cancercode`) use a different
+code list for each category. The vocabulary is therefore a link-valued
+qualifier on each `maps` entry. The engine resolves, checks, and backlinks
+link-valued qualifiers like any other link. This supersedes the prototype's
+column-level `vocabulary` link.
+
+**D2.6 Object bindings are table entries keyed by object. Accepted.**
+
+No table represents the same object twice, so `table.objects` entries are
+keyed by the object's ID. Each entry holds the binding's axes, its identity
+columns (as local links), and its reserved identity exceptions.
+
+**D2.7 Joins and join paths are profile documents. Accepted.**
+
+A join spans two tables and belongs to neither, so legacy relationship
+bindings become `join` documents, and binding paths become `join_path`
+documents. Their endpoints link to columns, so the tables need no separate
+fields.
+
+**D2.8 Converted IDs never contain another document's ID. Accepted.**
+
+The ledger's ID scheme covers every family: `<profile>.codes.*`,
+`<profile>.join.*`, `<profile>.join-path.*`, `<profile>.support.*`, and
+`topic.*`. Tables become `<profile>.<lowercased table name>`. Derived binding
+and qualification IDs disappear.
+
+**D2.9 Boilerplate conversions are conditional. Accepted.**
+
+Each repeated sentence in the ledger becomes a typed field, a table caveat, a
+qualifier description, or a module notice, but only where its stated
+condition holds. Elsewhere the sentence stays, and slice 3 reports it.
+
+**D2.10 Derivable and module-implied data is not authored. Accepted.**
+
+The following are no longer authored:
+
+- feature `aggregations`, which the aggregation side already records;
+- feature-binding, object-binding, and qualification IDs;
+- `availability`;
+- `profiles`, and `scope: profile_specific`;
+- schema-version fields.
+
+**D2.11 Extension-only families are not modeled. Accepted.**
+
+No extension module holds data. The `extension` module type remains, so kinds
+can be added when an extension exists.
+
+**D2.12 Release evidence on portable features stays as-is for now. Accepted.**
+
+It is flagged in the ledger as open item 2.
+
+### 5.3 Status
+
+- The model covers every legacy family.
+- The prototype conforms to it: 38 documents, 35 entries, and 130 links
+  check with no findings. It now includes a real internal-v2 object binding
+  with a reserved identity exception, and a real join.
+- 49 tests pass.
+- The ledger lists five open items for maintainer review. None blocks slice 3,
+  and item 5 is a genuine contradiction between a portable caveat and
+  internal-v2.
+
+Slice 2 is complete when the maintainer has reviewed the ledger. Its drafted
+value meanings and qualifier descriptions may be revised in place later.
+
 ## Change log
 
 - 2026-09-23: Created. Rebuild-wide contract, slice plan, and slice 1
@@ -1093,3 +1203,6 @@ Not built yet, by plan:
 - 2026-09-23: The maintainer closed slice 1 after confirming editor
   autocompletion works. Every remaining Proposed slice 1 decision is
   Accepted; D1.19's kinds stay provisional until slice 2.
+- 2026-09-23: Slice 2. Recorded decisions D2.1–D2.12, the parity ledger, and
+  the finalized model. D2.5 supersedes the prototype's column-level
+  vocabulary link. The demonstration topic nesting was removed for parity.
