@@ -34,6 +34,19 @@ class CliTests(CatalogTestCase):
         code, out, _ = self.run_cli("show", "topic.a", "--json")
         self.assertIn('"id": "topic.a"', out)
 
+    def test_search_renders_results_or_json(self):
+        self.write("catalog/base/topic.a.yaml", "kind: topic\nlabel: Alpha hub\n")
+        code, out, _ = self.run_cli("search", "alpha")
+        self.assertEqual(code, 0)
+        self.assertIn("1. Alpha hub (topic.a) · topic", out)
+        code, out, _ = self.run_cli("search", "alpha", "--json")
+        self.assertIn('"total": 1', out)
+
+    def test_search_rejects_an_unknown_filter(self):
+        code, _, err = self.run_cli("search", "alpha", "--kind", "nope")
+        self.assertEqual(code, 1)
+        self.assertIn("unknown kind `nope`", err)
+
     def test_show_unknown_id(self):
         code, _, err = self.run_cli("show", "missing")
         self.assertEqual(code, 1)

@@ -94,6 +94,32 @@ statuses:
   closed: Finished.
 """
 
+FIXTURE_QUERY = """
+search:
+  stopwords: [the, of]
+  field_weights: {id: 1, label: 5, tags: 3, default: 0.5}
+  entry_weights: {items: 1, default: 0.5}
+  expansion_weight: 0.5
+  expansions:
+    tumour: [tumor]
+  boosts:
+    - when: {kind: note, status: closed}
+      factor: 3
+  coverage_power: 1
+  saturation: 5
+  phrase_bonus: 0
+  min_relative_score: 0
+  limit: 10
+  kinds: [note, topic]
+  result_links: [notes]
+  summary_fields: [label]
+  topic_link: about
+  topic_parent_link: broader
+read:
+  summaries:
+    item: [label]
+"""
+
 
 class CatalogTestCase(unittest.TestCase):
     """Creates a temporary catalog root with the fixture model and real templates."""
@@ -104,6 +130,7 @@ class CatalogTestCase(unittest.TestCase):
         self.write("model/kinds.yaml", FIXTURE_KINDS)
         self.write("model/links.yaml", FIXTURE_LINKS)
         self.write("model/values.yaml", FIXTURE_VALUES)
+        self.write("model/query.yaml", FIXTURE_QUERY)
         shutil.copytree(REPOSITORY / "templates", self.root / "templates")
         self.write("catalog/base/module.yaml", "kind: module\nlabel: Base\nmodule_type: semantic\n")
 

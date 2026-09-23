@@ -1,0 +1,108 @@
+# Retrieval evaluation for `search`.
+#
+# Each case gives a query, the modules to load, and where expected documents
+# must rank:
+#   expect   each ID must appear within the first `within` results
+#   before   in each pair, the first ID must rank above the second
+#            whenever both appear
+#
+# The open-v2 cases are the legacy discovery regressions, ported with their
+# windows unchanged and their IDs mapped through migration/id-map.json.
+# Editing the catalog or model/query.yaml may reorder results; when a case
+# fails, check whether the new order is still what an analyst needs before
+# changing the case.
+
+cases:
+  nearest-subsequent-cancer:
+    query: nearest subsequent ipsilateral cancer
+    modules: [open-v2]
+    expect:
+      - {id: guardrail.longitudinal-search-is-patient-scoped, within: 5}
+      - {id: clinical.patient-pathology-observation, within: 8}
+    before:
+      - [guardrail.longitudinal-search-is-patient-scoped, clinical.exam-pathology-observation]
+
+  most-recent-prior-cancer:
+    query: most recent prior cancer
+    modules: [open-v2]
+    expect:
+      - {id: guardrail.longitudinal-search-is-patient-scoped, within: 5}
+      - {id: clinical.patient-pathology-observation, within: 8}
+    before:
+      - [guardrail.longitudinal-search-is-patient-scoped, aggregation.pathology-severity-to-exam]
+
+  timestamp-fallback:
+    query: procedure report exam fallback coalesce
+    modules: [open-v2]
+    expect:
+      - {id: guardrail.timestamps-answer-different-questions, within: 4}
+      - {id: open-v2.support.downstream-availability-time, within: 8}
+    before:
+      - [guardrail.timestamps-answer-different-questions, time.exam-event]
+      - [guardrail.timestamps-answer-different-questions, time.procedure-event]
+      - [guardrail.timestamps-answer-different-questions, time.pathology-report-documentation]
+
+  risk-calibration:
+    query: risk probability calibration Brier score
+    modules: [open-v2]
+    expect:
+      - {id: guardrail.risk-probability-readiness, within: 4}
+      - {id: open-v2.support.risk-probability-calibration-readiness, within: 6}
+    before:
+      - [guardrail.risk-probability-readiness, risk.ibis_ten_year]
+
+  finding-row-identity:
+    query: one row per finding finding key
+    modules: [open-v2]
+    expect:
+      - {id: imaging.finding_number, within: 4}
+    before:
+      - [imaging.finding_number, technical.pandas_index]
+
+  laterality-roles:
+    query: laterality null side bside
+    modules: [open-v2]
+    expect:
+      - {id: breast.side, within: 6}
+      - {id: pathology.biopsy_side, within: 6}
+      - {id: clinical.side-finding, within: 8}
+
+  finding-severity-aggregate:
+    query: finding pathology severity aggregate
+    modules: [open-v2]
+    expect:
+      - {id: aggregation.pathology-severity-to-finding, within: 4}
+      - {id: guardrail.explicit-attribution-policy, within: 8}
+    before:
+      - [aggregation.pathology-severity-to-finding, aggregation.pathology-severity-to-side]
+      - [aggregation.pathology-severity-to-finding, aggregation.pathology-severity-to-exam]
+
+  binary-cancer-endpoint:
+    query: represented binary cancer endpoint
+    modules: [open-v2]
+    expect:
+      - {id: guardrail.incomplete-outcome-capture, within: 4}
+      - {id: open-v2.support.outcome-capture, within: 8}
+    before:
+      - [guardrail.incomplete-outcome-capture, pathology.severity]
+
+  birads-assessment:
+    # The guardrail that an assessment is not pathology truth may rank first;
+    # the feature itself must be directly below it.
+    query: BI-RADS assessment
+    modules: [internal-v2]
+    expect:
+      - {id: imaging.assessment, within: 2}
+      - {id: guardrail.assessment-not-pathology, within: 3}
+
+  column-name:
+    query: asses
+    modules: [internal-v2]
+    expect:
+      - {id: imaging.assessment, within: 1}
+
+  synthetic-negative-finding:
+    query: synthetic contralateral negative finding
+    modules: [internal-v2]
+    expect:
+      - {id: imaging.finding_number, within: 5}
