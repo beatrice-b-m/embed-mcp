@@ -70,3 +70,11 @@ source provenance (D3.8).
 | `internal-v2.magview-coded-values-context` | Internal V2 MagView categorical and exceptional-value reconciliation | Internal V2 MagView categorical and exceptional values |
 | `internal-v2.guardrail.hormone-history-timing-needs-explicit-reconciliation` | Hormone-history timing fields have no supplied reconciliation rule | Hormone-history timing fields have no established reconciliation rule |
 | `internal-v2` module | Internal EMBED V2 working profile | Internal EMBED V2 |
+
+## Group 4: prose found in slice 6
+
+| Where | Before | After |
+|---|---|---|
+| `internal-v2.cancerhist_anon`, `internal-v2.hormonehist_anon`, `internal-v2.procedurehist_anon` (7 key caveats) | No completeness, sentinel, or longitudinal history-identity assertion follows from the topology export. | Its completeness, sentinel values, and longitudinal history identity are not established. |
+| `open-v2.join.combined-anon-side-projection` | SQL null equality differs from the null-as-state comparison used during investigation. | Null side is a state, and null side matches null side; SQL equality never matches null to null. |
+| `open-v2.join.combined-anon-side-projection` | Complete wide side tuples resolved during the registered check; incomplete tuples do not define a join. | Complete wide side tuples resolve to side-level rows; incomplete tuples do not define a join. |

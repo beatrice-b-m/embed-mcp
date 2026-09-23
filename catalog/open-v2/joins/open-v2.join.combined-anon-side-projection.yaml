@@ -7,10 +7,8 @@ cardinality:
 evidence: [cross_table_check]
 hazards:
   - Do not coerce null side to bilateral, left, or right.
-  - SQL null equality differs from the null-as-state comparison used during investigation.
+  - Null side is a state, and null side matches null side; SQL equality never matches null to null.
 caveats:
-  - >-
-    Complete wide side tuples resolved during the registered check; incomplete tuples do not
-    define a join.
+  - Complete wide side tuples resolve to side-level rows; incomplete tuples do not define a join.
 source_columns: [open-v2.combined_anon#acc_anon, open-v2.combined_anon#side]
 target_columns: [open-v2.side_level_anon#acc_anon, open-v2.side_level_anon#side]

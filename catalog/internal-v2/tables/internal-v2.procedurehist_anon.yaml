@@ -24,9 +24,7 @@ keys:
       - >-
         A grouping within which attributes vary; it is not a unique history-row or
         clinical-entry identity.
-      - >-
-        No completeness, sentinel, or longitudinal history-identity assertion follows from the
-        topology export.
+      - Its completeness, sentinel values, and longitudinal history identity are not established.
     columns: [empi_anon]
   exam-grouping:
     key_type: technical
@@ -37,9 +35,7 @@ keys:
       - >-
         A grouping within which attributes vary; it is not a unique history-row or
         clinical-entry identity.
-      - >-
-        No completeness, sentinel, or longitudinal history-identity assertion follows from the
-        topology export.
+      - Its completeness, sentinel values, and longitudinal history identity are not established.
     columns: [acc_anon]
 objects:
   patient:

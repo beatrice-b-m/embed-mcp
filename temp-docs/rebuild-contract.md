@@ -1575,7 +1575,10 @@ restates a guardrail. The rebuild renders the instructions with
 - the loaded modules and their notices;
 - the documents that `server.instructions` in `model/operations.yaml`
   selects, each with its label, key facts, and first sentence. The default
-  is every guardrail of priority critical or high.
+  is every critical guardrail (9.4, item 1).
+- Other guardrails stay reachable by traversal: each is a backlink, with its
+  priority, on every document it applies to and on their search results. The
+  instructions say so.
 
 The read-only boundary ("does not produce SQL, pipelines, …") is now a
 notice on the semantic module (D1.8), shown in the instructions and in
@@ -1630,8 +1633,8 @@ notice on the semantic module (D1.8), shown in the instructions and in
 - `embed-context serve` works over stdio. Started from `uv` in the worktree,
   it initializes in about 1.7 seconds, and the first search builds the index
   in about 0.2 seconds.
-- With the default modules, the instructions are about 7k characters, 21
-  guardrails.
+- With the default modules, the instructions are about 2.9k characters, with
+  the 6 critical guardrails.
 - 94 tests pass. The MCP tests drive the server through an in-process client
   on the fixture catalog. They cover tools and schemas, one text block with
   no structured content, JSON on request, error results, MCP wording,
@@ -1649,16 +1652,16 @@ worktree:
 
 ### 9.4 Open items
 
-1. **Instruction length.** Critical and high guardrails give about 7k
-   characters, loaded into every session. Critical only would be 6
-   guardrails, about 2.6k with the rest of the instructions. This is one
-   line in `model/operations.yaml`.
-2. **Process wording in prose.** Two phrasings remain outside labels:
-   - "No completeness, sentinel, or longitudinal history-identity assertion
-     follows from the topology export." (seven key descriptions in the three
-     history tables)
-   - "SQL null equality differs from the null-as-state comparison used during
-     investigation." (`open-v2.join.combined-anon-side-projection`)
+1. **Instruction length.** Resolved: the maintainer chose critical
+   guardrails only, provided high guardrails stay reachable by traversal.
+   Every high guardrail applies to between 3 and 14 documents, so it is a
+   backlink on each of them. With critical and high, the instructions were
+   about 7k characters.
+2. **Process wording in prose.** Resolved: the seven "follows from the
+   topology export" key caveats and two sentences on
+   `open-v2.join.combined-anon-side-projection` were rewritten, and are
+   listed in [`prose-rewrites.md`](prose-rewrites.md). The source
+   descriptions that name the topology export are kept as provenance.
 3. **Packaging (slice 7).** The server needs `--root` until the data
    directories are packaged.
 
@@ -1723,3 +1726,5 @@ worktree:
   maintainer. D6.2 revises D5.2, and D6.4 renames `show` to `read` and
   `--json` to `--format json` (D5.1). Added the operation table, the
   generated CLI, and the MCP server.
+- 2026-09-23: Resolved slice 6 items 1 and 2: the instructions list critical
+  guardrails only, and the remaining process wording in prose was rewritten.
