@@ -1,8 +1,7 @@
 # Catalog rebuild contract
 
-> **Status:** Draft. Slices 1 and 2 are closed. Slice 3 (full migration) is
-> complete and awaiting maintainer review; see section 6. Last updated
-> 2026-09-23.
+> **Status:** Draft. Slices 1–3 are closed. Slice 4 (query layer) is complete
+> and awaiting maintainer review; see section 7. Last updated 2026-09-23.
 >
 > This is a short-lived working document (see `AGENTS.md`, "Working
 > documents"). When the rebuild is complete, its durable content moves into
@@ -1295,6 +1294,122 @@ describes the catalog as migrated, before these rewrites.
    `breast_side.pathology_severity_aggregate`), so find-and-replace is still
    not a safe rename for every ID.
 
+## 7. Slice 4: query layer
+
+### 7.1 Scope
+
+Read a document with its links, search, filter, and look up codes, over the
+new model. Keep all search tuning in text configuration.
+
+### 7.2 Decisions
+
+**D4.1 Query tuning lives in `model/query.yaml`. Accepted.**
+
+`model/query.yaml` holds everything that shapes results:
+
+- stopwords;
+- field, link, and entry-section weights;
+- query expansions;
+- boosts;
+- the saturation, coverage, and phrase-bonus settings;
+- result cut-offs and limits;
+- which kinds are searchable;
+- which backlinks are listed with each result;
+- summary fields;
+- how topics nest;
+- which entry kinds a read shows in summary;
+- the names code lookup uses.
+
+The engine (`embed_context/query.py`) names no kind, field, link type, or
+clinical term. It reads them all from this file, and a configuration mistake
+is reported with its file and line.
+
+**D4.2 Search is a transparent, general scorer. Accepted.**
+
+- Each query term scores by the configured weight of the fields that
+  mention it, including linked documents' labels and nested entries. Terms
+  frequent across the catalog count for less, and each term's contribution
+  levels off.
+- Expansions add related terms at reduced weight. Documents matching more
+  of the query score higher, and so do those whose label or search terms
+  contain the whole phrase. Configured boosts then apply.
+- Results well below the best one are dropped.
+- The legacy engine's seven hard-coded clinical "intents" and fixed bonuses
+  are replaced by expansions and boosts in the configuration file.
+
+**D4.3 A retrieval evaluation guards search quality. Accepted.**
+
+`tests/retrieval_cases.yaml` holds the eight legacy discovery regressions. It
+keeps their expected ranking windows and ordering constraints unchanged, with
+IDs mapped through the migration. It adds three internal-v2 cases:
+- a BI-RADS query;
+- a physical column name;
+- the synthetic negative finding.
+
+All eleven pass. For the BI-RADS case, the assessment guardrail ranks first
+and the feature second, and the case accepts that order.
+`python -m tests.test_retrieval` prints every ranking, for tuning.
+
+**D4.4 Search results are compact. Accepted.**
+
+Each result holds the following, and nothing else:
+
+- ID, kind, label, and module;
+- its score;
+- a one-sentence summary;
+- which fields matched;
+- the configured backlinks (guardrails and profile support).
+
+A result is about 600 characters as JSON, against about 3,000 to 8,000 per
+match in the legacy `discover`. Reading a result's ID gives everything else.
+
+**D4.5 Reads summarize configured entry kinds. Accepted.**
+
+Reading a table shows each column with only its type and mappings. Reading a
+column's own address (`<table>#<column>`) shows its interpretations and
+backlinks. Other entries, such as claims, keys, and object bindings, are shown
+in full with their parent.
+
+**D4.6 `code` explains a represented value. Accepted.**
+
+Given a vocabulary, a column, or a feature, `code` returns:
+
+- the value's meaning in every code list that applies, per profile and column;
+- codes that differ only in case or spacing;
+- the columns' interpretations of that representation;
+- the feature's missing states for it.
+
+**D4.7 Filters. Accepted.**
+
+`search` filters by kind, by topic (including narrower topics), and by module.
+`--module` loads a module and the modules it requires. Unknown filter values
+are rejected, with a near-match suggestion.
+
+**D4.8 Legacy constraint summaries are not synthesized. Accepted.**
+
+The legacy getters grouped supported facts, unresolved claims, and
+high-priority guardrails into "constraint" sections. Those facts are reached
+by traversal instead: guardrails are backlinks, and claims are one read away
+through `cites`. No information is lost (G1). Slice 5 may show a claim's
+status in the link itself.
+
+### 7.3 Status
+
+- `embed-context search`, `show`, and `code` work on the full catalog.
+- The full catalog is indexed in about 1.3 seconds.
+- 70 tests pass: engine tests on the fixture model, code-lookup properties on
+  the real catalog, and the retrieval evaluation.
+
+### 7.4 Open items, for slice 5
+
+1. **Large reads are still large.** Reading the internal MagView table is
+   about 43k characters of text or 117k of JSON. The JSON field structure is
+   verbose, and 152 summarized columns remain.
+2. **Link items lack key facts.** Link items could carry a claim's status or a
+   guardrail's priority, so the reader can triage without opening them.
+3. **Carried over from slice 3:** a mapping's vocabulary is shown twice, and
+   qualifier values are shown without their names.
+
 ## Change log
 
 - 2026-09-23: Created. Rebuild-wide contract, slice plan, and slice 1
@@ -1346,3 +1461,5 @@ describes the catalog as migrated, before these rewrites.
   - Migrated the full legacy catalog.
 - 2026-09-23: Applied the maintainer-approved prose rewrites (D3.8), and
   guarded the converter against overwriting hand edits.
+- 2026-09-23: Slice 4. Recorded D4.1–D4.8, and added search, code lookup,
+  summarized reads, and the retrieval evaluation.
