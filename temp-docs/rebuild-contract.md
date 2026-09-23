@@ -1,7 +1,8 @@
 # Catalog rebuild contract
 
-> **Status:** Draft. Slice 1 (encoding) is partly decided; see section 4.8
-> for what remains open. Last updated 2026-09-23.
+> **Status:** Draft. Slice 1 (encoding) decisions are recorded; the slice
+> closes when the prototype passes its exit criteria (section 4.9). Last
+> updated 2026-09-23.
 >
 > This is a short-lived working document (see `AGENTS.md`, "Working
 > documents"). When the rebuild is complete, its durable content moves into
@@ -101,6 +102,10 @@ must read and edit it, rather than modifying the existing code.
   procedures the lab uses internally for feature aggregation and processing.
   They are presented as examples with their interpretation limits, never as
   required or canonical definitions.
+- **Patterns are conceptual, not code (D1.23).** A pattern describes
+  conceptual handling, feature cleaning, or aggregation in prose steps or
+  pseudocode. It contains no executable code and names no concrete tables or
+  columns; it links to portable features, concepts, and aggregations instead.
 
 ### Scope changes from the current system
 
@@ -110,7 +115,7 @@ must read and edit it, rather than modifying the existing code.
   logic, cohort definitions, or aggregation defaults. Patterns stay within that
   boundary by being descriptive options with limits (see Content principles).
   `project-scope.md` and `AGENTS.md` must be reconciled with this change before
-  cutover (slice 7). Whether a pattern may include code is Q1.9.
+  cutover (slice 7). Patterns contain no executable code (D1.23).
 - **Clinical knowledge concepts become first-class documents.** Examples are
   "breast cancer" with narrower concepts such as invasive and in-situ breast
   cancer, and treatment pathways. Today this knowledge lives only in context
@@ -118,8 +123,8 @@ must read and edit it, rather than modifying the existing code.
 
 ### Method
 
-- The rebuild is built in a separate git worktree on its own branch (name:
-  Q1.6). `main` keeps the current system usable and serves as the parity
+- The rebuild is built in a separate git worktree on the branch `rebuild`
+  (D1.22). `main` keeps the current system usable and serves as the parity
   oracle until cutover.
 - Work proceeds in slices. Each slice is assessed, its decisions are recorded
   here, it is built and reviewed, and it is committed before the next slice
@@ -137,7 +142,7 @@ must read and edit it, rather than modifying the existing code.
 | S3 | Converter from current JSON; full migration; parity check | Migrated document tree; parity report |
 | S4 | Query layer: read a document with its links, search, filters | Engine over the new model; search tuning as text configuration |
 | S5 | Output: view models, templates, JSON views | Templates for every kind; compact search and read results |
-| S6 | CLI and MCP adapters | Both generated from one operation table |
+| S6 | CLI and MCP adapters; MCP response format, reviewed in depth with the maintainer (Q1.7) | Both generated from one operation table |
 | S7 | Tests, packaging, documentation, scope reconciliation, cutover | Old implementation and curator removed |
 
 The slice boundaries may be revised here as work proceeds.
@@ -198,13 +203,14 @@ catalog/
     guardrails/guardrail.assessment-not-pathology.yaml
     contexts/clinical.screening-diagnostic-pathway.yaml
     topics/imaging.yaml
+    patterns/worst-severity-per-exam.yaml
   open-v2/                   # module: EMBED Open Data V2 profile
     module.yaml
     tables/imaging_findings_anon.yaml
     vocabularies/open-v2.imaging.assessment.yaml
   internal-v2/               # module: internal EMBED V2 profile
     module.yaml
-    patterns/...
+    ...
 templates/
   text/
     _macros.j2
@@ -361,9 +367,8 @@ D1.17).
   or suspicious content). Warnings never block loading.
 - A rule that cannot be expressed in the model is a named rule in code,
   listed in section 4.7 with the reason it needs code.
-- No hand-written JSON Schema is kept. A JSON Schema for editor
-  autocompletion may be generated from the model (Q1.5), but it is never
-  edited by hand.
+- No hand-written JSON Schema is kept. The editor schema (D1.21) is
+  generated from the model and never edited by hand.
 
 **D1.10 Controlled values live in one file, each with its meaning. Proposed.**
 
@@ -469,7 +474,7 @@ dependency. `jsonschema` is dropped because the model is the schema.
   | `relationship.source`, `relationship.target` | clinical object | relationships |
   | `table.columns[].maps` (with mapping status) | feature | columns |
   | `guardrail.applies_to` | object, feature, relationship, column, concept | guardrails |
-  | `pattern.uses` | feature, column, concept, aggregation | patterns |
+  | `pattern.uses` | feature, concept, aggregation (never tables or columns, D1.23) | patterns |
   | `<any>.claims` | claim (`context#claim`) | cited by |
   | `claim.sources` | source | supports |
 
@@ -511,15 +516,56 @@ families.
 | `profile_support` | Whether a profile supports a document, and with what limits | `qualifications` and `coverage`, pending the slice 2 merge |
 
 The current name clash is resolved here: today's `concepts` family becomes
-`feature`, and `concept` is reserved for clinical knowledge concepts. Whether
-the portable `feature` layer stays between table columns and concepts is
-Q1.8.
+`feature`, and `concept` is reserved for clinical knowledge concepts.
+
+**The portable `feature` layer is kept (Accepted, Q1.8).** The lab works across
+several versions of the same dataset. Each version is represented through
+different tables, with different bindings, feature availability, and
+interpretation contexts. Columns from each profile link to one shared feature,
+and the feature links to clinical concepts. Columns do not link to concepts
+directly.
 
 **D1.20 The curator viewer is retired. Accepted.**
 
 It is not rebuilt. Text files are the editing surface, and `check` plus `show`
 replace its validation and browsing roles. A read-only graph visualizer may be
 reconsidered after slice 5. The existing curator stays on `main` until cutover.
+
+**D1.21 An editor schema is generated from the model. Accepted (mechanics Proposed).**
+
+- A command (for example `embed-context schema`) generates a JSON Schema from
+  `kinds.yaml`, `links.yaml`, and `values.yaml`. `check` regenerates it.
+  Editors such as VS Code with the YAML extension then autocomplete fields,
+  controlled values, and document IDs in link fields, and flag errors while
+  typing.
+- The generated schema:
+  - selects the kind-specific shape from each file's `kind:` line;
+  - lists every controlled value with its one-line meaning as hover text;
+  - lists current document IDs for each link field, filtered to the kinds
+    that link type allows.
+- The schema is written to an ignored local path, because the ID lists
+  change with every new document. A committed `.vscode/settings.json` maps
+  `catalog/**/*.yaml` to that path, so no document needs a schema comment.
+- The schema is advisory. It covers one document at a time. Cross-document
+  rules, such as owning-side links, module scope, and acyclic links, are
+  reported only by `check`, which remains authoritative.
+
+**D1.22 Names and branch. Accepted.**
+
+- The CLI command and MCP server keep the invocation name `embed-context`.
+- The repository and its documentation call the project `embed-mcp`.
+- The rebuild branch and worktree are named `rebuild`.
+- The Python distribution is published today as `embedv2-agent-context`. Slice
+  7 confirms whether it stays that way or is renamed to match the command.
+
+**D1.23 Patterns contain no executable code. Accepted.**
+
+- A pattern holds prose steps or pseudocode focused on conceptual handling,
+  feature cleaning, or aggregation.
+- It never includes executable code or concrete table or column names. It
+  links to portable features, concepts, and aggregations (D1.17).
+- This keeps patterns valid across dataset versions and avoids implying a
+  canonical implementation.
 
 ### 4.5 Illustrative neighborhood
 
@@ -641,7 +687,7 @@ related:
     note: Distinguished by invasion beyond the basement membrane.
 ```
 
-`catalog/internal-v2/patterns/worst-severity-per-exam.yaml` (*hypothetical*):
+`catalog/semantic/patterns/worst-severity-per-exam.yaml` (*hypothetical*):
 
 ```yaml
 kind: pattern
@@ -651,9 +697,17 @@ summary: >-
   One way the lab has summarized several pathology observations
   for an exam into a single severity value.
 uses: [pathology.severity, aggregation.pathology-observation-severity]
+steps: |
+  for each exam:
+    collect the pathology observations attributed to the exam
+    keep the observation with the most severe severity code
 limits:
   - Presented as an option; it is not a canonical outcome definition.
 ```
+
+The pattern links only to portable documents, so it lives in the semantic
+module. A pattern that holds only for one profile lives in that profile's
+module, and it still names no tables or columns.
 
 `catalog/open-v2/vocabularies/open-v2.imaging.assessment.yaml`:
 
@@ -794,26 +848,20 @@ Resolved on 2026-09-23:
 - **Q1.2 Prose-heavy kinds.** YAML everywhere (D1.1).
 - **Q1.3 File granularity.** One document per file (D1.2).
 - **Q1.4 Curator viewer.** Retired (D1.20).
+- **Q1.5 Editor support.** Yes: generate an editor schema (D1.21).
+- **Q1.6 Worktree and naming.** Branch `rebuild`; command `embed-context`;
+  project `embed-mcp` (D1.22).
+- **Q1.8 Feature layer.** Kept (D1.19).
+- **Q1.9 Pattern content.** No executable code; pseudocode allowed (D1.23).
+  How patterns relate to existing `aggregation` documents is settled in slice 2.
 
 Open:
 
-- **Q1.5 Editor support.** Generate a JSON Schema from the model so that
-  editors (for example VS Code's YAML extension) offer autocompletion and
-  inline errors?
-- **Q1.6 Worktree and naming.** Branch name for the rebuild worktree, and
-  whether the new package keeps the `embedv2-agent-context` distribution
-  name. Distribution naming may be deferred to slice 7.
 - **Q1.7 MCP response format** (deferred to slice 6). Return
   template-rendered text as the primary MCP content (smaller and readable by
-  humans and models alike), JSON, or both?
-- **Q1.8 Feature layer** (slice 2). Keep a portable `feature` layer between
-  table columns and clinical concepts, so that `open-v2` and `internal-v2`
-  columns meaning the same thing share one feature? Or link columns directly
-  to concepts? Keeping it is recommended, because it is what makes the two
-  profiles comparable today.
-- **Q1.9 Pattern content** (slice 2). May a pattern include code or
-  pseudocode, or only prose steps with limits? How do patterns relate to the
-  existing `aggregation` documents?
+  humans and models alike), JSON, or both? The maintainer will review this
+  in depth together with the agent when slice 6 starts; it is not decided
+  before then.
 
 ### 4.9 Prototype and exit criteria
 
@@ -838,6 +886,8 @@ The slice 1 prototype is built in the rebuild worktree and covers:
   its non-owning side.
 - A `show` command rendering any document with its links and backlinks
   through a template.
+- A generated editor schema (D1.21) that gives autocompletion and inline
+  errors for the prototype files in VS Code.
 
 Slice 1 is complete when:
 
@@ -845,8 +895,9 @@ Slice 1 is complete when:
 2. The maintainer has performed the worked edits (section 4.6) by hand,
    `check` caught each deliberately introduced mistake, and `show` reflected
    each link change from both ends.
-3. Q1.5 and Q1.6 are answered, and every S1 decision is Accepted, revised, or
-   Superseded here.
+3. The editor schema gives autocompletion for fields, values, and link IDs in
+   VS Code.
+4. Every S1 decision is Accepted, revised, or Superseded here.
 
 ## Change log
 
@@ -865,3 +916,11 @@ Slice 1 is complete when:
   - Added content principles for guardrails and patterns, and scope changes
     for patterns and clinical concepts.
   - Added Q1.8 and Q1.9.
+- 2026-09-23: Recorded maintainer answers to Q1.5, Q1.6, Q1.8, and Q1.9.
+  - Added a generated editor schema (D1.21).
+  - Recorded names and the `rebuild` branch (D1.22).
+  - Recorded that patterns contain no executable code (D1.23), and restricted
+    pattern links to portable documents.
+  - Accepted the portable feature layer.
+  - Kept Q1.7 open for an in-depth joint review in slice 6.
+  - Moved the example pattern to the semantic module.
