@@ -22,10 +22,11 @@
 {% endif %}
 {% for c in e.mappings | default([]) %}{{ mapping({"mapping": c}) }}{% endfor %}
 {%- endmacro -%}
-{{ d.value }} in {{ d.address }}
+{% set shown = d.value if d.value else '""' %}
+{{ shown }} in {{ d.address }}
 {% set meanings = d.codes | rejectattr("match", "equalto", "none") | list %}
 {% if meanings | length > 1 %}
-{{ d.value }} has a meaning in {{ meanings | length }} code lists; each applies only under its own mapping.
+{{ shown }} has a meaning in {{ meanings | length }} code lists; each applies only under its own mapping.
 {% endif %}
 {% for c in d.codes %}
 {% if c.meaning is not none %}
@@ -42,17 +43,17 @@
 {% endif %}
 {% endfor %}
 {% for i in d.interpretations %}
-- Column interpretation{% if i.status is defined %} ({{ i.status }}){% endif %}{% if i.match == "listed" %} of "{{ i.representation }}", which lists {{ d.value }}{% endif %}: {{ i.meaning }} — {{ ref(i.id) }}{{ entry(i) }}
+- Column interpretation{% if i.status is defined %} ({{ i.status }}){% endif %}{% if i.match == "listed" %} of "{{ i.representation }}", which lists {{ shown }}{% endif %}: {{ i.meaning }} — {{ ref(i.id) }}{{ entry(i) }}
 {% endfor %}
 {% for s in d.missing_states %}
-- Missing state{% if s.match == "listed" %} "{{ s.representation }}", which lists {{ d.value }}{% endif %}: {{ s.meaning }} — {{ ref(s.id) }}{{ entry(s) }}
+- Missing state{% if s.match == "listed" %} "{{ s.representation }}", which lists {{ shown }}{% endif %}: {{ s.meaning }} — {{ ref(s.id) }}{{ entry(s) }}
 {% endfor %}
 {% if not d.codes and not d.interpretations and not d.missing_states %}
-No code list, interpretation, or missing state names {{ d.value }}.
+No code list, interpretation, or missing state names {{ shown }}.
 {% endif %}
 {% if d.other_interpretations is defined %}
 
-Other interpretations of {{ "the column" if d.other_interpretations | map(attribute="column") | unique | list | length == 1 else "the columns" }}, which do not name {{ d.value }}; one whose representation describes values without listing them may still cover it:
+Other interpretations of {{ "the column" if d.other_interpretations | map(attribute="column") | unique | list | length == 1 else "the columns" }}, which do not name {{ shown }}; one whose representation describes values without listing them may still cover it:
 {% for i in d.other_interpretations %}
 - "{{ i.representation }}"{% if i.status is defined %} ({{ i.status }}){% endif %}: {{ i.meaning }} — {{ ref(i.id) }}{{ entry(i) }}
 {% endfor %}
