@@ -10,8 +10,8 @@ optionality:
   target: unknown
 attribution_limitations:
   - >-
-    The catalog does not define a portable physical identifier or file-layout rule for
-    associating images with exams.
+    No physical identifier or file-layout rule for associating images with exams holds across
+    profiles.
 temporal_qualification: >-
   Image acquisition belongs to the imaging-exam context, but profile-specific acquisition
   timestamps and availability require separate evidence.

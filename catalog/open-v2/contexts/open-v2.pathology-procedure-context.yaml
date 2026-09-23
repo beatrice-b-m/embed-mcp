@@ -124,8 +124,8 @@ claims:
     status: verified
     caveats:
       - >-
-        Absence of a supplied field does not prohibit an analyst-defined policy; it means the
-        catalog does not designate one.
+        Absence of a supplied field does not prohibit an analyst-defined policy; no single
+        policy is authoritative.
     sources:
       - open-v2.release-schema
       - open-v2.maintainer-clarification-2026-07-29

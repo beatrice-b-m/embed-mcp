@@ -11,7 +11,7 @@ caveats:
   - >-
     NO does not mean that the image contains no annotation; it means the source does not declare
     sufficient burned-in annotation to identify the patient and acquisition date.
-  - The catalogue does not prescribe an action for YES, NO, or absence.
+  - No single action for YES, NO, or absence is authoritative.
 topics: [topic.imaging, topic.technical]
 cites:
   - internal-v2.v1c-metadata-context#burned-in-annotation-semantics

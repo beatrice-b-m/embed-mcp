@@ -16,7 +16,7 @@ search_terms:
   - minimum linked severity
 caveats:
   - Do not silently deduplicate multiplied joins.
-  - The catalog does not select a finding-level outcome policy.
+  - No single finding-level outcome policy is authoritative.
   - >-
     Incomplete linkage and multiplicity remain visible limitations even when a declared policy
     is reasonable.

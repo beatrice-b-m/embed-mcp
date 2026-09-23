@@ -16,8 +16,8 @@ search_terms:
   - prior gynecological procedure
 caveats:
   - >-
-    The controlled code meanings remain supported, while packet-observed category discrepancies
-    and composite result semantics are separately unresolved.
+    The controlled code meanings remain supported, while observed category discrepancies and
+    composite result semantics are unresolved.
   - Vocabulary completeness remains unknown; an unobserved documented code is not invalidated.
 topics: [topic.identity, topic.procedure, topic.temporal, topic.workflow]
 about:
@@ -89,9 +89,8 @@ claims:
       - internal-v2.patient-history-maintainer-confirmation
   history-identity-and-physical-scope:
     statement: >-
-      Complete physical inventories and supported mappings are now cataloged from reviewed
-      packets plus maintainer clarification, but no stable history-entry identifier or semantic
-      deduplication rule is established.
+      The history tables' columns and supported meanings are completely described, but no stable
+      history-entry identifier or semantic deduplication rule is established.
     status: unresolved
     caveats:
       - Repeated entries may be separate reports, corrections, or duplicates.

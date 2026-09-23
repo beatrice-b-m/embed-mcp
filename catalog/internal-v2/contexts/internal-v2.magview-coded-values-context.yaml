@@ -66,9 +66,7 @@ claims:
       dictionaries.
     status: unresolved
     caveats:
-      - >-
-        Unexplained tokens are retained as unresolved rather than guessed or silently
-        normalized.
+      - Unexplained tokens have unresolved meanings; do not guess or silently normalize them.
       - >-
         Known comma-delimited strings may be tokenized without assigning meaning to unexplained
         component codes.

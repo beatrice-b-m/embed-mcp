@@ -88,8 +88,8 @@ claims:
     status: verified
     caveats:
       - >-
-        Interpret null laterality according to the field's clinical role rather than applying a
-        catalog-wide null rule.
+        Interpret null laterality according to the field's clinical role; no single null rule
+        applies to every field.
     sources:
       - open-v2.release-schema
       - open-v2.maintainer-clarification-2026-07-29

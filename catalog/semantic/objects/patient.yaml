@@ -6,5 +6,5 @@ definition: >-
 grain: one patient
 search_terms: [patient, person, longitudinal patient]
 caveats:
-  - The catalog does not establish complete longitudinal care or outside-system follow-up.
+  - Complete longitudinal care and outside-system follow-up are not established.
 topics: [topic.identity, topic.demographics]

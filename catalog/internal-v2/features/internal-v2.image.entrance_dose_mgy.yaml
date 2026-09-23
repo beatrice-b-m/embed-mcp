@@ -6,8 +6,8 @@ evidence: [observed_source_values]
 search_terms: [entrance dose, radiation dose, mGy]
 caveats:
   - >-
-    Other represented dose and exposure attributes retain their standard DICOM element meanings
-    but remain inventoried without dedicated catalogue concepts.
+    Other dose and exposure columns carry their standard DICOM element meanings but are not
+    mapped to features.
 topics: [topic.imaging, topic.technical]
 cites:
   - internal-v2.v1c-metadata-context#parsed-dicom-element-semantics

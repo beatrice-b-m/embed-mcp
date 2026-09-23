@@ -8,7 +8,7 @@ evidence: [release_schema, inference, unresolved]
 hazards:
   - Use accession for the exam edge; retain side only for side-grain identity.
 caveats:
-  - The expected exam hierarchy was not retained as an enforced referential claim.
+  - The exam hierarchy is expected but not established as an enforced referential constraint.
 relationships: [clinical.exam-side]
 source_columns: [open-v2.side_level_anon#acc_anon]
 target_columns: [open-v2.exam_level_anon#acc_anon]

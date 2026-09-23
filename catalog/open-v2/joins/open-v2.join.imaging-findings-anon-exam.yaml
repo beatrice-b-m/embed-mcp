@@ -9,8 +9,8 @@ hazards:
   - Joining exam attributes to findings repeats exam values at finding grain.
 caveats:
   - >-
-    The accession relationship is expected, but complete referential coverage was not retained
-    as a portable claim.
+    The accession relationship is expected, but complete referential coverage is not
+    established.
 relationships: [clinical.exam-finding]
 source_columns: [open-v2.imaging_findings_anon#acc_anon]
 target_columns: [open-v2.exam_level_anon#acc_anon]

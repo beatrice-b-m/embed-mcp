@@ -18,8 +18,8 @@ search_terms:
   - ascertainment bias
 caveats:
   - >-
-    The catalog identifies the selection mechanism but does not prescribe an inclusion,
-    exclusion, weighting, or causal-analysis policy.
+    No single inclusion, exclusion, weighting, or causal-analysis policy for this selection
+    mechanism is authoritative.
   - >-
     Accurately name conclusions as applying to the represented tissue-sampled or
     pathology-observed population.

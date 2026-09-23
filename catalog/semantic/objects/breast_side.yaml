@@ -8,5 +8,7 @@ caveats:
   - >-
     A null side on a finding can represent bilateral involvement, while null procedure side
     generally means unknown.
-  - The semantic object must not inherit one catalog-wide null-laterality rule.
+  - >-
+    Null laterality has no single meaning across fields; interpret it by each field's clinical
+    role.
 topics: [topic.breast_side, topic.exam, topic.imaging]

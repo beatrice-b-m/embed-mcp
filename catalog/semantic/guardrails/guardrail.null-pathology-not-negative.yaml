@@ -11,6 +11,6 @@ rationale: >-
 scope: embed_general
 search_terms: [null pathology, no pathology is not negative, unattached pathology]
 caveats:
-  - A task-specific study may measure follow-up, but the catalog does not supply that policy.
+  - A study may measure follow-up, but no single follow-up policy is authoritative.
 topics: [topic.pathology, topic.temporal]
 applies_to: [pathology_diagnosis, pathology.severity]

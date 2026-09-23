@@ -261,8 +261,8 @@ claims:
     caveats:
       - The attribute is a source declaration and is not a verification of the pixel data.
       - >-
-        The catalogue does not prescribe exclusion, redaction, or another action based on this
-        attribute.
+        No single exclusion, redaction, or other action based on this attribute is
+        authoritative.
     sources:
       - internal-v2.dicom-image-module-standard
       - internal-v2.v1c-metadata-structure-observation

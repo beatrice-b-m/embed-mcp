@@ -11,7 +11,7 @@ rationale: >-
 scope: embed_general
 search_terms: [unit of analysis, grain transition, aggregation policy]
 caveats:
-  - The catalog does not select a canonical cohort or patient-level outcome.
+  - No single cohort or patient-level outcome is authoritative.
 topics: [topic.identity, topic.exam, topic.breast_side, topic.imaging, topic.pathology]
 applies_to:
   - patient

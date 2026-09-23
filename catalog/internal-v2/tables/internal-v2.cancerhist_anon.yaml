@@ -5,17 +5,15 @@ grain: >-
   unresolved
 caveats:
   - >-
-    Physical types are packet-reported pandas parse types, with str represented as string;
-    comment is assessed as string from maintainer description rather than packet observation.
+    Physical types are parse types rather than source-declared types; comment is a free-text
+    string.
   - >-
     No embedded schema or nullability contract is supplied; every column is conservatively
     nullable, independently of observed missingness.
   - >-
     Text padding and blank strings are physical representations, not global missing-value or
     normalization rules.
-  - >-
-    The packet tests groupings only and does not establish unique row identity, deduplication,
-    or cross-table match coverage.
+  - No unique row identity, deduplication rule, or cross-table match coverage is established.
 keys:
   patient-grouping:
     key_type: technical
@@ -24,8 +22,8 @@ keys:
     evidence: [observed_source_values]
     caveats:
       - >-
-        A tested grouping with varying attributes, not a unique history-row or clinical-entry
-        identity; missing values were retained as levels.
+        A grouping within which attributes vary; it is not a unique history-row or
+        clinical-entry identity.
       - >-
         No completeness, sentinel, or longitudinal history-identity assertion follows from the
         topology export.
@@ -37,8 +35,8 @@ keys:
     evidence: [observed_source_values]
     caveats:
       - >-
-        A tested grouping with varying attributes, not a unique history-row or clinical-entry
-        identity; missing values were retained as levels.
+        A grouping within which attributes vary; it is not a unique history-row or
+        clinical-entry identity.
       - >-
         No completeness, sentinel, or longitudinal history-identity assertion follows from the
         topology export.
@@ -50,8 +48,8 @@ keys:
     evidence: [observed_source_values]
     caveats:
       - >-
-        A tested grouping with varying attributes, not a unique history-row or clinical-entry
-        identity; missing values were retained as levels.
+        A grouping within which attributes vary; it is not a unique history-row or
+        clinical-entry identity.
       - >-
         No completeness, sentinel, or longitudinal history-identity assertion follows from the
         topology export.

@@ -16,8 +16,8 @@ search_terms:
   - pathology severity five
 caveats:
   - >-
-    Whether this state is eligible for any task-specific comparison group is an analysis
-    decision outside the catalog.
+    Whether this state belongs in a comparison group depends on the task; no single choice is
+    authoritative.
 topics: [topic.pathology]
 applies_to:
   - pathology_diagnosis

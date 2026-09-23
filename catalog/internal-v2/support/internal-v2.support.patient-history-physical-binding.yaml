@@ -1,12 +1,10 @@
 kind: profile_support
 representation_status: supported
 representation_summary: >-
-  HormoneHist_anon and ProcedureHist_anon have complete physical inventories from reviewed
-  packet columns plus the confirmed comment field, and bindings for supported history semantics.
+  HormoneHist_anon and ProcedureHist_anon are represented by their complete columns, including
+  the free-text comment field, with mappings for the supported history semantics.
 representation_caveats:
-  - >-
-    Packet dtypes are parse observations, comment is assessed as text, and all columns are
-    conservatively nullable.
+  - Column types are parse types, comment is free text, and every column is treated as nullable.
   - >-
     Unresolved ProcHist time candidates and HormoneHist side remain inventoried without clinical
     mappings.

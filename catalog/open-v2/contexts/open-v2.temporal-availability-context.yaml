@@ -12,8 +12,8 @@ search_terms:
   - anonymized dates
 caveats:
   - >-
-    Task-specific cohort, follow-up, label, and modality-inclusion choices are analysis policies
-    rather than dataset claims; agents must choose and defend them outside the portable catalog.
+    Cohort, follow-up, label, and modality-inclusion choices are task-specific; no single choice
+    is authoritative.
 topics:
   - topic.imaging
   - topic.pathology

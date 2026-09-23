@@ -2,9 +2,9 @@ kind: context
 label: Internal history packet representation review
 context_type: data_representation
 definition: >-
-  Reviewed topology packets and the complete-inventory clarification support history table
-  inventories and existing HormoneHist and ProcHist mappings, while preserving unresolved row
-  identity, conditional code discrepancies, and time semantics.
+  How the HormoneHist, ProcedureHist, and CancerHist tables represent patient history: their
+  complete columns and mappings, with row identity, conditional code discrepancies, and time
+  semantics unresolved.
 search_terms:
   - HormoneHist
   - ProcHist
@@ -44,12 +44,10 @@ about:
 claims:
   physical-inventories:
     statement: >-
-      The packet columns plus the maintainer-confirmed comment field form the complete column
-      inventories of HormoneHist_anon, ProcedureHist_anon, and CancerHist_anon.
-      Packet str is cataloged as string and int64 as int64; comment is assessed as string from
-      its free-text description.
-      Every column is conservatively nullable because pandas dtypes and observed levels do not
-      declare source-schema nullability.
+      The listed columns, including the free-text comment field, are the complete columns of
+      HormoneHist_anon, ProcedureHist_anon, and CancerHist_anon.
+      Their types are parse types, and comment is a free-text string.
+      Every column is treated as nullable because the source declares no schema nullability.
     status: reconciled
     sources:
       - internal-v2.hormone-history-topology-packet
@@ -58,10 +56,10 @@ claims:
       - internal-v2.history-inventory-maintainer-confirmation
   tested-groupings:
     statement: >-
-      In each reviewed packet, the tested PATIENT (empi_anon) grouping is coarser than EXAM
+      In each history table, the patient grouping (empi_anon) is coarser than the exam grouping
       (acc_anon), and empi_anon is constant within acc_anon.
-      HormoneHist and ProcHist history attributes vary within the tested patient and exam
-      groupings, except the blank HormoneHist side field.
+      HormoneHist and ProcHist history attributes vary within the patient and exam groupings,
+      except the blank HormoneHist side field.
       Neither grouping identifies a history row.
     status: reconciled
     caveats:
@@ -87,8 +85,8 @@ claims:
       - internal-v2.hormone-history-topology-packet
   hormone-category-discrepancies:
     statement: >-
-      After comparing the padded source tokens with the existing category-specific dictionaries,
-      the packet represents ORAL under H and T and TAXOL under H.
+      Outside the category-specific dictionaries, the padded source tokens include ORAL under H
+      and T and TAXOL under H.
       Their meanings in those category occurrences remain unresolved; the supported ORAL
       contraceptive and TAXOL therapy meanings do not establish these additional occurrences.
     status: unresolved
@@ -97,18 +95,17 @@ claims:
         The observed H/C and O/C paths support retaining separate category-dependent meanings
         for C.
       - >-
-        A documented code absent from this packet is not invalidated, and vocabulary
-        completeness remains unknown.
+        A documented code is not invalidated by being unobserved, and vocabulary completeness
+        remains unknown.
       - No recategorization or cross-category fallback is supplied.
     sources:
       - internal-v2.hormone-history-topology-packet
       - internal-v2.patient-history-maintainer-confirmation
   hormone-status-representation:
     statement: >-
-      HormoneHist current and continuous have Y, N, and blank string representations in the
-      packet.
-      Their reported-status concepts remain applicable, but the packet alone does not establish
-      a blank-as-N rule or exact interval endpoints.
+      HormoneHist current and continuous are represented as Y, N, and blank strings.
+      Their reported-status concepts remain applicable, but no blank-as-N rule or exact interval
+      endpoints are established.
     status: reconciled
     sources:
       - internal-v2.hormone-history-topology-packet

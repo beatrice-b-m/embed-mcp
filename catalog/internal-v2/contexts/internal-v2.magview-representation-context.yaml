@@ -153,7 +153,7 @@ claims:
       time and must not leak future information into an earlier analysis.
     status: reconciled
     caveats:
-      - The catalog does not select a universal latest-row policy.
+      - No single latest-row policy is authoritative.
       - >-
         A task-specific current-value analysis may use the latest value available by its
         declared as-of time.

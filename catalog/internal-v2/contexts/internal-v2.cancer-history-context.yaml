@@ -29,10 +29,9 @@ about:
 claims:
   relative-grouping-not-identity:
     statement: >-
-      The packet tests (acc_anon, patient, rel) under the label RELATIVE, finer than EXAM.
+      The (acc_anon, patient, rel) grouping, labeled RELATIVE, is finer than EXAM.
       The remaining history attributes, including curr_age, brca1, and brca2, vary within that
-      grouping; the tuple is not a unique row key and does not establish one identifiable
-      relative.
+      grouping; the tuple is not a unique row key and does not identify one relative.
     status: reconciled
     caveats:
       - Author-selected key labels are not independent clinical identity evidence.
@@ -53,8 +52,8 @@ claims:
         Do not transfer diagnosis dictionaries from MagView or ProcHist merely because code
         strings match.
       - >-
-        The packet does not establish that every entry is malignant, nor that an absent history
-        entry is cancer absence.
+        Not every entry is established as malignant, and an absent history entry does not
+        establish cancer absence.
     sources:
       - internal-v2.cancer-history-topology-packet
       - internal-v2.cancer-history-maintainer-clarification

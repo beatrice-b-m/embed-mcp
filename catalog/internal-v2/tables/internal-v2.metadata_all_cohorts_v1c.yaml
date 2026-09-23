@@ -43,8 +43,7 @@ caveats:
     non-identifier/non-date attributes were dropped during anonymization.
   - >-
     Detailed DICOM acquisition, dose, detector, collimator, geometry, windowing, and icon-image
-    attributes retain standard DICOM element semantics but remain inventoried without dedicated
-    catalogue concepts or mappings.
+    columns carry standard DICOM element semantics but are not mapped to features.
 keys:
   patient-locator:
     key_type: natural

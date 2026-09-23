@@ -16,9 +16,7 @@ hazards:
     Cross-patient accession associations are invalid; candidate accession sentinel behavior
     remains unresolved.
 caveats:
-  - >-
-    Descriptive route through established identifier namespaces; cross-table match coverage was
-    not tested by these packets.
+  - The tables share identifier namespaces; cross-table match coverage is not established.
   - >-
     Physical rows repeat both endpoints; physical multiplicity is distinct from clinical
     ownership.

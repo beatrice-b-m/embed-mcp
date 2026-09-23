@@ -13,8 +13,8 @@ caveats:
     A patient may have multiple sides, exams, procedures, diagnoses, and changing states over
     time.
   - >-
-    The catalog does not define incident, prevalent, earliest, or ever-positive patient
-    outcomes.
+    No single definition of incident, prevalent, earliest, or ever-positive patient outcomes is
+    authoritative.
 source_object: pathology_diagnosis
 target_object: patient
 input_feature: pathology.severity

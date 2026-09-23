@@ -7,7 +7,5 @@ caveats:
   - >-
     Image identity, file representation, series membership, and availability are
     profile-specific.
-  - >-
-    Catalog coverage of an image object does not imply that a selected profile has an image
-    table or file binding.
+  - The image object does not imply that every profile has an image table or file binding.
 topics: [topic.imaging]
