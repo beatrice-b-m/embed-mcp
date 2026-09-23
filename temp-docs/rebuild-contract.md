@@ -1,13 +1,8 @@
 # Catalog rebuild contract
 
-> **Status:** Draft. The slice 1 (encoding) prototype is built on the
-> `rebuild` branch and awaits maintainer review against its exit criteria
-> (section 4.9); see section 4.10 for what it established. Last updated
+> **Status:** Draft. Slice 1 (encoding) is closed (2026-09-23). Slice 2
+> (field-level model and parity ledger) is in progress. Last updated
 > 2026-09-23.
->
-> From the start of the slice 1 prototype, this document is maintained on the
-> `rebuild` branch together with the work it describes. The copy on `main`
-> is not updated again until cutover.
 >
 > This is a short-lived working document (see `AGENTS.md`, "Working
 > documents"). When the rebuild is complete, its durable content moves into
@@ -259,7 +254,7 @@ ignores folder names, so folders can be reorganized freely.
   names keep their source case, because they are local keys inside a table
   file, not document IDs.
 
-**D1.3 Modules are top-level directories. Proposed.**
+**D1.3 Modules are top-level directories. Accepted.**
 
 - Each module directory holds a `module.yaml` declaring its ID, kind
   (`semantic`, `profile`, or `extension`), label, and required modules.
@@ -274,7 +269,7 @@ ignores folder names, so folders can be reorganized freely.
 - No extension module is bundled today. The same mechanism covers
   extensions.
 
-**D1.4 Each file declares its kind. Proposed.**
+**D1.4 Each file declares its kind. Accepted.**
 
 The first line of each document is `kind: <kind>`. The kind is never inferred
 from the folder, so moving a file never changes its meaning.
@@ -310,7 +305,7 @@ D1.17).
   such as a guardrail's `statement` and `rationale`, and each exception is
   documented in the model.
 
-**D1.7 Facts are authored next to what they describe. Proposed.**
+**D1.7 Facts are authored next to what they describe. Accepted.**
 
 - Physical mappings live in the table file, on the column they describe: the
   column's type, nullability, mapped feature(s), mapping status, vocabulary,
@@ -324,7 +319,7 @@ D1.17).
   as a backlink on the semantic document. Merging qualifications and coverage
   into one kind is decided in slice 2.
 
-**D1.8 Recurring statements become typed fields rendered by templates. Proposed.**
+**D1.8 Recurring statements become typed fields rendered by templates. Accepted.**
 
 - Standard statements that recur across many records become typed fields,
   whose wording is defined once in a template:
@@ -345,7 +340,7 @@ D1.17).
 - The field-by-field list of these conversions is part of the slice 2 parity
   ledger. No clinical meaning may change.
 
-**D1.9 The model drives validation. Proposed.**
+**D1.9 The model drives validation. Accepted.**
 
 - A generic checker reads the model files and enforces:
   - required fields and field types;
@@ -375,13 +370,13 @@ D1.17).
 - No hand-written JSON Schema is kept. The editor schema (D1.21) is
   generated from the model and never edited by hand.
 
-**D1.10 Controlled values live in one file, each with its meaning. Proposed.**
+**D1.10 Controlled values live in one file, each with its meaning. Accepted.**
 
 `values.yaml` lists every controlled value set, and every value has a one-line
 meaning that reviewers can read. The checker, templates, CLI choices, and MCP
 input enums all read from it. Adding a value is one line.
 
-**D1.11 Templates use Jinja2. Proposed.**
+**D1.11 Templates use Jinja2. Accepted.**
 
 - All human-readable output is produced by Jinja templates. This covers CLI
   text, MCP text, and any rendered review pages.
@@ -405,14 +400,14 @@ input enums all read from it. Adding a value is one line.
   - `string.Template`: too weak.
   - Mako: embeds Python in templates, which is less reviewable.
 
-**D1.12 The source files are the primary review surface. Proposed.**
+**D1.12 The source files are the primary review surface. Accepted.**
 
 Colleagues review the YAML directly in diffs and pull requests. `show ID`
 displays one document with its links in both directions. A `render` command
 (slice 5) can also produce linked Markdown pages for browsing a neighborhood.
 These rendered views are generated on demand and never committed.
 
-**D1.13 Only mechanical helper commands. Proposed.**
+**D1.13 Only mechanical helper commands. Accepted.**
 
 - Normal edits need only an editor. The helpers are mechanical:
   - `check` validates.
@@ -426,7 +421,7 @@ These rendered views are generated on demand and never committed.
   `imaging.assessment` also rewrote them (section 4.10). Until slice 2 fixes
   those IDs, `rename` is the safe route.
 
-**D1.14 Formatting conventions. Proposed.**
+**D1.14 Formatting conventions. Accepted.**
 
 - Keys appear in the order the model declares.
 - Lists keep their authored order, and the order is meaningful only where
@@ -438,7 +433,7 @@ These rendered views are generated on demand and never committed.
   resulting empty key. Anything with prose uses block style.
 - A formatter may normalize key order, but it never rewrites prose.
 
-**D1.15 Dependencies. Proposed.**
+**D1.15 Dependencies. Accepted.**
 
 The runtime needs `ruamel.yaml` and `jinja2`, plus `mcp` as an optional
 dependency. `jsonschema` is dropped because the model is the schema.
@@ -461,7 +456,7 @@ dependency. `jsonschema` is dropped because the model is the schema.
   list becomes hub documents. Hubs may link to broader hubs, and a search
   filter by hub includes documents linked to it or to its narrower hubs.
 
-**D1.17 Link types are declared in `links.yaml`. Proposed.**
+**D1.17 Link types are declared in `links.yaml`. Accepted.**
 
 - Each link type declares:
   - its owning kind and field;
@@ -490,7 +485,7 @@ dependency. `jsonschema` is dropped because the model is the schema.
   | `<any>.cites` | claim (`context#claim`) | cited_by |
   | `claim.sources` | source | supports |
 
-**D1.18 Reads return one document plus its links, never inlined neighbors. Proposed.**
+**D1.18 Reads return one document plus its links, never inlined neighbors. Accepted.**
 
 This principle shapes the encoding and is implemented in slices 4–6:
 
@@ -504,7 +499,7 @@ This principle shapes the encoding and is implemented in slices 4–6:
 - This replaces today's responses, which inline full records, bindings, and
   provenance and so reach 30k–90k tokens.
 
-**D1.19 Provisional document kinds. Proposed.**
+**D1.19 Provisional document kinds. Accepted; slice 2 finalizes them.**
 
 These come from the maintainer's description of the catalog. Slice 2
 finalizes fields and names and records the parity mapping from current
@@ -543,7 +538,7 @@ It is not rebuilt. Text files are the editing surface, and `check` plus `show`
 replace its validation and browsing roles. A read-only graph visualizer may be
 reconsidered after slice 5. The existing curator stays on `main` until cutover.
 
-**D1.21 An editor schema is generated from the model. Accepted (mechanics Proposed).**
+**D1.21 An editor schema is generated from the model. Accepted.**
 
 - A command (for example `embed-context schema`) generates a JSON Schema from
   `kinds.yaml`, `links.yaml`, and `values.yaml`. `check` regenerates it.
@@ -596,14 +591,14 @@ reconsidered after slice 5. The existing curator stays on `main` until cutover.
 - The branch's `AGENTS.md` carries a banner saying that this contract
   governs the branch.
 
-**D1.25 The three layers are three top-level directories. Proposed.**
+**D1.25 The three layers are three top-level directories. Accepted.**
 
 `model/`, `catalog/`, and `templates/` sit side by side at the repository
 root. This keeps the model outside the module tree, so that every file under
 `catalog/` is a document and one editor-schema glob (`catalog/**/*.yaml`)
 covers them all.
 
-**D1.26 Naming conventions established by the prototype. Proposed.**
+**D1.26 Naming conventions established by the prototype. Accepted.**
 
 - `kind` is reserved for a document's kind. Fields that the current catalog
   called `kind` get specific names: `relationship_type`, `context_type`,
@@ -1095,3 +1090,6 @@ Not built yet, by plan:
   - Added the flow-style rule to D1.14.
   - Corrected D1.13: find-and-replace is not yet a safe rename.
   - Renamed the citation link type to `cites` in D1.17.
+- 2026-09-23: The maintainer closed slice 1 after confirming editor
+  autocompletion works. Every remaining Proposed slice 1 decision is
+  Accepted; D1.19's kinds stay provisional until slice 2.
