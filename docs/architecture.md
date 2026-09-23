@@ -133,6 +133,16 @@ feature: its meaning in every code list that applies, codes that differ only in
 case or spacing, the columns' interpretations of it, and the feature's missing
 states for it.
 
+- A column's code lists come from its mappings (`maps` links with a
+  `vocabulary` qualifier), and each code-list result names the mapping it
+  comes from: the feature and every other qualifier of that mapping, such as
+  `mapping: conditional` with its `category_column` and `category_value`.
+  A column may use a different code list under each mapping's conditions, so
+  when a value has a meaning in several code lists, text says that each
+  applies only under its own mapping. The meanings of the qualifiers'
+  controlled values are in the result's legend.
+- Given a feature, only the columns' mappings to that feature apply.
+
 ## Operations
 
 `model/operations.yaml` declares the shared operations (`search`, `read`,

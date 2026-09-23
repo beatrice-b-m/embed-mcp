@@ -15,7 +15,7 @@ import jsonschema
 from ruamel.yaml import YAML
 
 from embed_context.catalog import load_catalog
-from embed_context.query import Searcher, load_query_config, read
+from embed_context.query import Searcher, load_query_config, lookup_code, read
 from embed_context.render import render, render_named
 from embed_context.schema import build_schema
 from embed_context.view import view
@@ -51,6 +51,23 @@ class RepositoryCatalogTests(unittest.TestCase):
             data = searcher.search(case["query"])
             with self.subTest(search=name):
                 self.assertEqual(facts_missing_from_text(data, render_named(REPOSITORY, "_search", data)), [])
+        for address, value in self.code_lookups(config):
+            data = lookup_code(self.catalog, address, value, config)
+            with self.subTest(code=address, value=value):
+                self.assertEqual(facts_missing_from_text(data, render_named(REPOSITORY, "_code", data)), [])
+
+    def code_lookups(self, config):
+        """For every column that code lookup reads, its first code, a joined
+        pair of codes, and each of its interpretations' representations."""
+        names = config.codes
+        for link in self.catalog.links:
+            if link.spec.name == names["column_vocabulary_link"]:
+                codes = list(self.catalog.nodes[link.target].data[names["code_field"]])
+                yield link.source, codes[0]
+                yield link.source, ",".join(codes[:2])
+        for node in self.catalog.nodes.values():
+            if node.parent is not None and node.path[-2] == names["interpretation_field"]:
+                yield node.parent, node.data["representation"]
 
     def test_review_pages_link_only_to_pages_that_exist(self):
         import os

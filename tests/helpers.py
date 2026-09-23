@@ -46,6 +46,41 @@ item:
   entry: true
   fields:
     label: {type: text, required: true}
+
+codelist:
+  description: A code list.
+  fields:
+    label: {type: text, required: true}
+    terms: {type: map, required: true}
+
+sheet:
+  description: A sheet whose cells record measures.
+  fields:
+    label: {type: text, required: true}
+    cells: {type: record, entry_kind: cell}
+
+cell:
+  entry: true
+  fields:
+    readings: {type: record, entry_kind: reading}
+
+reading:
+  entry: true
+  fields:
+    representation: {type: text, required: true}
+    meaning: {type: text, required: true}
+
+measure:
+  description: What cells record.
+  fields:
+    label: {type: text, required: true}
+    gaps: {type: record, entry_kind: gap}
+
+gap:
+  entry: true
+  fields:
+    representation: {type: text, required: true}
+    meaning: {type: text, required: true}
 """
 
 FIXTURE_LINKS = """
@@ -82,6 +117,19 @@ rates:
       type: link
       targets: [topic]
       backlink: rated_via
+
+records:
+  owners: [cell]
+  targets: [measure]
+  backlink: cells
+  qualifiers:
+    status: {type: value, of: statuses, required: true}
+    list:
+      type: link
+      targets: [codelist]
+      backlink: used_by
+    when_cell: {type: text}
+    when_value: {type: text}
 """
 
 FIXTURE_VALUES = """
@@ -118,6 +166,12 @@ search:
 read:
   summaries:
     item: [label]
+codes:
+  code_field: terms
+  column_vocabulary_link: records.list
+  column_feature_link: records
+  interpretation_field: readings
+  missing_state_field: gaps
 """
 
 
@@ -178,10 +232,11 @@ class CatalogTestCase(unittest.TestCase):
 
 # Keys whose values text output may leave out: the view's locators (file,
 # line, module ID), link kinds, field and group names that text shows as
-# layout, and the markers `local` and `summary`. An entry's own ID may be
+# layout, the markers `local` and `summary`, and a code lookup's `match`,
+# which text words as the form of its result. An entry's own ID may be
 # shown as its key. Every other value, including each meaning in the
 # legend, must appear in the text.
-TEXT_MAY_OMIT = frozenset({"file", "line", "module", "kind", "name", "local", "summary"})
+TEXT_MAY_OMIT = frozenset({"file", "line", "module", "kind", "name", "local", "summary", "match"})
 
 
 def facts_missing_from_text(data, text: str) -> list[tuple[str, str]]:

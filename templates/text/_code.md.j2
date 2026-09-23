@@ -1,20 +1,33 @@
-{#- Code lookup (embed_context.query.lookup_code). -#}
+{#- Code lookup (embed_context.query.lookup_code). A column's code-list
+    results each name the mapping they come from, since a column may use a
+    different code list under each mapping's qualifiers. -#}
+{% import "text/_macros.j2" as m with context %}
+{%- macro mapping(c) -%}
+{% if c.mapping is defined %}
+
+  under the mapping to {{ ref(c.mapping.feature) }}{% if c.mapping.feature_label is defined %} — {{ c.mapping.feature_label }}{% endif %}
+{%- if c.mapping.qualifiers is defined %}{% for name, value in c.mapping.qualifiers.items() %}{% if value is sameas true %} · {{ name }}{% elif value is string %} · {{ name | replace("_", " ") }} {{ value }}{% elif value is not sameas false %} · {{ name | replace("_", " ") }}: {{ value | join("; ") }}{% endif %}{% endfor %}{% endif %}
+{%- endif %}
+{%- endmacro -%}
 {{ d.value }} in {{ d.address }}
+{% set meanings = d.codes | rejectattr("match", "equalto", "none") | list %}
+{% if meanings | length > 1 %}
+{{ d.value }} has a meaning in {{ meanings | length }} code lists; each applies only under its own mapping.
+{% endif %}
 {% for c in d.codes %}
 {% if c.meaning is not none %}
-- {{ c.meaning }} — {{ c.vocabulary }}{% if c.column %} (column {{ c.column }}){% endif %}
-
+- {{ c.meaning }} — {{ ref(c.vocabulary) }} ({{ c.vocabulary_label }}){% if c.column %}, column {{ ref(c.column) }}{% endif %}{{ mapping(c) }}
 {% else %}
-- Not in {{ c.vocabulary }}{% if c.column %} (column {{ c.column }}){% endif %}{% if c.similar_codes %}; differs only in case or spacing from: {{ c.similar_codes | join(", ") }}{% endif %}
-
+- Not in {{ ref(c.vocabulary) }} ({{ c.vocabulary_label }}){% if c.column %}, column {{ ref(c.column) }}{% endif %}{% if c.similar_codes %}; differs only in case or spacing from: {{ c.similar_codes | join(", ") }}{% endif %}{{ mapping(c) }}
 {% endif %}
 {% endfor %}
 {% for i in d.interpretations %}
 - Column interpretation ({{ i.status }}): {{ i.meaning }} — {{ i.id }}
 {% endfor %}
-{% for m in d.missing_states %}
-- Missing state: {{ m.meaning }} — {{ m.id }}
+{% for s in d.missing_states %}
+- Missing state: {{ s.meaning }} — {{ s.id }}
 {% endfor %}
 {% if not d.codes and not d.interpretations and not d.missing_states %}
 No code list, interpretation, or missing state applies.
 {% endif %}
+{{ m.legend(d) }}

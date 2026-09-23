@@ -4,7 +4,9 @@ from embed_context.catalog import load_catalog
 from embed_context.query import QueryError, Searcher, load_query_config, lookup_code, read, tokenize
 from embed_context.yamlio import YamlError
 
-from tests.helpers import REPOSITORY, CatalogTestCase
+from embed_context.render import render_named
+
+from tests.helpers import REPOSITORY, CatalogTestCase, facts_missing_from_text
 
 
 class TokenizeTests(unittest.TestCase):
@@ -85,6 +87,60 @@ class ReadTests(CatalogTestCase):
         self.assertEqual([f["name"] for f in item["fields"]], ["label"])
         self.assertNotIn("links", item)
         self.assertNotIn("backlinks", item)
+
+
+class FixtureCodeLookupTests(CatalogTestCase):
+    """Code lookup on the fixture model, whose `codes:` settings name its own kinds."""
+
+    def setUp(self):
+        super().setUp()
+        self.write("catalog/base/list.colors.yaml", """
+            kind: codelist
+            label: Colors
+            terms: {R: red, G: green}
+            """)
+        self.write("catalog/base/list.shapes.yaml", """
+            kind: codelist
+            label: Shapes
+            terms: {R: round, S: square}
+            """)
+        self.write("catalog/base/measure.color.yaml", "kind: measure\nlabel: Color\n")
+        self.write("catalog/base/measure.shape.yaml", "kind: measure\nlabel: Shape\n")
+        self.write("catalog/base/sheet.yaml", """
+            kind: sheet
+            label: Sheet
+            cells:
+              kind_of:
+                records: []
+              value:
+                records:
+                  - {id: measure.color, status: open, list: list.colors, when_cell: kind_of, when_value: C}
+                  - {id: measure.shape, status: open, list: list.shapes, when_cell: kind_of, when_value: S}
+            """)
+
+    def lookup(self, address, value):
+        catalog = self.load()
+        self.assertEqual(self.messages(catalog), [])
+        return lookup_code(catalog, address, value)
+
+    def test_each_code_list_result_carries_its_mapping_qualifiers(self):
+        result = self.lookup("sheet#value", "R")
+        self.assertEqual([(c["meaning"], c["mapping"]["feature"]) for c in result["codes"]], [("red", "measure.color"), ("round", "measure.shape")])
+        self.assertEqual(result["codes"][0]["mapping"]["qualifiers"], {"status": "open", "when_cell": "kind_of", "when_value": "C"})
+        self.assertEqual(result["legend"], {"records.status": {"open": "Still open."}})
+
+    def test_a_feature_uses_only_its_own_mappings(self):
+        result = self.lookup("measure.shape", "R")
+        self.assertEqual([c["vocabulary"] for c in result["codes"]], ["list.shapes"])
+
+    def test_text_carries_every_fact_of_a_lookup(self):
+        for address, value in [("sheet#value", "R"), ("sheet#value", "S"), ("list.colors", "r")]:
+            with self.subTest(address=address, value=value):
+                data = self.lookup(address, value)
+                text = render_named(self.root, "_code", data)
+                self.assertEqual(facts_missing_from_text(data, text), [])
+        text = render_named(self.root, "_code", self.lookup("sheet#value", "R"))
+        self.assertIn("R has a meaning in 2 code lists", text)
 
 
 class CodeLookupTests(unittest.TestCase):

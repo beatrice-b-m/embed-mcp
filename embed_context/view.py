@@ -198,6 +198,12 @@ def facts_for(catalog: Catalog, node: Node, options: ViewOptions) -> tuple[dict[
     return builder.facts(node), builder.legend
 
 
+def qualifiers_for(catalog: Catalog, link: Link) -> tuple[dict[str, Any], dict[str, dict[str, str]]]:
+    """A link's qualifiers, as a view shows them, and their legend."""
+    builder = _Builder(catalog, ViewOptions())
+    return {name: builder.qualifier(link, name, value) for name, value in link.qualifiers.items()}, builder.legend
+
+
 def _document_of(address: str) -> str:
     return address.split("#", 1)[0]
 

@@ -22,8 +22,9 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 from typing import Any
 
-from .catalog import Catalog, Node
-from .view import UnknownID, ViewOptions, facts_for, view
+from .catalog import Catalog, Link, Node
+from .model import LinkSpec
+from .view import UnknownID, ViewOptions, facts_for, qualifiers_for, view
 from .yamlio import YamlDocument, YamlError, read_yaml
 
 _TOKEN = re.compile(r"[a-z0-9]+(?:[-_.][a-z0-9]+)*")
@@ -409,7 +410,13 @@ def read(catalog: Catalog, address: str, config: QueryConfig | None = None) -> d
 
 def lookup_code(catalog: Catalog, address: str, value: str, config: QueryConfig | None = None) -> dict[str, Any]:
     """What a represented value means where ``address`` (a vocabulary, a
-    column, or a feature) is used."""
+    column, or a feature) is used.
+
+    A column's code lists come from its mappings, and each code-list result
+    carries the mapping it comes from (the feature and the mapping's
+    qualifiers), because a column may use a different code list under each
+    mapping's conditions. For a feature, only the columns' mappings to that
+    feature apply."""
     config = config or load_query_config(catalog)
     names = config.codes
     node = catalog.nodes.get(address)
@@ -417,25 +424,33 @@ def lookup_code(catalog: Catalog, address: str, value: str, config: QueryConfig 
         view(catalog, address)  # raises UnknownID with a suggestion
         raise UnknownID(address, None)
     feature_link = names.get("column_feature_link")
+    vocabulary_spec = next((link for link in catalog.model.all_links if link.name == names.get("column_vocabulary_link")), None)
+    legend: dict[str, dict[str, str]] = {}
     columns: list[Node] = []
     features: set[str] = set()
-    vocabularies: list[tuple[Node, Node | None]] = []  # (vocabulary, column it is used by)
+    vocabularies: list[tuple[Node, Node | None, Link | None]] = []  # (vocabulary, column, mapping)
     if names.get("code_field") in catalog.model.kinds[node.kind].fields:
-        vocabularies.append((node, None))
+        vocabularies.append((node, None, None))
     else:
+        feature = None
         if any(link.spec.name == feature_link for link in catalog.outgoing(node.address)):
             columns = [node]  # a column
         else:
-            columns = [catalog.nodes[link.source] for link in catalog.incoming(node.address) if link.spec.name == feature_link]
-            features.add(node.address)  # a feature
+            sources = [link.source for link in catalog.incoming(node.address) if link.spec.name == feature_link]
+            columns = [catalog.nodes[source] for source in dict.fromkeys(sources)]
+            feature = node.address  # a feature
+            features.add(feature)
         for column in columns:
             for link in catalog.outgoing(column.address):
-                if link.spec.name == names.get("column_vocabulary_link"):
-                    vocabularies.append((catalog.nodes[link.target], column))
+                if link.spec.name != feature_link or (feature is not None and link.target != feature):
+                    continue
+                vocabulary = catalog.nodes.get(link.qualifiers.get(vocabulary_spec.field, "")) if vocabulary_spec else None
+                if vocabulary is not None:
+                    vocabularies.append((vocabulary, column, link))
         if not columns:
             raise QueryError(f"`{address}` is not a vocabulary, a column, or a feature that columns record")
     matches = []
-    for vocabulary, column in vocabularies:
+    for vocabulary, column, mapping in vocabularies:
         codes = vocabulary.data.get(names["code_field"], {})
         entry: dict[str, Any] = {
             "vocabulary": vocabulary.address,
@@ -443,11 +458,12 @@ def lookup_code(catalog: Catalog, address: str, value: str, config: QueryConfig 
             "module": vocabulary.module,
             "column": column.address if column else None,
         }
+        if mapping is not None:
+            entry["mapping"] = _mapping_facts(catalog, mapping, vocabulary_spec, legend)
         if value in codes:
             matches.append({**entry, "code": value, "meaning": codes[value], "match": "exact"})
         else:
-            similar = [code for code in codes if code.strip().lower() == value.strip().lower()]
-            matches.append({**entry, "code": value, "meaning": None, "match": "none", "similar_codes": similar})
+            matches.append({**entry, "code": value, "meaning": None, "match": "none", "similar_codes": _similar(codes, value)})
     interpretations = []
     for column in columns:
         for entry in catalog.entries_of(column.address):
@@ -460,7 +476,26 @@ def lookup_code(catalog: Catalog, address: str, value: str, config: QueryConfig 
         for entry in catalog.entries_of(feature):
             if entry.path[-2] == names.get("missing_state_field") and entry.data.get("representation") == value:
                 missing.append({"id": entry.address, "feature": feature, **{k: v for k, v in entry.data.items() if isinstance(v, str)}})
-    return {"address": address, "value": value, "codes": matches, "interpretations": interpretations, "missing_states": missing}
+    result = {"address": address, "value": value, "codes": matches, "interpretations": interpretations, "missing_states": missing}
+    if legend:
+        result["legend"] = legend
+    return result
+
+
+def _similar(codes: dict[str, str], value: str) -> list[str]:
+    """Codes that differ from ``value`` only in case or surrounding spaces."""
+    return [code for code in codes if code.strip().lower() == value.strip().lower()]
+
+
+def _mapping_facts(catalog: Catalog, mapping: Link, vocabulary_spec: LinkSpec | None, legend: dict[str, dict[str, str]]) -> dict[str, Any]:
+    """The feature a column mapping records and its qualifiers, other than the code list itself."""
+    qualifiers, used = qualifiers_for(catalog, mapping)
+    _merge(legend, used)
+    if vocabulary_spec is not None:
+        qualifiers.pop(vocabulary_spec.field, None)
+    feature = catalog.nodes[mapping.target]
+    facts: dict[str, Any] = {"feature": feature.address, "feature_label": feature.label, "qualifiers": qualifiers}
+    return {key: value for key, value in facts.items() if value not in ({}, None)}
 
 
 # Helpers --------------------------------------------------------------------------
