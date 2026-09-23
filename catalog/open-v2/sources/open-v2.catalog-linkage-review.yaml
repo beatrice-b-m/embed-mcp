@@ -1,0 +1,13 @@
+kind: source
+label: Open-v2 catalog linkage review
+source_type: supporting_internal
+locator_type: repository_path
+locator: docs/open-v2-linkage-review.md
+version_scope: >-
+  Retained open-v2 table, key, projection, relationship, and caveat conclusions
+  derived during the schema-version-3 review.
+notes:
+  - >-
+    This versioned record preserves reviewed implementation conclusions,
+    including unresolved relationship behavior, without making the active catalog self-citing.
+  - It is not a substitute for maintainer confirmation of clinical workflow semantics.

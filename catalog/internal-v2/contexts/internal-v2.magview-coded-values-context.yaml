@@ -1,0 +1,32 @@
+kind: context
+label: Internal V2 MagView categorical and exceptional-value reconciliation
+context_type: known_issue
+definition: >-
+  Most legacy categorical systems retain V1/V2 meanings,
+  while internal source strings also contain undocumented codes, formatting variants,
+  and unresolved numeric exceptions.
+# Prototype: the exam, breast-side, ultrasound, and MRI topics are outside
+# this slice.
+topics: [topic.imaging, topic.mammography, topic.pathology, topic.procedure, topic.workflow]
+about:
+  # Prototype: also about pathology.diagnosis_code_slot and breast.side, which
+  # are outside this slice.
+  - imaging.assessment
+  - imaging.recommendation
+  - pathology.severity
+  - internal-v2.magview_all_cohorts_pacs_v2_anon
+search_terms: [internal V2 categorical values, unresolved source code, numeric sentinel, lowercase assessment, laterality null]
+claims:
+  # Prototype: an excerpt holding one of this context's claims.
+  code-normalization:
+    statement: >-
+      All alphabetic internal MagView codes may be compared after trimming surrounding whitespace and uppercasing;
+      normalization does not assign meanings to otherwise unexplained tokens.
+    status: verified
+    sources: [internal-v2.magview-maintainer-clarifications]
+    caveats:
+      - The original source representation remains part of the physical occurrence.
+      - Comma-delimited fields are split on commas; ordering and repetition do not change meaning.
+caveats:
+  - Observed absence is not evidence that a documented code cannot occur.
+  - Schema nullability does not establish clinical missingness semantics.

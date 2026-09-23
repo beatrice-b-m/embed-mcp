@@ -1,0 +1,25 @@
+kind: relationship
+label: Interpretation may lead to procedure
+relationship_type: association
+definition: Clinical association between an interpretation or recommendation and a later procedure.
+source_object: imaging_interpretation
+target_object: procedure
+cardinality:
+  targets_per_source: zero_or_more
+  sources_per_target: zero_or_more
+optionality:
+  source: optional
+  target: optional
+attribution_limitations:
+  - A recommendation does not prove a procedure occurred.
+  - A profile may lack a complete direct recommendation-to-procedure key.
+temporal_qualification: >-
+  The procedure generally occurs after the imaging interpretation,
+  but no universal interval is defined.
+# Prototype: temporal links to time.exam-event, time.procedure-event, and
+# time.downstream-availability are outside this slice.
+topics: [topic.imaging, topic.procedure, topic.temporal, topic.workflow]
+search_terms: [recommendation procedure, assessment biopsy, follow-up procedure]
+cites: [clinical.screening-diagnostic-pathway#assessment-guides-next-step]
+caveats:
+  - This relationship describes clinical adjacency rather than an executable linkage.

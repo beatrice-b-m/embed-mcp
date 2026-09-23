@@ -1,0 +1,9 @@
+kind: source
+label: EMBED V2 open-data clinical legend
+source_type: release_legend
+locator_type: logical_artifact
+locator: EMBEDv2-open-data-clinical-legend.csv
+version_scope: Legend distributed for the open-v2 clinical-table release.
+notes:
+  - The legend supports released header and code meanings but is not assumed exhaustive.
+  - Legend content does not establish temporal availability, row identity, or null semantics.

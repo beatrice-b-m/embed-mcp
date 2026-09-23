@@ -1,0 +1,4 @@
+kind: module
+label: EMBED Open Data V2
+module_type: profile
+requires: [semantic]

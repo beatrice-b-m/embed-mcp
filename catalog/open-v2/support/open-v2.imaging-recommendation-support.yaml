@@ -1,0 +1,7 @@
+kind: profile_support
+subject: imaging.recommendation
+status: supported
+cites:
+  - open-v2.assessment-recommendation-context#recommendation-code-mappings
+  - open-v2.assessment-recommendation-context#recommendation-composition
+  - open-v2.assessment-recommendation-context#separate-fields

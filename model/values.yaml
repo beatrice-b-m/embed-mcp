@@ -1,0 +1,146 @@
+# Controlled values. Each value set maps a value to its one-line meaning.
+# Adding a value is one line here; the checker, templates, and editor schema
+# read this file directly.
+#
+# Prototype wording (slice 1): these meanings were drafted from the current
+# documentation and need maintainer review in slice 2.
+
+module_types:
+  semantic: Portable clinical meaning shared by every profile.
+  profile: The physical representation of one dataset release.
+  extension: Additional documents layered on other modules.
+
+feature_value_types:
+  identifier: A value that identifies a patient, exam, or other record.
+  date: A calendar date or timestamp.
+  categorical: A small set of named categories without a separate code list.
+  coded: Values drawn from a code list defined by a vocabulary.
+  flag: A true/false indicator.
+  numeric: A measured or counted number.
+  text: Free text.
+  aggregate: A value summarized from several underlying occurrences.
+  model_output: A value produced by a predictive or risk model.
+  technical: A value that exists for storage or processing, not clinical meaning.
+
+evidence_kinds:
+  release_schema: Established by a release's physical schema.
+  release_legend: Established by a release's code legend.
+  observed_source_values: Established by targeted inspection of represented source values.
+  cross_table_check: Established by comparing tables within a release.
+  maintainer_confirmed: Confirmed by a dataset maintainer.
+  inference: Inferred by catalog authors from other evidence.
+  unresolved: Evidence is incomplete or conflicting.
+
+scopes:
+  general_clinical: General clinical background that does not depend on EMBED.
+  embed_general: Holds for EMBED generally, across releases.
+
+cardinalities:
+  exactly_one: Exactly one.
+  zero_or_one: At most one.
+  one_or_more: At least one.
+  zero_or_more: Any number, including none.
+  unknown: Not established.
+
+optionalities:
+  required: The participant must be present.
+  optional: The participant may be absent.
+  unknown: Not established.
+
+relationship_types:
+  hierarchy: One object contains or is composed of the other.
+  association: The objects are clinically associated without containment.
+  attribution: One object is attributed to the other.
+  documentation: One object documents the other.
+  derivation: One object is derived from the other.
+
+temporal_types:
+  event_time: When a clinical event occurred.
+  documentation_time: When something was documented.
+  availability_time: When information became available.
+
+aggregation_statuses:
+  provided: The dataset provides the aggregated value.
+  analyst_defined: The analyst must define the aggregation.
+  unsupported: The aggregation is not supported by the representation.
+  unresolved: Whether the aggregation is supported is not established.
+
+guardrail_categories:
+  prohibition: A represented value must not be interpreted in a particular way.
+  analyst_choice: Interpretation requires an explicit choice by the analyst.
+  interpretation_limit: A limit on what a represented value can establish.
+
+guardrail_priorities:
+  critical: Misinterpretation would invalidate most analyses.
+  high: Misinterpretation is likely and consequential.
+  standard: Relevant to careful interpretation.
+
+source_types:
+  maintainer_confirmed: A confirmation recorded by a dataset maintainer.
+  release_schema: A release's physical schema.
+  release_legend: A release's code legend.
+  supporting_internal: An internal supporting record in this repository.
+  public_documentation: Publicly available documentation.
+
+locator_types:
+  url: A web address.
+  repository_path: A path in this repository.
+  logical_artifact: A named artifact without a public address.
+
+claim_statuses:
+  verified: Checked directly against the cited evidence.
+  reconciled: Agreed across sources after review.
+  unverified: Stated by a source but not yet checked.
+  unresolved: Evidence is incomplete or conflicting.
+  contradicted: Evidence contradicts the statement.
+
+context_types:
+  clinical_workflow: Background on how clinical care proceeds.
+  data_representation: How the data represents something.
+  interpretation_guardrail: Background supporting an interpretation constraint.
+  known_issue: A known problem or open question in the data.
+
+mapping_statuses:
+  direct: The column records the feature as represented.
+  derived: The column is computed or projected from other represented values.
+  conditional: The column records the feature only under stated conditions.
+  ambiguous: The column may record the feature, but its meaning is not settled.
+  unresolved: Whether the column records the feature is not established.
+
+vocabulary_completeness:
+  unknown: Whether the code list is exhaustive is not stated.
+  open: Codes outside the list are known to occur.
+  closed: The code list is exhaustive.
+
+vocabulary_parsing:
+  atomic: Each value is a single code.
+  comma_composed_undocumented: Values may combine several codes; delimiter, ordering, repetition, and composition semantics are undocumented, so preserve the source string.
+  comma_delimited_unordered: Values are comma-separated codes whose order and repetition carry no meaning.
+  shared_slot_dictionary: Several columns share this code list.
+
+null_meanings:
+  undocumented: What a null or blank value means is not documented and must not be inferred from the code meanings.
+
+key_types:
+  natural: Built from clinically meaningful columns.
+  technical: Built from storage or export columns.
+
+key_uniqueness:
+  unique: Identifies at most one row.
+  not_unique: May match several rows.
+  unknown: Not established.
+
+key_completeness:
+  complete: Every row has every key column.
+  incomplete: Some rows lack a key column.
+  unknown: Not established.
+
+support_statuses:
+  supported: The profile's evidence supports the document.
+  unsupported: The profile does not represent the document.
+  unresolved: Whether the profile supports the document is not established.
+  interpretation_limit: The profile supports the document with stated limits.
+  not_cataloged: The profile may represent the document, but the catalog does not describe it yet.
+
+pattern_statuses:
+  example: One way the lab has handled the data; not a canonical definition.

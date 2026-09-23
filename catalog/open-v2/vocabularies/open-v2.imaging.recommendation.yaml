@@ -1,0 +1,60 @@
+kind: vocabulary
+label: Imaging recommendation codes
+completeness: unknown
+null_meaning: undocumented
+parsing: comma_composed_undocumented
+evidence: [release_legend]
+codes:
+  "1": 1 Year follow up
+  "&": NOT SPECIFIED
+  ">": Return to screening
+  A: Cyst aspiration
+  AS: Aspiration
+  B: Biopsy
+  BF: Bilateral Follow-up
+  BM: Bilateral mammo
+  BU: Bilateral ultrasound
+  C: Clinical correlation of finding
+  CM: Clinical management
+  CMR: Clinical management w/ recall
+  D: Any decision to biopsy should be based on clinical assessment
+  E: Biopsy based on Clinical
+  F: Short term follow-up bilateral
+  FL: Short term follow up left
+  FN: Fine needle aspiration
+  FR: Short term follow up right
+  GB: Bilateral Diagnostic Mammogram
+  GL: Left Diagnostic Mammogram
+  GR: Right Diagnostic Mammogram
+  HRR: High Risk Screening MRI
+  ICU: Independent clinical FU
+  IFM: Independent clinical FU
+  L: Needle localization and excision
+  M: Magnification mammography
+  MR: Breast MRI
+  MR6: MRI six month follow up
+  MRA: MRI abnormal
+  MRB: MR guided biopsy
+  MRC: MRI-Consider routine
+  MRI: MRI immediate follow up
+  MRN: MRI strongly recommend
+  N: Bilateral mammogram
+  O: Old films for comparison
+  OF: OSF/Additional Evaluation
+  P: Additional projections
+  PU: Possible ultrasound after mammo
+  RL: Left mammogram
+  RR: Right mammogram
+  S: Spot compression
+  SB: Stereotactic biopsy
+  SE: Surgical excision
+  T: Appropriate action
+  TM: Tomo Views Also
+  TR: Technical Repeat
+  U: An ultrasound exam
+  UB: Ultrasound biopsy
+  UM: Unilateral mammo
+  USC: Negative OSF
+  UU: Unilateral ultrasound
+  Y: Cytologic analysis
+  Z: Biopsy already performed

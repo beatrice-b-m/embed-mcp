@@ -1,0 +1,62 @@
+kind: context
+label: Screening and diagnostic breast-imaging pathway
+context_type: clinical_workflow
+scope: general_clinical
+definition: >-
+  Screening and diagnostic imaging serve different clinical roles,
+  with tissue sampling and pathology entering later when indicated.
+topics: [topic.imaging, topic.mammography, topic.pathology, topic.procedure, topic.workflow]
+about:
+  # Prototype: also about exam.mammography_type, pathology.biopsy_type, and
+  # pathology.surgery_type, which are outside this slice.
+  - imaging.assessment
+search_terms: [screening pathway, diagnostic pathway, screening recall, symptomatic diagnostic, biopsy pathway]
+claims:
+  screening-role:
+    statement: >-
+      Screening mammography evaluates asymptomatic patients
+      for findings that may require additional diagnostic evaluation.
+    status: reconciled
+    sources: [hitilab.embed.label-assignment.clinical-pathway, hitilab.embed.overview.clinical-primer]
+    caveats:
+      - This clinical role does not identify an EMBED exam row or define a cohort.
+  direct-diagnostic-entry:
+    statement: A symptomatic presentation may enter diagnostic imaging without a preceding screening examination.
+    status: reconciled
+    sources: [hitilab.embed.label-assignment.clinical-pathway, hitilab.embed.overview.clinical-primer]
+    caveats:
+      - Absence of a linked screening record does not by itself prove that symptoms were present.
+  assessment-guides-next-step:
+    statement: >-
+      Diagnostic assessment may resolve a finding, support surveillance,
+      or lead to a recommendation for tissue sampling.
+    status: reconciled
+    sources: [hitilab.embed.label-assignment.clinical-pathway, hitilab.embed.overview.clinical-primer]
+    caveats:
+      - An assessment category is not interchangeable with pathology truth.
+  pathology-follows-sampling:
+    statement: >-
+      Pathology is produced after tissue sampling or surgery
+      and may inform subsequent treatment or imaging.
+    status: reconciled
+    sources: [hitilab.embed.label-assignment.clinical-pathway, hitilab.embed.overview.clinical-primer]
+    caveats:
+      - The statement supplies no universal timing window or treatment rule.
+workflow_steps:
+  screening:
+    label: Screening imaging
+    claims: [screening-role]
+  diagnostic-evaluation:
+    label: Diagnostic evaluation
+    claims: [direct-diagnostic-entry, assessment-guides-next-step]
+  tissue-sampling:
+    label: Tissue sampling
+    claims: [pathology-follows-sampling]
+  subsequent-care:
+    label: Subsequent care
+    claims: [pathology-follows-sampling]
+caveats:
+  - >-
+    This context is general clinical background and is not evidence
+    that open-v2 rows form a complete or deterministic event sequence.
+  - No follow-up interval, interval-cancer policy, outcome definition, or modality-inclusion rule is established.

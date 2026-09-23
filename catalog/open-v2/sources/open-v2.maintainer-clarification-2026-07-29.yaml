@@ -1,0 +1,25 @@
+kind: source
+label: Open-v2 maintainer clarification on representation and provenance
+source_type: maintainer_confirmed
+locator_type: repository_path
+locator: docs/manual-review-batches.md
+version_scope: >-
+  Open-v2 linked-exam, multimodal descriptor, aggregation, pathology, report, risk, demographic,
+  laterality, and date semantics reviewed on 2026-07-29 and retained in the repository clarification record.
+notes:
+  - >-
+    Confirms same-episode linked accessions, descriptor-versus-modality boundaries,
+    mammography-only Boolean aggregates, minimum pathology-severity rollups,
+    synthetic contralateral findings, age handling, legal-sex and release-version meanings,
+    context-dependent null laterality, procedure-associated pathology-code behavior,
+    report-version sequencing, clinical-time risk calculation, and consistent within-patient date shifts.
+  - >-
+    Ordinary risk outputs are tentatively believed to use percentage points,
+    but the risk table has not been validated in depth.
+  - >-
+    Retains unknown system-specific code mappings, report addendum linkage, risk-field variants,
+    most sentinel meanings, measurement units, MRI ambiguities, and model versions
+    for later internal investigation.
+  - >-
+    There is no universal delimiter, ordering, or null convention across loosely structured coded fields;
+    absent field-specific evidence, preserve source strings and treat null as unknown or missing.

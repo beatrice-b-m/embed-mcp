@@ -1,0 +1,19 @@
+kind: vocabulary
+label: BI-RADS assessment codes
+completeness: unknown
+null_meaning: undocumented
+parsing: atomic
+evidence: [observed_source_values, release_legend]
+caveats:
+  - The Open V2 legend is a comparison source and is not assumed exhaustive for internal V2.
+  - Null and blank meanings remain physical-occurrence specific.
+codes:
+  A: Additional evaluation
+  B: Benign
+  K: Known biopsy-proven malignancy
+  M: Highly suggestive of malignancy
+  N: Negative
+  P: Probably benign
+  S: Suspicious
+  X: No Assessment
+  s: Suspicious after supported case normalization

@@ -1,0 +1,6 @@
+kind: profile_support
+subject: imaging.assessment
+status: supported
+cites:
+  - open-v2.assessment-recommendation-context#assessment-codes
+  - open-v2.assessment-recommendation-context#separate-fields

@@ -1,0 +1,178 @@
+# Link types between documents.
+#
+# A link is written only in the owning document, under `field:` (which
+# defaults to the link type's name). The engine computes the reverse link and
+# shows it on the target under `backlink:`. Writing a link from the target's
+# side is an error.
+#
+#   owners      kinds whose documents (or entries) write this link
+#   targets     kinds the link may point to; `any` allows every kind
+#   many        a list of links (default true); false for a single link
+#   required    the owner must write at least one link of this type
+#   acyclic     following this link type may never lead back to the start
+#   symmetric   shown under the same name from both ends
+#   local       bare values name entries in the same document,
+#               so `acc_anon` means `<this-document>#acc_anon`
+#   qualifiers  extra fields a link may carry; a link then takes the form
+#               `{id: <target>, <qualifier>: ...}`
+#
+# Every link may also be written as `{id: <target>, note: <text>}` to explain
+# why the link exists.
+#
+# Prototype (slice 1): slice 2 finalizes names and targets.
+
+topics:
+  owners: [clinical_object, concept, feature, relationship, temporal, aggregation, guardrail, pattern, context]
+  targets: [topic]
+  backlink: members
+  description: Hub documents this document belongs under.
+
+topic_broader:
+  field: broader
+  owners: [topic]
+  targets: [topic]
+  backlink: narrower
+  acyclic: true
+
+broader:
+  owners: [concept]
+  targets: [concept]
+  backlink: narrower
+  acyclic: true
+  description: More general concepts; a concept may have several.
+
+related:
+  owners: any
+  targets: any
+  symmetric: true
+  backlink: related
+  description: An association without a more specific link type.
+
+cites:
+  owners: [clinical_object, concept, feature, relationship, temporal, aggregation, guardrail, pattern, context, profile_support, missing_state, interpretation]
+  targets: [claim]
+  backlink: cited_by
+  description: Claims that support this document.
+
+claim_sources:
+  field: sources
+  owners: [claim]
+  targets: [source]
+  backlink: supports
+  required: true
+
+step_claims:
+  field: claims
+  owners: [workflow_step]
+  targets: [claim]
+  local: true
+  backlink: steps
+
+objects:
+  owners: [feature]
+  targets: [clinical_object]
+  backlink: features
+  description: Clinical objects this feature describes.
+
+feature_concepts:
+  field: concepts
+  owners: [feature]
+  targets: [concept]
+  backlink: features
+  description: Clinical concepts this feature represents.
+
+feature_temporal:
+  field: temporal
+  owners: [feature]
+  targets: [temporal]
+  backlink: features
+
+relationship_temporal:
+  field: temporal
+  owners: [relationship]
+  targets: [temporal]
+  backlink: relationships
+
+relative_to:
+  owners: [temporal]
+  targets: [temporal]
+  acyclic: true
+  backlink: anchor_for
+
+source_object:
+  owners: [relationship, aggregation]
+  targets: [clinical_object]
+  many: false
+  required: true
+  backlink: source_of
+
+target_object:
+  owners: [relationship, aggregation]
+  targets: [clinical_object]
+  many: false
+  required: true
+  backlink: target_of
+
+input_feature:
+  owners: [aggregation]
+  targets: [feature]
+  many: false
+  backlink: aggregated_by
+
+result_feature:
+  owners: [aggregation]
+  targets: [feature]
+  many: false
+  backlink: result_of
+
+via:
+  owners: [aggregation]
+  targets: [relationship]
+  backlink: aggregations
+
+applies_to:
+  owners: [guardrail]
+  targets: [clinical_object, concept, feature, relationship, temporal, aggregation, table, column]
+  backlink: guardrails
+  description: Documents whose interpretation this guardrail constrains.
+
+uses:
+  owners: [pattern]
+  targets: [feature, concept, aggregation, table, column]
+  backlink: patterns
+
+about:
+  owners: [context]
+  targets: [clinical_object, concept, feature, relationship, temporal, aggregation, table, column]
+  backlink: contexts
+  description: Documents this context gives background on.
+
+maps:
+  owners: [column]
+  targets: [feature]
+  backlink: columns
+  qualifiers:
+    mapping: {type: value, of: mapping_statuses, required: true}
+  description: Features this column records.
+
+column_vocabulary:
+  field: vocabulary
+  owners: [column]
+  targets: [vocabulary]
+  many: false
+  backlink: columns
+
+key_columns:
+  field: columns
+  owners: [key]
+  targets: [column]
+  local: true
+  required: true
+  backlink: keys
+
+subject:
+  owners: [profile_support]
+  targets: [clinical_object, concept, feature, relationship, temporal, aggregation, guardrail, context]
+  many: false
+  required: true
+  backlink: profile_support

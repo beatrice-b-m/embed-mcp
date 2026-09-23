@@ -1,0 +1,4 @@
+kind: module
+label: Internal EMBED V2 working profile
+module_type: profile
+requires: [semantic]

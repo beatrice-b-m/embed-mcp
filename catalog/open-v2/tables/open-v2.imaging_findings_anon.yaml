@@ -1,0 +1,51 @@
+kind: table
+label: imaging_findings_anon
+grain: imaging_finding
+caveats:
+  - No documented natural key uniquely identifies every imaging-finding row.
+keys:
+  finding_tuple:
+    columns: [acc_anon, side, numfind]
+    key_type: natural
+    uniqueness: not_unique
+    completeness: incomplete
+    evidence: [release_schema, cross_table_check]
+    caveats:
+      - >-
+        The apparent accession, side, and finding tuple is incomplete
+        and does not uniquely identify every imaging row.
+      - Null side and sentinel-like finding numbers require explicit handling.
+  export_index:
+    columns: [__index_level_0__]
+    key_type: technical
+    uniqueness: unique
+    completeness: complete
+    evidence: [release_schema, cross_table_check]
+    caveats:
+      - The pandas serialization index is release-local provenance, not a clinical or cross-release key.
+# Prototype: an excerpt of 6 of the table's 54 columns, in physical order.
+columns:
+  acc_anon:
+    type: int64
+    nullable: true
+  side:
+    type: string
+    nullable: true
+  numfind:
+    type: int8
+    nullable: true
+  asses:
+    type: string
+    nullable: true
+    maps:
+      - {id: imaging.assessment, mapping: direct}
+    vocabulary: open-v2.imaging.assessment
+  recc:
+    type: string
+    nullable: true
+    maps:
+      - {id: imaging.recommendation, mapping: direct}
+    vocabulary: open-v2.imaging.recommendation
+  __index_level_0__:
+    type: int64
+    nullable: true

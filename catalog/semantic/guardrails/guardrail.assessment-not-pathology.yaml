@@ -1,0 +1,22 @@
+kind: guardrail
+label: Imaging assessment is not pathology truth
+category: prohibition
+priority: high
+statement: Do not substitute an imaging assessment or recommendation for a tissue diagnosis.
+rationale: >-
+  Assessment guides next clinical actions;
+  pathology observations and diagnoses are distinct downstream objects.
+scope: general_clinical
+topics: [topic.imaging, topic.pathology, topic.workflow]
+applies_to:
+  - imaging_interpretation
+  - pathology_diagnosis
+  - imaging.assessment
+  - imaging.recommendation
+  - pathology.severity
+  - clinical.interpretation-procedure
+  - clinical.pathology-observation-diagnosis
+search_terms: [assessment versus pathology, BI-RADS not diagnosis]
+cites: [clinical.screening-diagnostic-pathway#assessment-guides-next-step]
+# The former caveat "The catalog describes representation and does not
+# prescribe care." is now a notice in catalog/semantic/module.yaml.

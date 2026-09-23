@@ -1,0 +1,23 @@
+kind: feature
+label: Pathology severity
+definition: Inverse coded group for the most severe procedure-associated pathology descriptor.
+value_type: coded
+evidence: [release_schema, observed_source_values, maintainer_confirmed]
+topics: [topic.pathology]
+objects: [pathology_diagnosis]
+# Prototype: temporal links to time.pathology-report-documentation and
+# time.downstream-availability, and the five severity aggregations, are
+# outside this slice.
+search_terms: [pathology severity]
+caveats:
+  - Lower values are more severe; do not use an increasing numeric threshold to select cancer-positive pathology.
+  - Null means that no pathology is attached and must not be interpreted as benign or negative.
+missing_states:
+  unattached_pathology:
+    representation: "null"
+    meaning: >-
+      No pathology is attached through the represented severity field;
+      this is not a diagnosis category or negative outcome.
+    caveats:
+      - It does not establish that no pathology exists elsewhere.
+      - It does not establish benign disease, no cancer, complete capture, or adequate follow-up.

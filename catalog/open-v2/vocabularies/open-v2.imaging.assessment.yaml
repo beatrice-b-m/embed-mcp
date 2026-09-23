@@ -1,0 +1,15 @@
+kind: vocabulary
+label: BI-RADS assessment codes
+completeness: unknown
+null_meaning: undocumented
+parsing: atomic
+evidence: [release_legend]
+codes:
+  A: Additional evaluation
+  B: Benign
+  K: Known biopsy-proven malignancy
+  M: Highly suggestive of malignancy
+  N: Negative
+  P: Probably benign
+  S: Suspicious
+  X: No Assessment

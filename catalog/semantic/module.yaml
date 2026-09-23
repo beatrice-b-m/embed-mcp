@@ -1,0 +1,9 @@
+kind: module
+label: Portable EMBED clinical semantics
+module_type: semantic
+definition: Clinical meaning shared by every EMBED profile, independent of any physical table.
+notices:
+  - The catalog describes representation and does not prescribe care.
+  - >-
+    The catalog does not emit SQL, pipelines, canonical cohorts,
+    scientific-validity claims, clinical rows, or empirical counts.

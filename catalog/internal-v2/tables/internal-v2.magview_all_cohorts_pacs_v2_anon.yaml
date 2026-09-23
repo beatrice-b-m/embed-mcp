@@ -1,0 +1,63 @@
+kind: table
+label: magview_all_cohorts_PACS_v2_anon
+grain: >-
+  one finding-oriented denormalized MagView clinical association row
+  with repeated patient and exam attributes
+  and optional finding, procedure, pathology, and specimen representations
+caveats:
+  - No complete durable physical-row key is established.
+  - >-
+    Repeated patient attributes may vary over time and require an explicit as-of-time choice;
+    repeated exam attributes should agree and conflicts are data-quality errors without a supplied repair policy.
+  - The modality_desc occurrence is preferred; modality remains unmapped because its relationship to modality_desc is unknown.
+  - Unmapped columns remain physically inventoried because their clinical meaning is unresolved or outside supported evidence.
+keys:
+  # Prototype: the procedure-locator and procedure-specimen-row-locator keys
+  # use columns outside this excerpt.
+  patient-locator:
+    columns: [empi_anon]
+    key_type: natural
+    uniqueness: not_unique
+    completeness: complete
+    evidence: [release_schema, observed_source_values]
+    caveats:
+      - The anonymized identifier is release scoped and repeats across wide rows.
+  exam-locator:
+    columns: [acc_anon]
+    key_type: natural
+    uniqueness: not_unique
+    completeness: complete
+    evidence: [release_schema, observed_source_values]
+    caveats:
+      - The accession is source scoped and repeats for findings and downstream attachments.
+  finding-locator:
+    columns: [acc_anon, numfind]
+    key_type: natural
+    uniqueness: not_unique
+    completeness: incomplete
+    evidence: [release_schema, observed_source_values]
+    caveats:
+      - The clinical identity can occupy repeated rows while procedure, pathology, or descriptor fields differ.
+      - A reserved negative finding number and data-quality conflicts prevent unconditional physical-row uniqueness.
+# Prototype: an excerpt of 4 of the table's 152 columns, in physical order.
+columns:
+  empi_anon:
+    type: int64
+    nullable: true
+  acc_anon:
+    type: int64
+    nullable: true
+  numfind:
+    type: int8
+    nullable: true
+  asses:
+    type: string
+    nullable: true
+    maps:
+      - {id: imaging.assessment, mapping: direct}
+    vocabulary: internal-v2.imaging.assessment
+    interpretations:
+      s:
+        meaning: Suspicious after supported uppercase and surrounding-whitespace normalization
+        status: reconciled
+        cites: [internal-v2.magview-coded-values-context#code-normalization]

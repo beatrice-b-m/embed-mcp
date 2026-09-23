@@ -1,0 +1,26 @@
+kind: relationship
+label: Pathology observations support diagnosis state
+relationship_type: derivation
+definition: >-
+  Classification of attached pathology descriptors
+  into the most severe represented diagnosis group.
+source_object: pathology_observation
+target_object: pathology_diagnosis
+cardinality:
+  targets_per_source: zero_or_one
+  sources_per_target: one_or_more
+optionality:
+  source: optional
+  target: required
+attribution_limitations:
+  - Unknown descriptor meanings may limit interpretation.
+  - Duplicate slots do not create additional diagnostic weight.
+temporal_qualification: >-
+  The diagnosis is documented after the associated observation;
+  exact availability is not established.
+# Prototype: temporal links to time.pathology-report-documentation and
+# time.downstream-availability are outside this slice.
+topics: [topic.pathology]
+search_terms: [pathology code severity, diagnosis classification, breast cancer state]
+caveats:
+  - The inverse severity scale is an implementation value ordering, not disease chronology.

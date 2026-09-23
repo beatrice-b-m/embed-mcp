@@ -1,0 +1,224 @@
+# Document kinds and their fields.
+#
+# Every catalog document starts with `kind: <name>` and may use only the
+# fields its kind declares here, plus the link fields that model/links.yaml
+# declares for that kind. Field types:
+#
+#   text    a string (prose may use inline Markdown)
+#   value   one controlled value from model/values.yaml (`of:` names the set)
+#   flag    true or false
+#   map     string keys to string values (for example, vocabulary codes)
+#   record  nested fields; `entry_kind:` makes it a keyed map of addressable
+#           entries (`<document-id>#<key>`) whose fields are declared under
+#           that entry kind below
+#
+# `many: true` makes a field a list. `required: true` makes it mandatory.
+# `description:` is shown by the editor schema and by `show`.
+#
+# Prototype (slice 1): fields follow the current catalog closely; slice 2
+# finalizes names and records each change in the parity ledger.
+
+module:
+  description: The module.yaml file at the top of a module directory.
+  fields:
+    label: {type: text, required: true}
+    module_type: {type: value, of: module_types, required: true}
+    requires: {type: text, many: true, description: IDs of modules this module builds on.}
+    definition: {type: text}
+    notices: {type: text, many: true, description: Module-wide statements shown once, instead of repeated on every document.}
+
+topic:
+  description: An optional hub document that other documents link to for browsing and filtering.
+  fields:
+    label: {type: text, required: true}
+    definition: {type: text}
+
+clinical_object:
+  description: A clinical thing the data represents, such as an exam, finding, or procedure.
+  fields:
+    label: {type: text, required: true}
+    definition: {type: text, required: true}
+    grain: {type: text, required: true, description: What one occurrence of the object is.}
+    search_terms: {type: text, many: true}
+    caveats: {type: text, many: true}
+
+concept:
+  description: A clinical knowledge concept, such as breast cancer or a treatment pathway.
+  fields:
+    label: {type: text, required: true}
+    definition: {type: text, required: true}
+    search_terms: {type: text, many: true}
+    caveats: {type: text, many: true}
+
+feature:
+  description: A portable clinical attribute that tables in one or more profiles may represent.
+  fields:
+    label: {type: text, required: true}
+    definition: {type: text, required: true}
+    value_type: {type: value, of: feature_value_types, required: true}
+    evidence: {type: value, of: evidence_kinds, many: true}
+    search_terms: {type: text, many: true}
+    caveats: {type: text, many: true}
+    missing_states: {type: record, entry_kind: missing_state, description: Documented meanings of missing representations.}
+
+missing_state:
+  description: A documented meaning of one missing representation of a feature.
+  entry: true
+  fields:
+    representation: {type: text, required: true}
+    meaning: {type: text, required: true}
+    caveats: {type: text, many: true}
+
+relationship:
+  description: A typed clinical relationship between two clinical objects.
+  fields:
+    label: {type: text, required: true}
+    relationship_type: {type: value, of: relationship_types, required: true}
+    definition: {type: text, required: true}
+    cardinality:
+      type: record
+      required: true
+      fields:
+        targets_per_source: {type: value, of: cardinalities, required: true}
+        sources_per_target: {type: value, of: cardinalities, required: true}
+    optionality:
+      type: record
+      required: true
+      fields:
+        source: {type: value, of: optionalities, required: true}
+        target: {type: value, of: optionalities, required: true}
+    attribution_limitations: {type: text, many: true}
+    temporal_qualification: {type: text}
+    search_terms: {type: text, many: true}
+    caveats: {type: text, many: true}
+
+temporal:
+  description: A time meaning, such as when an exam occurred or when pathology was documented.
+  fields:
+    label: {type: text, required: true}
+    temporal_type: {type: value, of: temporal_types, required: true}
+    definition: {type: text, required: true}
+    search_terms: {type: text, many: true}
+    caveats: {type: text, many: true}
+
+aggregation:
+  description: Documented semantics for combining occurrences of a feature across a relationship.
+  fields:
+    label: {type: text, required: true}
+    aggregation_status: {type: value, of: aggregation_statuses, required: true}
+    definition: {type: text, required: true}
+    ordering: {type: text}
+    search_terms: {type: text, many: true}
+    caveats: {type: text, many: true}
+
+guardrail:
+  description: A constraint on how represented data may be interpreted; it does not prescribe downstream use.
+  fields:
+    label: {type: text, required: true}
+    category: {type: value, of: guardrail_categories, required: true}
+    priority: {type: value, of: guardrail_priorities, required: true}
+    statement: {type: text, required: true}
+    rationale: {type: text}
+    scope: {type: value, of: scopes}
+    search_terms: {type: text, many: true}
+    caveats: {type: text, many: true}
+
+pattern:
+  description: A data-handling procedure presented as an example with its limits, never as a canonical definition.
+  fields:
+    label: {type: text, required: true}
+    pattern_status: {type: value, of: pattern_statuses, required: true}
+    definition: {type: text, required: true}
+    steps: {type: text, description: Prose steps or pseudocode; never executable code.}
+    limits: {type: text, many: true}
+    search_terms: {type: text, many: true}
+
+context:
+  description: Reviewed background knowledge with the claims it makes.
+  fields:
+    label: {type: text, required: true}
+    context_type: {type: value, of: context_types, required: true}
+    scope: {type: value, of: scopes}
+    definition: {type: text, required: true}
+    search_terms: {type: text, many: true}
+    claims: {type: record, entry_kind: claim}
+    workflow_steps: {type: record, entry_kind: workflow_step, description: Ordered steps of a clinical workflow.}
+    caveats: {type: text, many: true}
+
+claim:
+  description: One reviewed statement made by a context.
+  entry: true
+  fields:
+    statement: {type: text, required: true}
+    status: {type: value, of: claim_statuses, required: true}
+    caveats: {type: text, many: true}
+
+workflow_step:
+  description: One step of a clinical workflow.
+  entry: true
+  fields:
+    label: {type: text, required: true}
+
+source:
+  description: A cited source of evidence.
+  fields:
+    label: {type: text, required: true}
+    source_type: {type: value, of: source_types, required: true}
+    scope: {type: value, of: scopes}
+    locator_type: {type: value, of: locator_types, required: true}
+    locator: {type: text, required: true}
+    version_scope: {type: text, required: true, description: What the source covers.}
+    notes: {type: text, many: true}
+
+table:
+  description: One physical table of one profile, with its columns, keys, and column mappings.
+  fields:
+    label: {type: text, required: true, description: The physical table name.}
+    grain: {type: text, required: true, description: What one row represents.}
+    caveats: {type: text, many: true}
+    keys: {type: record, entry_kind: key}
+    columns: {type: record, entry_kind: column, required: true, description: Physical columns keyed by their source name, in physical order.}
+
+key:
+  description: A candidate key of a table.
+  entry: true
+  fields:
+    key_type: {type: value, of: key_types, required: true}
+    uniqueness: {type: value, of: key_uniqueness, required: true}
+    completeness: {type: value, of: key_completeness, required: true}
+    evidence: {type: value, of: evidence_kinds, many: true}
+    caveats: {type: text, many: true}
+
+column:
+  description: One physical column of a table.
+  entry: true
+  fields:
+    type: {type: text, required: true, description: The physical storage type.}
+    nullable: {type: flag, required: true}
+    caveats: {type: text, many: true}
+    interpretations: {type: record, entry_kind: interpretation, description: Meanings of specific represented values in this column, keyed by the value.}
+
+interpretation:
+  description: The meaning of one represented value in one column.
+  entry: true
+  fields:
+    meaning: {type: text, required: true}
+    status: {type: value, of: claim_statuses, required: true}
+    caveats: {type: text, many: true}
+
+vocabulary:
+  description: A code list used by one or more columns.
+  fields:
+    label: {type: text, required: true}
+    completeness: {type: value, of: vocabulary_completeness, required: true}
+    null_meaning: {type: value, of: null_meanings}
+    parsing: {type: value, of: vocabulary_parsing, required: true}
+    evidence: {type: value, of: evidence_kinds, many: true}
+    caveats: {type: text, many: true}
+    codes: {type: map, required: true, description: Each code and its label.}
+
+profile_support:
+  description: Whether a profile supports a semantic document, and with what limits.
+  fields:
+    status: {type: value, of: support_statuses, required: true}
+    caveats: {type: text, many: true}
