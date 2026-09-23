@@ -45,6 +45,9 @@ open questions; they are not long-term reference documentation.
 - `templates/` is the source of truth for output layout.
 - `embed_context/` implements the model generically and contains no catalog
   content, clinical wording, or search vocabulary.
+- `tools/` holds maintainer tools outside the package. `tools/atlas/` builds
+  a page from the graph export and agent traces; its template's `CONFIG`
+  names the few kinds it treats specially.
 - README and `docs/` are manually synchronized explanations. They must agree
   with the catalog and implementation but never override them.
 - `docs/manual-review-batches.md` and `docs/open-v2-linkage-review.md` are
@@ -148,6 +151,10 @@ For packaging changes, build the wheel and verify that it carries `model/`,
   them. Test CLI text, JSON, exit status, and help, and the MCP tool set,
   closed input schemas, read-only annotations, one text block per call, error
   results, and stderr-only startup errors.
+- Graph export or trace format: update `tools/atlas/` so the page still reads
+  them; `tests.test_atlas_tool` builds a page from both. A kind added,
+  renamed, or removed in `model/kinds.yaml` belongs in the template's `CONFIG`
+  layers.
 - Packaging: keep the bundled data, console script, package version,
   `CITATION.cff`, README install paths, and client configurations
   synchronized.

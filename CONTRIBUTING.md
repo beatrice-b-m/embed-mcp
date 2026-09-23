@@ -40,6 +40,9 @@ controlled values, and link IDs as you type.
   (`operations.yaml`).
 - `templates/text/` holds the output layout.
 - `embed_context/` is the engine. It contains no catalog content.
+- `tools/` holds maintainer tools that are not part of the package, such as
+  the [atlas](tools/atlas/README.md), a page that draws the graph and agent
+  traces.
 - The README and `docs/` explain these files. They must agree with them and
   never override them.
 
@@ -110,6 +113,7 @@ Focused tests while iterating:
 | Operations and CLI | `tests.test_operations`, `tests.test_cli`, `tests.test_graph` |
 | MCP | `tests.test_mcp_server` (needs the `mcp` extra) |
 | Traces | `tests.test_trace` |
+| Atlas page (`tools/atlas`) | `tests.test_atlas_tool` |
 | Editor schema | `tests.test_schema` |
 | The real catalog | `tests.test_repository_catalog` |
 

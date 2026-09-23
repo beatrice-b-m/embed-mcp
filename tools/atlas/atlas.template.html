@@ -1,0 +1,1039 @@
+<meta charset="utf-8">
+<title>EMBED Context Atlas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root {
+  --page: #f3f4f6;
+  --surface: #fbfbfc;
+  --raised: #ffffff;
+  --ink: #101318;
+  --ink-2: #4a515b;
+  --muted: #7f8791;
+  --hair: #dfe2e7;
+  --edge: rgba(16, 19, 24, 0.10);
+  --edge-hi: rgba(16, 19, 24, 0.55);
+  --wash: rgba(16, 19, 24, 0.05);
+  --m0: #2a78d6;
+  --m1: #eb6834;
+  --m2: #1baf7a;
+  --m-other: #9a9fa6;
+  --critical: #d03b3b;
+  --serious: #ec835a;
+  --warning: #fab219;
+  --focus: #2a78d6;
+  --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --page: #0c0e11;
+    --surface: #14171b;
+    --raised: #1a1e23;
+    --ink: #eef1f4;
+    --ink-2: #b4bcc6;
+    --muted: #7d8590;
+    --hair: #272c33;
+    --edge: rgba(238, 241, 244, 0.09);
+    --edge-hi: rgba(238, 241, 244, 0.6);
+    --wash: rgba(238, 241, 244, 0.06);
+    --m0: #3987e5;
+    --m1: #d95926;
+    --m2: #199e70;
+    --m-other: #6f757d;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --page: #0c0e11;
+  --surface: #14171b;
+  --raised: #1a1e23;
+  --ink: #eef1f4;
+  --ink-2: #b4bcc6;
+  --muted: #7d8590;
+  --hair: #272c33;
+  --edge: rgba(238, 241, 244, 0.09);
+  --edge-hi: rgba(238, 241, 244, 0.6);
+  --wash: rgba(238, 241, 244, 0.06);
+  --m0: #3987e5;
+  --m1: #d95926;
+  --m2: #199e70;
+  --m-other: #6f757d;
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { height: 100%; }
+body {
+  background: var(--page);
+  color: var(--ink);
+  font: 14px/1.5 var(--sans);
+  padding-inline: 16px;
+  padding-block: 18px 28px;
+}
+.app { max-width: 1480px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
+code, .id { font-family: var(--mono); font-size: 0.92em; }
+button, input, select { font: inherit; color: inherit; }
+button:focus-visible, input:focus-visible, select:focus-visible, [tabindex]:focus-visible {
+  outline: 2px solid var(--focus); outline-offset: 2px;
+}
+
+/* Header */
+.masthead { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 14px 28px; }
+.masthead h1 { margin: 0; font-size: 22px; font-weight: 600; letter-spacing: -0.01em; text-wrap: balance; }
+.masthead p { margin: 2px 0 0; color: var(--ink-2); max-width: 68ch; }
+.stats { display: flex; flex-wrap: wrap; gap: 4px 20px; margin: 0; }
+.stats div { display: flex; flex-direction: column; }
+.stats dt { font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.stats dd { margin: 0; font-size: 18px; font-weight: 500; font-variant-numeric: tabular-nums; }
+
+.bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; border-bottom: 1px solid var(--hair); }
+.tabs { display: flex; gap: 2px; }
+.tabs button {
+  background: none; border: 0; padding: 8px 12px 9px; cursor: pointer; color: var(--ink-2);
+  border-bottom: 2px solid transparent; margin-bottom: -1px; font-weight: 500;
+}
+.tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--ink); }
+.tabs button:hover { color: var(--ink); }
+.data-actions { display: flex; flex-wrap: wrap; gap: 6px; padding-bottom: 6px; }
+.btn {
+  border: 1px solid var(--hair); background: var(--raised); border-radius: 6px; padding: 4px 10px;
+  cursor: pointer; font-size: 13px; color: var(--ink-2);
+}
+.btn:hover { color: var(--ink); border-color: var(--muted); }
+.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* Views */
+.view { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 14px; }
+.view[hidden] { display: none !important; }
+.stage {
+  position: relative; background: var(--surface); border: 1px solid var(--hair); border-radius: 10px;
+  min-height: 560px; height: calc(100vh - 240px); max-height: 900px; overflow: hidden;
+}
+.stage svg { width: 100%; height: 100%; display: block; touch-action: none; }
+.stage-tools {
+  position: absolute; left: 10px; right: 10px; top: 10px; display: flex; flex-wrap: wrap; gap: 6px; align-items: flex-start;
+  pointer-events: none;
+}
+.stage-tools > * { pointer-events: auto; }
+.search { position: relative; width: min(320px, 100%); }
+.search input {
+  width: 100%; border: 1px solid var(--hair); background: var(--raised); border-radius: 6px; padding: 5px 10px;
+}
+.search ul {
+  position: absolute; left: 0; right: 0; top: calc(100% + 4px); margin: 0; padding: 4px; list-style: none;
+  background: var(--raised); border: 1px solid var(--hair); border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,.12);
+  max-height: 300px; overflow: auto; z-index: 5;
+}
+.search li { padding: 5px 8px; border-radius: 5px; cursor: pointer; display: flex; flex-direction: column; }
+.search li:hover, .search li[aria-selected="true"] { background: var(--wash); }
+.search li .id { color: var(--ink-2); font-size: 11.5px; overflow-wrap: anywhere; }
+.chips { display: flex; flex-wrap: wrap; gap: 4px; max-width: 760px; }
+.chip {
+  display: inline-flex; align-items: center; gap: 5px; border: 1px solid var(--hair); background: var(--raised);
+  border-radius: 999px; padding: 1px 9px; font-size: 12px; cursor: pointer; color: var(--ink-2);
+}
+.chip[aria-pressed="false"] { opacity: 0.45; text-decoration: line-through; }
+.chip .n { font-variant-numeric: tabular-nums; color: var(--muted); }
+.stage-legend {
+  position: absolute; left: 10px; bottom: 10px; display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12px;
+  color: var(--ink-2); background: color-mix(in srgb, var(--surface) 88%, transparent); padding: 4px 8px; border-radius: 6px;
+  max-width: calc(100% - 20px);
+}
+.sw { display: inline-block; width: 10px; height: 10px; border-radius: 50%; vertical-align: -1px; margin-right: 5px; }
+.sw.ring { background: none; border: 1.5px solid var(--ink); }
+.sw.sq { border-radius: 2px; background: var(--muted); }
+.sw.dash { width: 16px; height: 0; border-radius: 0; border-top: 1.5px dashed var(--ink); vertical-align: 3px; }
+.sw.line { width: 16px; height: 0; border-radius: 0; border-top: 1.5px solid var(--ink); vertical-align: 3px; }
+.busy {
+  position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted); font-size: 13px;
+}
+
+/* SVG marks */
+.edges { fill: none; stroke: var(--edge); stroke-width: 0.6; }
+.edges-hi { fill: none; stroke: var(--edge-hi); stroke-width: 0.9; }
+.node { stroke: var(--surface); stroke-width: 0.8; cursor: pointer; }
+.node.m0 { fill: var(--m0); } .node.m1 { fill: var(--m1); } .node.m2 { fill: var(--m2); } .node.mx { fill: var(--m-other); }
+.node.guard { stroke: var(--ink); stroke-width: 1.4; }
+.node.topic { fill: var(--muted); }
+svg.has-sel .node { opacity: 0.12; }
+svg.has-sel .node.nb, svg.has-sel .node.sel { opacity: 1; }
+svg.has-sel .edges { opacity: 0.35; }
+.node.sel { stroke: var(--ink); stroke-width: 2.2; }
+svg.dim .node { opacity: 0.18; }
+svg.dim .node.lit { opacity: 1; }
+.ov-ring { fill: none; stroke: var(--ink); stroke-width: 1.8; pointer-events: none; }
+.ov-hit { fill: none; stroke: var(--ink); stroke-width: 1.1; stroke-dasharray: 2.5 2; pointer-events: none; opacity: 0.8; }
+.ov-shown { fill: var(--ink); pointer-events: none; opacity: 0.55; }
+.ov-path { fill: none; stroke: var(--ink); stroke-width: 1.5; pointer-events: none; }
+.ov-path.jump { stroke-dasharray: 5 4; }
+.ov-num { font: 500 9px var(--mono); fill: var(--ink); paint-order: stroke; stroke: var(--surface); stroke-width: 3px; pointer-events: none; }
+.ov-focus { fill: none; stroke: var(--ink); stroke-width: 3; pointer-events: none; }
+.ov-heat { fill: var(--ink); fill-opacity: 0.16; stroke: var(--ink); stroke-width: 1; pointer-events: none; }
+
+/* Kind graph */
+.k-edge { fill: none; stroke: var(--muted); stroke-opacity: 0.45; cursor: pointer; }
+.k-edge:hover, .k-edge.hi { stroke: var(--ink); stroke-opacity: 0.9; }
+.k-node circle { fill: var(--raised); stroke: var(--ink-2); stroke-width: 1.2; }
+.k-node.entry circle { stroke-dasharray: 3 2; }
+.k-node text { font: 500 11.5px var(--mono); fill: var(--ink); }
+.k-node .cnt { font: 400 10.5px var(--sans); fill: var(--muted); font-variant-numeric: tabular-nums; }
+.k-node { cursor: pointer; }
+.k-node.hi circle { stroke: var(--ink); stroke-width: 2; }
+.k-band { fill: var(--wash); }
+.k-band-label { font: 500 10.5px var(--sans); letter-spacing: 0.07em; text-transform: uppercase; fill: var(--muted); }
+svg.k-dim .k-edge:not(.hi) { stroke-opacity: 0.08; }
+svg.k-dim .k-node:not(.hi) { opacity: 0.35; }
+
+/* Panel */
+.panel {
+  background: var(--surface); border: 1px solid var(--hair); border-radius: 10px; padding: 14px 16px;
+  display: flex; flex-direction: column; gap: 12px; min-height: 0;
+  height: calc(100vh - 240px); min-height: 560px; max-height: 900px; overflow: auto;
+}
+.panel h2 { margin: 0; font-size: 15px; font-weight: 600; text-wrap: balance; }
+.panel h3 { margin: 0 0 4px; font-size: 11px; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
+.panel p { margin: 0; color: var(--ink-2); }
+.meta { display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: center; font-size: 12.5px; color: var(--ink-2); }
+.pill { display: inline-flex; align-items: center; gap: 5px; border: 1px solid var(--hair); border-radius: 999px; padding: 0 8px; font-size: 12px; }
+.group { display: flex; flex-direction: column; gap: 2px; }
+.group-name { font-family: var(--mono); font-size: 12px; color: var(--ink-2); display: flex; justify-content: space-between; gap: 8px; }
+.group-name .n { color: var(--muted); font-family: var(--sans); font-variant-numeric: tabular-nums; }
+.linklist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.linklist button {
+  all: unset; box-sizing: border-box; width: 100%; cursor: pointer; padding: 3px 6px; border-radius: 5px;
+  display: flex; gap: 7px; align-items: baseline;
+}
+.linklist button:hover, .linklist button:focus-visible { background: var(--wash); }
+.linklist .lbl { flex: 1; min-width: 0; overflow-wrap: anywhere; font-size: 13px; }
+.linklist .sub { display: block; font-family: var(--mono); font-size: 11px; color: var(--muted); overflow-wrap: anywhere; }
+.more { all: unset; cursor: pointer; font-size: 12px; color: var(--ink-2); padding: 2px 6px; text-decoration: underline; text-underline-offset: 2px; }
+.more:focus-visible { outline: 2px solid var(--focus); }
+
+.tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.tile { border: 1px solid var(--hair); border-radius: 8px; padding: 7px 10px; background: var(--raised); }
+.tile .k { font-size: 11px; color: var(--muted); letter-spacing: 0.04em; text-transform: uppercase; }
+.tile .v { font-size: 19px; font-weight: 500; font-variant-numeric: tabular-nums; }
+.tile .s { font-size: 12px; color: var(--ink-2); }
+.note { font-size: 12.5px; color: var(--ink-2); border-left: 2px solid var(--hair); padding-left: 10px; }
+
+.steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.steps button {
+  all: unset; box-sizing: border-box; width: 100%; cursor: pointer; border-radius: 6px; padding: 5px 7px;
+  display: grid; grid-template-columns: 22px minmax(0, 1fr) auto; gap: 2px 8px; align-items: baseline;
+}
+.steps button:hover, .steps button:focus-visible { background: var(--wash); }
+.steps button[aria-current="true"] { background: var(--wash); box-shadow: inset 2px 0 0 var(--ink); }
+.steps .seq { font: 500 11px var(--mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+.steps .what { min-width: 0; overflow-wrap: anywhere; font-size: 13px; }
+.steps .tool { font: 500 11px var(--mono); color: var(--ink-2); margin-right: 5px; }
+.steps .chars { font-size: 11.5px; color: var(--muted); font-variant-numeric: tabular-nums; text-align: right; }
+.steps .flags { grid-column: 2 / 4; display: flex; flex-wrap: wrap; gap: 4px; }
+.flag { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; border-radius: 4px; padding: 0 6px; border: 1px solid var(--hair); color: var(--ink-2); }
+.flag i { font-style: normal; width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
+.flag.error i { background: var(--critical); }
+.flag.large i { background: var(--serious); }
+.flag.research i { background: var(--warning); }
+.flag.jump i { background: none; border: 1px dashed var(--ink-2); border-radius: 0; height: 0; width: 10px; }
+.flag.follow i { background: none; border-top: 1.5px solid var(--ink-2); border-radius: 0; height: 0; width: 10px; }
+.sizebar { height: 3px; background: var(--hair); border-radius: 2px; grid-column: 2 / 4; overflow: hidden; }
+.sizebar span { display: block; height: 100%; background: var(--ink-2); border-radius: 2px; }
+
+.flows { display: flex; flex-direction: column; gap: 6px; }
+.flow { display: grid; grid-template-columns: minmax(0, 1fr) 48px; gap: 2px 8px; font-size: 12.5px; }
+.flow .name { font-family: var(--mono); font-size: 12px; overflow-wrap: anywhere; }
+.flow .val { text-align: right; font-variant-numeric: tabular-nums; color: var(--ink-2); }
+.flow .track { grid-column: 1 / 3; height: 8px; border-radius: 0 4px 4px 0; background: var(--wash); }
+.flow .track span { display: block; height: 100%; border-radius: 0 4px 4px 0; }
+
+select { border: 1px solid var(--hair); background: var(--raised); border-radius: 6px; padding: 4px 8px; width: 100%; }
+textarea { width: 100%; height: 120px; font: 11px var(--mono); border: 1px solid var(--hair); border-radius: 6px; background: var(--raised); color: var(--ink); }
+
+.tip {
+  position: fixed; z-index: 20; pointer-events: none; background: var(--raised); border: 1px solid var(--hair);
+  border-radius: 8px; padding: 6px 9px; box-shadow: 0 6px 20px rgba(0,0,0,.14); max-width: 320px; font-size: 12.5px;
+}
+.tip .id { display: block; color: var(--muted); font-size: 11px; overflow-wrap: anywhere; }
+.toast {
+  position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); background: var(--ink); color: var(--surface);
+  padding: 6px 14px; border-radius: 6px; font-size: 13px; z-index: 30;
+}
+
+@media (max-width: 900px) {
+  .view { grid-template-columns: minmax(0, 1fr); }
+  .stage { height: 70vh; min-height: 380px; }
+  .panel { height: auto; min-height: 0; max-height: none; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+
+<div class="app">
+  <header class="masthead">
+    <div>
+      <h1>EMBED Context Atlas</h1>
+      <p>The <code>embed-context</code> catalog as a graph: every document, its typed links, and how agents move through it. Entries such as columns and claims are folded into the document that holds them.</p>
+    </div>
+    <dl class="stats" id="stats"></dl>
+  </header>
+
+  <div class="bar">
+    <div class="tabs" role="tablist" aria-label="Views">
+      <button role="tab" id="tab-map" aria-controls="view-map" aria-selected="true">Catalog map</button>
+      <button role="tab" id="tab-kinds" aria-controls="view-kinds" aria-selected="false" tabindex="-1">Kind structure</button>
+      <button role="tab" id="tab-journeys" aria-controls="view-journeys" aria-selected="false" tabindex="-1">Agent journeys</button>
+    </div>
+    <div class="data-actions">
+      <label class="btn" for="file-graph">Load graph.json</label>
+      <input class="visually-hidden" type="file" id="file-graph" accept=".json,application/json">
+      <label class="btn" for="file-trace">Load trace .jsonl</label>
+      <input class="visually-hidden" type="file" id="file-trace" accept=".jsonl,.json,.txt" multiple>
+      <button class="btn" id="copy-layout" type="button">Copy layout</button>
+    </div>
+  </div>
+
+  <section class="view" id="view-map" role="tabpanel" aria-labelledby="tab-map">
+    <div class="stage">
+      <svg id="map-svg" role="img" aria-label="Force layout of catalog documents, coloured by module"></svg>
+      <div class="busy" id="map-busy">Laying out the catalog…</div>
+      <div class="stage-tools">
+        <div class="search">
+          <label class="visually-hidden" for="map-search">Find a document</label>
+          <input id="map-search" type="search" placeholder="Find a document by ID or label" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="map-search-list">
+          <ul id="map-search-list" role="listbox" hidden></ul>
+        </div>
+        <div class="chips" id="kind-chips" aria-label="Show or hide kinds"></div>
+      </div>
+      <div class="stage-legend" id="map-legend"></div>
+    </div>
+    <aside class="panel" id="map-panel" aria-live="polite"></aside>
+  </section>
+
+  <section class="view" id="view-kinds" role="tabpanel" aria-labelledby="tab-kinds" hidden>
+    <div class="stage">
+      <svg id="kind-svg" role="img" aria-label="Kinds of nodes and the number of links between them"></svg>
+    </div>
+    <aside class="panel" id="kind-panel" aria-live="polite"></aside>
+  </section>
+
+  <section class="view" id="view-journeys" role="tabpanel" aria-labelledby="tab-journeys" hidden>
+    <div class="stage">
+      <svg id="journey-svg" role="img" aria-label="Catalog map with an agent's calls overlaid"></svg>
+      <div class="busy" id="journey-busy">Laying out the catalog…</div>
+      <div class="stage-legend">
+        <span><span class="sw ring"></span>read (number = step)</span>
+        <span><span class="sw ring" style="border-style:dashed"></span>search result</span>
+        <span><span class="sw" style="background:var(--ink);width:5px;height:5px;opacity:.6"></span>shown in a response</span>
+        <span><span class="sw line"></span>followed a shown link</span>
+        <span><span class="sw dash"></span>jumped to an ID not shown before</span>
+      </div>
+    </div>
+    <aside class="panel" id="journey-panel" aria-live="polite"></aside>
+  </section>
+</div>
+<div class="tip" id="tip" hidden></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<script type="application/json" id="graph-data">/*GRAPH*/</script>
+<script type="application/json" id="trace-data">/*TRACE*/</script>
+<script type="application/json" id="trace-note">/*TRACE_NOTE*/</script>
+<script>
+(() => {
+"use strict";
+
+// ---------------------------------------------------------------- data model
+// The only model knowledge in this page: everything else comes from the graph
+// export. Keep these in step with model/kinds.yaml and model/query.yaml.
+const CONFIG = {
+  // The hub kind, the target of query.yaml's `topic_link`. Hubs are placed at
+  // the centre of their members instead of shaping the layout.
+  hubKind: "topic",
+  // Documents of this kind get a dark ring on the map.
+  ringKind: "guardrail",
+  // A response longer than this many characters is flagged as large.
+  largeResponse: 10000,
+  // Columns of the kind-structure view, left to right. Kinds not listed here
+  // go in a final "Other" column.
+  layers: [
+    { label: "Release tables", kinds: ["table", "column", "key", "join", "join_path", "object_binding", "vocabulary"] },
+    { label: "Represented meaning", kinds: ["feature", "interpretation", "missing_state", "reserved_exception"] },
+    { label: "Clinical model", kinds: ["clinical_object", "relationship", "temporal", "aggregation", "concept", "pattern"] },
+    { label: "Guardrails and hubs", kinds: ["guardrail", "topic"] },
+    { label: "Evidence", kinds: ["context", "profile_support", "claim", "source", "workflow_step"] },
+  ],
+};
+const LARGE_RESPONSE = CONFIG.largeResponse;
+const HUB_KIND = CONFIG.hubKind;
+const state = { graph: null, sessions: [], traceNote: null, hiddenKinds: new Set(), selected: null, positions: new Map() };
+
+function parseGraph(raw) {
+  if (!raw || !Array.isArray(raw.nodes) || !Array.isArray(raw.links)) throw new Error("This file has no nodes and links; export one with `embed-context graph`.");
+  const byId = new Map(raw.nodes.map(n => [n.id, n]));
+  const docOf = id => { let n = byId.get(id); let guard = 0; while (n && n.parent && guard++ < 8) n = byId.get(n.parent); return n ? n.id : id; };
+  const docs = raw.nodes.filter(n => !n.parent);
+  const docSet = new Set(docs.map(d => d.id));
+  // Module colour slots: modules others require come first, then the listed order.
+  const requiredBy = new Map(raw.modules.map(m => [m.id, 0]));
+  raw.modules.forEach(m => (m.requires || []).forEach(r => requiredBy.set(r, (requiredBy.get(r) || 0) + 1)));
+  const moduleOrder = raw.modules.map((m, i) => ({ m, i })).sort((a, b) => (requiredBy.get(b.m.id) - requiredBy.get(a.m.id)) || a.i - b.i).map(x => x.m);
+  const moduleSlot = new Map(moduleOrder.map((m, i) => [m.id, i < 3 ? `m${i}` : "mx"]));
+  // Folded, undirected document edges.
+  const pairs = new Map();
+  const out = new Map(), inc = new Map();
+  for (const l of raw.links) {
+    const s = docOf(l.source), t = docOf(l.target);
+    (out.get(s) || out.set(s, []).get(s)).push(l);
+    (inc.get(t) || inc.set(t, []).get(t)).push(l);
+    if (s === t || !docSet.has(s) || !docSet.has(t)) continue;
+    const key = s < t ? `${s}\u0000${t}` : `${t}\u0000${s}`;
+    const p = pairs.get(key) || { source: s < t ? s : t, target: s < t ? t : s, count: 0 };
+    p.count++; pairs.set(key, p);
+  }
+  const folded = [...pairs.values()];
+  const degree = new Map(docs.map(d => [d.id, 0]));
+  folded.forEach(p => { degree.set(p.source, degree.get(p.source) + 1); degree.set(p.target, degree.get(p.target) + 1); });
+  const entriesOf = new Map();
+  raw.nodes.forEach(n => { if (n.parent) { const d = docOf(n.id); entriesOf.set(d, (entriesOf.get(d) || 0) + 1); } });
+  return { raw, byId, docOf, docs, docSet, folded, degree, out, inc, moduleOrder, moduleSlot, entriesOf };
+}
+
+function parseTraceText(text) {
+  const sessions = new Map();
+  let bad = 0;
+  text.split(/\r?\n/).forEach(line => {
+    if (!line.trim()) return;
+    let r; try { r = JSON.parse(line); } catch { bad++; return; }
+    if (!r.session) { bad++; return; }
+    const s = sessions.get(r.session) || { id: r.session, start: null, calls: [] };
+    if (r.event === "start") s.start = r; else if (r.event === "call") s.calls.push(r);
+    sessions.set(r.session, s);
+  });
+  const list = [...sessions.values()].filter(s => s.calls.length);
+  list.forEach(s => s.calls.sort((a, b) => a.seq - b.seq));
+  list.sort((a, b) => String(a.start?.time || a.calls[0].time).localeCompare(String(b.start?.time || b.calls[0].time)));
+  return { list, bad };
+}
+
+function analyse(session, G) {
+  const seen = new Set();
+  let prev = null;
+  let followed = 0, jumped = 0;
+  for (const c of session.calls) {
+    c.flags = [];
+    if (c.error) c.flags.push("error");
+    if (c.chars >= LARGE_RESPONSE) c.flags.push("large");
+    if (c.tool === "search" && prev && prev.tool === "search") c.flags.push("research");
+    const target = c.arguments && typeof c.arguments.id === "string" ? c.arguments.id : null;
+    if ((c.tool === "read" || c.tool === "code") && target) {
+      c.how = seen.has(target) ? "follow" : "jump";
+      c.how === "follow" ? followed++ : jumped++;
+    }
+    (c.returned || []).forEach(id => seen.add(id));
+    (c.shown || []).forEach(id => seen.add(id));
+    prev = c;
+  }
+  const readDocs = new Set();
+  const everShown = new Set();
+  session.calls.forEach(c => {
+    if (!c.error && (c.tool === "read" || c.tool === "code")) (c.returned || []).forEach(id => readDocs.add(G.docOf(id)));
+    (c.shown || []).forEach(id => everShown.add(G.docOf(id)));
+    if (c.tool === "search") (c.returned || []).forEach(id => everShown.add(G.docOf(id)));
+  });
+  const shownUnread = [...everShown].filter(d => !readDocs.has(d) && G.docSet.has(d));
+  session.summary = {
+    calls: session.calls.length,
+    errors: session.calls.filter(c => c.error).length,
+    chars: session.calls.reduce((a, c) => a + (c.chars || 0), 0),
+    reads: readDocs.size, followed, jumped, shownUnread: shownUnread.length,
+  };
+}
+
+// ---------------------------------------------------------------- layout
+function computeLayout(G) {
+  const nodes = G.docs.filter(d => d.kind !== HUB_KIND).map(d => ({ id: d.id, module: d.module }));
+  const keep = new Set(nodes.map(n => n.id));
+  const links = G.folded.filter(p => keep.has(p.source) && keep.has(p.target)).map(p => ({ source: p.source, target: p.target }));
+  // Modules others require sit in the middle; the rest alternate to either side.
+  const centre = G.moduleOrder.filter(m => G.raw.modules.some(o => (o.requires || []).includes(m.id)));
+  const sides = G.moduleOrder.filter(m => !centre.includes(m));
+  const targetX = new Map(centre.map(m => [m.id, 0]));
+  sides.forEach((m, i) => targetX.set(m.id, (i % 2 ? 1 : -1) * 380 * (1 + Math.floor(i / 2))));
+  const sim = d3.forceSimulation(nodes)
+    .force("link", d3.forceLink(links).id(d => d.id).distance(28))
+    .force("charge", d3.forceManyBody().strength(-26).distanceMax(320))
+    .force("x", d3.forceX(d => targetX.get(d.module) || 0).strength(0.07))
+    .force("y", d3.forceY(0).strength(0.07))
+    .force("collide", d3.forceCollide(d => radius(G, d.id) + 1))
+    .stop();
+  for (let i = 0; i < 380; i++) sim.tick();
+  const pos = new Map(nodes.map(n => [n.id, [n.x, n.y]]));
+  // Hubs sit at the centroid of what links to them, so they never pull the layout.
+  G.docs.filter(d => d.kind === HUB_KIND).forEach(d => {
+    const pts = [];
+    G.folded.forEach(p => {
+      const other = p.source === d.id ? p.target : p.target === d.id ? p.source : null;
+      if (other && pos.has(other)) pts.push(pos.get(other));
+    });
+    pos.set(d.id, pts.length ? [d3.mean(pts, p => p[0]), d3.mean(pts, p => p[1])] : [0, 0]);
+  });
+  return pos;
+}
+function radius(G, id) { return 2.2 + Math.sqrt(G.degree.get(id) || 0) * 0.75; }
+
+// ---------------------------------------------------------------- shared helpers
+const $ = sel => document.querySelector(sel);
+const fmt = n => n >= 10000 ? `${(n / 1000).toFixed(1)}k` : n.toLocaleString();
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const tip = $("#tip");
+function showTip(evt, html) {
+  tip.innerHTML = html; tip.hidden = false;
+  const pad = 14, w = tip.offsetWidth, h = tip.offsetHeight;
+  let x = evt.clientX + pad, y = evt.clientY + pad;
+  if (x + w > innerWidth - 8) x = evt.clientX - w - pad;
+  if (y + h > innerHeight - 8) y = evt.clientY - h - pad;
+  tip.style.left = `${Math.max(8, x)}px`; tip.style.top = `${Math.max(8, y)}px`;
+}
+const hideTip = () => { tip.hidden = true; };
+function toast(msg) {
+  const t = document.createElement("div"); t.className = "toast"; t.textContent = msg; document.body.append(t);
+  setTimeout(() => t.remove(), 2600);
+}
+function nodeTip(G, id) {
+  const n = G.byId.get(id); if (!n) return esc(id);
+  const mod = G.raw.modules.find(m => m.id === n.module);
+  return `<strong>${esc(n.label)}</strong><span class="id">${esc(id)}</span>${esc(n.kind)} · ${esc(mod ? mod.id : n.module)} · ${G.degree.get(id) || 0} linked documents`;
+}
+
+// ---------------------------------------------------------------- map view (shared by map and journeys)
+function MapView(svgEl, { onSelect, showHubs }) {
+  const svg = d3.select(svgEl);
+  svg.selectAll("*").remove();
+  const g = svg.append("g");
+  const edgePath = g.append("path").attr("class", "edges");
+  const hiPath = g.append("path").attr("class", "edges-hi");
+  const nodeLayer = g.append("g");
+  const overlay = g.append("g");
+  const zoom = d3.zoom().scaleExtent([0.25, 12]).on("zoom", e => g.attr("transform", e.transform));
+  svg.call(zoom).on("dblclick.zoom", null);
+  let G = null, pos = null, visible = new Set();
+
+  function render(graph, positions, hidden) {
+    G = graph; pos = positions;
+    visible = new Set(G.docs.filter(d => !hidden.has(d.kind) && (d.kind !== HUB_KIND || showHubs())).map(d => d.id));
+    let d = "";
+    for (const p of G.folded) {
+      if (!visible.has(p.source) || !visible.has(p.target)) continue;
+      const a = pos.get(p.source), b = pos.get(p.target);
+      d += `M${a[0].toFixed(1)} ${a[1].toFixed(1)}L${b[0].toFixed(1)} ${b[1].toFixed(1)}`;
+    }
+    edgePath.attr("d", d);
+    const data = G.docs.filter(n => visible.has(n.id));
+    const sel = nodeLayer.selectAll("circle").data(data, n => n.id);
+    sel.exit().remove();
+    sel.enter().append("circle")
+      .on("pointermove", (e, n) => showTip(e, nodeTip(G, n.id)))
+      .on("pointerleave", hideTip)
+      .on("click", (e, n) => { e.stopPropagation(); onSelect && onSelect(n.id); })
+      .merge(sel)
+      .attr("class", n => `node ${n.kind === HUB_KIND ? "topic" : G.moduleSlot.get(n.module) || "mx"}${n.kind === CONFIG.ringKind ? " guard" : ""}`)
+      .attr("cx", n => pos.get(n.id)[0]).attr("cy", n => pos.get(n.id)[1])
+      .attr("r", n => n.kind === HUB_KIND ? 5 : radius(G, n.id));
+    svg.on("click", () => onSelect && onSelect(null));
+  }
+  function fit(pad = 30) {
+    const w = svgEl.clientWidth || 800, h = svgEl.clientHeight || 600;
+    const pts = [...visible].map(id => pos.get(id)).filter(Boolean);
+    if (!pts.length) return;
+    const x0 = d3.min(pts, p => p[0]), x1 = d3.max(pts, p => p[0]), y0 = d3.min(pts, p => p[1]), y1 = d3.max(pts, p => p[1]);
+    const k = Math.min((w - pad * 2) / (x1 - x0 || 1), (h - pad * 2 - 70) / (y1 - y0 || 1));
+    const t = d3.zoomIdentity.translate(w / 2, h / 2 + 18).scale(k).translate(-(x0 + x1) / 2, -(y0 + y1) / 2);
+    svg.call(zoom.transform, t);
+  }
+  function focus(id, scale = 2.4) {
+    const p = pos.get(id); if (!p) return;
+    const w = svgEl.clientWidth, h = svgEl.clientHeight;
+    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const t = d3.zoomIdentity.translate(w / 2, h / 2).scale(scale).translate(-p[0], -p[1]);
+    (reduce ? svg : svg.transition().duration(550)).call(zoom.transform, t);
+  }
+  function select(id) {
+    svgEl.classList.toggle("has-sel", !!id);
+    nodeLayer.selectAll("circle").classed("sel", n => n.id === id).classed("nb", false);
+    if (!id) { hiPath.attr("d", ""); return; }
+    const nb = new Set();
+    let d = "";
+    for (const p of G.folded) {
+      if (p.source !== id && p.target !== id) continue;
+      const other = p.source === id ? p.target : p.source;
+      if (!visible.has(other)) continue;
+      nb.add(other);
+      const a = pos.get(p.source), b = pos.get(p.target);
+      d += `M${a[0].toFixed(1)} ${a[1].toFixed(1)}L${b[0].toFixed(1)} ${b[1].toFixed(1)}`;
+    }
+    hiPath.attr("d", d);
+    nodeLayer.selectAll("circle").classed("nb", n => nb.has(n.id));
+  }
+  function setOverlay(fn) { overlay.selectAll("*").remove(); if (fn) fn(overlay, pos); }
+  function setLit(ids) {
+    svgEl.classList.toggle("dim", !!ids);
+    nodeLayer.selectAll("circle").classed("lit", n => !!ids && ids.has(n.id));
+  }
+  return { render, fit, focus, select, setOverlay, setLit, get visible() { return visible; } };
+}
+
+// ---------------------------------------------------------------- catalog map tab
+let mapView, journeyView;
+let showHubs = false;
+
+function renderStats(G) {
+  const entries = G.raw.nodes.length - G.docs.length;
+  const items = [["Documents", G.docs.length], ["Entries", entries], ["Links", G.raw.links.length], ["Link types", Object.keys(G.raw.link_types || {}).length], ["Modules", G.raw.modules.length]];
+  $("#stats").innerHTML = items.map(([k, v]) => `<div><dt>${k}</dt><dd>${v.toLocaleString()}</dd></div>`).join("");
+}
+
+function renderChips(G) {
+  const counts = d3.rollup(G.docs, v => v.length, d => d.kind);
+  const kinds = [...counts.keys()].sort((a, b) => counts.get(b) - counts.get(a));
+  const box = $("#kind-chips");
+  box.innerHTML = "";
+  kinds.forEach(k => {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "chip";
+    const on = k === HUB_KIND ? showHubs : !state.hiddenKinds.has(k);
+    b.setAttribute("aria-pressed", String(on));
+    b.innerHTML = `${esc(k)} <span class="n">${counts.get(k)}</span>`;
+    b.title = k === HUB_KIND ? "Hubs sit at the centre of their members and do not shape the layout" : `Show or hide ${k} documents`;
+    b.addEventListener("click", () => {
+      if (k === HUB_KIND) showHubs = !showHubs;
+      else state.hiddenKinds.has(k) ? state.hiddenKinds.delete(k) : state.hiddenKinds.add(k);
+      b.setAttribute("aria-pressed", String(k === HUB_KIND ? showHubs : !state.hiddenKinds.has(k)));
+      mapView.render(G, state.positions, state.hiddenKinds);
+      mapView.select(state.selected);
+    });
+    box.append(b);
+  });
+}
+
+function renderLegend(G) {
+  const mods = G.moduleOrder.map(m => `<span><span class="sw" style="background:var(--${G.moduleSlot.get(m.id) === "mx" ? "m-other" : G.moduleSlot.get(m.id)})"></span><code>${esc(m.id)}</code></span>`).join("");
+  $("#map-legend").innerHTML = `${mods}<span><span class="sw ring"></span>${esc(CONFIG.ringKind)}</span><span>size = linked documents</span>`;
+}
+
+function linkGroups(G, id) {
+  const types = G.raw.link_types || {};
+  const groups = new Map();
+  const add = (name, dir, other, via) => {
+    const key = `${dir}:${name}`;
+    const g = groups.get(key) || { name, dir, items: new Map() };
+    if (!g.items.has(other)) g.items.set(other, via);
+    groups.set(key, g);
+  };
+  (G.out.get(id) || []).forEach(l => { if (G.docOf(l.target) !== id) add(l.type, "out", l.target, l.source !== id ? l.source : null); });
+  (G.inc.get(id) || []).forEach(l => {
+    if (G.docOf(l.source) === id) return;
+    const t = types[l.type] || {};
+    add(t.symmetric ? l.type : (t.backlink || `${l.type} (in)`), "in", l.source, l.target !== id ? l.target : null);
+  });
+  return [...groups.values()].sort((a, b) => (a.dir === b.dir ? b.items.size - a.items.size : a.dir === "out" ? -1 : 1));
+}
+
+function renderNodePanel(G, id) {
+  const panel = $("#map-panel");
+  if (!id) { renderMapIntro(G); return; }
+  const n = G.byId.get(id);
+  const mod = G.raw.modules.find(m => m.id === n.module);
+  const slot = G.moduleSlot.get(n.module);
+  const groups = linkGroups(G, id);
+  panel.innerHTML = `
+    <div>
+      <h2>${esc(n.label)}</h2>
+      <div class="id" style="color:var(--ink-2);overflow-wrap:anywhere;margin-top:2px">${esc(id)}</div>
+    </div>
+    <div class="meta">
+      <span class="pill">${esc(n.kind)}</span>
+      <span class="pill"><span class="sw" style="margin:0;background:var(--${slot === "mx" ? "m-other" : slot})"></span>${esc(mod ? mod.id : n.module)}</span>
+      <span>${G.degree.get(id) || 0} linked documents</span>
+      ${G.entriesOf.get(id) ? `<span>· ${G.entriesOf.get(id)} entries</span>` : ""}
+    </div>
+    <p class="note">Read it in full with <code>embed-context read ${esc(id)}</code>.</p>
+    ${groups.map(gr => groupHtml(G, gr)).join("")}
+  `;
+  panel.querySelectorAll("[data-go]").forEach(b => b.addEventListener("click", () => selectNode(b.dataset.go, true)));
+  panel.querySelectorAll("[data-more]").forEach(b => b.addEventListener("click", () => {
+    b.previousElementSibling.querySelectorAll("li[hidden]").forEach(li => { li.hidden = false; }); b.remove();
+  }));
+  panel.scrollTop = 0;
+}
+function groupHtml(G, gr) {
+  const items = [...gr.items.entries()];
+  const limit = 10;
+  return `<div class="group">
+    <div class="group-name"><span>${gr.dir === "out" ? "→" : "←"} ${esc(gr.name)}</span><span class="n">${items.length}</span></div>
+    <ul class="linklist">${items.map(([other, via], i) => {
+      const n = G.byId.get(other); const doc = G.docOf(other);
+      const sub = other !== doc ? other : (via ? `via ${via}` : other);
+      return `<li${i >= limit ? " hidden" : ""}><button type="button" data-go="${esc(doc)}"><span class="lbl">${esc(n ? n.label : other)}<span class="sub">${esc(sub)}</span></span></button></li>`;
+    }).join("")}</ul>
+    ${items.length > limit ? `<button type="button" class="more" data-more>Show ${items.length - limit} more</button>` : ""}
+  </div>`;
+}
+function renderMapIntro(G) {
+  const hubs = G.docs.filter(d => d.kind !== HUB_KIND).sort((a, b) => G.degree.get(b.id) - G.degree.get(a.id)).slice(0, 8);
+  const guards = G.docs.filter(d => d.kind === CONFIG.ringKind).length;
+  $("#map-panel").innerHTML = `
+    <div><h2>Reading the map</h2></div>
+    <p>Each dot is a document. Profiles sit on the flanks, and the shared <code>${esc(G.moduleOrder[0]?.id || "")}</code> layer sits between them. A line means at least one typed link between two documents or their entries.</p>
+    <p>Hubs are hidden by default because they would pull everything toward them. Turn on the <code>${esc(HUB_KIND)}</code> chip to place them at the centre of their members. The ${guards} <code>${esc(CONFIG.ringKind)}</code> documents have a dark ring.</p>
+    <div class="group"><h3>Most-linked documents</h3>
+      <ul class="linklist">${hubs.map(h => `<li><button type="button" data-go="${esc(h.id)}"><span class="lbl">${esc(h.label)}<span class="sub">${esc(h.id)} · ${G.degree.get(h.id)} linked</span></span></button></li>`).join("")}</ul>
+    </div>
+    <p class="note">The layout depends only on the graph, so the same export always gives the same map. <strong>Copy layout</strong> puts its coordinates on the clipboard for figures drawn elsewhere.</p>`;
+  $("#map-panel").querySelectorAll("[data-go]").forEach(b => b.addEventListener("click", () => selectNode(b.dataset.go, true)));
+}
+function selectNode(id, zoomTo) {
+  const G = state.graph;
+  if (id && G.byId.get(id)?.kind === HUB_KIND && !showHubs) {
+    showHubs = true; renderChips(G); mapView.render(G, state.positions, state.hiddenKinds);
+  }
+  if (id && state.hiddenKinds.has(G.byId.get(id)?.kind)) {
+    state.hiddenKinds.delete(G.byId.get(id).kind); renderChips(G); mapView.render(G, state.positions, state.hiddenKinds);
+  }
+  state.selected = id;
+  mapView.select(id);
+  renderNodePanel(G, id);
+  if (id && zoomTo) mapView.focus(id);
+}
+
+// Search box
+function setupSearch() {
+  const input = $("#map-search"), list = $("#map-search-list");
+  let matches = [], active = 0;
+  const close = () => { list.hidden = true; input.setAttribute("aria-expanded", "false"); };
+  const draw = () => {
+    list.innerHTML = matches.map((n, i) => `<li role="option" id="opt-${i}" aria-selected="${i === active}" data-id="${esc(n.id)}"><span>${esc(n.label)}</span><span class="id">${esc(n.id)}</span></li>`).join("");
+    list.hidden = !matches.length; input.setAttribute("aria-expanded", String(!!matches.length));
+    list.querySelectorAll("li").forEach(li => li.addEventListener("mousedown", e => { e.preventDefault(); pick(li.dataset.id); }));
+  };
+  const pick = id => { close(); input.value = ""; switchTab("map"); selectNode(id, true); };
+  input.addEventListener("input", () => {
+    const q = input.value.trim().toLowerCase();
+    if (q.length < 2) { matches = []; draw(); return; }
+    const G = state.graph;
+    matches = G.docs.filter(d => d.id.toLowerCase().includes(q) || d.label.toLowerCase().includes(q))
+      .sort((a, b) => (a.id.toLowerCase().startsWith(q) ? -1 : 0) - (b.id.toLowerCase().startsWith(q) ? -1 : 0) || G.degree.get(b.id) - G.degree.get(a.id))
+      .slice(0, 8);
+    active = 0; draw();
+  });
+  input.addEventListener("keydown", e => {
+    if (e.key === "ArrowDown") { active = Math.min(active + 1, matches.length - 1); draw(); e.preventDefault(); }
+    else if (e.key === "ArrowUp") { active = Math.max(active - 1, 0); draw(); e.preventDefault(); }
+    else if (e.key === "Enter" && matches[active]) pick(matches[active].id);
+    else if (e.key === "Escape") { close(); input.value = ""; }
+  });
+  input.addEventListener("blur", () => setTimeout(close, 120));
+}
+
+// ---------------------------------------------------------------- kind structure tab
+function renderKinds(G) {
+  const svg = d3.select("#kind-svg");
+  svg.selectAll("*").remove();
+  const W = 1100, H = 700;
+  svg.attr("viewBox", `0 0 ${W} ${H}`).attr("preserveAspectRatio", "xMidYMid meet");
+  const svgEl = svg.node();
+  const nodeCount = d3.rollup(G.raw.nodes, v => v.length, n => n.kind);
+  const kinds = [...nodeCount.keys()];
+  const layers = CONFIG.layers.map(l => ({ label: l.label, kinds: l.kinds.filter(k => nodeCount.has(k)) }));
+  const placed = new Set(layers.flatMap(l => l.kinds));
+  const rest = kinds.filter(k => !placed.has(k));
+  if (rest.length) layers.push({ label: "Other", kinds: rest });
+  const colW = W / layers.length;
+  const pos = new Map();
+  layers.forEach((l, i) => {
+    const x = colW * (i + 0.5);
+    const top = 86, bottom = H - 40;
+    l.kinds.forEach((k, j) => pos.set(k, [x, l.kinds.length === 1 ? (top + bottom) / 2 : top + (bottom - top) * (j / (l.kinds.length - 1))]));
+  });
+  layers.forEach((l, i) => {
+    svg.append("rect").attr("class", "k-band").attr("x", colW * i + 8).attr("y", 20).attr("width", colW - 16).attr("height", H - 36).attr("rx", 10)
+      .style("opacity", i % 2 ? 0.5 : 1);
+    svg.append("text").attr("class", "k-band-label").attr("x", colW * (i + 0.5)).attr("y", 44).attr("text-anchor", "middle").text(l.label);
+  });
+  const kindOf = id => G.byId.get(id)?.kind;
+  const agg = new Map();
+  G.raw.links.forEach(l => {
+    const s = kindOf(l.source), t = kindOf(l.target);
+    const key = `${s}\u0000${t}`;
+    const a = agg.get(key) || { s, t, count: 0, types: new Map() };
+    a.count++; a.types.set(l.type, (a.types.get(l.type) || 0) + 1); agg.set(key, a);
+  });
+  const edges = [...agg.values()].sort((a, b) => a.count - b.count);
+  const maxC = d3.max(edges, e => e.count);
+  const wScale = d3.scaleSqrt().domain([1, maxC]).range([0.8, 11]);
+  const rScale = d3.scaleSqrt().domain([1, d3.max(kinds, k => nodeCount.get(k))]).range([6, 26]);
+  const gEdges = svg.append("g");
+  const pathFor = e => {
+    const [x1, y1] = pos.get(e.s), [x2, y2] = pos.get(e.t);
+    if (e.s === e.t) { const r = rScale(nodeCount.get(e.s)); return `M${x1 + r * 0.6},${y1 - r * 0.8} C${x1 + r + 40},${y1 - r - 40} ${x1 + r + 40},${y1 + r + 40} ${x1 + r * 0.6},${y1 + r * 0.8}`; }
+    const dx = x2 - x1, bend = Math.abs(dx) < 1 ? 60 : 0;
+    const mx = (x1 + x2) / 2 + bend, my = (y1 + y2) / 2 - (Math.abs(dx) < 1 ? 0 : 0);
+    return Math.abs(dx) < 1 ? `M${x1},${y1} Q${mx},${my} ${x2},${y2}` : `M${x1},${y1} C${x1 + dx * 0.45},${y1} ${x2 - dx * 0.45},${y2} ${x2},${y2}`;
+  };
+  gEdges.selectAll("path").data(edges).enter().append("path")
+    .attr("class", "k-edge").attr("d", pathFor).attr("stroke-width", e => wScale(e.count))
+    .on("pointermove", (ev, e) => showTip(ev, edgeTip(e)))
+    .on("pointerleave", hideTip)
+    .on("click", (ev, e) => { ev.stopPropagation(); highlightKind(null, e); });
+  const gNodes = svg.append("g");
+  const entryKinds = new Set(Object.entries(G.raw.kinds || {}).filter(([, v]) => v.entry).map(([k]) => k));
+  const node = gNodes.selectAll("g").data(kinds).enter().append("g")
+    .attr("class", k => `k-node${entryKinds.has(k) ? " entry" : ""}`)
+    .attr("transform", k => `translate(${pos.get(k)[0]},${pos.get(k)[1]})`)
+    .attr("tabindex", 0).attr("role", "button").attr("aria-label", k => `${k}, ${nodeCount.get(k)} nodes`)
+    .on("click", (ev, k) => { ev.stopPropagation(); highlightKind(k); })
+    .on("keydown", (ev, k) => { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); highlightKind(k); } })
+    .on("pointermove", (ev, k) => showTip(ev, `<strong><code>${esc(k)}</code></strong><span class="id">${nodeCount.get(k)} ${entryKinds.has(k) ? "entries" : "documents"}</span>${esc(G.raw.kinds?.[k]?.description || "")}`))
+    .on("pointerleave", hideTip);
+  node.append("circle").attr("r", k => rScale(nodeCount.get(k)));
+  node.append("text").attr("y", k => -rScale(nodeCount.get(k)) - 6).attr("text-anchor", "middle").text(k => k);
+  node.append("text").attr("class", "cnt").attr("y", k => rScale(nodeCount.get(k)) + 13).attr("text-anchor", "middle").text(k => nodeCount.get(k).toLocaleString());
+  svg.on("click", () => highlightKind(null));
+
+  function edgeTip(e) {
+    const types = [...e.types.entries()].sort((a, b) => b[1] - a[1]).map(([t, n]) => `<code>${esc(t)}</code> ${n}`).join(" · ");
+    return `<strong><code>${esc(e.s)}</code> → <code>${esc(e.t)}</code></strong><span class="id">${e.count.toLocaleString()} links</span>${types}`;
+  }
+  function highlightKind(k, edge) {
+    svgEl.classList.toggle("k-dim", !!(k || edge));
+    gEdges.selectAll("path").classed("hi", e => edge ? e === edge : !!k && (e.s === k || e.t === k));
+    node.classed("hi", x => edge ? (x === edge.s || x === edge.t) : x === k);
+    renderKindPanel(G, k, edge, edges, nodeCount, entryKinds);
+  }
+  renderKindPanel(G, null, null, edges, nodeCount, entryKinds);
+}
+function renderKindPanel(G, k, edge, edges, nodeCount, entryKinds) {
+  const panel = $("#kind-panel");
+  const top = [...edges].sort((a, b) => b.count - a.count);
+  const list = k ? top.filter(e => e.s === k || e.t === k) : edge ? [edge] : top.slice(0, 10);
+  const title = k ? `<code>${esc(k)}</code>` : edge ? `<code>${esc(edge.s)}</code> → <code>${esc(edge.t)}</code>` : "How the kinds connect";
+  const intro = k
+    ? `<p>${esc(G.raw.kinds?.[k]?.description || "")} ${nodeCount.get(k).toLocaleString()} ${entryKinds.has(k) ? "entries" : "documents"}.</p>`
+    : edge ? "" : `<p>Each circle is a kind of node, sized by how many there are (a dashed outline marks entries inside documents). Lines are links between kinds, and line width shows the link count. Select a kind or a line for details.</p>`;
+  panel.innerHTML = `<div><h2>${title}</h2></div>${intro}
+    <div class="group"><h3>${k ? "Its links" : edge ? "Link types" : "Largest link bundles"}</h3>
+      <ul class="linklist">${list.map(e => `<li><button type="button" tabindex="-1"><span class="lbl"><code>${esc(e.s)}</code> → <code>${esc(e.t)}</code><span class="sub">${[...e.types.entries()].sort((a, b) => b[1] - a[1]).map(([t, n]) => `${esc(t)} ${n}`).join(" · ")}</span></span><span class="n" style="font-variant-numeric:tabular-nums;color:var(--ink-2)">${e.count.toLocaleString()}</span></button></li>`).join("")}</ul>
+    </div>
+    ${moduleFlowsHtml(G)}`;
+}
+function moduleFlowsHtml(G) {
+  const flows = d3.rollups(G.raw.links, v => v.length, l => G.byId.get(l.source)?.module, l => G.byId.get(l.target)?.module)
+    .flatMap(([s, ts]) => ts.map(([t, n]) => ({ s, t, n }))).sort((a, b) => b.n - a.n);
+  const max = d3.max(flows, f => f.n);
+  return `<div class="group"><h3>Links between modules</h3>
+    <p style="font-size:12.5px;margin-bottom:6px">Each profile links into the shared layer, which is how one feature describes columns in both releases.</p>
+    <div class="flows">${flows.map(f => {
+      const slot = G.moduleSlot.get(f.s);
+      return `<div class="flow"><span class="name">${esc(f.s)} → ${esc(f.t)}</span><span class="val">${f.n.toLocaleString()}</span><span class="track"><span style="width:${(f.n / max * 100).toFixed(1)}%;background:var(--${slot === "mx" ? "m-other" : slot})"></span></span></div>`;
+    }).join("")}</div></div>`;
+}
+
+// ---------------------------------------------------------------- journeys tab
+let currentSession = 0;
+let currentStep = null;
+function renderJourneys() {
+  const G = state.graph;
+  const panel = $("#journey-panel");
+  state.sessions.forEach(s => analyse(s, G));
+  if (!state.sessions.length) {
+    panel.innerHTML = `<div><h2>No trace loaded</h2></div><p>Start the server with <code>embed-context serve --trace /path/trace.jsonl</code>, run an agent, then choose <strong>Load trace .jsonl</strong>.</p>`;
+    journeyView.setOverlay(null); journeyView.setLit(null); return;
+  }
+  const options = state.sessions.map((s, i) => `<option value="${i}"${i === currentSession ? " selected" : ""}>${esc(s.id)} · ${s.calls.length} calls${s.start?.time ? ` · ${esc(s.start.time.slice(0, 16).replace("T", " "))}` : ""}</option>`).join("");
+  const heat = currentSession === -1;
+  const sessions = heat ? state.sessions : [state.sessions[currentSession]];
+  const sum = sessions.reduce((a, s) => { Object.keys(s.summary).forEach(k => { a[k] = (a[k] || 0) + s.summary[k]; }); return a; }, {});
+  const s = sessions[0];
+  const readsTotal = sum.followed + sum.jumped;
+  panel.innerHTML = `
+    <div>
+      <label for="session-select"><h3 style="margin-bottom:6px">Session</h3></label>
+      <select id="session-select">${options}${state.sessions.length > 1 ? `<option value="-1"${heat ? " selected" : ""}>All ${state.sessions.length} sessions · where reads concentrate</option>` : ""}</select>
+    </div>
+    ${state.traceNote ? `<p class="note">${esc(state.traceNote)}</p>` : ""}
+    <div class="tiles">
+      <div class="tile"><div class="k">Calls</div><div class="v">${sum.calls}</div><div class="s">${sum.errors ? `${sum.errors} failed` : "none failed"}</div></div>
+      <div class="tile"><div class="k">Text returned</div><div class="v">${fmt(sum.chars)}</div><div class="s">characters</div></div>
+      <div class="tile"><div class="k">Documents read</div><div class="v">${sum.reads}</div><div class="s">${readsTotal ? `${sum.followed} of ${readsTotal} reads followed a shown link` : "no reads"}</div></div>
+      <div class="tile"><div class="k">Shown, never read</div><div class="v">${sum.shownUnread}</div><div class="s">documents offered but not opened</div></div>
+    </div>
+    ${heat ? heatListHtml(G) : `<div class="group"><h3>Steps</h3><ol class="steps">${s.calls.map((c, i) => stepHtml(c, i, s)).join("")}</ol></div>`}
+    <p class="note">Flags: <span class="flag error"><i></i>error</span> the call failed · <span class="flag large"><i></i>large</span> more than ${fmt(LARGE_RESPONSE)} characters · <span class="flag research"><i></i>searched again</span> two searches in a row · <span class="flag jump"><i></i>jumped</span> an ID no earlier response showed.</p>`;
+  $("#session-select").addEventListener("change", e => { currentSession = +e.target.value; currentStep = null; renderJourneys(); });
+  panel.querySelectorAll("[data-step]").forEach(b => b.addEventListener("click", () => { currentStep = currentStep === +b.dataset.step ? null : +b.dataset.step; renderJourneys(); }));
+  panel.querySelectorAll("[data-go]").forEach(b => b.addEventListener("click", () => journeyView.focus(b.dataset.go)));
+  drawJourneyOverlay(G, sessions, heat);
+}
+function stepHtml(c, i, s) {
+  const max = d3.max(s.calls, x => x.chars || 0) || 1;
+  const a = c.arguments || {};
+  const what = c.tool === "search" ? `“${esc(a.query || "")}”` : c.tool === "code" ? `<code>${esc(a.id || "")}</code> = <code>${esc(a.value ?? "")}</code>` : `<code>${esc(a.id || JSON.stringify(a))}</code>`;
+  const flags = [];
+  if (c.error) flags.push(`<span class="flag error"><i></i>error</span>`);
+  if (c.flags.includes("large")) flags.push(`<span class="flag large"><i></i>large</span>`);
+  if (c.flags.includes("research")) flags.push(`<span class="flag research"><i></i>searched again</span>`);
+  if (c.how === "jump") flags.push(`<span class="flag jump"><i></i>jumped</span>`);
+  if (c.how === "follow") flags.push(`<span class="flag follow"><i></i>followed</span>`);
+  if (c.tool === "search" && c.returned) flags.push(`<span class="flag">${c.returned.length} results</span>`);
+  const err = c.error ? `<span class="sub" style="display:block;font-size:11.5px;color:var(--ink-2)">${esc(c.error)}</span>` : "";
+  return `<li><button type="button" data-step="${i}" aria-current="${currentStep === i}">
+    <span class="seq">${c.seq}</span><span class="what"><span class="tool">${esc(c.tool)}</span>${what}${err}</span><span class="chars">${fmt(c.chars || 0)}</span>
+    <span class="sizebar"><span style="width:${((c.chars || 0) / max * 100).toFixed(1)}%"></span></span>
+    ${flags.length ? `<span class="flags">${flags.join("")}</span>` : ""}</button></li>`;
+}
+function readCounts(G, sessions) {
+  const counts = new Map();
+  sessions.forEach(s => s.calls.forEach(c => { if (!c.error && (c.tool === "read" || c.tool === "code")) (c.returned || []).forEach(id => { const d = G.docOf(id); counts.set(d, (counts.get(d) || 0) + 1); }); }));
+  return counts;
+}
+function heatListHtml(G) {
+  const counts = [...readCounts(G, state.sessions).entries()].sort((a, b) => b[1] - a[1]).slice(0, 12);
+  return `<div class="group"><h3>Most-read documents</h3><ul class="linklist">${counts.map(([id, n]) => `<li><button type="button" data-go="${esc(id)}"><span class="lbl">${esc(G.byId.get(id)?.label || id)}<span class="sub">${esc(id)}</span></span><span class="n" style="color:var(--ink-2);font-variant-numeric:tabular-nums">${n}</span></button></li>`).join("")}</ul></div>`;
+}
+function drawJourneyOverlay(G, sessions, heat) {
+  const lit = new Set();
+  journeyView.setOverlay((layer, pos) => {
+    const P = id => pos.get(G.docOf(id));
+    if (heat) {
+      const counts = readCounts(G, sessions);
+      const max = d3.max([...counts.values()]) || 1;
+      counts.forEach((n, id) => { const p = pos.get(id); if (!p) return; lit.add(id);
+        layer.append("circle").attr("class", "ov-heat").attr("cx", p[0]).attr("cy", p[1]).attr("r", radius(G, id) + 3 + 14 * Math.sqrt(n / max)); });
+      return;
+    }
+    const s = sessions[0];
+    const calls = currentStep == null ? s.calls : [s.calls[currentStep]];
+    const shown = new Set(), hits = new Set();
+    calls.forEach(c => { (c.shown || []).forEach(id => shown.add(G.docOf(id))); if (c.tool === "search") (c.returned || []).forEach(id => hits.add(G.docOf(id))); });
+    shown.forEach(id => { const p = pos.get(id); if (!p) return; lit.add(id); layer.append("circle").attr("class", "ov-shown").attr("cx", p[0]).attr("cy", p[1]).attr("r", 1.6); });
+    hits.forEach(id => { const p = pos.get(id); if (!p) return; lit.add(id); layer.append("circle").attr("class", "ov-hit").attr("cx", p[0]).attr("cy", p[1]).attr("r", radius(G, id) + 3); });
+    // The walk: consecutive reads, solid when the ID had been shown, dashed when it had not.
+    const focusSteps = s.calls.filter(c => !c.error && (c.tool === "read" || c.tool === "code") && (c.returned || []).length && P(c.returned[0]));
+    const labels = new Map();
+    focusSteps.forEach(c => { const d = G.docOf(c.returned[0]); (labels.get(d) || labels.set(d, []).get(d)).push(c.seq); });
+    for (let i = 1; i < focusSteps.length; i++) {
+      const a = P(focusSteps[i - 1].returned[0]), b = P(focusSteps[i].returned[0]);
+      if (a === b) continue;
+      layer.append("path").attr("class", `ov-path${focusSteps[i].how === "jump" ? " jump" : ""}`)
+        .attr("d", `M${a[0]},${a[1]} Q${(a[0] + b[0]) / 2 + (b[1] - a[1]) * 0.15},${(a[1] + b[1]) / 2 - (b[0] - a[0]) * 0.15} ${b[0]},${b[1]}`)
+        .style("opacity", currentStep == null ? 1 : 0.25);
+    }
+    labels.forEach((seqs, d) => { const p = pos.get(d); if (!p) return; lit.add(d);
+      layer.append("circle").attr("class", "ov-ring").attr("cx", p[0]).attr("cy", p[1]).attr("r", radius(G, d) + 2.5);
+      layer.append("text").attr("class", "ov-num").attr("x", p[0] + radius(G, d) + 4).attr("y", p[1] - radius(G, d) - 2).text(seqs.join("·")); });
+    if (currentStep != null) {
+      const c = s.calls[currentStep];
+      (c.returned || []).slice(0, c.tool === "search" ? 0 : 1).forEach(id => { const p = P(id); if (p) layer.append("circle").attr("class", "ov-focus").attr("cx", p[0]).attr("cy", p[1]).attr("r", radius(G, G.docOf(id)) + 6); });
+    }
+  });
+  journeyView.setLit(lit);
+  if (currentStep != null) {
+    const c = sessions[0].calls[currentStep];
+    const target = (c.returned || [])[0];
+    if (target && c.tool !== "search") journeyView.focus(G.docOf(target), 2);
+  }
+}
+
+// ---------------------------------------------------------------- tabs, loading, boot
+function switchTab(name) {
+  ["map", "kinds", "journeys"].forEach(t => {
+    const on = t === name;
+    $(`#tab-${t}`).setAttribute("aria-selected", String(on));
+    $(`#tab-${t}`).tabIndex = on ? 0 : -1;
+    $(`#view-${t}`).hidden = !on;
+  });
+  if (name === "journeys" && !journeyView.fitted) { journeyView.fit(); journeyView.fitted = true; }
+  if (name === "map" && !mapView.fitted) { mapView.fit(); mapView.fitted = true; }
+  try { localStorage.setItem("atlas-tab", name); } catch {}
+}
+function setupTabs() {
+  const names = ["map", "kinds", "journeys"];
+  names.forEach((t, i) => {
+    const b = $(`#tab-${t}`);
+    b.addEventListener("click", () => switchTab(t));
+    b.addEventListener("keydown", e => {
+      const d = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
+      if (!d) return;
+      const next = names[(i + d + names.length) % names.length];
+      switchTab(next); $(`#tab-${next}`).focus();
+    });
+  });
+}
+
+function loadGraph(raw) {
+  state.graph = parseGraph(raw);
+  state.selected = null;
+  renderStats(state.graph);
+  $("#map-busy").hidden = false; $("#journey-busy").hidden = false;
+  setTimeout(() => {
+    state.positions = computeLayout(state.graph);
+    $("#map-busy").hidden = true; $("#journey-busy").hidden = true;
+    renderChips(state.graph);
+    renderLegend(state.graph);
+    mapView.render(state.graph, state.positions, state.hiddenKinds);
+    journeyView.render(state.graph, state.positions, new Set());
+    mapView.fitted = journeyView.fitted = false;
+    const active = ["map", "journeys"].find(t => !$(`#view-${t}`).hidden);
+    if (active === "map") { mapView.fit(); mapView.fitted = true; }
+    if (active === "journeys") { journeyView.fit(); journeyView.fitted = true; }
+    renderMapIntro(state.graph);
+    renderKinds(state.graph);
+    renderJourneys();
+  }, 30);
+}
+
+function setupFiles() {
+  $("#file-graph").addEventListener("change", async e => {
+    const f = e.target.files[0]; if (!f) return;
+    try { loadGraph(JSON.parse(await f.text())); toast(`Loaded ${f.name}`); }
+    catch (err) { toast(err.message || "That file is not a graph export."); }
+    e.target.value = "";
+  });
+  $("#file-trace").addEventListener("change", async e => {
+    const files = [...e.target.files]; if (!files.length) return;
+    const texts = await Promise.all(files.map(f => f.text()));
+    const { list, bad } = parseTraceText(texts.join("\n"));
+    if (!list.length) { toast("No calls found; a trace has one JSON record per line from `serve --trace`."); e.target.value = ""; return; }
+    state.sessions = list; state.traceNote = null; currentSession = 0; currentStep = null;
+    renderJourneys(); switchTab("journeys");
+    toast(`Loaded ${list.length} session${list.length > 1 ? "s" : ""}${bad ? `; skipped ${bad} unreadable lines` : ""}`);
+    e.target.value = "";
+  });
+  $("#copy-layout").addEventListener("click", async () => {
+    const positions = {};
+    state.positions.forEach((p, id) => { positions[id] = [+p[0].toFixed(1), +p[1].toFixed(1)]; });
+    const text = JSON.stringify({ version: state.graph.raw.version, positions });
+    try { await navigator.clipboard.writeText(text); toast(`Copied coordinates for ${state.positions.size} documents`); }
+    catch {
+      const panel = $("#map-panel"); switchTab("map");
+      panel.insertAdjacentHTML("afterbegin", `<div class="group"><h3>Layout coordinates</h3><textarea id="layout-text" readonly></textarea></div>`);
+      const ta = $("#layout-text"); ta.value = text; ta.focus(); ta.select();
+      toast("Select all and copy the coordinates from the panel");
+    }
+  });
+}
+
+function boot() {
+  setupTabs(); setupSearch(); setupFiles();
+  mapView = MapView($("#map-svg"), { onSelect: id => selectNode(id, false), showHubs: () => showHubs });
+  journeyView = MapView($("#journey-svg"), { onSelect: id => { if (id) { hideTip(); switchTab("map"); selectNode(id, true); } }, showHubs: () => true });
+  const { list } = parseTraceText(document.getElementById("trace-data").textContent);
+  state.sessions = list;
+  state.traceNote = JSON.parse(document.getElementById("trace-note").textContent);
+  let tab = "map"; try { tab = localStorage.getItem("atlas-tab") || "map"; } catch {}
+  switchTab(["map", "kinds", "journeys"].includes(tab) ? tab : "map");
+  loadGraph(JSON.parse(document.getElementById("graph-data").textContent));
+  addEventListener("resize", () => { mapView.fitted = journeyView.fitted = false; const t = ["map", "journeys"].find(x => !$(`#view-${x}`).hidden); if (t === "map") { mapView.fit(); mapView.fitted = true; } if (t === "journeys") { journeyView.fit(); journeyView.fitted = true; } });
+}
+boot();
+})();
+</script>

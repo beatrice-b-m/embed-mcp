@@ -46,4 +46,4 @@ packages = ["embed_context"]
 "templates" = "embed_context/_data/templates"
 
 [tool.hatch.build.targets.sdist]
-include = ["embed_context", "model", "catalog", "templates", "tests", "README.md", "LICENSE", "CITATION.cff"]
+include = ["embed_context", "model", "catalog", "templates", "tests", "tools", "README.md", "LICENSE", "CITATION.cff"]

@@ -188,7 +188,8 @@ embed-context graph > graph.json
 
 The export loads every module unless `--module` is given, and carries labels
 but no other field content; [Architecture](docs/architecture.md#graph-export)
-describes its shape.
+describes its shape. To explore it, and agent traces, in a browser, build the
+[atlas](tools/atlas/README.md).
 
 ## What the catalog will not decide
 
