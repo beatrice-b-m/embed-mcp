@@ -13,7 +13,7 @@
 #           that entry kind below
 #
 # `many: true` makes a field a list. `required: true` makes it mandatory.
-# `description:` is shown by the editor schema and by `show`.
+# `description:` is shown by the editor schema as hover text.
 #
 # Short specs may use the one-line `{type: text, many: true}` form. Write any
 # spec that contains prose in block style instead: inside `{...}`, a comma

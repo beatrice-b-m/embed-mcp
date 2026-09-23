@@ -1,330 +1,299 @@
-# Catalog-set format
+# Catalog format
 
-## Documents and versions
+The catalog is a graph of small YAML documents that link to one another. This
+page is the reference for how those documents are written and checked. For how
+the engine reads them and produces output, see [Architecture](architecture.md).
 
-The current catalog is a deterministic composition of:
+## Three layers
+
+| Directory | Holds | Edited when |
+|---|---|---|
+| `model/` | The structure: document kinds and their fields (`kinds.yaml`), link types (`links.yaml`), controlled values (`values.yaml`), search and read tuning (`query.yaml`), and the shared operations (`operations.yaml`) | A new kind, field, link type, value, or operation is needed |
+| `catalog/` | The documents, one directory per module | Catalog content changes |
+| `templates/` | The Jinja templates that lay out text output | Output layout changes |
+
+The model files are the only definition of structure. The engine names no
+kind, field, link type, or clinical term of its own, so adding a kind or a
+controlled value is an edit to a text file, not to code.
+
+## Modules
+
+Each directory under `catalog/` is a module and starts with `module.yaml`:
+
+```yaml
+kind: module
+label: Internal EMBED V2
+module_type: profile
+requires: [semantic]
+```
+
+- `module_type` is `semantic` (portable clinical meaning), `profile` (one
+  dataset release's physical representation), or `extension`.
+- `requires` lists the modules this one builds on. Loading a module also loads
+  what it requires.
+- `notices` are module-wide statements shown once, in `--help` and in the MCP
+  server instructions, instead of being repeated on every document.
+
+A document belongs to the module whose directory contains it; that membership
+is its availability. **Scope rule:** a document may link only to documents in
+its own module or in modules its module requires. Backlinks cross in the other
+direction, so a portable feature shows the `open-v2` and `internal-v2` columns
+that map to it whenever those modules are loaded.
+
+The bundled modules are `semantic`, `internal-v2`, and `open-v2`. Folder names
+inside a module (`features/`, `tables/`, …) only help people find files. The
+engine reads every `*.yaml` file under a module and ignores folder names.
+
+## Documents
+
+One document per file, and the file name is the ID:
+`catalog/semantic/features/imaging.assessment.yaml` is `imaging.assessment`.
+
+```yaml
+kind: feature
+label: Imaging assessment
+definition: BI-RADS assessment code.
+value_type: coded
+evidence: [release_schema, release_legend]
+search_terms: [imaging assessment, birads, bi-rads]
+caveats:
+  - Do not impose a simple ordinal scale across assessment states.
+topics: [topic.imaging]
+objects: [imaging_interpretation]
+```
+
+- The first line is always `kind: <kind>`. The kind is never inferred from the
+  folder, so moving a file never changes its meaning.
+- IDs are lowercase letters, digits, `.`, `-`, and `_`, and are unique across
+  the whole catalog. A document's ID never contains another document's ID, so
+  derived IDs such as `<profile>.codes.*`, `<profile>.join.*`, and
+  `<profile>.support.*` are independent names.
+- Every kind uses `label` and `definition`. Fields whose meaning genuinely
+  differs keep their own names, such as a guardrail's `statement` and
+  `rationale`.
+- `kind` is reserved for a document's kind, so fields that would otherwise be
+  called kind have specific names: `relationship_type`, `context_type`,
+  `source_type`, and `key_type`.
+
+### Kinds
+
+| Kind | What it holds |
+|---|---|
+| `clinical_object` | A clinical thing the data represents, such as an exam, finding, or procedure, and the grain of one occurrence |
+| `relationship` | A typed clinical relationship between two objects, with cardinality and optionality |
+| `concept` | A clinical knowledge concept, such as breast cancer or a treatment pathway |
+| `feature` | A portable clinical attribute that tables in one or more profiles may represent |
+| `temporal` | A time meaning, such as exam event or pathology report time |
+| `aggregation` | Documented behavior of moving a feature between grains |
+| `guardrail` | An interpretation constraint on represented data |
+| `pattern` | A data-handling procedure the lab uses, presented as an example with its limits |
+| `context` | Reviewed background, holding its claims |
+| `source` | A cited source |
+| `topic` | An optional hub that other documents link to for browsing and filtering |
+| `table` | One physical table of one profile, with its columns, keys, and represented objects |
+| `vocabulary` | A code list, with its completeness, null meaning, and parsing |
+| `join` | A physical route between two tables' columns |
+| `join_path` | An ordered chain of joins that together represent one relationship |
+| `profile_support` | Whether a profile's evidence supports a subject, and whether it represents it in usable columns |
+
+`model/kinds.yaml` declares every field of every kind. Its header explains the
+field types:
+
+| Type | Written as |
+|---|---|
+| `text` | A string. Prose may use inline Markdown |
+| `value` | One controlled value from `model/values.yaml`; `of:` names the value set |
+| `flag` | `true` or `false` |
+| `map` | String keys to string values, such as a vocabulary's codes |
+| `record` | Nested fields. With `entry_kind:`, a keyed map of addressable entries |
+
+`many: true` makes a field a list, and `required: true` makes it mandatory.
+
+### Entries
+
+Some facts belong inside a document: a context's claims, a table's columns and
+keys, a feature's missing states. These are **entries**, keyed by a short name
+and addressed as `<document>#<key>`:
+
+```yaml
+kind: table
+label: imaging_findings_anon
+columns:
+  asses:
+    type: string
+    nullable: true
+    maps:
+      - {id: imaging.assessment, mapping: direct, vocabulary: open-v2.codes.imaging-assessment}
+```
+
+The column above is `open-v2.imaging_findings_anon#asses`, and other documents
+can link to it by that address. An entry inside another entry is addressed as
+`document#entry/sub-entry`. Physical column names keep their source case,
+because they are keys inside a table file, not document IDs.
+
+## Links
+
+A link field holds IDs. `model/links.yaml` declares each link type:
+
+- `owners`: the kinds whose documents (or entries) write the link;
+- `targets`: the kinds it may point to (`any` allows every kind);
+- `backlink`: the name the target shows it under;
+- `many` (default true), `required`, `acyclic`, `symmetric` (shown under
+  the same name from both ends, like `related`);
+- `local`: bare values name entries of the same document, so `acc_anon`
+  means `<this document>#acc_anon`;
+- `qualifiers`: extra fields the link may carry.
+
+**A link is written once, by its owner.** The engine computes the reverse
+link, and every read shows both directions. Writing a link from the target's
+side is an error that names the owning side. Removing a wrong link is deleting
+one line; the backlink disappears with it.
+
+A link is a bare ID, or an entry with qualifiers or a note:
+
+```yaml
+objects: [imaging_interpretation]
+maps:
+  - {id: imaging.assessment, mapping: direct, vocabulary: open-v2.codes.imaging-assessment}
+related:
+  - {id: breast_side, note: Side-level rollups aggregate finding values.}
+```
+
+A qualifier of `type: link` is itself a link, with its own targets and
+backlink: a mapping's `vocabulary` is checked like any link, and the
+vocabulary shows the mapping under `mappings`. `#key` refers to an entry of the
+same document.
+
+A feature's `temporal` link may carry `records: true`, meaning the feature's
+value *is* that time (for example, `exam.study_date` records
+`time.exam-event`).
+
+## Controlled values
+
+`model/values.yaml` lists every value set, and every value has a one-line
+meaning:
+
+```yaml
+mapping_statuses:
+  direct: The column records the feature as represented.
+  derived: The column is computed or projected from other represented values.
+```
+
+The checker, the templates, the editor schema, and the MCP input enums all
+read this file. Adding a value is one line. Output shows each meaning where
+the value appears, or once in a response's "Values" legend when the value
+repeats on links or entries.
+
+Recurring statements are typed fields rather than repeated prose. For example,
+a vocabulary's `null_meaning: undocumented` replaces a sentence once copied
+onto about 150 features, and its meaning is rendered from `values.yaml`.
+Free-text `caveats` are for facts specific to one document.
+
+## YAML rules
+
+The catalog uses a restricted YAML subset so that every file reads the same
+way to a person and to the engine:
+
+- **Every scalar is read as a string**, and types come from the model. Codes
+  such as `N`, `Y`, `no`, `1`, or `6` therefore stay strings.
+- Anchors, aliases, tags, and multi-document files are rejected.
+- An empty value (`field:` with nothing after it) is rejected as an
+  unfinished edit.
+- Flow style (`[a, b]`, `{id: x, mapping: direct}`) is for short values only.
+  Inside `{...}` a comma ends a value, so prose containing a comma must use
+  block style.
+- Long prose uses a folded block scalar (`>-`), one sentence per line, for
+  clean diffs.
+
+### House style
+
+- Keys appear in the order the model declares: plain fields, then links, then
+  nested entry sections.
+- Lists keep their authored order.
+- Indentation is two spaces.
+- Quotes appear only where YAML would otherwise misread a value.
+
+## Checking
+
+```bash
+embed-context check
+```
+
+`check` loads every module and reports each problem with its file, line, and
+field, suggesting a near match where there is one:
 
 ```text
-catalog-set manifest (schema 1)
-├── semantic catalog (schema 8)
-├── zero or more profile modules (schema 2)
-└── zero or more extension modules (schema 2)
+catalog/semantic/features/imaging.assessment.yaml:10: error: objects: unknown ID
+  `imaging_interpretaton`; did you mean `imaging_interpretation`?
 ```
 
-The public manifest selects `catalog/semantic/catalog.json` and the `open-v2`
-profile. `internal-v2` is bundled as a non-default working profile; its binding
-covers the wide internal MagView clinical table, internal V1c
-image metadata, and the hormone, procedure, and cancer history tables. All
-schemas use JSON Schema Draft 2020-12 and close authored objects with
-`additionalProperties: false`.
+It enforces the model: required fields and field types, controlled values,
+link targets that exist and have an allowed kind, entries that resolve, links
+written only from their owning side, acyclic link chains, file names that are
+valid IDs, and the module scope rule. A few cross-document rules that the
+model cannot express are named rules in the engine (see
+[Architecture](architecture.md#what-stays-in-code)).
 
-Schema v8 has no legacy input mode. A schema-v6 monolith, semantic schema 7,
-profile schema 1, extension schema 1, wrong discriminator, or unknown version
-causes a fatal startup error. The loader does not silently migrate or ignore
-fields.
+Findings are errors, which stop the catalog from loading cleanly, or warnings,
+which do not. `check` exits 1 when there are errors.
 
-## Catalog-set manifest
+### Editor schema
 
-The manifest names one semantic catalog plus default profile and extension
-locators. Locators are closed unions:
+`check` also writes a JSON Schema generated from the model to the ignored
+`.embed-context/schema.json` (`embed-context schema` writes it alone). The
+committed `.vscode/settings.json` maps `catalog/**/*.yaml` to it, so VS Code
+with the Red Hat YAML extension autocompletes fields, controlled values (with
+their meanings as hover text), and document IDs in link fields, filtered to
+the kinds each link type allows. The schema checks one file at a time and is
+advisory; `check` remains the authority for rules that span files.
 
-```json
-{"kind": "bundled", "resource": "semantic/catalog.json"}
+## Tuning and interface files
+
+### `model/query.yaml`
+
+Everything that shapes search and reads, with comments for each setting:
+
+- stopwords, field and entry weights, query expansions, and boosts;
+- scoring settings and result limits;
+- which kinds search returns, and which backlinks each result lists;
+- which entry kinds a read shows in summary form (a table's columns, for
+  example, show only their type and mappings until read by address);
+- `link_facts`: the fields shown on every link to a kind, such as a
+  guardrail's `priority` or a claim's `status`;
+- the field names `code` lookup uses.
+
+`tests/retrieval_cases.yaml` checks that search stays useful; rerun it after
+editing this file.
+
+### `model/operations.yaml`
+
+The operations the CLI and the MCP server share (`search`, `read`, `code`),
+with their descriptions and arguments, the output formats, the default
+modules, and the documents listed in the MCP server instructions. Both
+surfaces are generated from it. See [Architecture](architecture.md#operations).
+
+### Templates
+
+`templates/text/<kind>.md.j2` lays out one kind, and `_default.md.j2` lays out
+any kind without its own template, so a new kind displays without a template
+being written first. Named templates render search results (`_search`), code
+lookups (`_code`), the review-page index (`_index`), and the MCP server
+instructions (`_instructions`). Shared formatting is in `_macros.j2`.
+
+Templates receive the view described in [Architecture](architecture.md#views)
+and may lay facts out but not drop them: a repository test checks that every
+fact of every view appears in its text. They print link targets through
+`ref()`, and word hints for the surface that prints them through `command()`
+and `arg()`.
+
+## Review pages
+
+```bash
+embed-context render
 ```
 
-```json
-{"kind": "file", "path": "../shared/catalog.json"}
-```
-
-Bundled resources resolve through package data. File paths resolve relative to
-the containing manifest. The resolver does not scan directories, expand
-environment variables, or search the working directory or home directory.
-
-## Semantic catalog
-
-The semantic catalog contains controlled values and ID-keyed registries for
-clinical objects, concepts, semantic relationships, temporal semantics,
-aggregations, guardrails, coverage, vocabularies, sources, and contexts.
-
-Objects define clinical instance meaning and descriptive grain independently
-of storage. Concepts define reusable meaning and object ownership.
-Relationships retain direction, cardinality, optionality, attribution limits,
-and temporal qualification. Claims cite exact `context-id#claim-id` records.
-
-The shared catalog includes the `image` object and `clinical.exam-image`
-relationship. Their presence expresses shared meaning; it does not assert that
-every profile supplies an image table, file layout, or verified physical key.
-`internal-v2` supplies an image table whose `anon_dicom_path` basename is the
-anonymized SOP Instance UID. That value supplies durable image identity within
-one dataset version even though the UID is not exported as a separate metadata
-column.
-
-## Contributions and availability
-
-Profiles and extensions have a closed `contributions` object with all semantic
-families:
-
-```json
-{
-  "clinical_objects": {},
-  "concepts": {},
-  "semantic_relationships": {},
-  "temporal_semantics": {},
-  "aggregations": {},
-  "guardrails": {},
-  "coverage": {}
-}
-```
-
-Any module may introduce new meaning. Contributions do not need to exist in
-the shared semantic catalog first. An optional availability record is either:
-
-```json
-{"scope": "portable"}
-```
-
-or:
-
-```json
-{"scope": "profiles", "profiles": ["internal-v2"]}
-```
-
-When omitted, semantic-catalog records default to portable availability and a
-profile or extension contribution defaults to its target profile. Runtime
-validation checks availability against loaded profiles and provenance scope.
-
-The `internal-v2` profile demonstrates this mechanism in three independent ways.
-Its MagView binding maps the wide `magview_all_cohorts_PACS_v2_anon` clinical
-table to shared and profile-owned clinical semantics, including an internal
-putative pathology-specimen object whose reliability and identity remain
-unresolved. It also records longitudinal patient identity, same-episode linked
-accessions, accession-plus-finding-number identity, date-shift and event-time
-meaning, supported procedure representation, categorical normalization,
-invalid pathology-severity value `6`, and a technical cancer-registry
-reference.
-
-Its patient-history contributions bind `HormoneHist_anon`, `ProcedureHist_anon`
-(the `ProcHist` surface), and `CancerHist_anon`. Packet columns plus the confirmed
-free-text `comment` field form complete inventories. `str` becomes `string` and
-`int64` remains `int64`; comment is assessed as text from maintainer description,
-and every column is conservatively nullable. These are parse assessments, not
-source-declared schema constraints.
-
-HormoneHist and ProcHist use category-specific mappings, patient ownership, and
-imaging-accession recording context without unique history-entry identity.
-Occurrence interpretations preserve unresolved category/code combinations and
-the ProcHist composite result `FA,SF`; its vocabulary uses
-`comma_composed_undocumented`. CancerHist maps the confirmed self/relative flag
-and conditional relationship-category role. Its provisional type/cancercode
-interpretations use `unresolved` mappings with category qualifiers and
-`unverified` occurrence claims. BRCA and temporal fields remain inventoried
-without clinical mappings. The existing schema supports this distinction;
-neither parser behavior nor public response shapes change. See
-[history packet review](history-topology-review.md).
-
-Its image-metadata binding adds the `metadata_all_cohorts_v1c` table at
-one row per extracted DICOM image instance. That table carries the `image`
-object, the profile's `region_of_interest` object, co-located patient, exam, and
-image-derived breast-side projections, a cross-table accession route for
-`clinical.exam-image`, and a same-table route for
-`clinical.image-region-of-interest`. Because the artifact is delimited text with
-no embedded column schema, its recorded physical types are assessed parse types
-and every column is conservatively nullable; unresolved and technical columns
-stay inventoried without mappings. Region-of-interest information is a
-serialized per-image collection, so no ROI row grain or ROI identifier is
-declared; ROI coordinates use inclusive `[y_min, x_min, y_max, x_max]` DICOM
-pixel-array bounds. Curated coordinates are expected in bounds, residual
-out-of-bounds values may be safely clipped, and radiologist provenance spans
-multiple annotation workflows rather than only ROI_SS/ROI_SSC screen captures.
-For DBT rows, the physical `ImagesInAcquisition` column maps to the
-`internal-v2.image.dbt_frame_count` concept: it describes frames or z-slices
-within the image, not distinct image instances in an acquisition group.
-Cross-image ROI grouping remains absent. The paired image metadata is internal
-V1c while the clinical surface is internal V2, so the
-exam-to-image binding records incomplete coverage and states that an unmatched
-clinical exam is not an exam without images. The accession remains one distinct
-exam identifier in the shared cross-table namespace, belongs to exactly one
-patient, and treats a cross-patient association as an invalid data-quality
-error. The anonymized DICOM locator is intended for every
-extracted image; its basename supplies dataset-version-scoped anonymized SOP
-Instance UID identity. Observed missing values likely mean anonymization failed
-before saving and keep the technical key physically incomplete. DICOM Burned
-In Annotation uses the
-standard `YES`, `NO`, and absent-attribute meanings and remains a source
-declaration rather than pixel-data verification.
-
-## Profile modules
-
-A profile document has `profile_schema_version: 2`, one profile identity, a
-requirement for semantic schema 8, semantic contributions, sources, contexts,
-qualifications, vocabularies, and one physical `profile_binding`.
-
-Vocabulary `parsing` distinguishes atomic values from fields that need
-field-specific handling. `comma_delimited_unordered` means split the physical
-value on commas and interpret the resulting component codes without assigning
-meaning to their order or repetition. Unknown component meanings remain
-unknown. `comma_composed_undocumented` is reserved for comma-bearing values
-whose composition semantics have not been established.
-
-### Physical table inventory
-
-Tables declare physical columns independently of mappings:
-
-```json
-{
-  "id": "open-v2.binding.table.patients_anon",
-  "table": "patients_anon",
-  "grain": "one exported patient row",
-  "columns": [
-    {"name": "empi_anon", "physical_type": "int64", "nullable": true}
-  ],
-  "keys": [],
-  "caveats": []
-}
-```
-
-`grain` is optional descriptive text, not a closed global enum. Physical type
-and schema nullability occur once on the table-owned column. Columns may remain
-unmapped while their semantics are unresolved. Keys, object identity, and
-relationship endpoints must reference declared columns.
-
-### Feature mappings
-
-A feature binding maps one physical occurrence to one concept:
-
-```json
-{
-  "id": "open-v2.binding.feature.patient-id",
-  "table": "patients_anon",
-  "column": "empi_anon",
-  "concept": "identity.patient_identifier",
-  "status": "direct"
-}
-```
-
-Status is `direct`, `derived`, `conditional`, `ambiguous`, or `unresolved`.
-Mappings are identified by their authored IDs, not by `profile:table.column`,
-so one column may have several mappings and one concept may map to many
-columns. Downstream renamed columns simply map to the same stable concept.
-Callers must inspect status and handle multiple applicable mappings rather than
-assuming equivalence.
-
-Optional `qualifiers` are a closed scalar-valued map. They preserve descriptive
-metadata such as `{"slot": 1}` without reserving parameters for one pathology
-concept. Optional occurrence interpretations retain value/null meaning,
-evidence status, claims, and caveats. Vocabulary selection remains
-mapping-specific.
-
-Evidence arrays use the release-neutral value `observed_source_values` when a
-record depends on targeted observations of the applicable source artifact. The
-record's profile scope, claim references, and cited source—not the controlled
-evidence token—identify whether that artifact is Open V2, internal V2, internal
-V1c, or another governed representation. The former
-`observed_v2_values` value is not a schema-v8 input.
-
-### Object mappings and co-location
-
-Object bindings name an object, table, relevant columns, evidence, and optional
-instance identity. Three optional independent axes replace the former mixed
-representation enum:
-
-- `completeness`: `complete`, `partial`, or `unknown`;
-- `authority`: `preferred`, `reference`, `alternative`, or `unspecified`; and
-- `derivation`: `source`, `projected`, `derived`, or `unknown`.
-
-Co-location is never authored as a role. It is computed when multiple object
-bindings select the same table. Physical relationships may also have the same
-source and target table; this records within-row navigation and is not a
-table-graph cycle.
-
-Relationship bindings and ordered binding paths remain descriptive physical
-routes. They are not executable joins and do not promote matching tuples into
-clinical attribution guarantees.
-
-## Extension modules
-
-An extension has `extension_schema_version: 2`, identity, semantic version,
-lifecycle, one target profile, explicit extension dependencies, all-family
-contributions, evidence records, optional lineage, and a `profile_binding` with
-the same physical shapes used by profiles. Empty physical collections are
-valid for semantic-only extensions.
-
-There is no revision array and no `reinterprets_concept`, `replaces_binding`,
-or `coexists_with` mechanism. Extensions add scoped records and mappings with
-new stable IDs. Competing or conditional interpretations remain simultaneously
-addressable and are surfaced as alternatives or ambiguity.
-
-## Composition and queries
-
-Loading retains origin, module, lifecycle, target profile, and availability
-for every contribution. Duplicate IDs, missing dependencies, dependency
-cycles, invalid scope, unresolved references, duplicate mapping IDs, and
-incompatible physical endpoints are errors. Independent extension input order
-does not change the effective view.
-
-Portable queries need no profile. Profile-dependent operations require an
-explicit profile when applicable contributions, qualifications, vocabularies,
-or mappings differ. Python, CLI, MCP, and the curator use the same resolver.
-
-The Python entry point is:
-
-```python
-load_catalog(
-    catalog_set=None,
-    *,
-    profile_paths=None,
-    extension_paths=None,
-    include_default_profiles=True,
-    include_default_extensions=False,
-)
-```
-
-CLI and MCP startup accept repeatable `--profile-file` and `--extension-file`.
-`--no-default-profiles` omits manifest-selected profiles. Startup failures
-identify the document and JSON path without exposing file content.
-
-## Footer verification
-
-`scripts/validate_source_profile.py` compares a selected profile's complete
-table and column inventory to direct-child Parquet footer schemas. It checks
-file/table presence, exact column names, physical types, and schema
-nullability. It reads no rows, values, statistics, counts, identifiers, dates,
-or report text.
-
-Footer agreement does not validate key uniqueness, referential coverage,
-cardinality, clinical attribution, ROI geometry, outcome capture, or
-availability. The verifier is intentionally exact rather than a partial
-catalog-authoring scanner.
-
-It also reads Parquet only. The internal V1c image-metadata table is delimited
-text with no embedded schema, so it is outside footer verification and remains a
-separate authoring concern; the verifier must not be widened into a text reader.
-
-## Authoring from local source data
-
-Footer verification is not the only permitted authoring evidence. In an
-authorized environment, maintainers may perform minimal, question-specific
-inspection of local source data to reconcile represented values, sentinels,
-row grain, or physical relationships. This investigation remains outside the
-runtime catalog and verifier.
-
-Historical references—including the V1 Open Data dictionary and public EMBED
-documentation—and the V2 Open Data legend must be checked against internal V2
-rather than copied as profile truth. The authored result may contain reconciled
-non-identifying controlled values and supported meanings, but never raw rows,
-identifiers, report text, extracts, empirical counts, frequencies, or
-distributions.
-
-Represent a targeted source-data observation as a profile source with kind
-`supporting_internal` and locator kind `logical_artifact`. Its version scope and
-notes should identify the internal-V2 question it answered without recording a
-local path, row, or source value.
-
-## Authoring rule
-
-Search existing stable IDs before adding meaning. Reuse shared semantics when
-meaning is unchanged, but put legitimately profile-specific objects and
-concepts in that profile's contributions with correct availability. Keep
-physical columns in table inventories and semantic interpretation in mappings.
-Record uncertainty explicitly; do not manufacture physical details from a
-semantic scaffold.
+writes one linked Markdown page per document, plus an index by module and
+kind, into the ignored `.embed-context/pages/`. The pages use the same
+templates as terminal output, and each links back to its source YAML file.
+They are generated on demand and never committed; the YAML files are the review
+surface in diffs and pull requests.
