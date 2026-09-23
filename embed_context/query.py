@@ -226,16 +226,20 @@ class Searcher:
         terms = list(dict.fromkeys(tokenize(text, config.stopwords)))
         phrase = " ".join(text.lower().split())
         scored = []
+        excluded = 0  # documents that match the query but not the filters
         for doc in self.documents:
             node = doc.node
-            if kinds and node.kind not in kinds:
-                continue
-            if modules and node.module not in modules:
-                continue
-            if topic_members is not None and node.address not in topic_members:
-                continue
+            filtered = (
+                (kinds and node.kind not in kinds)
+                or (modules and node.module not in modules)
+                or (topic_members is not None and node.address not in topic_members)
+            )
             score, matched = self._score(doc, terms, phrase)
-            if score > 0:
+            if score <= 0:
+                continue
+            if filtered:
+                excluded += 1
+            else:
                 scored.append((score, node.address, doc, matched))
         scored.sort(key=lambda item: (-item[0], item[1]))
         if scored:
@@ -251,6 +255,7 @@ class Searcher:
             "filters": {name: values for name, values in filters.items() if values},
             "total": len(scored),
             "results": results,
+            "excluded_by_filters": excluded if excluded and not scored else None,
             "unmatched_terms": unmatched,
             "legend": legend,
         }

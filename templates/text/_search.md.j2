@@ -8,7 +8,8 @@ Filters: {% for name, values in d.filters.items() %}{{ name }} {{ values | join(
 
 {% endif %}
 {% if not d.results %}
-No results.
+No results.{% if d.excluded_by_filters is defined %} {{ d.excluded_by_filters }} documents match without the filters.{% endif %}
+
 {% endif %}
 {% for r in d.results %}
 

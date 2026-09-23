@@ -49,6 +49,12 @@ class SearchTests(CatalogTestCase):
         self.assertNotIn("margin", ranked)
         self.assertNotIn("closed", ranked)
 
+    def test_an_empty_filtered_search_reports_what_the_filters_excluded(self):
+        data = self.search("tumor", kinds=["topic"])
+        self.assertEqual((data["results"], data["excluded_by_filters"]), ([], 1))
+        self.assertNotIn("excluded_by_filters", self.search("xylophone"))
+        self.assertNotIn("excluded_by_filters", self.search("density", kinds=["note"]))
+
     def test_kind_filter_and_unknown_kind(self):
         self.assertEqual({r["kind"] for r in self.search("breast", kinds=["topic"])["results"]}, {"topic"})
         with self.assertRaises(QueryError) as raised:
