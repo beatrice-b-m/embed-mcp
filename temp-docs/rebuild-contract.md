@@ -1,7 +1,8 @@
 # Catalog rebuild contract
 
-> **Status:** Draft. Slices 1–5 are closed. Slice 6 (CLI and MCP adapters)
-> is built and awaiting maintainer review; see section 9. Last updated
+> **Status:** Draft. Slices 1–6 are closed. Slice 7 (packaging,
+> documentation, scope, cutover) is built on `rebuild` and awaiting the
+> maintainer's answers in section 10.4 before cutover. Last updated
 > 2026-09-23.
 >
 > This is a short-lived working document (see `AGENTS.md`, "Working
@@ -1590,7 +1591,8 @@ notice on the semantic module (D1.8), shown in the instructions and in
   `embed-context serve` loads. Each module also loads what it requires.
 - `--module` overrides the setting, for example
   `embed-context --module open-v2 serve`.
-- The CLI's other commands still load every module by default.
+- The CLI's other commands still load every module by default. Superseded
+  by D7.4: `search`, `read`, and `code` share the default.
 
 **D6.7 Input schemas are closed. Accepted.**
 
@@ -1665,6 +1667,122 @@ worktree:
 3. **Packaging (slice 7).** The server needs `--root` until the data
    directories are packaged.
 
+## 10. Slice 7: packaging, documentation, scope, and cutover
+
+### 10.1 Scope
+
+Package the catalog with the software, restore CI, remove the migration
+tooling, rewrite the documentation, reconcile project scope, and cut over to
+`main`. The maintainer closed slice 6 on 2026-09-23.
+
+### 10.2 Decisions
+
+**D7.1 Cutover is a fast-forward of `main`. Accepted.**
+
+`main` has no commits that `rebuild` lacks, so cutover fast-forwards local
+`main` to `rebuild` after the maintainer reviews slice 7. Pushing to `origin`
+waits for the maintainer's explicit confirmation. The `rebuild` worktree is
+then removed.
+
+**D7.2 The release is `0.11.0`. Accepted.**
+
+`pyproject.toml` and `CITATION.cff` carry `0.11.0`.
+
+**D7.3 Only the ID map survives the migration tooling. Accepted.**
+
+`legacy/`, the converter, and the parity report are removed; they remain in
+git history. `migration/id-map.json` moves to `docs/legacy-id-map.json`, and
+the README gains "Upgrading from 0.10".
+
+**D7.4 The catalog travels with the package. Accepted.**
+
+- The wheel bundles `model/`, `catalog/`, and `templates/` under
+  `embed_context/_data/`.
+- The root is `--root`, then a checkout containing the current directory,
+  then the installed copy (in a source install, the repository).
+- The installed copy is read-only: `check` validates it without writing the
+  editor schema, and `render` and `schema` refuse it.
+- `default_modules` (was `server.modules`) in `model/operations.yaml`
+  applies to `search`, `read`, `code`, and `serve`. `check`, `render`, and
+  `schema` load every module.
+- `embed-context --version` is added.
+
+**D7.5 The maintainer's Claude Code setup is not switched yet. Accepted.**
+
+The README documents the switch from `embedv2-agent-context` and
+`embed-context-mcp`. The maintainer's tool install and `~/.claude.json` are
+not changed until the maintainer asks.
+
+**D7.6 Documentation. Accepted.**
+
+- Removed: architecture v5–v8, the curator viewer plan, and the
+  profile-module migration.
+- Rewritten: the README, `docs/README.md`, `docs/catalog-format.md`,
+  `CONTRIBUTING.md`, and `AGENTS.md`.
+- Added: `docs/architecture.md`, which also records the rebuild's design
+  decisions and open items.
+- Updated: `docs/clinical-semantic-model.md`, which now points to the catalog
+  as authoritative.
+- Kept as historical evidence: the five review records, two of which catalog
+  sources cite by path.
+- Catalog content that the README, `AGENTS.md`, and project scope restated
+  (the internal-v2 representation details) is now reached only through the
+  catalog's contexts. Every restated fact was confirmed present in the
+  catalog first.
+
+**D7.7 Scope reconciliation. Accepted; the maintainer reviews its commit.**
+
+`docs/project-scope.md` gains the content principles, clinical knowledge
+concepts, and a data-handling patterns section, and restates its requirements
+in the new terms. `AGENTS.md` and the contribution checklist carry the
+principles.
+
+**D7.8 Ledger open items move to the docs. Accepted.**
+
+Drafted value wording, release evidence on portable features, and column
+references in qualifiers are recorded under "Open items" in
+`docs/architecture.md`.
+
+**D7.9 CI is restored. Accepted.**
+
+Tests run on Python 3.11–3.13, followed by `check` and the MCP tests with
+only the `mcp` extra. A package job builds the wheel, checks its contents,
+and verifies base-only and `mcp` tool installs outside the checkout. Every
+package step was run locally.
+
+**D7.10 Search reports matches its filters excluded. Accepted.**
+
+The reconciliation found that project scope requires this no-result
+diagnostic, which 0.10 had and slice 4 dropped.
+
+### 10.3 Result
+
+- 97 tests pass, and `check` reports no problems.
+- The wheel holds the 668 data files and no legacy, migration, or test files.
+- Base-only and `mcp` installs work from outside the checkout. Every README
+  command was run against the installed wheel.
+- Fixed on the way:
+  - a stale `show` reference in `model/kinds.yaml`;
+  - the README's OpenCode configuration, which nested servers under a
+    `servers` key that OpenCode does not use.
+
+### 10.4 Open questions for the maintainer
+
+1. **`new` and `rename` (Q7.1).** The agent recommends building `rename`,
+   which makes ID changes safe without an agent, and dropping `new`, which the
+   editor schema covers. Either can wait until after cutover.
+2. **Unimplemented cross-document rules (Q7.2).** Section 4.7 accepted two
+   named rules that were never built:
+   - key uniqueness against relationship cardinality;
+   - join-path adjacency, which 0.10 enforced.
+   They are listed as open items in `docs/architecture.md`.
+3. **A `v0.10.0` tag (Q7.3).** The docs point to `v0.10.0` for the removed
+   footer verifier and fieldwork runners. The only existing tag is `v0.7.0`.
+   The agent proposes tagging `main`'s current commit (`736a6c8`) as `v0.10.0`
+   before the fast-forward, and pushing the tag with `main`.
+4. **Source verification (Q7.4).** 0.10's Parquet footer verifier read the
+   old catalog. Should it be ported to the YAML tables, or left in history?
+
 ## Change log
 
 - 2026-09-23: Created. Rebuild-wide contract, slice plan, and slice 1
@@ -1728,3 +1846,7 @@ worktree:
   generated CLI, and the MCP server.
 - 2026-09-23: Resolved slice 6 items 1 and 2: the instructions list critical
   guardrails only, and the remaining process wording in prose was rewritten.
+- 2026-09-23: Slice 7. The maintainer closed slice 6. Recorded D7.1–D7.10
+  and open questions Q7.1–Q7.4. Packaged the catalog, released 0.11.0,
+  restored CI, removed the migration tooling, rewrote the documentation, and
+  reconciled project scope. D7.4 supersedes the CLI default in D6.6.
