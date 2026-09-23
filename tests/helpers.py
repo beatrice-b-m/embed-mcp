@@ -121,6 +121,22 @@ read:
 """
 
 
+# The fixture uses the real operation declarations, which name no catalog
+# content, with its own server settings.
+FIXTURE_SERVER = """server:
+  modules: [base]
+  instructions:
+    - when: {kind: note, status: closed}
+
+"""
+
+
+def fixture_operations() -> str:
+    real = (REPOSITORY / "model" / "operations.yaml").read_text(encoding="utf-8")
+    start, end = real.index("\nserver:\n") + 1, real.index("\n# The `format` argument")
+    return real[:start] + FIXTURE_SERVER + real[end + 1 :]
+
+
 class CatalogTestCase(unittest.TestCase):
     """Creates a temporary catalog root with the fixture model and real templates."""
 
@@ -131,6 +147,7 @@ class CatalogTestCase(unittest.TestCase):
         self.write("model/links.yaml", FIXTURE_LINKS)
         self.write("model/values.yaml", FIXTURE_VALUES)
         self.write("model/query.yaml", FIXTURE_QUERY)
+        self.write("model/operations.yaml", fixture_operations())
         shutil.copytree(REPOSITORY / "templates", self.root / "templates")
         self.write("catalog/base/module.yaml", "kind: module\nlabel: Base\nmodule_type: semantic\n")
 

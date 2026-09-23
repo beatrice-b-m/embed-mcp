@@ -38,9 +38,31 @@ class QueryError(ValueError):
 
 
 @dataclass(frozen=True)
-class Boost:
+class Condition:
+    """Which documents a configuration entry applies to: a kind and field
+    values, where a field matches any of its listed values."""
+
     kind: str | None
-    conditions: dict[str, frozenset[str]]
+    fields: dict[str, frozenset[str]]
+
+    def matches(self, node: Node) -> bool:
+        if self.kind is not None and node.kind != self.kind:
+            return False
+        return all(node.data.get(key) in values for key, values in self.fields.items())
+
+
+def parse_condition(doc: YamlDocument, raw: Any, path: tuple, catalog: Catalog) -> Condition:
+    """Read a `when:` mapping such as `{kind: guardrail, priority: [critical, high]}`."""
+    when = dict(_mapping(doc, raw, path))
+    kind = when.pop("kind", None)
+    if kind is not None and kind not in catalog.model.kinds:
+        raise _error(doc, (*path, "kind"), f"unknown kind `{kind}`")
+    return Condition(kind, {key: frozenset(value if isinstance(value, list) else [value]) for key, value in when.items()})
+
+
+@dataclass(frozen=True)
+class Boost:
+    condition: Condition
     factor: float
 
 
@@ -94,12 +116,8 @@ def load_query_config(catalog: Catalog) -> QueryConfig:
     for index, raw in enumerate(search.get("boosts", [])):
         path = ("search", "boosts", index)
         raw = _mapping(doc, raw, path)
-        when = dict(_mapping(doc, raw.get("when", {}), (*path, "when")))
-        kind = when.pop("kind", None)
-        if kind is not None and kind not in model.kinds:
-            raise _error(doc, (*path, "when", "kind"), f"unknown kind `{kind}`")
-        conditions = {key: frozenset(value if isinstance(value, list) else [value]) for key, value in when.items()}
-        boosts.append(Boost(kind, conditions, _number(doc, raw.get("factor"), (*path, "factor"))))
+        condition = parse_condition(doc, raw.get("when", {}), (*path, "when"), catalog)
+        boosts.append(Boost(condition, _number(doc, raw.get("factor"), (*path, "factor"))))
     kinds = tuple(_list(doc, search, "kinds", ("search",)))
     for kind in kinds:
         if kind not in model.document_kinds:
@@ -260,7 +278,7 @@ class Searcher:
         if phrase and any(phrase in text for text in doc.phrases):
             total *= 1 + config.phrase_bonus
         for boost in config.boosts:
-            if self._boost_applies(boost, doc.node):
+            if boost.condition.matches(doc.node):
                 total *= boost.factor
         return total, matched_fields
 
@@ -270,12 +288,6 @@ class Searcher:
             return 0.0
         k = self.config.saturation
         return self.idf[term] * weight * (k + 1) / (weight + k)
-
-    @staticmethod
-    def _boost_applies(boost: Boost, node: Node) -> bool:
-        if boost.kind is not None and node.kind != boost.kind:
-            return False
-        return all(node.data.get(key) in values for key, values in boost.conditions.items())
 
     def _result(self, doc: _Indexed, score: float, matched: set[str], legend: dict[str, dict[str, str]]) -> dict[str, Any]:
         node = doc.node
@@ -459,12 +471,13 @@ def _suggest(value: str, candidates: list[str] | tuple[str, ...]) -> str:
     return f"; did you mean `{matches[0]}`?" if matches else ""
 
 
-def _summary(node: Node, fields: tuple[str, ...]) -> str | None:
+def _summary(node: Node, fields: tuple[str, ...], limit: int | None = _SUMMARY_LIMIT) -> str | None:
+    """The first sentence of the first of ``fields`` the node has, cut to ``limit`` characters."""
     for name in fields:
         text = node.data.get(name)
         if isinstance(text, str):
             first = re.split(r"(?<=\.)\s", text, maxsplit=1)[0]
-            return first if len(first) <= _SUMMARY_LIMIT else first[: _SUMMARY_LIMIT - 1].rstrip() + "…"
+            return first if limit is None or len(first) <= limit else first[: limit - 1].rstrip() + "…"
     return None
 
 

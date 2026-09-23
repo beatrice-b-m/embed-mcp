@@ -1,0 +1,98 @@
+# The operations that the CLI and the MCP server share. Both are generated
+# from this file: CLI subcommands and their options, and MCP tools and their
+# input schemas. Descriptions appear in `--help` and in the MCP tool list.
+# embed_context/operations.py connects each operation to the engine; it holds
+# no descriptions of its own.
+#
+# Argument fields:
+#   type         string or integer
+#   required     positional on the CLI, required in the MCP schema
+#   many         repeatable on the CLI, a list in MCP
+#   choices      where the allowed values come from: `kinds` (the searchable
+#                kinds in query.yaml), `modules` (the loaded modules), or
+#                `formats` (under `format` below). MCP lists them as an
+#                enum; the CLI names them in its help and rejects others
+#                with a suggestion.
+#   minimum      the smallest allowed integer
+#   cli          the CLI option name, when it differs from --<name>
+
+server:
+  # Modules the MCP server loads when `embed-context serve` is given no
+  # --module. Each module also loads the modules it requires.
+  modules: [internal-v2]
+
+  # Documents listed in the server instructions, so that an agent meets them
+  # before its first call. Each condition names a kind and field values, as
+  # the boosts in query.yaml do; a list matches any of its values.
+  instructions:
+    - when: {kind: guardrail, priority: [critical, high]}
+
+# The `format` argument that every operation accepts, and its formats.
+format:
+  description: The output format; text unless json is asked for.
+  formats:
+    text: Text laid out by the templates in templates/text/. The default.
+    json: >-
+      The same facts as JSON, in the view shape that embed_context/view.py
+      documents.
+
+operations:
+  search:
+    description: >-
+      Find documents for a clinical question or term.
+      Each result gives the document's ID, kind, label, and one-line summary, the fields that
+      matched, and its guardrails and profile support.
+      Read a result's ID for the whole document.
+    arguments:
+      query:
+        type: string
+        required: true
+        description: Words to search for, for example "most recent prior cancer".
+      kinds:
+        type: string
+        many: true
+        choices: kinds
+        cli: --kind
+        description: Only documents of these kinds.
+      topics:
+        type: string
+        many: true
+        cli: --topic
+        description: Only documents under these topics or their narrower topics, given by topic ID.
+      modules:
+        type: string
+        many: true
+        choices: modules
+        cli: --in-module
+        description: Only documents in these modules.
+      limit:
+        type: integer
+        minimum: 1
+        description: The maximum number of results; the default is set in model/query.yaml.
+
+  read:
+    description: >-
+      Read one document or entry with its fields and its links in both directions.
+      Linked documents appear by ID and label with a few key facts, never in full; read a
+      linked ID to follow the link.
+      Address an entry inside a document as document#entry, for example a table's column.
+    arguments:
+      id:
+        type: string
+        required: true
+        description: A document ID, or an entry address such as open-v2.imaging_findings_anon#asses.
+
+  code:
+    description: >-
+      Explain a represented value: its meaning in every code list that applies, codes that
+      differ from it only in case or spacing, the columns' interpretations of it, and the
+      feature's missing states for it.
+    arguments:
+      id:
+        type: string
+        required: true
+        description: A vocabulary, a column address, or a feature.
+      value:
+        type: string
+        required: true
+        description: The represented value, for example B or s.

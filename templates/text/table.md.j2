@@ -24,5 +24,8 @@
   {{ m.summary_line(entry) }}
 {% endif %}
 {% endfor %}
+{% if section.name in ["objects", "columns"] %}
+  For one in full: {{ command("read") }} {{ d.id }}#<{{ section.name[:-1] }}>
+{% endif %}
 {% endfor %}
 {% endblock %}

@@ -1,65 +1,61 @@
-"""Command-line interface: check, show, search, code, and schema."""
+"""Command-line interface.
+
+The shared operations (search, read, code) are generated from
+``model/operations.yaml`` (see ``embed_context.operations``), so the CLI and
+the MCP server take the same arguments and print the same text. The
+maintainer commands (check, render, schema) and ``serve``, which starts the
+MCP server, are CLI-only.
+
+The catalog is loaded before the full parser is built, because the help
+lists the loaded modules, the searchable kinds, and the modules' notices.
+"""
 
 from __future__ import annotations
 
 import argparse
-import json
 import sys
 from pathlib import Path
 from typing import Any
 
 from .catalog import Catalog, find_root, load_catalog
+from .operations import ArgumentError, Interface, Session, Surface, call, choices, load_interface
 from .pages import DEFAULT_PATH as PAGES_PATH
 from .pages import write_pages
-from .query import QueryError, Searcher, load_query_config, lookup_code, read
-from .render import render, render_named
+from .query import QueryConfig, QueryError, load_query_config
 from .schema import DEFAULT_PATH, write_schema
 from .view import UnknownID
 from .yamlio import YamlError
 
+_DESCRIPTION = "Human-editable clinical-semantic context for EMBED data."
+
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(prog="embed-context", description="Human-editable clinical-semantic context for EMBED data.")
-    parser.add_argument("--root", type=Path, help="catalog root (default: the nearest directory holding model/kinds.yaml)")
-    parser.add_argument("--module", dest="modules", action="append", help="load only this module and the modules it requires; repeatable")
-    commands = parser.add_subparsers(dest="command", required=True)
-
-    check = commands.add_parser("check", help="validate every document and regenerate the editor schema")
-    check.add_argument("--no-schema", action="store_true", help="do not write the editor schema")
-
-    show = commands.add_parser("show", help="show one document or entry with its links and backlinks")
-    show.add_argument("id", help="a document ID, or an entry address such as open-v2.imaging_findings_anon#asses")
-    show.add_argument("--json", action="store_true", help="print JSON instead of text")
-
-    search = commands.add_parser("search", help="find documents for a question or term")
-    search.add_argument("query", help="words to search for, for example 'most recent prior cancer'")
-    search.add_argument("--kind", dest="kinds", action="append", help="only this kind of document; repeatable")
-    search.add_argument("--topic", dest="topics", action="append", help="only documents under this topic or its narrower topics; repeatable")
-    search.add_argument("--in-module", dest="in_modules", action="append", help="only documents in this module; repeatable")
-    search.add_argument("--limit", type=int, help="maximum number of results (default from model/query.yaml)")
-    search.add_argument("--json", action="store_true", help="print JSON instead of text")
-
-    code = commands.add_parser("code", help="explain a represented value through the code lists and interpretations that apply")
-    code.add_argument("id", help="a vocabulary, a column address, or a feature")
-    code.add_argument("value", help="the represented value, for example B or s")
-    code.add_argument("--json", action="store_true", help="print JSON instead of text")
-
-    pages = commands.add_parser("render", help="write linked Markdown review pages for every document")
-    pages.add_argument("--output", type=Path, default=PAGES_PATH, help=f"directory relative to the root (default: {PAGES_PATH}); replaced on each run")
-
-    schema = commands.add_parser("schema", help="write the editor schema")
-    schema.add_argument("--output", type=Path, default=DEFAULT_PATH, help=f"path relative to the root (default: {DEFAULT_PATH})")
-
-    args = parser.parse_args(argv)
+    argv = list(sys.argv[1:] if argv is None else argv)
+    early = argparse.ArgumentParser(add_help=False)
+    _global_options(early)
+    early.add_argument("command", nargs="?")
+    known, _ = early.parse_known_args(argv)
     try:
-        root = args.root or find_root()
-        catalog = load_catalog(root, args.modules)
+        root = known.root or find_root()
+        modules = known.modules
+        if known.command == "serve" and not modules:
+            modules = list(load_interface(root).server_modules) or None
+        catalog = load_catalog(root, modules)
+        interface = load_interface(root, catalog)
     except (FileNotFoundError, ValueError) as error:
         print(f"embed-context: {error}", file=sys.stderr)
         return 2
     except YamlError as error:
         print(f"embed-context: model error: {error}", file=sys.stderr)
         return 2
+    try:
+        config: QueryConfig | None = load_query_config(catalog)
+        config_error = None
+    except YamlError as error:  # `check` and `schema` still work without it
+        config, config_error = None, error
+
+    session = Session(catalog, config, interface) if config else None
+    args = _parser(catalog, interface, session).parse_args(argv)
 
     if args.command == "check":
         return _check(catalog, write=not args.no_schema)
@@ -67,36 +63,96 @@ def main(argv: list[str] | None = None) -> int:
         path = write_schema(catalog, args.output)
         print(f"Wrote {path.relative_to(catalog.root)}")
         return 0
+    if session is None:
+        print(f"embed-context: configuration error: {config_error}", file=sys.stderr)
+        return 2
+    if args.command == "render":
+        target = write_pages(catalog, session.config, args.output)
+        print(f"Wrote {len(catalog.documents) + 1} pages to {target.relative_to(catalog.root)}; start at index.md")
+        return 0
+    if args.command == "serve":
+        from .mcp_server import serve
+
+        return serve(session)
+
+    operation = interface.operations[args.command]
+    arguments = {a.name: getattr(args, a.name) for a in operation.arguments if getattr(args, a.name) is not None}
     try:
-        config = load_query_config(catalog)
-        if args.command == "render":
-            target = write_pages(catalog, config, args.output)
-            print(f"Wrote {len(catalog.documents) + 1} pages to {target.relative_to(catalog.root)}; start at index.md")
-            return 0
-        if args.command == "show":
-            data, text = _show(catalog, args.id, config)
-        elif args.command == "search":
-            data = Searcher(catalog, config).search(args.query, args.kinds, args.topics, args.in_modules, args.limit)
-            text = render_named(catalog.root, "_search", data)
-        else:
-            data = lookup_code(catalog, args.id, args.value, config)
-            text = render_named(catalog.root, "_code", data)
+        text = call(session, Surface("cli", interface), operation.name, arguments)
     except UnknownID as error:
         print(f"embed-context: {error.message}", file=sys.stderr)
         return 1
-    except QueryError as error:
+    except (QueryError, ArgumentError) as error:
         print(f"embed-context: {error}", file=sys.stderr)
         return 1
     except YamlError as error:
         print(f"embed-context: configuration error: {error}", file=sys.stderr)
         return 2
-    if args.json:
-        print(json.dumps(data, indent=1, ensure_ascii=False))
-    else:
-        sys.stdout.write(text)
+    sys.stdout.write(text)
     if catalog.errors:
         print(f"embed-context: the catalog has {len(catalog.errors)} errors; run `embed-context check`", file=sys.stderr)
     return 0
+
+
+def _global_options(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument("--root", type=Path, help="catalog root (default: the nearest directory holding model/kinds.yaml)")
+    parser.add_argument(
+        "--module",
+        dest="modules",
+        action="append",
+        help="load only this module and the modules it requires; repeatable (default: every module, or for `serve` the modules in model/operations.yaml)",
+    )
+
+
+def _parser(catalog: Catalog, interface: Interface, session: Session | None) -> argparse.ArgumentParser:
+    notices = [notice for module in catalog.modules.values() for notice in module.notices]
+    epilog = "Notices:\n" + "\n".join(f"  {notice}" for notice in notices) if notices else None
+    parser = argparse.ArgumentParser(
+        prog="embed-context",
+        description=_DESCRIPTION,
+        epilog=epilog,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    _global_options(parser)
+    commands = parser.add_subparsers(dest="command", required=True)
+
+    for operation in interface.operations.values():
+        sub = commands.add_parser(operation.name, help=_first_sentence(operation.description), description=operation.description)
+        for argument in operation.arguments:
+            options: dict[str, Any] = {"help": _help(argument, session)}
+            if argument.type == "integer":
+                options["type"] = int
+            if argument.required:
+                sub.add_argument(argument.name, **options)
+                continue
+            if argument.many:
+                options["action"] = "append"
+            sub.add_argument(argument.cli_flag, dest=argument.name, metavar=argument.cli_flag.lstrip("-").upper(), **options)
+
+    check = commands.add_parser("check", help="validate every document and regenerate the editor schema")
+    check.add_argument("--no-schema", action="store_true", help="do not write the editor schema")
+
+    pages = commands.add_parser("render", help="write linked Markdown review pages for every document")
+    pages.add_argument("--output", type=Path, default=PAGES_PATH, help=f"directory relative to the root (default: {PAGES_PATH}); replaced on each run")
+
+    schema = commands.add_parser("schema", help="write the editor schema")
+    schema.add_argument("--output", type=Path, default=DEFAULT_PATH, help=f"path relative to the root (default: {DEFAULT_PATH})")
+
+    commands.add_parser("serve", help="run the MCP server on standard input and output")
+    return parser
+
+
+def _help(argument: Any, session: Session | None) -> str:
+    text = argument.description
+    if argument.many:
+        text += " Repeatable."
+    if session is not None and argument.choices:
+        text += f" One of: {', '.join(choices(session, argument))}."
+    return text.replace("%", "%%")
+
+
+def _first_sentence(text: str) -> str:
+    return text.split(". ", 1)[0].rstrip(".")
 
 
 def _check(catalog: Catalog, write: bool) -> int:
@@ -115,8 +171,3 @@ def _check(catalog: Catalog, write: bool) -> int:
         path = write_schema(catalog)
         print(f"Editor schema: {path.relative_to(catalog.root)}")
     return 1 if errors else 0
-
-
-def _show(catalog: Catalog, address: str, config: Any) -> tuple[dict[str, Any], str]:
-    data = read(catalog, address, config)
-    return data, render(catalog.root, data)

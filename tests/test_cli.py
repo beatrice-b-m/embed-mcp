@@ -26,12 +26,12 @@ class CliTests(CatalogTestCase):
         self.assertEqual(code, 1)
         self.assertIn("catalog/base/n.yaml:3: error: status: `opne` is not in statuses", out)
 
-    def test_show_renders_text_or_json(self):
+    def test_read_renders_text_or_json(self):
         self.write("catalog/base/topic.a.yaml", "kind: topic\nlabel: A\n")
-        code, out, _ = self.run_cli("show", "topic.a")
+        code, out, _ = self.run_cli("read", "topic.a")
         self.assertEqual(code, 0)
         self.assertIn("## A", out)
-        code, out, _ = self.run_cli("show", "topic.a", "--json")
+        code, out, _ = self.run_cli("read", "topic.a", "--format", "json")
         self.assertIn('"id": "topic.a"', out)
 
     def test_search_renders_results_or_json(self):
@@ -39,7 +39,7 @@ class CliTests(CatalogTestCase):
         code, out, _ = self.run_cli("search", "alpha")
         self.assertEqual(code, 0)
         self.assertIn("1. Alpha hub (topic.a) · topic", out)
-        code, out, _ = self.run_cli("search", "alpha", "--json")
+        code, out, _ = self.run_cli("search", "alpha", "--format", "json")
         self.assertIn('"total": 1', out)
 
     def test_search_rejects_an_unknown_filter(self):
@@ -47,7 +47,31 @@ class CliTests(CatalogTestCase):
         self.assertEqual(code, 1)
         self.assertIn("unknown kind `nope`", err)
 
-    def test_show_unknown_id(self):
-        code, _, err = self.run_cli("show", "missing")
+    def test_read_unknown_id(self):
+        code, _, err = self.run_cli("read", "missing")
         self.assertEqual(code, 1)
         self.assertIn("unknown ID `missing`", err)
+
+    def test_operations_are_generated_from_the_operation_table(self):
+        self.write("catalog/base/module.yaml", "kind: module\nlabel: Base\nmodule_type: semantic\nnotices:\n  - Base notice.\n")
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out), self.assertRaises(SystemExit):
+            main(["--root", str(self.root), "--help"])
+        self.assertIn("{search,read,code,check,render,schema,serve}", out.getvalue())
+        self.assertIn("Base notice.", out.getvalue())
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out), self.assertRaises(SystemExit):
+            main(["--root", str(self.root), "search", "--help"])
+        self.assertIn("--in-module IN-MODULE", out.getvalue())
+        self.assertIn("One of: note, topic.", " ".join(out.getvalue().split()))
+
+    def test_hints_are_worded_for_the_cli(self):
+        for name in ("a", "b"):
+            self.write(f"catalog/base/topic.{name}.yaml", "kind: topic\nlabel: Alpha hub\n")
+        code, out, _ = self.run_cli("search", "alpha", "--limit", "1")
+        self.assertIn("use --limit to see them", out)
+
+    def test_an_unknown_format_is_rejected(self):
+        code, _, err = self.run_cli("search", "alpha", "--format", "jsn")
+        self.assertEqual(code, 1)
+        self.assertIn("unknown format `jsn`; did you mean `json`?", err)

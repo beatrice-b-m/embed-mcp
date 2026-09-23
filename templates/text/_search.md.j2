@@ -1,5 +1,6 @@
 {#- Search results (embed_context.query.Searcher.search). Each result is
-    compact; `show <id>` reads it with all its links. -#}
+    compact; reading its ID shows it with all its links. `command()` and
+    `arg()` word hints for the CLI or MCP (embed_context.operations.Surface). -#}
 {% import "text/_macros.j2" as m with context %}
 Search: {{ d.query }}
 {% if d.filters is defined %}
@@ -27,7 +28,7 @@ No results.
 {% endfor %}
 {% if d.total > d.results | length %}
 
-{{ d.total - d.results | length }} more results; use --limit to see them.
+{{ d.total - d.results | length }} more results; use {{ arg("search", "limit") }} to see them.
 {% endif %}
 {% if d.unmatched_terms is defined %}
 No document mentions: {{ d.unmatched_terms | join(", ") }}
