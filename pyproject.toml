@@ -1,0 +1,33 @@
+[project]
+name = "embed-context"
+version = "0.11.0.dev0"
+description = "Human-editable clinical-semantic context for EMBED data"
+readme = "README.md"
+authors = [
+    { name = "Beatrice Brown-Mulry" },
+]
+requires-python = ">=3.11,<3.14"
+dependencies = [
+    "jinja2>=3.1",
+    "ruamel.yaml>=0.18",
+]
+
+[project.urls]
+Repository = "https://github.com/beatrice-b-m/embed-mcp"
+
+[project.scripts]
+embed-context = "embed_context.cli:main"
+
+[dependency-groups]
+# jsonschema is used only by tests, to check that the generated editor
+# schema accepts the catalog and rejects broken documents.
+dev = [
+    "jsonschema>=4.23",
+]
+
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["embed_context"]

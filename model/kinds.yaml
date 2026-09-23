@@ -15,6 +15,10 @@
 # `many: true` makes a field a list. `required: true` makes it mandatory.
 # `description:` is shown by the editor schema and by `show`.
 #
+# Short specs may use the one-line `{type: text, many: true}` form. Write any
+# spec that contains prose in block style instead: inside `{...}`, a comma
+# ends the value.
+#
 # Prototype (slice 1): fields follow the current catalog closely; slice 2
 # finalizes names and records each change in the parity ledger.
 
@@ -23,9 +27,15 @@ module:
   fields:
     label: {type: text, required: true}
     module_type: {type: value, of: module_types, required: true}
-    requires: {type: text, many: true, description: IDs of modules this module builds on.}
+    requires:
+      type: text
+      many: true
+      description: IDs of modules this module builds on.
     definition: {type: text}
-    notices: {type: text, many: true, description: Module-wide statements shown once, instead of repeated on every document.}
+    notices:
+      type: text
+      many: true
+      description: Module-wide statements shown once, instead of repeated on every document.
 
 topic:
   description: An optional hub document that other documents link to for browsing and filtering.
@@ -38,7 +48,10 @@ clinical_object:
   fields:
     label: {type: text, required: true}
     definition: {type: text, required: true}
-    grain: {type: text, required: true, description: What one occurrence of the object is.}
+    grain:
+      type: text
+      required: true
+      description: What one occurrence of the object is.
     search_terms: {type: text, many: true}
     caveats: {type: text, many: true}
 
@@ -59,7 +72,10 @@ feature:
     evidence: {type: value, of: evidence_kinds, many: true}
     search_terms: {type: text, many: true}
     caveats: {type: text, many: true}
-    missing_states: {type: record, entry_kind: missing_state, description: Documented meanings of missing representations.}
+    missing_states:
+      type: record
+      entry_kind: missing_state
+      description: Documented meanings of missing representations.
 
 missing_state:
   description: A documented meaning of one missing representation of a feature.
@@ -129,7 +145,9 @@ pattern:
     label: {type: text, required: true}
     pattern_status: {type: value, of: pattern_statuses, required: true}
     definition: {type: text, required: true}
-    steps: {type: text, description: Prose steps or pseudocode; never executable code.}
+    steps:
+      type: text
+      description: Prose steps or pseudocode; never executable code.
     limits: {type: text, many: true}
     search_terms: {type: text, many: true}
 
@@ -142,7 +160,10 @@ context:
     definition: {type: text, required: true}
     search_terms: {type: text, many: true}
     claims: {type: record, entry_kind: claim}
-    workflow_steps: {type: record, entry_kind: workflow_step, description: Ordered steps of a clinical workflow.}
+    workflow_steps:
+      type: record
+      entry_kind: workflow_step
+      description: Ordered steps of a clinical workflow.
     caveats: {type: text, many: true}
 
 claim:
@@ -167,17 +188,30 @@ source:
     scope: {type: value, of: scopes}
     locator_type: {type: value, of: locator_types, required: true}
     locator: {type: text, required: true}
-    version_scope: {type: text, required: true, description: What the source covers.}
+    version_scope:
+      type: text
+      required: true
+      description: What the source covers.
     notes: {type: text, many: true}
 
 table:
   description: One physical table of one profile, with its columns, keys, and column mappings.
   fields:
-    label: {type: text, required: true, description: The physical table name.}
-    grain: {type: text, required: true, description: What one row represents.}
+    label:
+      type: text
+      required: true
+      description: The physical table name.
+    grain:
+      type: text
+      required: true
+      description: What one row represents.
     caveats: {type: text, many: true}
     keys: {type: record, entry_kind: key}
-    columns: {type: record, entry_kind: column, required: true, description: Physical columns keyed by their source name, in physical order.}
+    columns:
+      type: record
+      entry_kind: column
+      required: true
+      description: Physical columns keyed by their source name, in physical order.
 
 key:
   description: A candidate key of a table.
@@ -193,10 +227,16 @@ column:
   description: One physical column of a table.
   entry: true
   fields:
-    type: {type: text, required: true, description: The physical storage type.}
+    type:
+      type: text
+      required: true
+      description: The physical storage type.
     nullable: {type: flag, required: true}
     caveats: {type: text, many: true}
-    interpretations: {type: record, entry_kind: interpretation, description: Meanings of specific represented values in this column, keyed by the value.}
+    interpretations:
+      type: record
+      entry_kind: interpretation
+      description: Meanings of specific represented values in this column, keyed by the value.
 
 interpretation:
   description: The meaning of one represented value in one column.
@@ -215,7 +255,10 @@ vocabulary:
     parsing: {type: value, of: vocabulary_parsing, required: true}
     evidence: {type: value, of: evidence_kinds, many: true}
     caveats: {type: text, many: true}
-    codes: {type: map, required: true, description: Each code and its label.}
+    codes:
+      type: map
+      required: true
+      description: Each code and its label.
 
 profile_support:
   description: Whether a profile supports a semantic document, and with what limits.
