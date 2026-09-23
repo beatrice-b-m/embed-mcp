@@ -23,9 +23,11 @@ server:
 
   # Documents listed in the server instructions, so that an agent meets them
   # before its first call. Each condition names a kind and field values, as
-  # the boosts in query.yaml do; a list matches any of its values.
+  # the boosts in query.yaml do; a list matches any of its values. Other
+  # guardrails reach the agent as backlinks, with their priority, on every
+  # document they apply to and on search results.
   instructions:
-    - when: {kind: guardrail, priority: [critical, high]}
+    - when: {kind: guardrail, priority: critical}
 
 # The `format` argument that every operation accepts, and its formats.
 format:

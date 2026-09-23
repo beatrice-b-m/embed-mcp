@@ -10,6 +10,7 @@ How to use it
 - {{ command("read") }} takes an ID and returns that document with its links in both directions. Linked documents appear by ID and label, never in full; read a linked ID to follow the link.
 - {{ command("code") }} explains a represented value through the code lists, column interpretations, and missing states that apply.
 - Output is text. Pass {{ arg("read", "format") }} json for the same facts as JSON.
+- Guardrails constrain how represented values may be interpreted. Every read and search result lists the guardrails that apply to it, with their priority; read a guardrail's ID for its rationale and scope.
 
 Modules loaded
 {% for module in d.modules %}
