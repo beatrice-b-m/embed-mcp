@@ -49,7 +49,11 @@ class YamlDocument:
 
 
 def read_yaml(file: Path) -> YamlDocument:
-    text = file.read_text(encoding="utf-8")
+    return parse_yaml(file.read_text(encoding="utf-8"), file)
+
+
+def parse_yaml(text: str, file: Path) -> YamlDocument:
+    """Parse YAML text; ``file`` is used only in error messages."""
     yaml = YAML(typ="base", pure=True)
     try:
         _reject_unsupported_syntax(yaml, text, file)

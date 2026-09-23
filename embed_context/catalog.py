@@ -96,14 +96,30 @@ class Catalog:
     links: list[Link] = field(default_factory=list)
     findings: list[Finding] = field(default_factory=list)
 
+    _index: dict[str, dict[str, list]] | None = field(default=None, repr=False, compare=False)
+
     def outgoing(self, address: str) -> list[Link]:
-        return [link for link in self.links if link.source == address]
+        return self._indexes()["outgoing"].get(address, [])
 
     def incoming(self, address: str) -> list[Link]:
-        return [link for link in self.links if link.target == address]
+        return self._indexes()["incoming"].get(address, [])
 
     def entries_of(self, address: str) -> list[Node]:
-        return [node for node in self.nodes.values() if node.parent == address]
+        return self._indexes()["entries"].get(address, [])
+
+    def _indexes(self) -> dict[str, dict[str, list]]:
+        # Built on first use, after loading has finished; a catalog is not
+        # modified once loaded.
+        if self._index is None:
+            index: dict[str, dict[str, list]] = {"outgoing": {}, "incoming": {}, "entries": {}}
+            for link in self.links:
+                index["outgoing"].setdefault(link.source, []).append(link)
+                index["incoming"].setdefault(link.target, []).append(link)
+            for node in self.nodes.values():
+                if node.parent is not None:
+                    index["entries"].setdefault(node.parent, []).append(node)
+            self._index = index
+        return self._index
 
     @property
     def errors(self) -> list[Finding]:

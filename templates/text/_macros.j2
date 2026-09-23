@@ -44,7 +44,7 @@
 {% for group in groups %}
 {% for item in group.links %}
 {{ indent }}{{ "%-16s"|format(group.name if loop.first else "") }} {{ item.id }} — {{ item.label }}
-{%- if item.qualifiers is defined %}{% for q in item.qualifiers %} · {{ q.value }}{% endfor %}{% endif %}
+{%- if item.qualifiers is defined %}{% for q in item.qualifiers %}{% if q.value == "true" %} · {{ q.name }}{% elif q.value != "false" %} · {{ q.value }}{% endif %}{% endfor %}{% endif %}
 {%- if item.note is defined %} · {{ item.note }}{% endif %}
 
 {% endfor %}

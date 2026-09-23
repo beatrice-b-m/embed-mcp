@@ -91,6 +91,10 @@ feature_temporal:
   targets: [temporal]
   backlink: features
   description: Time meanings this feature records or depends on.
+  qualifiers:
+    records:
+      type: flag
+      description: True when the feature's value is this time, rather than depending on it.
 
 temporal_objects:
   field: objects
@@ -265,9 +269,8 @@ join_relationships:
   field: relationships
   owners: [join]
   targets: [relationship]
-  required: true
   backlink: joins
-  description: Clinical relationships this join represents.
+  description: Clinical relationships this join represents; projections between tables may represent none.
 
 source_columns:
   owners: [join]
