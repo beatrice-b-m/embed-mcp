@@ -120,6 +120,7 @@ class FindingTests(CatalogTestCase):
         catalog = self.load(["extra"])
         self.assertEqual(catalog.findings, [])
         self.assertEqual(sorted(node.module for node in catalog.documents), ["base", "extra"])
+        self.assertEqual(list(catalog.modules), ["base", "extra"])  # `other` is not listed as loaded
 
     def test_duplicate_ids_across_modules(self):
         self.write("catalog/extra/module.yaml", "kind: module\nlabel: Extra\nmodule_type: profile\n")

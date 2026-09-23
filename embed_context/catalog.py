@@ -165,6 +165,8 @@ class _Loader:
         for module_dir in modules.values():
             self._read_module(module_dir)
         chosen = self._select(selected)
+        # Only loaded modules remain; the others were read only to resolve `requires`.
+        self.catalog.modules = {module_id: self.catalog.modules[module_id] for module_id in chosen}
         for module_id in chosen:
             for file in sorted(modules[module_id].rglob("*.yaml")):
                 if file.name != MODULE_FILE:
