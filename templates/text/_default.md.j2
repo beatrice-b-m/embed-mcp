@@ -1,27 +1,16 @@
 {#- Renders any kind of document or entry. A kind with its own template in
     this directory (for example feature.md.j2) can extend this one and
     override its blocks. -#}
-{% import "text/_macros.j2" as m %}
-{% block header %}
-## {{ d.label }}
-{{ d.id }} · {{ d.kind }} · {{ d.module_label | default("") }}
-{% endblock %}
+{% import "text/_macros.j2" as m with context %}
+{% block header %}{{ m.header(d) }}{% endblock %}
 {% block body %}
 
-{{ m.fields(d.fields) }}
+{{ m.fields(d.fields | default([])) }}
 {%- endblock %}
-{% block entries %}
-{{ m.entries(d.entries) }}
+{% block sections %}
+{{ m.sections(d.sections | default([])) }}
 {%- endblock %}
 {% block links %}
-{% if d.links %}
-
-Links
-{{ m.link_groups(d.links) }}
-{%- endif %}
-{% if d.backlinks %}
-
-Backlinks
-{{ m.link_groups(d.backlinks) }}
-{%- endif %}
-{% endblock %}
+{{ m.links_and_backlinks(d) }}
+{%- endblock %}
+{{ m.legend(d) }}

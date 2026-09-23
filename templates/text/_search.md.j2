@@ -1,8 +1,9 @@
 {#- Search results (embed_context.query.Searcher.search). Each result is
     compact; `show <id>` reads it with all its links. -#}
+{% import "text/_macros.j2" as m with context %}
 Search: {{ d.query }}
-{% if d.filters.kinds or d.filters.topics or d.filters.modules %}
-Filters: {% for name, values in d.filters.items() if values %}{{ name }} {{ values | join(", ") }}{{ "; " if not loop.last }}{% endfor %}
+{% if d.filters is defined %}
+Filters: {% for name, values in d.filters.items() %}{{ name }} {{ values | join(", ") }}{{ "; " if not loop.last }}{% endfor %}
 
 {% endif %}
 {% if not d.results %}
@@ -10,12 +11,13 @@ No results.
 {% endif %}
 {% for r in d.results %}
 
-{{ loop.index }}. {{ r.label }} ({{ r.id }}) · {{ r.kind }}
-{% if r.summary %}
+{{ loop.index }}. {{ r.label }} ({{ ref(r.id) }}) · {{ r.kind | replace("_", " ") }}{% if r.facts is defined %} · {% for name, value in r.facts.items() %}{{ name | replace("_", " ") }} {{ value }}{{ ", " if not loop.last }}{% endfor %}{% endif %}
+
+{% if r.summary is defined %}
    {{ r.summary }}
 {% endif %}
-{% for group in r.links %}
-   {{ group.name }}: {% for link in group.links %}{{ link.id }}{{ ", " if not loop.last }}{% endfor %}
+{% for group in r.links | default([]) %}
+   {{ group.name | replace("_", " ") }}: {% for link in group.links %}{{ ref(link.id) }}{% if link.facts is defined %} ({% for name, value in link.facts.items() %}{{ value }}{{ ", " if not loop.last }}{% endfor %}){% endif %}{{ ", " if not loop.last }}{% endfor %}
 
 {% endfor %}
 {% endfor %}
@@ -23,6 +25,7 @@ No results.
 
 {{ d.total - d.results | length }} more results; use --limit to see them.
 {% endif %}
-{% if d.unmatched_terms %}
+{% if d.unmatched_terms is defined %}
 No document mentions: {{ d.unmatched_terms | join(", ") }}
 {% endif %}
+{{ m.legend(d) }}

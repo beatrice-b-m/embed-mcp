@@ -1,0 +1,29 @@
+{#- Contexts read as their claims: each with its status, statement,
+    caveats, and sources. -#}
+{% extends "text/_default.md.j2" %}
+{% block sections %}
+{% for section in d.sections | default([]) %}
+{% if section.name == "claims" %}
+
+Claims
+{% for claim in section.entries %}
+{% set status = claim.fields | selectattr("name", "equalto", "status") | first %}
+{% set statement = claim.fields | selectattr("name", "equalto", "statement") | first %}
+  [{{ claim.key }}] ({{ status.value }}) {{ statement.text }}
+{% for f in claim.fields if f.name == "caveats" %}{% for t in f.texts %}
+      caveat: {{ t }}
+{% endfor %}{% endfor %}
+{% for g in claim.links | default([]) %}
+      {{ g.name }}: {% for l in g.links %}{{ ref(l.id) }}{{ ", " if not loop.last }}{% endfor %}
+
+{% endfor %}
+{% for g in claim.backlinks | default([]) %}
+      {{ g.name | replace("_", " ") }}: {% for l in g.links %}{{ ref(l.id) }}{{ ", " if not loop.last }}{% endfor %}
+
+{% endfor %}
+{% endfor %}
+{% else %}
+{{ m.sections([section]) }}
+{%- endif %}
+{% endfor %}
+{% endblock %}

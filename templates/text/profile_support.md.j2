@@ -1,0 +1,31 @@
+{#- Profile support: what the subject is, then the two separate answers
+    (does the evidence support it; is it represented in usable columns). -#}
+{% extends "text/_default.md.j2" %}
+{% block header %}
+{% set subject = d.links | default([]) | selectattr("name", "equalto", "subject") | first %}
+## Profile support: {{ subject.links[0].label }}
+{{ d.id }} · {{ d.module_label }} · subject {{ ref(subject.links[0].id) }}
+{% endblock %}
+{% block body %}
+{% for part in ["evidence", "representation"] %}
+{% set found = d.fields | selectattr("name", "equalto", part ~ "_status") | list %}
+{% if found %}
+{% set status = found[0] %}
+
+{{ part | capitalize }}: {{ status.value }} — {{ status.meaning }}
+{% for f in d.fields if f.name == part ~ "_summary" %}
+  {{ f.text }}
+{% endfor %}
+{% for f in d.fields if f.name == part ~ "_caveats" %}{% for t in f.texts %}
+  caveat: {{ t }}
+{% endfor %}{% endfor %}
+{% for g in d.links | default([]) if g.name == part ~ "_cites" %}
+  cites: {% for l in g.links %}{{ ref(l.id) }}{% if l.facts is defined %} ({{ l.facts.status }}){% endif %}{{ ", " if not loop.last }}{% endfor %}
+
+{% endfor %}
+{% endif %}
+{% endfor %}
+{% endblock %}
+{% block links %}
+{{ m.links_and_backlinks(d, skip=["subject", "evidence_cites", "representation_cites"]) }}
+{%- endblock %}

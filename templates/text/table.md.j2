@@ -1,0 +1,28 @@
+{#- Tables list keys, represented objects, and columns one line each; read
+    `<table>#<column>` or `<table>#<object>` for an entry in full. -#}
+{% extends "text/_default.md.j2" %}
+{% block sections %}
+{% for section in d.sections | default([]) %}
+
+{{ section.name | capitalize }}
+{% for entry in section.entries %}
+{% set links = {} %}
+{% for g in entry.links | default([]) %}{% set _ = links.update({g.name: g.links}) %}{% endfor %}
+{% if section.name == "keys" %}
+  {{ entry.key }}: {% for l in links.get("columns", []) %}{{ l.label }}{{ ", " if not loop.last }}{% endfor %}{% for f in entry.fields | default([]) if f.value is defined %} · {{ f.name | replace("_", " ") }} {{ f.value }}{% endfor %}
+
+{% for f in entry.fields | default([]) if f.texts is defined %}{% for t in f.texts %}
+      {{ t }}
+{% endfor %}{% endfor %}
+{% elif section.name == "objects" %}
+  {{ entry.key }}{% for l in links.get("object", []) %} → {{ m.link(l) }}{% endfor %}{% if links.get("identity_columns") %} · identity {% for l in links["identity_columns"] %}{{ l.label }}{{ ", " if not loop.last }}{% endfor %}{% endif %}{% for f in entry.fields | default([]) %} · {{ f.name | replace("_", " ") }} {{ m.inline(f) }}{% endfor %}
+
+{% elif section.name == "columns" %}
+  {{ entry.key }} ({% for f in entry.fields | default([]) if f.name == "type" %}{{ f.text }}{% endfor %}){% for l in links.get("maps", []) %}{{ " →" if loop.first else ";" }} {{ m.link(l) }}{% endfor %}
+
+{% else %}
+  {{ m.summary_line(entry) }}
+{% endif %}
+{% endfor %}
+{% endfor %}
+{% endblock %}

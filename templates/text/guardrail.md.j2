@@ -1,0 +1,14 @@
+{#- Guardrails lead with their statement and priority. -#}
+{% extends "text/_default.md.j2" %}
+{% block header %}
+{% set priority = d.fields | selectattr("name", "equalto", "priority") | first %}
+{% set category = d.fields | selectattr("name", "equalto", "category") | first %}
+{{ m.header(d, priority.value ~ " priority " ~ category.value | replace("_", " ")) }}
+{% endblock %}
+{% block body %}
+{% for f in d.fields if f.name == "statement" %}
+{{ f.text }}
+{% endfor %}
+
+{{ m.fields(d.fields | rejectattr("name", "in", ["statement", "priority", "category"]) | list) }}
+{%- endblock %}

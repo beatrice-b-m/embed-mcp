@@ -1,0 +1,14 @@
+{#- The index page of `embed-context render`: every document, by module and kind. -#}
+# EMBED catalog
+{% for module in d.modules %}
+
+## {{ module.label }} (`{{ module.id }}`)
+{% for kind in module.kinds %}
+
+### {{ kind.name | replace("_", " ") | capitalize }} ({{ kind.documents | length }})
+{% for doc in kind.documents %}
+- {{ ref(doc.id) }}{% if doc.label != doc.id %} — {{ doc.label }}{% endif %}
+
+{% endfor %}
+{% endfor %}
+{% endfor %}

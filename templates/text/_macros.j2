@@ -1,71 +1,130 @@
-{#- Shared formatting for text views.
+{#- Shared formatting for views built by embed_context/view.py (its docstring
+    describes the view's shape).
 
-    Each macro receives part of a view built by embed_context/view.py:
-      fields     name, type, many, and one of: text (a list), choices
-                 (value and meaning), pairs (key and value), fields (nested)
-      entries    name, description, nodes (each node is itself a view)
-      links      name, links (id, kind, label, and optional note / qualifiers)
-
-    Keys avoid Python dict method names such as `values` and `items`,
-    which Jinja would resolve to the method instead.
+    `ref(id)` prints a link target: the plain ID in terminal output, a
+    relative Markdown link on review pages (`embed-context render`).
 -#}
+
+{%- macro inline(f) -%}
+{%- if f.text is defined %}{{ f.text }}
+{%- elif f.texts is defined %}{{ f.texts | join("; ") }}
+{%- elif f.value is defined %}{{ f.value }}
+{%- elif f.choices is defined %}{% for c in f.choices %}{{ c.value }}{{ ", " if not loop.last }}{% endfor %}
+{%- elif f.flag is defined %}{{ "yes" if f.flag else "no" }}
+{%- elif f.map is defined %}{{ f.map | length }} entries
+{%- elif f.fields is defined %}{% for c in f.fields %}{{ c.name }} {{ inline(c) }}{{ ", " if not loop.last }}{% endfor %}
+{%- endif -%}
+{%- endmacro %}
 
 {% macro fields(items, indent="") %}
 {% for f in items %}
-{% if f.type == "value" and f.many %}
+{% if f.value is defined %}
+{{ indent }}{{ f.name }}: {{ f.value }}{% if f.meaning %} — {{ f.meaning }}{% endif %}
+
+{% elif f.choices is defined %}
 {{ indent }}{{ f.name }}:
-{% for v in f.choices %}
-{{ indent }}  - {{ v.value }}{% if v.meaning %} — {{ v.meaning }}{% endif %}
+{% for c in f.choices %}
+{{ indent }}  - {{ c.value }}{% if c.meaning %} — {{ c.meaning }}{% endif %}
 
 {% endfor %}
-{% elif f.type == "value" %}
-{{ indent }}{{ f.name }}: {{ f.choices[0].value }}{% if f.choices[0].meaning %} — {{ f.choices[0].meaning }}{% endif %}
-
-{% elif f.type == "map" %}
+{% elif f.map is defined %}
 {{ indent }}{{ f.name }}:
-{% for item in f.pairs %}
-{{ indent }}  {{ "%-6s"|format(item.key) }} {{ item.value }}
+{% for key, value in f.map.items() %}
+{{ indent }}  {{ "%-6s" | format(key) }} {{ value }}
 {% endfor %}
-{% elif f.type == "record" %}
+{% elif f.fields is defined %}
+{{ indent }}{{ f.name }}: {{ inline(f) }}
+{% elif f.texts is defined %}
 {{ indent }}{{ f.name }}:
-{{ fields(f.fields, indent ~ "  ") }}
-{%- elif f.many %}
-{{ indent }}{{ f.name }}:
-{% for v in f.text %}
-{{ indent }}  - {{ v }}
+{% for t in f.texts %}
+{{ indent }}  - {{ t }}
 {% endfor %}
 {% else %}
-{{ indent }}{{ f.name }}: {{ f.text[0] }}
+{{ indent }}{{ f.name }}: {{ inline(f) }}
 {% endif %}
 {% endfor %}
 {% endmacro %}
 
+{%- macro link(item) -%}
+{{ ref(item.id) }}{% if item.label is defined %} — {{ item.label }}{% endif %}
+{%- if item.facts is defined %} ({% for name, value in item.facts.items() %}{{ name | replace("_", " ") }} {{ value }}{{ ", " if not loop.last }}{% endfor %}){% endif %}
+{%- if item.qualifiers is defined %}{% for name, value in item.qualifiers.items() %}{% if value is sameas true %} · {{ name }}{% elif value is string %} · {{ name | replace("_", " ") }} {{ value }}{% elif value is not sameas false %} · {{ name | replace("_", " ") }}: {{ value | join("; ") }}{% endif %}{% endfor %}{% endif %}
+{%- if item.note is defined %} · {{ item.note }}{% endif %}
+{%- endmacro %}
+
 {% macro link_groups(groups, indent="  ") %}
 {% for group in groups %}
 {% for item in group.links %}
-{{ indent }}{{ "%-16s"|format(group.name if loop.first else "") }} {{ item.id }} — {{ item.label }}
-{%- if item.qualifiers is defined %}{% for q in item.qualifiers %}{% if q.value == "true" %} · {{ q.name }}{% elif q.value != "false" %} · {{ q.value }}{% endif %}{% endfor %}{% endif %}
-{%- if item.note is defined %} · {{ item.note }}{% endif %}
-
+{{ indent }}{{ "%-16s" | format(group.name if loop.first else "") }} {{ link(item) }}
 {% endfor %}
 {% endfor %}
 {% endmacro %}
 
-{% macro entries(groups, indent="") %}
-{% for group in groups %}
+{%- macro short(item) -%}
+{% if item.local is defined %}{{ item.label }}{% else %}{{ link(item) }}{% endif %}
+{%- endmacro %}
 
-{{ indent }}{{ group.name }}:
-{% for item in group.nodes %}
-{{ indent }}  [{{ item.id.split("#")[-1] }}]
-{{ fields(item.fields, indent ~ "    ") }}
-{%- if item.links %}
-{{ link_groups(item.links, indent ~ "    ") }}
+{%- macro summary_line(entry) -%}
+{{ entry.key }}
+{%- for f in entry.fields | default([]) %} · {{ f.name | replace("_", " ") }} {{ inline(f) }}{% endfor %}
+{%- for group in entry.links | default([]) %} · {{ group.name | replace("_", " ") }} {% for item in group.links %}{{ short(item) }}{{ ", " if not loop.last }}{% endfor %}{% endfor %}
+{%- endmacro %}
+
+{% macro sections(groups, indent="") %}
+{% for section in groups %}
+
+{{ indent }}{{ section.name | replace("_", " ") | capitalize }}
+{% for entry in section.entries %}
+{% if entry.summary is defined %}
+{{ indent }}  {{ summary_line(entry) }}
+{% else %}
+{{ indent }}  [{{ entry.key }}]
+{{ fields(entry.fields | default([]), indent ~ "    ") }}
+{%- if entry.links is defined %}
+{{ link_groups(entry.links, indent ~ "    ") }}
 {%- endif %}
-{% if item.backlinks %}
+{% if entry.backlinks is defined %}
 {{ indent }}    backlinks:
-{{ link_groups(item.backlinks, indent ~ "      ") }}
+{{ link_groups(entry.backlinks, indent ~ "      ") }}
 {%- endif %}
-{{ entries(item.entries, indent ~ "    ") }}
-{%- endfor %}
+{% if entry.sections is defined %}
+{{ sections(entry.sections, indent ~ "    ") }}
+{%- endif %}
+{% endif %}
 {% endfor %}
+{% endfor %}
+{% endmacro %}
+
+{% macro legend(d) %}
+{% if d.legend is defined %}
+
+Values
+{% for key, meanings in d.legend.items() %}
+  {{ key | replace("_", " ") }}
+{% for value, meaning in meanings.items() %}
+    {{ value }} — {{ meaning }}
+{% endfor %}
+{% endfor %}
+{% endif %}
+{% endmacro %}
+
+{% macro header(d, subtitle="") %}
+## {{ d.label }}
+{{ d.id }} · {{ d.kind | replace("_", " ") }}{% if d.module_label is defined %} · {{ d.module_label }}{% endif %}{% if subtitle %} · {{ subtitle }}{% endif %}
+
+{% endmacro %}
+
+{% macro links_and_backlinks(d, skip=[]) %}
+{% set outgoing = d.links | default([]) | rejectattr("name", "in", skip) | list %}
+{% if outgoing %}
+
+Links
+{{ link_groups(outgoing) }}
+{%- endif %}
+{% set incoming = d.backlinks | default([]) | rejectattr("name", "in", skip) | list %}
+{% if incoming %}
+
+Backlinks
+{{ link_groups(incoming) }}
+{%- endif %}
 {% endmacro %}
