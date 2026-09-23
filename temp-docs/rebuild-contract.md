@@ -1,8 +1,8 @@
 # Catalog rebuild contract
 
 > **Status:** Draft. Slices 1–6 are closed. Slice 7 (packaging,
-> documentation, scope, cutover) is built on `rebuild` and awaiting the
-> maintainer's answers in section 10.4 before cutover. Last updated
+> documentation, scope, cutover) is built on `rebuild`; Q7.2 in section 10.4
+> is open before cutover. Last updated
 > 2026-09-23.
 >
 > This is a short-lived working document (see `AGENTS.md`, "Working
@@ -1766,22 +1766,53 @@ diagnostic, which 0.10 had and slice 4 dropped.
   - the README's OpenCode configuration, which nested servers under a
     `servers` key that OpenCode does not use.
 
-### 10.4 Open questions for the maintainer
+### 10.4 Maintainer answers and open questions
 
-1. **`new` and `rename` (Q7.1).** The agent recommends building `rename`,
-   which makes ID changes safe without an agent, and dropping `new`, which the
-   editor schema covers. Either can wait until after cutover.
-2. **Unimplemented cross-document rules (Q7.2).** Section 4.7 accepted two
-   named rules that were never built:
-   - key uniqueness against relationship cardinality;
-   - join-path adjacency, which 0.10 enforced.
-   They are listed as open items in `docs/architecture.md`.
-3. **A `v0.10.0` tag (Q7.3).** The docs point to `v0.10.0` for the removed
-   footer verifier and fieldwork runners. The only existing tag is `v0.7.0`.
-   The agent proposes tagging `main`'s current commit (`736a6c8`) as `v0.10.0`
-   before the fast-forward, and pushing the tag with `main`.
-4. **Source verification (Q7.4).** 0.10's Parquet footer verifier read the
-   old catalog. Should it be ported to the YAML tables, or left in history?
+- **Q7.1 `new` and `rename`.** Resolved: `rename` is built (D7.11). `new` is
+  not built, since the editor schema covers scaffolding; it can be added
+  later.
+- **Q7.2 Unimplemented cross-document rules.** Open. The maintainer asked what
+  they add; the answer is recorded below.
+- **Q7.3 The `v0.10.0` tag.** Resolved: the maintainer tags `v0.10` after
+  cutover is completed and tested. The docs already point to the tag for the
+  removed scripts.
+- **Q7.4 Source verification.** Resolved: the footer verifier and fieldwork
+  runners stay in history.
+
+**D7.11 `embed-context rename`. Accepted.**
+
+- It renames a document (its file and every link to it) or an entry (its key
+  and every link to it).
+- The YAML reader records the character span of every scalar and key, so the
+  command edits only link values: prose, comments, and IDs that merely contain
+  the old one are untouched.
+- The catalog is reloaded afterwards, and every file is restored if the
+  result has errors or lost a link.
+- Plain-text values equal to the old name are listed for a manual check.
+- On a copy of the catalog, renaming `image` edited 39 one-line link values
+  and moved one file, and the result checked cleanly.
+
+**Q7.2 in detail.** 0.10 enforced these checks on physical joins and paths,
+and the rebuild enforces none of them:
+
+1. A join's source and target column lists have the same length.
+2. Paired columns have the same physical type.
+3. A join that claims at least one target per source requires every source
+   row to have the join columns.
+4. A join that claims at most one target per source joins to columns declared
+   as a unique key of the target table, and likewise for at most one source
+   per target.
+5. A join's source completeness does not contradict the declared completeness
+   of a key on the same columns.
+6. Consecutive joins in a join path meet at the same table.
+7. Two keys on the same columns do not declare different uniqueness or
+   completeness.
+8. Hierarchy joins do not form a cycle.
+
+The current catalog passes checks 1–4 and 6, which were tested against it on
+2026-09-23. It came from 0.10, which enforced them. The checks protect future
+edits: without them, a join can claim a one-to-one relationship that its keys
+do not support, and `check` will not notice.
 
 ## Change log
 
@@ -1850,3 +1881,5 @@ diagnostic, which 0.10 had and slice 4 dropped.
   and open questions Q7.1–Q7.4. Packaged the catalog, released 0.11.0,
   restored CI, removed the migration tooling, rewrote the documentation, and
   reconciled project scope. D7.4 supersedes the CLI default in D6.6.
+- 2026-09-23: Recorded the maintainer's answers to Q7.1, Q7.3, and Q7.4, and
+  built `rename` (D7.11). Q7.2 remains open, with what the checks add.
