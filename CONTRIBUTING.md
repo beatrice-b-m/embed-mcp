@@ -1,9 +1,9 @@
 # Contributing
 
 Contributions should make the catalog easier to trust without turning it into
-an analysis recipe. Shared semantics remain reusable, while profiles and
-extensions may add availability-scoped meaning as well as secondary physical
-schemas and mappings.
+an analysis recipe. Portable meaning lives in the `semantic` module and is
+reused by every profile; each profile module adds its own tables, mappings,
+code lists, and profile-specific meaning.
 
 ## Development setup
 
@@ -11,193 +11,133 @@ You need uv and Python 3.11, 3.12, or 3.13:
 
 ```bash
 git clone https://github.com/beatrice-b-m/embed-mcp.git
-cd embed-mcp
-uv sync --locked --all-extras
-uv run --locked embed-context validate
 ```
-
-This repository is a uv workspace. The root project builds the lightweight
-`embedv2-agent-context` distribution; `packages/curator` builds the optional
-`embedv2-agent-context-curator` companion. `--all-extras` selects the root MCP
-and curator extras, and the workspace source mapping resolves the companion
-locally. The two projects use one lockfile and the same software version.
-
-This setup and the baseline test suite need no EMBED data. Read
-[the documentation map](docs/README.md), then
-[project scope](docs/project-scope.md) before changing catalog meaning.
-
-## Canonical sources
-
-- `catalog/semantic/catalog.json` is the canonical shared semantic content.
-- `catalog/profiles/open-v2.json` is the canonical Open V2 evidence, coverage,
-  vocabulary, qualification, and physical-binding inventory.
-- `catalog/profiles/internal-v2.json` is the non-default working internal
-  profile. It inventories the wide `magview_all_cohorts_PACS_v2_anon`
-  clinical table, binds its supported patient, episode, finding, date,
-  procedure, pathology, and registry-reference meanings, and contributes
-  internal-only specimen, staging, biomarker, nodal, and source-workflow
-  semantics. Procedure information is supported; specimen-level reliability,
-  identity, completeness, and cardinality are unresolved. It also contributes
-  `HormoneHist`, `ProcHist`, and `CancerHist` patient-history objects and
-  physical inventories. Reviewed packet types plus the confirmed omitted
-  `comment` column establish inventory completeness; all columns are
-  conservatively nullable. Hormone/procedure history accessions are recording
-  context, not event time. CancerHist subject and relationship-category roles
-  are confirmed, cancer-code dictionaries are provisional, and BRCA codes,
-  relative identity, and temporal interpretation remain unresolved. See the
-  [history packet review](docs/history-topology-review.md). The profile also
-  inventories the internal V1c `metadata_all_cohorts_v1c` image-metadata table at one row
-  per extracted DICOM image instance and binds the image object, co-located
-  patient, exam, and image-derived side projections, image metadata concepts,
-  the cross-table exam-to-image route, and serialized regions of interest. The
-  clinical surface is internal V2 while the paired image metadata is internal
-  V1c, covers every EMBEDv1 exam and patient, and is narrower than clinical V2.
-  ROI coordinates use inclusive DICOM pixel-array
-  `[y_min, x_min, y_max, x_max]` bounds. Curated coordinates are expected in
-  bounds, while residual out-of-bounds values may be safely clipped. ROI
-  provenance spans multiple annotation workflows rather than only
-  ROI_SS/ROI_SSC screen captures. For DBT images, `ImagesInAcquisition`
-  represents the image's frame or z-slice count rather than the number of
-  distinct image instances in an acquisition group;
-  stable per-region identity and cross-image correspondence are not represented.
-  Patient and exam identifiers share their cross-table namespaces;
-  each accession belongs to exactly one patient, and a cross-patient
-  association is an invalid data-quality error. The anonymized DICOM path
-  basename is the dataset-version-scoped anonymized SOP Instance UID; a missing
-  path likely means anonymization failed before the file could be saved.
-- `catalog/catalog-set.json` selects bundled defaults; each document type has
-  a standalone version-matched JSON Schema shape contract.
-- `embed_context/catalog.py` adds strict semantic, cross-reference, scope, and
-  profile invariants that JSON Schema cannot express.
-- Human-facing Markdown is manually synchronized explanatory material. It is
-  neither generated output nor a competing source of truth.
-
-Search for an existing stable ID, concept, claim, or vocabulary before adding
-one:
 
 ```bash
-rg -n "candidate phrase|candidate.identifier" \
-  catalog embed_context tests docs README.md
+cd embed-mcp && uv sync --locked --all-extras
 ```
 
-## Worked semantic-change flow
+```bash
+uv run --locked embed-context check
+```
 
-Suppose a review establishes a new timestamp meaning.
+Inside the checkout, every command works on its files rather than the
+installed copy. The setup and the test suite need no EMBED data. Read the
+[documentation map](docs/README.md), then [project scope](docs/project-scope.md),
+before changing catalog meaning.
 
-1. Identify the clinical object and what one instance represents. Reuse an
-   existing object when its clinical grain is unchanged.
-2. Check whether an existing concept already has the same meaning. Create a
-   new concept only when meaning changes, not merely because another profile
-   uses a different column. Put profile-specific meaning in that module's
-   `contributions` with the narrowest correct availability.
-3. Add or reuse a `temporal_semantic` record that states whether the value is
-   event, documentation, or availability time. Do not designate a universal
-   diagnosis date, coalesce different time meanings, or substitute an
-   unsupported proxy. Use a separately named endpoint or sensitivity analysis
-   when another time is genuinely part of the question.
-4. Add the narrowest reviewed `context-id#claim-id` and applicable source.
-   Preserve unresolved or contradicted status instead of smoothing it away.
-5. Declare physical columns once on their table, then add feature mappings only
-   when their meaning is supported. Use mapping status and scalar qualifiers
-   for direct, derived, conditional, ambiguous, or unresolved interpretations.
-   Keep object completeness, authority, and derivation independent; co-location
-   is inferred from shared tables. Use occurrence interpretations, instance
-   identity, and relationship-binding paths where applicable.
-6. Change the applicable semantic, profile, extension, or manifest schema only
-   when its serialized shape or an expressible invariant changes. Keep runtime
-   and schema validators in parity.
-7. Add focused synthetic unit tests, checked-in catalog acceptance assertions,
-   and interface tests for every changed CLI, Python, or MCP surface.
-8. Synchronize README, format, architecture, and agent instructions affected
-   by the change.
-9. Commit the coherent change with an informative
-   `type(scope): subject` message.
+For editor support, open the repository in VS Code with the recommended Red Hat
+YAML extension. `check` writes the editor schema, which autocompletes fields,
+controlled values, and link IDs as you type.
 
-Never add SQL, dataframe logic, executable cohort rules, preferred outcomes,
-empirical counts, distributions, or raw clinical data to the catalog. In an
-authorized environment, targeted source-data inspection may inform a specific
-semantic decision under the boundary below.
+## Where things live
 
-## Clone-safe validation
+- `catalog/` holds the documents and is the source of truth for catalog
+  content. `catalog/semantic/` is portable meaning; `catalog/internal-v2/` and
+  `catalog/open-v2/` are the profiles.
+- `model/` holds the structure (`kinds.yaml`, `links.yaml`, `values.yaml`),
+  search and read tuning (`query.yaml`), and the shared operations
+  (`operations.yaml`).
+- `templates/text/` holds the output layout.
+- `embed_context/` is the engine. It contains no catalog content.
+- The README and `docs/` explain these files. They must agree with them and
+  never override them.
 
-Run the complete baseline:
+See [Catalog format](docs/catalog-format.md) for the details.
+
+## Common edits
+
+Most edits need only an editor and `check`:
+
+| Edit | What to change |
+|---|---|
+| Correct a definition | One line in the document's file |
+| Remove a wrong link | Delete one line in the document that owns the link; the backlink disappears from the other |
+| Link two related documents | Add a `related:` entry to either one |
+| Insert an intermediate concept | Create it with `broader:` set to the old parent, then change the children's `broader:` values |
+| Map a new column | One column entry in the table file, plus a vocabulary file if its codes are new |
+| Add a controlled value | One line in `model/values.yaml` |
+| Add a link type | One entry in `model/links.yaml` |
+| Add a kind | One entry in `model/kinds.yaml`, then its files; the default template displays it, and a dedicated template is optional |
+| Rename an ID | Rename the file, then fix each broken link that `check` reports. Do not use a project-wide find-and-replace: some IDs, such as `image`, appear inside other IDs and in prose |
+
+Before adding a document, search for an existing object, feature, concept,
+claim, source, or vocabulary that already says it, and reuse it when the
+meaning is unchanged. Write a link in the document that owns it (see
+`model/links.yaml`); `check` names the owning side if you write it on the
+other.
+
+After an edit:
+
+```bash
+uv run --locked embed-context check
+```
+
+```bash
+uv run --locked embed-context read <id>
+```
+
+`read` shows the document with its links in both directions, so you can see
+that a link change appears from both ends. `embed-context render` writes linked
+Markdown pages of the whole catalog into the ignored `.embed-context/pages/`
+for browsing a neighborhood.
+
+## Validation
+
+The clone-safe baseline, which CI also runs:
 
 ```bash
 uv run --locked python -m unittest discover -v
-uv run --locked embed-context validate
-uv run --locked --no-dev --extra mcp python -m unittest \
-  tests.test_mcp_server -v
-uv run --locked --package embedv2-agent-context-curator python -m unittest \
-  discover -s packages/curator/tests -v
 ```
-
-`tests/test_catalog_schema.py` checks the current semantic and profile modules
-against Draft 2020-12 JSON Schema. Synthetic runtime tests cover independent
-column inventories, many-to-many mappings, inferred co-location, and same-table
-relationships. The core loader additionally enforces reference closure and
-semantic invariants.
-
-Use focused checks while iterating:
-
-| Change | Minimum focused checks |
-| --- | --- |
-| Catalog content or core query | `uv run --locked python -m unittest tests.test_catalog tests.test_catalog_integration -v` |
-| JSON Schema or loader validation | `uv run --locked python -m unittest tests.test_catalog_schema tests.test_catalog -v` |
-| CLI | `uv run --locked python -m unittest tests.test_cli -v` |
-| MCP adapter | `uv run --locked --no-dev --extra mcp python -m unittest tests.test_mcp_server -v` |
-| Packaging or entry points | Build both workspace distributions; inspect core exclusion and companion ownership; install base-only and combined wheels into temporary uv tool directories; run installed commands outside the checkout |
-| Source-profile verifier | `uv run --locked python -m unittest tests.test_source_profile -v` |
-| Local curation viewer | `uv run --locked --package embedv2-agent-context-curator python -m unittest discover -s packages/curator/tests -v` plus the root missing-extra CLI tests |
-
-For the packaging row, build the distributions independently:
 
 ```bash
-uv build
-uv build --package embedv2-agent-context-curator
+uv run --locked embed-context check
 ```
-
-The root wheel must contain no `embed_context_curator` files or browser assets.
-The companion wheel must contain its Python package and all files under
-`embed_context_curator/static`, and must declare the exact matching core
-version. Installed-tool acceptance covers a base-only environment and a
-combined environment containing both optional interfaces; isolated MCP and
-curator tests cover each extra separately. It also checks that base-only
-`curate` exits with the installation hint instead of an import traceback.
-
-## Local curation workbench
-
-The viewer lives in the `packages/curator` workspace member and is not included
-in the base wheel. After the workspace setup above, launch read-only review
-with `uv run --locked embed-context curate`. To curate, load and select exactly
-one source-tree or external schema-v8 module, for example:
 
 ```bash
-uv run --locked embed-context \
-  --extension-file project-configs/review.json \
-  curate --edit-module project-configs/review.json
+uv run --locked --no-dev --extra mcp python -m unittest tests.test_mcp_server -v
 ```
 
-Before saving, validate the current revision, compare baseline and draft query
-behavior, and inspect the exact source diff. A save is refused if any loaded
-module changed on disk. After saving, rerun the normal focused checks and
-clone-safe baseline, inspect `git diff`, and commit through the ordinary review
-flow. The viewer does not stage or commit files.
+Focused tests while iterating:
 
-Before committing, inspect `git diff`, stage only the coherent unit, and verify:
+| Area | Tests |
+|---|---|
+| Loading and checking | `tests.test_check`, `tests.test_yamlio`, `tests.test_yamlout` |
+| Views and templates | `tests.test_view` |
+| Search, read, and code | `tests.test_query`, `tests.test_retrieval` |
+| Operations and CLI | `tests.test_operations`, `tests.test_cli` |
+| MCP | `tests.test_mcp_server` (needs the `mcp` extra) |
+| Editor schema | `tests.test_schema` |
+| The real catalog | `tests.test_repository_catalog` |
+
+After editing `model/query.yaml`, run the retrieval evaluation and read its
+rankings:
 
 ```bash
-git status --short
-git log --oneline -3
+uv run --locked python -m tests.test_retrieval
 ```
 
-## Optional local-source investigation
+When a retrieval case fails, check whether the new order is still what an
+analyst needs before changing the case.
+
+Engine tests use a small fixture model and must not depend on what the real
+catalog contains. Tests of the real catalog check whole-catalog properties
+only, so catalog edits never require test edits.
+
+For packaging changes, build the wheel, check that it carries `model/`,
+`catalog/`, and `templates/` under `embed_context/_data/` and nothing from
+`tests/`, and test base-only and `mcp` installs in temporary `UV_TOOL_DIR` and
+`UV_TOOL_BIN_DIR` locations from outside the checkout. The CI package job does
+exactly this.
+
+## Local source investigation
 
 The ignored `reference_files/` directory may contain authorized internal V2
 tables, an older V1 Open Data dictionary, and release legends. Before reading
 source rows, write down the specific catalog question and use the smallest
 practical set of columns and records. Appropriate investigations include
-reconciling an existing dictionary entry with all represented categorical
-values, checking a sentinel interpretation, and testing a proposed row grain or
+reconciling an existing code list with all represented categorical values,
+checking a sentinel interpretation, and testing a proposed row grain or
 linkage. Broad profiling and general-purpose dataset summaries are out of
 scope.
 
@@ -218,60 +158,20 @@ values and their supported meanings belong in the catalog. Keep temporary
 scripts and outputs ignored or outside the checkout, and never commit anything
 under `reference_files/`.
 
-Use `observed_source_values` for evidence established by a targeted source-data
-observation. The claim's source and profile scope carry the release boundary;
-the evidence value is intentionally neutral across internal V1c, internal V2,
-and public representations.
+Use the evidence value `observed_source_values` for a targeted source-data
+observation. The document's module and its cited source carry the release
+boundary; the evidence value is neutral across internal V1c, internal V2, and
+public representations.
 
-For maintainer-reviewed structural packets, the optional
-[Fieldwork topology workflow](docs/fieldwork-topology-review.md) supplies a
-separate operator-run script. Its dependencies are not added to the core package.
-Run its synthetic acceptance checks without clinical data:
-
-```bash
-uv run --no-project --python 3.13 \
-  --with "$HOME/AgentFiles/projects/fieldwork" --with 'pyarrow==20.0.0' \
-  python -m unittest tests.test_clinical_topology -v
-```
-
-The normal test suite runs its dependency-free plan checks and skips optional
-packet execution checks when Fieldwork or its dataframe dependencies are absent.
-
-The [approved MagView round-one review](docs/magview-fieldwork-round1-review.md)
-also supplies a separate, question-specific custom topology helper. Its
-synthetic acceptance checks need neither Fieldwork nor clinical data:
-
-```bash
-python3 tests/test_magview_topology_followups.py -v
-```
-
-Only the maintainer runs that helper against the explicitly selected clinical
-input. Every output remains pending manual review before agent access.
-
-For an exact footer-only comparison, maintainers may run:
-
-```bash
-uv run --locked python scripts/validate_source_profile.py
-```
-
-This verifier remains footer-only and Parquet-only. It checks the selected
-profile's exact table-owned column inventory, types, and schema nullability; it
-does not validate keys, joins, cardinality, clinical meaning, represented
-values, or ROI geometry. It defaults to `open-v2` and cannot verify the internal
-V1c delimited-text image-metadata table, whose recorded types are assessed parse
-types rather than an embedded schema; do not widen the verifier to read text.
-`reference_files/` is not required for a fresh clone.
+0.10's Parquet footer verifier and fieldwork topology runners were removed in
+0.11; they read the old catalog format and remain at the `v0.10.0` tag.
 
 ## Continuous integration
 
-GitHub Actions runs the clone-safe core and companion baselines on Python 3.11,
-3.12, and 3.13 for every pull request and every push to `main`. A separate
-packaging job builds both distributions and verifies that the core wheel has no
-viewer modules or browser assets while the companion wheel owns all of them.
-It tests base-only and combined optional-interface tool installations outside
-the checkout, including the base CLI's missing-curator diagnostic; isolated
-test steps cover MCP and curator independently. The workflow never accesses
-EMBED data or `reference_files/`.
+GitHub Actions runs the clone-safe baseline on Python 3.11, 3.12, and 3.13 for
+every pull request and every push to `main`. A package job builds the wheel,
+checks its contents, and tests base-only and `mcp` tool installs outside the
+checkout. The workflow never accesses EMBED data or `reference_files/`.
 
 ## Pull request checklist
 
@@ -280,17 +180,9 @@ EMBED data or `reference_files/`.
 - Targeted source-data findings are reconciled with applicable current and
   historical references without copying raw data or empirical summaries.
 - Missing states, attribution, temporal meaning, aggregation, guardrails, and
-  coverage stay explicit.
-- Instance identity, occurrence-specific interpretations, and composed binding
-  paths have applicable evidence and do not promote row keys into clinical
-  identity.
-- Guardrails have the correct category and priority; exact-result constraints
-  and discovery intent boosts preserve stable IDs and explain their basis.
-- Tables own complete physical column metadata; semantic mappings do not repeat
-  type, nullability, or grain.
-- Profile/extension contributions have explicit or module-default availability.
-- JSON Schema and strict runtime validation agree where their responsibilities
-  overlap.
-- Examples, command counts, version axes, and cross-references are current.
-- Relevant focused tests and the full clone-safe baseline pass.
+  profile support stay explicit.
+- Guardrails have the correct category and priority.
+- Physical facts live on their table's columns; features do not repeat them.
+- `check` reports no findings, and the full baseline passes.
+- The README and `docs/` agree with changed files, commands, and IDs.
 - Completed changes are split into descriptive, granular commits.

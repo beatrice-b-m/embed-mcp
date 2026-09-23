@@ -2,21 +2,22 @@
 
 ## How to read the model
 
-Begin with a clinical object or question. Follow semantic relationships to
-adjacent objects, then inspect features, time meanings, aggregations,
-guardrails, and coverage. Consult a profile binding only after selecting the
-shared or profile-available concepts needed for the analysis.
+This page is an overview for people. The catalog's documents are
+authoritative, and where this page and a document differ, the document wins;
+read it with `embed-context read <id>`.
 
-A semantic relationship describes clinical meaning and attribution. A profile
-relationship binding describes how one release can approximate that
-relationship with tables and columns. Neither is executable join logic.
-When a semantic relationship needs several physical hops, an ordered binding
-path retains that composition and every step's hazards.
+Begin with a clinical object or question. Follow relationships to adjacent
+objects, then read features, time meanings, aggregations, guardrails, and
+profile support. Read a profile's tables and columns only after choosing the
+features an analysis needs.
 
-`open-v2` below is the stable profile ID for the registered open EMBED V2
-physical layout; it is not catalog schema version 2. See the README
-[glossary and version axes](../README.md#terms-and-version-axes) for the core
-terminology.
+A relationship describes clinical meaning and attribution. A profile's `join`
+documents describe how one release can approximate that relationship with
+tables and columns, and a `join_path` keeps a composition of several joins with
+each step's hazards. Neither is executable join logic.
+
+`open-v2` and `internal-v2` below are module IDs for the EMBED Open Data V2 and
+internal V2 representations.
 
 ## Breast-imaging objects
 
@@ -224,8 +225,8 @@ time without pretending it has the same meaning.
 The represented pathology severity is derived from the most severe attached
 pathology descriptor group. Side- and exam-level severity aggregates use the
 minimum numeric value because the scale is inverse. Open-v2 support for those
-two supplied rollups is recorded through profile-specific coverage and result
-feature bindings; `provided` does not imply that every future profile contains
+two supplied rollups is recorded through its profile support documents and
+column mappings; `provided` does not imply that every future profile contains
 the same fields.
 
 Internal-v2 maps its represented finding-associated pathology severity
@@ -271,7 +272,7 @@ remain unresolved. Probability calibration, Brier scores, and similar
 probability-based interpretations require those semantics to be validated
 first.
 
-Coverage records distinguish a documented unsupported or unresolved surface
-from a failed search. A `no_catalog_coverage` diagnostic means only that the
-portable catalog has no indexed record for the query; it is not evidence that
-the clinical concept is absent from EMBED or clinical care.
+Profile support documents distinguish a documented unsupported or unresolved
+surface from a failed search. A search with no results means only that no
+catalog document matched the query; it is not evidence that the clinical
+concept is absent from EMBED or clinical care.

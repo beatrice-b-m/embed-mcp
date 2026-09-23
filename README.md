@@ -1,7 +1,7 @@
 # embed-mcp
 
-Ask useful questions about the Emory Breast Imaging Dataset (EMBED) through CLI or MCP before
-turning tables into cohorts.
+Ask useful questions about the Emory Breast Imaging Dataset (EMBED) through a
+CLI or an MCP server before turning tables into cohorts.
 
 EMBED is a breast-imaging research dataset from Emory Healthcare containing
 screening and diagnostic mammography images, image metadata, and structured
@@ -11,580 +11,220 @@ the dataset, its organization, access requirements, and supporting resources.
 This project does not distribute the dataset or replace its official
 documentation and data-use terms.
 
-EMBED contains rich imaging, assessment, procedure, and pathology data, but its
-physical layout alone cannot tell you what a row means, whether two records can
-be attributed to each other, or which date is appropriate for a study. This
-project provides a reviewed, machine-queryable guide to those meanings.
-
-Use it to answer questions such as:
+EMBED's physical layout alone cannot tell you what a row means, whether two
+records can be attributed to each other, or which date suits a study. This
+project is a reviewed guide to those meanings, written as a graph of linked
+documents that people edit as plain text and agents navigate one link at a
+time. Use it to answer questions such as:
 
 - What does missing pathology mean?
 - Which breast-cancer outcome states are represented?
 - Can pathology be attributed to a particular imaging finding?
 - Which timestamps are event dates and which are documentation dates?
-- How does a clinical concept map to an EMBED V2 table and column?
+- How does a clinical feature map to a table and column in a dataset release?
 
 The catalog works without access to EMBED data. It contains no clinical rows,
-counts, distributions, or executable cohort definitions.
-
-Catalog maintainers working in an authorized environment may use narrowly
-scoped source-data inspection to resolve a specific representation question.
-That authoring evidence is reconciled against applicable dictionaries, legends,
-maintainer knowledge, and the
-[public EMBED documentation](https://docs.hitilab.com/datasets/embed); source
-rows and empirical summaries never become catalog content. See
-[project scope](docs/project-scope.md#local-source-investigation) for the
-boundary.
+counts, distributions, or executable cohort definitions. Maintainers working in
+an authorized environment may inspect source data narrowly to answer a specific
+representation question; source rows and empirical summaries never become
+catalog content (see [project scope](docs/project-scope.md#local-source-investigation)).
 
 ## Install
 
 You need [uv](https://docs.astral.sh/uv/getting-started/installation/). Install
-the lightweight catalog, Python API, and CLI directly from GitHub:
+the command from GitHub, with the `mcp` extra if an AI client will use it:
 
 ```bash
-uv tool install \
-  'embedv2-agent-context @ git+https://github.com/beatrice-b-m/embed-mcp.git'
+uv tool install 'embed-context[mcp] @ git+https://github.com/beatrice-b-m/embed-mcp.git'
 ```
 
-Add only the optional interfaces you need:
-
-```bash
-# Read-only stdio MCP server.
-uv tool install \
-  'embedv2-agent-context[mcp] @ git+https://github.com/beatrice-b-m/embed-mcp.git'
-
-# Local catalog curation web viewer.
-uv tool install \
-  --with \
-  'embedv2-agent-context-curator @ git+https://github.com/beatrice-b-m/embed-mcp.git#subdirectory=packages/curator' \
-  'embedv2-agent-context @ git+https://github.com/beatrice-b-m/embed-mcp.git'
-
-# Both optional interfaces.
-uv tool install \
-  --with \
-  'embedv2-agent-context-curator @ git+https://github.com/beatrice-b-m/embed-mcp.git#subdirectory=packages/curator' \
-  'embedv2-agent-context[mcp] @ git+https://github.com/beatrice-b-m/embed-mcp.git'
-```
-
-These commands create an isolated environment and install commands into uv's
-executable directory:
-
-- `embed-context` queries the catalog from a terminal or script.
-- `embed-context-mcp`, when the `mcp` extra is selected, lets an AI client
-  query the same catalog over stdio MCP.
-
-The `curator` extra installs the separate
-`embedv2-agent-context-curator` companion distribution. The base wheel contains
-neither its Python implementation nor its HTML, JavaScript, and CSS assets.
-The `curate` subcommand remains visible in base CLI help and reports the exact
-extra needed when the companion is absent.
-
-If uv says its executable directory is not on `PATH`, run:
-
-```bash
-uv tool update-shell
-```
-
-Then start a new shell and verify the installation:
+Leave out `[mcp]` for the CLI alone. For a reproducible installation, add a tag
+or commit after the URL, for example `embed-mcp.git@v0.11.0`. The catalog is
+bundled with the package, so the command works from any directory. If uv says
+its executable directory is not on `PATH`, run `uv tool update-shell` and start
+a new shell. Then check the installation:
 
 ```bash
 embed-context --version
-embed-context validate
 ```
-
-For a reproducible Git installation, select the root project at a tag or
-commit:
 
 ```bash
-uv tool install \
-  'embedv2-agent-context @ git+https://github.com/beatrice-b-m/embed-mcp.git@REV'
+embed-context check
 ```
-
-Add `[mcp]` after `embedv2-agent-context` when needed. A curator installation
-must install both projects from the same revision:
-
-```bash
-uv tool install \
-  --with \
-  'embedv2-agent-context-curator @ git+https://github.com/beatrice-b-m/embed-mcp.git@REV#subdirectory=packages/curator' \
-  'embedv2-agent-context @ git+https://github.com/beatrice-b-m/embed-mcp.git@REV'
-```
-
-Add the root package's `mcp` extra to the final argument when both optional
-interfaces are needed. Keeping both URLs at the same revision preserves the
-lockstep core/curator compatibility contract. To install from a local clone,
-run `uv tool install '.[curator]'` in the repository root.
-Contributors should instead use the workspace development environment described
-in [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Start with a clinical question
 
-You do not need to know a table name or catalog identifier:
+You do not need to know a table name or document ID:
 
 ```bash
-embed-context discover "What does absent pathology mean?" \
-  --profile open-v2 --limit 5
+embed-context search "what does absent pathology mean"
 ```
 
-Each match explains why it was returned and gives you a stable identifier.
-Follow that identifier with the matching exact command:
+Each result gives a document's ID, kind, label, one-line summary, the fields
+that matched, and the guardrails that apply to it. Read any ID for the whole
+document:
 
 ```bash
-embed-context guardrail guardrail.null-pathology-not-negative
+embed-context read guardrail.null-pathology-not-negative
 ```
 
-The result explains that pathology which is not attached through the represented
-field is not evidence of a negative diagnosis, benign disease, or complete
-follow-up. It also links to related concepts and reviewed provenance.
-
-Other useful starting points:
+A read shows the document's fields and its links in both directions. Linked
+documents appear by ID and label with a few key facts, such as a guardrail's
+priority or a claim's review status, and are never shown in full, so you choose
+what to read next. A table read lists its columns one line each; read one
+column in full by its address:
 
 ```bash
-# Understand represented cancer outcomes and when they become known.
-embed-context discover \
-  "How is breast cancer represented and when is it known?" --limit 5
-
-# Examine attribution between imaging findings and pathology.
-embed-context discover \
-  "pathology attribution to imaging findings" \
-  --kind semantic_relationship --kind guardrail --limit 5
-
-# Find candidate pathology timestamps.
-embed-context discover \
-  "Which timestamps could anchor pathology?" \
-  --kind temporal_semantic --limit 5
+embed-context read internal-v2.magview_all_cohorts_pacs_v2_anon#asses
 ```
 
-Discovery can return clinical objects, features, relationships, time meanings,
-aggregations, interpretation guardrails, coverage statements, and supporting
-context. A no-result response means the catalog has no indexed answer under
-the selected filters; it does not prove that a concept is absent from EMBED or
-clinical reality.
-
-## Move from meaning to implementation
-
-Start with shared or selected-profile clinical semantics. Once you know which
-concepts your work needs, inspect how the selected profile represents them:
+To learn what a represented value means where it is used:
 
 ```bash
-embed-context feature pathology.severity --include-codes
-embed-context object imaging_finding
-embed-context profile-table open-v2 exam_level_anon
-embed-context relationship-bindings \
-  --profile open-v2 \
-  --semantic-relationship clinical.finding-pathology-observation
+embed-context code imaging.assessment B
 ```
 
-Profile bindings describe tables, columns, physical associations, evidence,
-and known join hazards. They are not executable joins and do not choose an
-analysis policy for you.
+Every command prints text by default. Add `--format json` for the same facts as
+JSON. `embed-context --help` and `embed-context <command> --help` describe
+every option.
 
-Physical columns are inventoried independently from their semantic mappings.
-This lets unmapped columns remain visible during curation, allows renamed or
-derived columns to reuse a concept, and permits one occurrence to carry several
-explicitly ambiguous or conditional mappings. Co-located objects are computed
-from their shared table rather than declared as a special representation.
+## Modules
 
-Run `embed-context --help` to see all commands. The main navigation pattern is:
+The catalog has three modules:
 
-```text
-clinical question
-  -> discover
-  -> exact semantic record
-  -> related records and provenance
-  -> profile binding, if implementation detail is needed
-```
+| Module | Holds |
+|---|---|
+| `semantic` | Portable clinical meaning shared by every dataset release |
+| `internal-v2` | The internal EMBED V2 representation: the MagView clinical table, the internal V1c image metadata, and the hormone, procedure, and cancer history tables |
+| `open-v2` | The EMBED Open Data V2 representation |
 
-## Use structured output
-
-Put `--format json` before the subcommand for a stable response envelope:
+`search`, `read`, `code`, and `serve` load `internal-v2` and the `semantic`
+module it requires. Choose other modules with `--module`, which goes before the
+command and may be repeated:
 
 ```bash
-embed-context --format json discover \
-  "What does absent pathology mean?" --limit 5
+embed-context --module open-v2 search "pathology severity"
 ```
-
-Successful responses have `ok: true`, the command name, and a `data` object.
-Errors use the same envelope with `ok: false`, a structured error type, and a
-message. This makes the CLI suitable for scripts and agent tooling as well as
-interactive use.
-
-## Curate catalog modules locally
-
-Maintainers who installed the `curator` extra can open the temporary local
-metadata workbench without accessing EMBED data:
-
-```bash
-embed-context curate
-```
-
-The server binds only to `127.0.0.1`, opens an automatically allocated port,
-and stops with the command. Review mode is read-only. To edit, explicitly name
-one loaded filesystem-backed schema-v8 module:
-
-```bash
-embed-context \
-  --extension-file project-configs/review.json \
-  curate --edit-module project-configs/review.json
-```
-
-The companion workbench edits the authored module and validates it through the
-same catalog resolver and domain checks as normal loading. It compares real
-catalog discovery before and after the draft and displays the exact prospective
-bytes before an atomic save. It never serializes the effective catalog, reads
-clinical artifacts, runs git commands, or exposes a remote service. Use
-`--no-open` for manual browser launch.
 
 ## Connect an AI client
 
-The optional `embed-context-mcp` command exposes the catalog as thirteen
-read-only MCP tools. The client starts the command itself and communicates over
-standard input/output; you do not run the server in a separate terminal.
-
-Installing the MCP extra does not select a dataset profile. Profile selection
-happens when the server starts:
-
-- with no composition arguments, the bundled default catalog set loads only
-  `open-v2`;
-- `internal-v2` must be loaded explicitly; and
-- adding `--profile-file` without `--no-default-profiles` loads that profile
-  alongside the default `open-v2` profile rather than replacing it.
-
-The `profile` argument on individual MCP query tools filters contributions from
-an already loaded profile. It does not load a profile that was omitted at
-server startup.
-
-Confirm that the command is visible in the environment where your client
-starts:
-
-```bash
-command -v embed-context-mcp
-embed-context-mcp --version
-```
-
-### Codex
-
-Register the default `open-v2` server:
-
-```bash
-codex mcp add embed_context_open -- embed-context-mcp
-codex mcp list
-```
-
-Equivalent configuration:
-
-```toml
-[mcp_servers.embed_context_open]
-command = "embed-context-mcp"
-```
-
-The uv tool environment also contains the non-default `internal-v2` catalog
-set. Resolve its installed absolute path once, validate it, and pass it to a
-separately named Codex MCP server:
-
-```bash
-INTERNAL_CATALOG=$(find "$(uv tool dir)/embedv2-agent-context/lib" \
-  -path '*/site-packages/embed_context/_data/internal-v2-catalog-set.json' \
-  -print -quit)
-
-embed-context --catalog "$INTERNAL_CATALOG" validate
-
-codex mcp add embed_context_internal -- \
-  embed-context-mcp --catalog "$INTERNAL_CATALOG"
-codex mcp list
-```
-
-The validation output should report `profiles: internal-v2`. The environment
-directory retains the distribution name `embedv2-agent-context`; that package
-name is independent of the repository name. Re-resolve the path if the uv tool
-is removed and reinstalled into a different tool directory.
-
-Equivalent configuration, after replacing the placeholder with the absolute
-path printed by `printf '%s\n' "$INTERNAL_CATALOG"`:
-
-```toml
-[mcp_servers.embed_context_internal]
-command = "embed-context-mcp"
-args = [
-  "--catalog",
-  "/absolute/path/to/internal-v2-catalog-set.json",
-]
-```
-
-From a retained repository checkout, the source-tree manifest is an equivalent
-and simpler stable path:
-
-```bash
-codex mcp add embed_context_internal -- \
-  embed-context-mcp \
-  --catalog /absolute/path/to/embed-mcp/catalog/internal-v2-catalog-set.json
-```
-
-You may register `embed_context_open` and `embed_context_internal` at the same
-time. To replace an existing registration instead, remove or edit that MCP
-server and add it again with the desired startup arguments.
+`embed-context serve` runs a read-only MCP server over standard input and
+output, with three tools: `search`, `read`, and `code`. The client starts the
+command itself. The server's instructions list the critical guardrails and the
+modules' notices; other guardrails appear on every document they apply to.
 
 ### Claude Code
 
 ```bash
-claude mcp add --transport stdio --scope user \
-  embed-context -- embed-context-mcp
-claude mcp list
+claude mcp add --transport stdio --scope user embed-context -- embed-context serve
+```
+
+### Codex
+
+```bash
+codex mcp add embed_context -- embed-context serve
 ```
 
 ### OpenCode
 
-Add this local server to `opencode.json` or `opencode.jsonc`:
+Add this server to `opencode.json` or `opencode.jsonc`:
 
 ```jsonc
 {
   "$schema": "https://opencode.ai/config.json",
   "mcp": {
-    "servers": {
-      "embed_context": {
-        "type": "local",
-        "command": ["embed-context-mcp"]
-      }
+    "embed_context": {
+      "type": "local",
+      "command": ["embed-context", "serve"]
     }
   }
 }
 ```
 
-If a desktop client does not inherit your shell `PATH`, `uv tool dir --bin`
-prints uv's executable directory. Use the absolute path to
-`embed-context-mcp` in that client's configuration.
+For the Open Data V2 representation, register a second server with
+`embed-context --module open-v2 serve`. If a desktop client does not inherit
+your shell `PATH`, use the absolute path that `uv tool dir --bin` prints.
 
-Agents should begin with the MCP `discover` tool, follow returned identifiers
-with exact semantic getters, review the returned `constraints`, and inspect
-profile bindings only when they need release-specific implementation detail.
-For longitudinal pathology questions, candidate search follows the patient's
-timeline; the candidate pathology accession is not forced to equal the index
-exam accession.
+## Use it from Python
 
-## Use the Python API
-
-The Python package exposes the same validated, composable catalog set:
+Install the package as a normal dependency of your project, then:
 
 ```python
-from embed_context import load_catalog
+from embed_context.catalog import find_root, load_catalog
+from embed_context.query import Searcher, lookup_code, read
 
-catalog = load_catalog()
-matches = catalog.discover(
-    "absent pathology",
-    profile="open-v2",
-    limit=5,
-)
-guardrail = catalog.get_guardrail(
-    "guardrail.null-pathology-not-negative"
-)
+catalog = load_catalog(find_root(), ["internal-v2"])
+results = Searcher(catalog).search("most recent prior cancer")
+document = read(catalog, results["results"][0]["id"])
 ```
 
-The no-argument loader selects the bundled portable semantic catalog and the
-public `open-v2` profile, with no project extensions. External profile and
-extension modules are explicit and are never searched for automatically:
-
-```python
-catalog = load_catalog(
-    profile_paths=["catalog/profiles/internal-v2.json"],
-    extension_paths=["project-configs/derived-features.json"],
-    include_default_profiles=False,
-)
-```
-
-The CLI and MCP entry points expose the same composition controls with
-repeatable `--profile-file` and `--extension-file` options. Use
-`--no-default-profiles` to omit manifest-selected profiles and
-`--include-default-extensions` to opt into extensions selected by a custom
-manifest. Feature and code lookup accept `--profile` when several loaded
-profiles make vocabulary resolution ambiguous.
-
-Query results retain contribution origins, so portable meaning, released
-profile representation, and project-owned content remain distinguishable.
-Profiles and extensions may contribute availability-scoped objects, concepts,
-relationships, time semantics, aggregations, guardrails, and coverage rather
-than waiting for every meaning to become portable. Qualifications add evidence
-and caveats without mutating records; competing mappings remain separately
-addressable and surface as alternatives or ambiguity.
-
-Schema v8 is intentionally strict. Semantic schema 7, profile/extension schema
-1, and schema-v6 monoliths are rejected at startup rather than silently
-migrated. Update authored modules before loading them with software `0.10.0`.
-
-The non-default `internal-v2` working profile now inventories the wide
-`magview_all_cohorts_PACS_v2_anon` clinical table and binds distinct patient,
-partial-episode, exam, breast-side, finding, interpretation, procedure,
-putative specimen, and pathology objects alongside supported workflow meanings.
-Within this profile, `empi_anon` supports longitudinal patient identity,
-linked accessions are co-occurring exams in one imaging episode rather than
-prior or follow-up exams, and `(acc_anon, numfind)` identifies one clinical
-finding. A null finding side is bilateral and equivalent to `B`; either
-representation projects to both unilateral breast-side identities. Finding
-number `-9` is the synthetic contralateral BI-RADS 1/`N` finding added when a
-bilateral exam has only a unilateral non-negative finding row. Every anonymized
-date across EMBED tables and versions uses the same patient-specific shift;
-`studydate_anon` and `procdate_anon` are exam and procedure occurrence times,
-while `pdate_anon` remains provisional. Within a patient, each complete
-`(procdate_anon, type, bside)` tuple identifies one procedure. Every exam-level
-field is invariant within an accession; conflicts are data-quality errors.
-Specimen-level presence, completeness, reliability, identity, and cardinality
-remain unresolved and should not be relied upon. `path_severity` is the most
-severe group selected by the extraction's fixed mapping over `path1` through
-`path10`; a null severity with a populated descriptor or a represented value
-`6` is a data-quality error, not a clinical category.
-Unclear columns remain in the physical inventory without manufactured
-mappings, and absent curated Open V2 aggregates are not projected onto the
-internal table. Load `internal-v2` explicitly; it is not part of the public
-default manifest.
-
-Internal V2 also inventories `HormoneHist_anon`, `ProcedureHist_anon` (the
-`ProcHist` surface), and `CancerHist_anon`. Reviewed topology packets supply
-pandas parse types and observed grouping/code structure; maintainer confirmation
-supplies the omitted free-text `comment` column on every table. All columns are
-conservatively nullable, and no source text is included. HormoneHist and ProcHist
-reuse the reviewed patient-history meanings and category-dependent bindings.
-Their accession is recording context, not historical event time, and their
-tested patient/exam groupings do not identify history entries.
-
-CancerHist distinguishes patient history (`patient=1`) from relative history
-(`patient=0`); `rel` is a relationship category, not a unique relative ID.
-Cancer-code interpretations from the supplied draft dictionaries remain
-provisional; BRCA codes, timing, and relative identity remain unresolved.
-The review also records HormoneHist category/code discrepancies and ProcHist's
-unresolved `FA,SF` composition. See the
-[history packet review](docs/history-topology-review.md) for the evidence,
-supported mappings, and remaining gaps.
-
-The same profile also binds the image-metadata table, `metadata_all_cohorts_v1c`,
-whose rows describe one extracted breast-imaging DICOM image instance each. It
-carries the `image` object, co-located patient, exam, and image-derived
-breast-side projections, DICOM-derived attributes, pipeline-derived
-classifications, enrichment flags, and serialized per-image regions of
-interest. Its physical types are assessed parse types rather than an embedded
-schema, and every column is conservatively nullable. There is an important and
-deliberate version boundary: the clinical surface is internal V2 while the
-currently paired image metadata is the most recent internal **V1c** artifact,
-which covers every EMBEDv1 exam and patient. It remains narrower than clinical
-V2, so a clinical V2 exam with no matching image row
-is therefore outside current extraction coverage and is **not** an exam without
-images; an inner accession join silently discards those exams. `acc_anon`
-and `empi_anon` use the same cross-table exam and patient namespaces. Each
-accession belongs to exactly one patient; a cross-patient association is an
-invalid data-quality error and must not be retained as a valid link. The
-anonymized DICOM locator is intended to be present for every
-extracted image. Its filename is the anonymized SOP Instance UID, providing
-durable image identity within one dataset version; a missing path likely means
-anonymization failed before the de-identified file could be saved. V1c covers
-the DICOM objects associated with EMBEDv1 accessions after excluding secondary
-captures and screen saves, except ROI_SS and ROI_SSC annotation images retained
-solely for ROI extraction. Legacy PNG conversions and `has_pix_array` should
-not be used for current work; use the anonymized DICOM files. DICOM Burned In Annotation records
-whether the source declares sufficient burned-in annotation to identify the
-patient and acquisition date; it is a declaration, not pixel-data verification,
-and the catalogue prescribes no action from it.
-Columns parsed directly from DICOM elements retain their standard DICOM
-semantics; pipeline-derived fields require separate extraction evidence.
-Regions of interest are serialized collections on the image row rather than one
-row per region: the count, coordinate, frame-index, and depth-derivation
-collections are generated in tandem and aligned by position. Coordinates are
-inclusive `[y_min, x_min, y_max, x_max]` bounds in the attached DICOM
-pixel-array space: `[100, 200, 150, 250]` is 51×51 pixels and maps to
-`image[100:151, 200:251]` in NumPy. Curated coordinates are expected within
-the image bounds; residual out-of-bounds coordinates may be safely clipped.
-The annotations originate from radiologists during routine clinical care
-through multiple workflows, including direct coordinate extraction from
-annotation DICOM objects without pixel arrays and annotation extraction from
-ROI_SS/ROI_SSC screen captures. For some DBT ROIs an in-house model inferred
-frame depth, marked by `ROI_depth_derived`. No stable ROI identifier or
-cross-image correspondence is represented, and ROI-to-finding attribution is
-reliable only when one finding exists on that accession side.
-
-A uv tool installation is intentionally isolated and does not add
-`embed_context` to unrelated Python environments. Add the package as a normal
-dependency when importing it from another project.
+Results are the same views the CLI prints with `--format json`; see
+[Architecture](docs/architecture.md#views) for their shape.
 
 ## What the catalog will not decide
 
-This project supplies context for designing an analysis; it does not design
-the analysis itself. In particular, it does not:
+The catalog supplies context for designing an analysis; it does not design the
+analysis. It does not choose a cohort, diagnosis date, outcome window,
+exclusion, censoring, or aggregation policy; it does not turn physical
+co-location into clinical attribution; and it does not claim that an analysis
+is scientifically valid. The constraints on interpreting represented values
+are guardrail documents:
 
-- choose a cohort, diagnosis date, outcome window, exclusion rule, censoring
-  rule, or aggregation policy;
-- turn physical associations into guaranteed clinical attribution;
-- treat imaging assessment as pathology truth;
-- treat absent pathology as a negative outcome; or
-- claim complete outcome capture or scientific validity.
+```bash
+embed-context search "pathology" --kind guardrail
+```
 
-One important example is time. EMBED represents imaging exam dates, procedure
-dates, and pathology report dates with different meanings. The registered
-profile does not supply a supported specimen-collection time, and no candidate
-is designated as a universal diagnosis date. A missing selected endpoint stays
-missing: procedure and report dates must not be coalesced or fallback-substituted
-for one another. Separately named endpoints or sensitivity analyses can compare
-their implications. Downstream pathology can also leak future information into
-an earlier prediction target.
+## Upgrading from 0.10
 
-Risk outputs may support association or ranking questions while their scale,
-horizon, model version, exceptional values, or probability meaning remains
-unresolved. Probability calibration and Brier-score interpretation require
-those semantics to be validated first.
+Version 0.11 rebuilt the catalog and its engine. The catalog's clinical
+meaning is carried over, apart from the changes listed below; its encoding,
+IDs, commands, and tools are new.
 
-See the [clinical-semantic model](docs/clinical-semantic-model.md) for the
-outcome, attribution, time, aggregation, and uncertainty details that should
-inform study design.
+- **Reinstall under the new name.** The distribution is now `embed-context`
+  (it was `embedv2-agent-context`). Both provide an `embed-context` command, so
+  remove the old tool first:
 
-## Terms and version axes
+  ```bash
+  uv tool uninstall embedv2-agent-context
+  ```
 
-- A **clinical object** is an independently meaningful entity or observation.
-- A **feature** is shared or profile-available meaning owned by one or more
-  clinical objects.
-- A **semantic relationship** describes clinical adjacency or attribution.
-- A **profile binding** describes how a physical release represents a meaning.
-- A **physical column inventory** records a table's names, types, and schema
-  nullability independently of semantic mappings.
-- A **feature mapping** links one column occurrence to one concept with a
-  `direct`, `derived`, `conditional`, `ambiguous`, or `unresolved` status.
-- **Clinical instance identity** states how bound columns identify one
-  represented object instance and where that identity stops.
-- An **occurrence interpretation** qualifies the meaning of a value or null at
-  one physical feature occurrence.
-- A **binding path** composes ordered physical relationships that together
-  implement one portable semantic relationship.
-- A **guardrail** records a reusable interpretation constraint, not a policy.
-- **Resolved constraints** summarize supported facts, unresolved claims,
-  prohibited substitutions, required analyst choices, high-priority
-  guardrails, and relevant contexts for an exact result.
-- **Coverage** says what the catalog represents, not how complete the dataset
-  is empirically.
-
-The version numbers describe different things:
-
-| Axis | Current value |
-| --- | --- |
-| Software package and commands | `0.10.0` |
-| Semantic catalog schema | `8` |
-| Profile-module schema | `2` |
-| Extension-module schema | `2` |
-| Registered EMBED V2 physical profile | `open-v2` |
-| Optional MCP SDK dependency | `2.0.0` |
-| Optional curator companion | lockstep `0.10.0` |
+  Then install as described in [Install](#install).
+- **Update client configurations.** `embed-context-mcp` is replaced by
+  `embed-context serve`, which loads `internal-v2` by default. Replace
+  `embed-context-mcp --catalog <internal-v2-catalog-set.json>` with
+  `embed-context serve`, and a default (`open-v2`) server with
+  `embed-context --module open-v2 serve`.
+- **Commands and tools.** `discover` became `search`. The getters
+  (`get_feature`, `get_guardrail`, `get_context`, `get_profile_table`, and the
+  others) became `read`, which takes any document ID or entry address.
+  `lookup_code` became `code`. Physical relationship bindings are `join` and
+  `join_path` documents, and qualifications and coverage are `profile_support`
+  documents, all reached through `read` and `search`. `validate` became
+  `check`. Output is text unless `--format json` is given.
+- **IDs.** IDs that 0.10 derived from other records' IDs, such as bindings,
+  qualifications, coverage, and vocabularies, have new independent names.
+  [`docs/legacy-id-map.json`](docs/legacy-id-map.json) maps each changed 0.10
+  ID to its new address; IDs not listed are unchanged.
+- **Deliberate content changes.** Notes that described how the catalog was
+  built rather than EMBED were dropped or restated as EMBED facts; 16 portable
+  caveats contradicted by the internal V2 representation were removed; and
+  qualification summaries that only restated a status were dropped. Other
+  content was carried over with its meaning unchanged.
+- **Retired.** The curator viewer, the JSON Schemas, and the Python API of 0.10
+  are gone. The catalog is now plain YAML under `catalog/`, checked by
+  `embed-context check`.
 
 ## Learn more
 
-- [Documentation map](docs/README.md) — choose the shortest route for your role.
-- [Clinical-semantic model](docs/clinical-semantic-model.md) — understand the
-  clinical graph and interpretation limits.
-- [Catalog format](docs/catalog-format.md) — integrate with the serialized
-  model or Python, CLI, and MCP interfaces.
-- [Architecture v8](docs/architecture-v8.md) — understand the current scoped
-  contribution model, physical inventories, and effective query view.
-- [Architecture v7](docs/architecture-v7.md) and
-  [profile-module migration](docs/profile-module-migration.md) — review the
-  preceding ownership and typed-revision design as history.
-- [Architecture v6](docs/architecture-v6.md) — review the preceding monolithic
-  schema-v6 architecture.
-- [Contributing](CONTRIBUTING.md) — set up a development environment and make
-  catalog or code changes safely.
+- [Documentation map](docs/README.md): choose the shortest route for your role.
+- [Clinical-semantic model](docs/clinical-semantic-model.md): the clinical
+  graph and its interpretation limits.
+- [Catalog format](docs/catalog-format.md): how documents are written and
+  checked.
+- [Architecture](docs/architecture.md): how the engine reads the catalog and
+  answers questions, and why.
+- [Contributing](CONTRIBUTING.md): make catalog or code changes safely.
 
 Citation metadata is provided in [`CITATION.cff`](CITATION.cff). Cite the
-software version or commit SHA used, and cite EMBED separately according to the
+software version or commit used, and cite EMBED separately according to the
 dataset's documentation.

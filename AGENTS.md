@@ -1,13 +1,5 @@
 # Repository guidelines for agents
 
-> **`rebuild` branch.** This branch rebuilds the catalog and engine from the
-> ground up. `temp-docs/rebuild-contract.md` governs work here and takes
-> precedence over the rest of this file wherever they differ. The previous
-> implementation was removed from this branch and still runs from `main`,
-> which is the parity oracle. Its catalog JSON is kept under
-> `legacy/catalog/` as migration input. The rest of this file, the README,
-> and `docs/` still describe `main` until slice 7 rewrites them.
-
 ## Start here
 
 Read these in order before changing behavior or catalog meaning:
@@ -16,15 +8,13 @@ Read these in order before changing behavior or catalog meaning:
 2. `docs/README.md` for the role-based documentation map.
 3. `docs/project-scope.md` for normative clinical, evidence, portability, and
    safety boundaries.
-4. `CONTRIBUTING.md` for the worked change flow and validation matrix.
-5. `docs/catalog-format.md` and `docs/architecture-v8.md` when changing the
-   serialized model or query behavior.
+4. `CONTRIBUTING.md` for common edits and the validation matrix.
+5. `docs/catalog-format.md` and `docs/architecture.md` when changing the model,
+   the engine, or output.
 
-The current version axes are independent: software `0.10.0`, semantic catalog
-schema version `8`, profile-module schema version `2`, extension-module schema
-version `2`, registered public profile `open-v2`, and optional MCP SDK
-dependency `2.0.0`. The optional `embedv2-agent-context-curator` companion is
-versioned in lockstep with the core distribution.
+The software version is `0.11.0`, and the optional MCP SDK dependency is
+`mcp==2.0.0`. The catalog has no separate schema version: its structure is the
+`model/` directory.
 
 ## Working documents
 
@@ -33,72 +23,41 @@ implementation plan or a draft of one. They record in-progress decisions and
 open questions; they are not long-term reference documentation.
 
 - A working document governs only the in-progress work it describes. It never
-  overrides the structured catalog, the implementation, or `docs/`.
+  overrides the catalog, the implementation, or `docs/`.
 - Keep its decisions and open questions current as work proceeds, and record
   every change in its change log.
 - When the work finishes, move durable content into `docs/`, the README, or
   this file, then delete the working document.
-- Active: `temp-docs/rebuild-contract.md` is the contract for rebuilding the
-  catalog encoding and engine from the ground up. Read it before any rebuild
-  work.
 
 ## Canonical-source hierarchy
 
-- `catalog/semantic/catalog.json` is the source of truth for shared clinical
-  semantics, provenance, controlled values, and vocabularies.
-- `catalog/profiles/open-v2.json` is the source of truth for the released Open
-  V2 profile, its qualifications, evidence, coverage, and physical bindings.
-- `catalog/profiles/internal-v2.json` is the non-default working internal
-  profile. It covers the wide MagView clinical table; its procedure-level
-  representation is supported and its specimen-level reliability and identity
-  remain unresolved. It inventories `HormoneHist_anon`, `ProcedureHist_anon`
-  (the `ProcHist` surface), and `CancerHist_anon` from reviewed topology packets
-  plus confirmed free-text `comment` columns. Types are assessed parse types and all columns
-  are conservatively nullable. Hormone/procedure history accessions are
-  recording context, historical results are not verified current pathology,
-  and patient/exam groupings are not history-entry identities. CancerHist
-  `patient` distinguishes self (1) from relative (0); `rel` is a relationship
-  category, not a relative ID, and may be blank for a relative. Cancer-code
-  dictionaries remain provisional; BRCA encodings and temporal meanings are
-  unresolved. Preserve HormoneHist category/code discrepancies and ProcHist's
-  undocumented `FA,SF` composition; do not import other-table parsing rules.
-  See `docs/history-topology-review.md` for the evidence boundary.
-  It also covers the internal V1c
-  image-metadata table with
-  image, co-located patient/exam/side,
-  DICOM-attribute, modality, enrichment, and serialized region-of-interest
-  representations. The clinical surface is internal V2 while the paired image
-  metadata is the most recent internal V1c artifact, covers every EMBEDv1 exam
-  and patient, and is narrower than clinical V2, so an unmatched later clinical
-  exam means missing extraction coverage rather than missing images. The
-  ROI collections use inclusive `[y_min, x_min, y_max, x_max]` target-image
-  pixel bounds, normally curated in bounds with safe downstream clipping for
-  residual out-of-bounds values, and originate through multiple clinical
-  annotation workflows rather than only ROI_SS/ROI_SSC screen captures. The
-  `ImagesInAcquisition` column is informative for DBT images and represents
-  the number of frames or z-slices in the image, not the number of distinct
-  image instances in an acquisition group. The
-  patient and exam identifiers share their cross-table namespaces, every
-  accession belongs to exactly one patient, and any cross-patient association
-  is a data-quality error. The anonymized DICOM locator is intended for every
-  extracted image; its basename is the anonymized SOP Instance UID within one
-  dataset version, and a missing locator likely means anonymization failed
-  before the de-identified file could be saved.
-- `catalog/catalog-set.json` selects the bundled semantic and default profile
-  modules; version-matched schemas are standalone structural contracts.
-- `embed_context/catalog.py` implements strict parsing, cross-reference,
-  clinical-semantic, scope, and profile invariants.
+- `catalog/` is the source of truth for catalog content: `catalog/semantic/`
+  for portable clinical meaning, provenance, and hubs; `catalog/internal-v2/`
+  and `catalog/open-v2/` for each profile's tables, mappings, code lists,
+  support documents, and profile-specific meaning. `internal-v2` is the default
+  module; its contexts describe the MagView clinical table, the internal V1c
+  image metadata, and the hormone, procedure, and cancer history tables, with
+  their evidence boundaries. Read those contexts, rather than any summary, for
+  what the internal representation establishes.
+- `model/` is the source of truth for structure: kinds and fields, link types,
+  controlled values and their meanings, search and read tuning, and the shared
+  operations.
+- `templates/` is the source of truth for output layout.
+- `embed_context/` implements the model generically and contains no catalog
+  content, clinical wording, or search vocabulary.
 - README and `docs/` are manually synchronized explanations. They must agree
-  with the structured catalog and implementation but never override them.
+  with the catalog and implementation but never override them.
 - `docs/manual-review-batches.md` and `docs/open-v2-linkage-review.md` are
-  historical evidence records, not executable policy or general onboarding.
+  historical evidence records cited by catalog sources, not executable policy
+  or general onboarding. The other review records in `docs/` are historical
+  too.
 
-Search for existing objects, concepts, claims, sources, and vocabularies before
-adding stable IDs. Reuse shared semantics when meaning is unchanged. Profiles
-and extensions may add every semantic family with explicit or module-default
-availability; keep physical columns in table inventories and interpretations
-in stable-ID mappings. Typed revisions and legacy catalog loading are not part
-of schema v8.
+Search for existing objects, features, concepts, claims, sources, and
+vocabularies before adding an ID, and reuse them when meaning is unchanged.
+Write each link once, in the document that owns it; backlinks are computed.
+Keep physical facts on their table's columns and interpretations on the column
+or mapping they qualify. A document may link only within its module and the
+modules its module requires.
 
 ## Clinical-source investigation boundary
 
@@ -116,7 +75,7 @@ clinical source data narrowly to answer a specific catalog question.
   preferred analysis policy. Reconcile them with maintainer knowledge,
   applicable legends, dictionaries, and documentation.
 - Use the release-neutral evidence value `observed_source_values` for targeted
-  source observations. The containing profile, claims, and sources carry the
+  source observations. The containing module, claims, and sources carry the
   V1c, V2, public, or internal version boundary.
 - The V1 Open Data dictionary and public EMBED documentation are historical,
   non-comprehensive references. The V2 Open Data legend is a closer comparison
@@ -129,11 +88,6 @@ clinical source data narrowly to answer a specific catalog question.
 - `reference_files/` is ignored local material. Never add or commit any of its
   contents. Keep temporary investigation outputs there or outside the checkout
   and review staged changes for accidental clinical content.
-- `scripts/validate_source_profile.py` remains a footer-only, Parquet-only exact
-  schema verifier. Its narrow implementation must not be expanded into a row
-  reader or a delimited-text reader; separate, question-specific investigation
-  may be used during authorized catalog authoring. The internal V1c
-  image-metadata table is delimited text and is therefore outside its scope.
 - Treat release-schema and legend evidence as profile-specific. Public or
   historical material cannot silently fill a verified profile gap.
 - Do not turn guardrails or historical recipes into SQL, dataframe logic,
@@ -142,7 +96,7 @@ clinical source data narrowly to answer a specific catalog question.
 
 ## Environment and validation
 
-Set up all development dependencies and optional interfaces with:
+Set up all development dependencies and the MCP extra with:
 
 ```bash
 uv sync --locked --all-extras
@@ -152,46 +106,35 @@ The clone-safe baseline is:
 
 ```bash
 uv run --locked python -m unittest discover -v
-uv run --locked embed-context validate
-uv run --locked --no-dev --extra mcp python -m unittest \
-  tests.test_mcp_server -v
-uv run --locked --package embedv2-agent-context-curator python -m unittest \
-  discover -s packages/curator/tests -v
+uv run --locked embed-context check
+uv run --locked --no-dev --extra mcp python -m unittest tests.test_mcp_server -v
 ```
 
-Run focused tests while iterating:
+`CONTRIBUTING.md` lists focused tests by area. After editing
+`model/query.yaml`, run `uv run --locked python -m tests.test_retrieval` and
+read the rankings.
 
-- core/catalog: `tests.test_catalog tests.test_catalog_integration`
-- JSON Schema parity: `tests.test_catalog_schema`
-- CLI: `tests.test_cli`
-- MCP: `tests.test_mcp_server` with `--extra mcp`
-- curator companion: `packages/curator/tests` with
-  `--package embedv2-agent-context-curator`
-- footer verifier implementation: `tests.test_source_profile`
-
-Run `uv run --locked python scripts/validate_source_profile.py` only when the
-optional ignored artifacts are already present and footer verification is
-actually in scope.
-
-For packaging changes, build both workspace distributions. Verify that the core
-wheel contains the catalog resources and entry points but no curator
-implementation or browser assets, and that the companion wheel owns all viewer
-code and static resources. Test base-only and combined installs in temporary
-`UV_TOOL_DIR` and `UV_TOOL_BIN_DIR` locations from outside the checkout.
+For packaging changes, build the wheel and verify that it carries `model/`,
+`catalog/`, and `templates/` under `embed_context/_data/` and nothing from
+`tests/`. Test base-only and `mcp` installs in temporary `UV_TOOL_DIR` and
+`UV_TOOL_BIN_DIR` locations from outside the checkout.
 
 ## Change-specific interface checklist
 
-- Catalog or schema: update both validators where responsibilities overlap,
-  add parity and acceptance tests, and document shape/invariant changes.
-- Core getter/discovery: update Python, CLI, and MCP surfaces plus response
-  documentation and navigation examples.
-- CLI: test text output, JSON success and error envelopes, exit status, and
-  help.
-- MCP: test the advertised tool set, closed input schemas, read-only
-  annotations, generic structured output, dispatch, and stderr-only startup
-  errors.
-- Packaging: keep the bundled catalog/schema, console scripts, package version,
-  companion version, README install paths, and client configurations
+- Model: a new kind, field, link type, or value is an edit to `model/`; update
+  `docs/catalog-format.md` when the format's rules change. Engine tests use the
+  fixture model in `tests/helpers.py`, never the real catalog's content.
+- Catalog content: run `check`, and read the changed documents to confirm
+  links appear from both ends. Catalog edits need no test edits.
+- Output: templates may lay facts out but not drop them; the repository test
+  that text carries every fact must pass.
+- Operations: change `model/operations.yaml` and the handler table in
+  `embed_context/operations.py` together; the CLI and MCP are generated from
+  them. Test CLI text, JSON, exit status, and help, and the MCP tool set,
+  closed input schemas, read-only annotations, one text block per call, error
+  results, and stderr-only startup errors.
+- Packaging: keep the bundled data, console script, package version,
+  `CITATION.cff`, README install paths, and client configurations
   synchronized.
 - Any public interface change: update the relevant usage, format, and
   architecture documentation.
