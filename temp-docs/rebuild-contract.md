@@ -1,7 +1,8 @@
 # Catalog rebuild contract
 
 > **Status:** Draft. Slices 1–5 are closed. Slice 6 (CLI and MCP adapters)
-> is in progress; see section 9. Last updated 2026-09-23.
+> is built and awaiting maintainer review; see section 9. Last updated
+> 2026-09-23.
 >
 > This is a short-lived working document (see `AGENTS.md`, "Working
 > documents"). When the rebuild is complete, its durable content moves into
@@ -906,13 +907,10 @@ Resolved on 2026-09-23:
 - **Q1.9 Pattern content.** No executable code; pseudocode allowed (D1.23).
   How patterns relate to existing `aggregation` documents is settled in slice 2.
 
-Open:
+Resolved in slice 6:
 
-- **Q1.7 MCP response format** (deferred to slice 6). Return
-  template-rendered text as the primary MCP content (smaller and readable by
-  humans and models alike), JSON, or both? The maintainer will review this
-  in depth together with the agent when slice 6 starts; it is not decided
-  before then.
+- **Q1.7 MCP response format.** Text by default, with JSON on request, and
+  one content block per call (D6.1).
 
 ### 4.9 Prototype and exit criteria
 
@@ -1429,15 +1427,17 @@ rendering, and provide browsable review pages (D1.12).
 - links and backlinks as `{id, kind, label}` plus optional `facts`,
   `qualifiers`, `note`, and `local`.
 
-Keys with no content are left out. Templates format the view, and `--json`
-prints it unchanged, so text and JSON carry the same facts (D1.11).
+Keys with no content are left out. Templates format the view, and
+`--format json` (originally `--json`; D6.4) prints it unchanged, so text and
+JSON carry the same facts (D1.11).
 
 **D5.2 Meanings appear once. Accepted.**
 
-Controlled values on the document's own fields, and on its entries' fields,
-show their meaning inline. Values in link qualifiers and link facts repeat on
-every link, so their meanings appear once, in the response's `legend`. For
-example, `maps.mapping: direct`.
+Controlled values on the document's own fields show their meaning inline.
+Values in link qualifiers and link facts repeat on every link, so their
+meanings appear once, in the response's `legend`. For example,
+`maps.mapping: direct`. Revised by D6.2: entries' field values repeat too
+(every claim has a status), so their meanings also moved to the legend.
 
 **D5.3 Links carry key facts. Accepted.**
 
@@ -1502,6 +1502,166 @@ checks that every link on every page resolves.
 
 The maintainer closed slice 5 on 2026-09-23. Item 1 moves to slice 6.
 
+## 9. Slice 6: CLI and MCP adapters
+
+### 9.1 Scope
+
+Generate the CLI and the MCP server from one operation table, and settle the
+MCP response format (Q1.7) with the maintainer.
+
+### 9.2 Decisions
+
+The maintainer reviewed the options with the agent on 2026-09-23. The
+measurements behind D6.1: compact JSON is 1.35 to 2.5 times the size of
+text, in characters. The ratio is about 1.35 for a feature or guardrail read,
+1.3 for a search, and 2.5 for the MagView table (25k characters of text
+against 62k of JSON).
+
+**D6.1 MCP returns text by default and JSON on request. Accepted.**
+
+- Every operation takes `format`, `text` (the default) or `json`.
+- A call returns exactly one text block: the template-rendered text, or the
+  view as compact JSON.
+- No `structuredContent` or `outputSchema` is sent. The MCP specification
+  asks for the text block to repeat structured content as JSON, and clients
+  differ in which of the two they pass to the model. Sending one form means
+  every client passes the model one copy.
+- The templates the maintainer reviews are the text the agent reads.
+
+**D6.2 Text carries every fact of its view. Accepted.**
+
+- D1.11 let templates omit fields. Text is now the default output, so a
+  template may lay facts out but not drop them.
+- A repository test renders every node and every retrieval query, and checks
+  that each value of the view appears in the text. The only keys text may
+  omit are listed in `tests/helpers.py`: the locators (`file`, `line`, the
+  module ID), link kinds, field and group names, and the `local` and
+  `summary` markers. An entry's ID may be shown as its key.
+- To make this hold, templates now show link labels on claims and profile
+  support, record subfields with their meanings, guardrail category
+  meanings, key evidence, and each search result's matched fields.
+- Entries' value meanings move to the legend (revising D5.2).
+
+**D6.3 Three shared operations: `search`, `read`, and `code`. Accepted.**
+
+- `check`, `render`, `schema`, and `serve` are CLI-only.
+- `show` is renamed `read`, with no alias.
+
+**D6.4 One operation table. Accepted.**
+
+- `model/operations.yaml` declares each operation's description and
+  arguments, the output formats, and the server settings.
+- `embed_context/operations.py` connects each operation to the engine
+  (`_HANDLERS`). Loading fails, naming the file and line, if an operation
+  has no handler or its arguments differ from the handler's.
+- Both surfaces check arguments in the same code, with near-match
+  suggestions.
+- The CLI builds its subcommands, options, and help from the table. The
+  catalog is loaded first, so the help lists the searchable kinds, the loaded
+  modules, and the modules' notices.
+- `--json` became `--format json`, the same argument MCP takes.
+
+**D6.5 Server instructions come from the catalog. Accepted.**
+
+The legacy server wrote a paragraph of clinical guidance into its
+instructions in Python: absent pathology is not negative; an assessment is
+not pathology; grain changes need a policy; longitudinal search is
+patient-scoped; no date is a universal diagnosis date; do not coalesce
+timestamps; risk outputs are not calibrated probabilities. Each of these
+restates a guardrail. The rebuild renders the instructions with
+`templates/text/_instructions.md.j2` from:
+
+- how to use the three tools (interface text, in the template);
+- the loaded modules and their notices;
+- the documents that `server.instructions` in `model/operations.yaml`
+  selects, each with its label, key facts, and first sentence. The default
+  is every guardrail of priority critical or high.
+
+The read-only boundary ("does not produce SQL, pipelines, …") is now a
+notice on the semantic module (D1.8), shown in the instructions and in
+`--help`. No clinical wording is in code.
+
+**D6.6 The server loads `internal-v2` by default. Accepted.**
+
+- `server.modules` in `model/operations.yaml` sets the modules
+  `embed-context serve` loads. Each module also loads what it requires.
+- `--module` overrides the setting, for example
+  `embed-context --module open-v2 serve`.
+- The CLI's other commands still load every module by default.
+
+**D6.7 Input schemas are closed. Accepted.**
+
+- `additionalProperties: false` on every tool.
+- `kinds`, `modules`, and `format` are enums.
+- `topics` is a string checked against the catalog, with a suggestion.
+- Tools are annotated read-only, non-destructive, idempotent, and
+  closed-world.
+
+**D6.8 Errors. Accepted.**
+
+- A bad argument or unknown ID is a tool result with `isError` and the
+  CLI's message, so the agent can correct itself.
+- An unknown tool name is a protocol error.
+- `serve` refuses a catalog with errors.
+- All startup errors, including a missing `mcp` package, go to standard
+  error, because standard output carries the protocol.
+- CLI errors stay plain text on standard error in either format.
+
+**D6.9 Surface-specific wording. Accepted.**
+
+- Templates word hints through `command(operation)` and
+  `arg(operation, argument)`, which `Surface` supplies from the operation
+  table.
+- For example, search says "use --limit" on the CLI and "use limit" in MCP.
+  Table reads end their object and column lists with how to read one in
+  full.
+- Review pages use the CLI wording.
+
+**D6.10 Dependencies and scope. Accepted.**
+
+- `mcp==2.0.0` is the optional `mcp` extra, as on `main`. The CLI works
+  without it.
+- No MCP resources or prompts.
+- Large reads are accepted as they are: the MagView table is 25k characters
+  of text.
+
+### 9.3 Result
+
+- `embed-context serve` works over stdio. Started from `uv` in the worktree,
+  it initializes in about 1.7 seconds, and the first search builds the index
+  in about 0.2 seconds.
+- With the default modules, the instructions are about 7k characters, 21
+  guardrails.
+- 94 tests pass. The MCP tests drive the server through an in-process client
+  on the fixture catalog. They cover tools and schemas, one text block with
+  no structured content, JSON on request, error results, MCP wording,
+  catalog-derived instructions, and stderr-only startup errors.
+- Fixed on the way: the catalog listed modules it had not loaded, so search
+  accepted them as filters.
+
+To try the server from a client before packaging (slice 7), point it at the
+worktree:
+
+```json
+{"command": "uv", "args": ["run", "--locked", "--directory", "<worktree>", "--extra", "mcp",
+  "embed-context", "--root", "<worktree>", "serve"]}
+```
+
+### 9.4 Open items
+
+1. **Instruction length.** Critical and high guardrails give about 7k
+   characters, loaded into every session. Critical only would be 6
+   guardrails, about 2.6k with the rest of the instructions. This is one
+   line in `model/operations.yaml`.
+2. **Process wording in prose.** Two phrasings remain outside labels:
+   - "No completeness, sentinel, or longitudinal history-identity assertion
+     follows from the topology export." (seven key descriptions in the three
+     history tables)
+   - "SQL null equality differs from the null-as-state comparison used during
+     investigation." (`open-v2.join.combined-anon-side-projection`)
+3. **Packaging (slice 7).** The server needs `--root` until the data
+   directories are packaged.
+
 ## Change log
 
 - 2026-09-23: Created. Rebuild-wide contract, slice plan, and slice 1
@@ -1559,3 +1719,7 @@ The maintainer closed slice 5 on 2026-09-23. Item 1 moves to slice 6.
   link facts and the legend, per-kind templates, and review pages.
 - 2026-09-23: Rewrote four labels that described the catalog's own process
   (8.4, item 2). The maintainer closed slice 5.
+- 2026-09-23: Slice 6. Recorded D6.1–D6.10 and resolved Q1.7 with the
+  maintainer. D6.2 revises D5.2, and D6.4 renames `show` to `read` and
+  `--json` to `--format json` (D5.1). Added the operation table, the
+  generated CLI, and the MCP server.
