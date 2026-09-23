@@ -36,6 +36,22 @@ class RepositoryCatalogTests(unittest.TestCase):
                 render(REPOSITORY, view(self.catalog, address))
                 json.dumps(view(self.catalog, address))
 
+    def test_review_pages_link_only_to_pages_that_exist(self):
+        import os
+        import re
+        import tempfile
+
+        from embed_context.pages import write_pages
+        from embed_context.query import load_query_config
+
+        with tempfile.TemporaryDirectory() as directory:
+            target = write_pages(self.catalog, load_query_config(self.catalog), Path(directory) / "pages")
+            for page in target.glob("*.md"):
+                for link in re.findall(r"\]\(([^)]+)\)", page.read_text()):
+                    with self.subTest(page=page.name, link=link):
+                        # normpath, not resolve: a temporary directory may sit behind a symlink
+                        self.assertTrue(Path(os.path.normpath(target / link)).exists())
+
     def test_editor_schema_accepts_every_document(self):
         schema = build_schema(self.catalog)
         jsonschema.Draft7Validator.check_schema(schema)

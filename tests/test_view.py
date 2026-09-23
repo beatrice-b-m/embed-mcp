@@ -1,7 +1,7 @@
 import jinja2
 
 from embed_context.render import render
-from embed_context.view import UnknownID, view
+from embed_context.view import UnknownID, ViewOptions, view
 
 from tests.helpers import CatalogTestCase
 
@@ -39,16 +39,33 @@ class ViewTests(CatalogTestCase):
     def test_removing_a_link_removes_its_backlink(self):
         self.write("catalog/base/n1.yaml", "kind: note\nlabel: First\nstatus: open\n")
         catalog = self.load()
-        self.assertEqual(view(catalog, "topic.a")["backlinks"], [])
-        self.assertEqual(view(catalog, "n2")["backlinks"], [])
+        self.assertNotIn("backlinks", view(catalog, "topic.a"))
+        self.assertNotIn("backlinks", view(catalog, "n2"))
 
     def test_controlled_values_carry_their_meaning(self):
         fields = {f["name"]: f for f in view(self.load(), "n2")["fields"]}
-        self.assertEqual(fields["status"]["choices"], [{"value": "closed", "meaning": "Finished."}])
+        self.assertEqual(fields["status"], {"name": "status", "value": "closed", "meaning": "Finished."})
 
     def test_views_never_inline_linked_documents(self):
         link = view(self.load(), "n1")["links"][0]["links"][0]
         self.assertEqual(set(link), {"id", "kind", "label"})
+
+    def test_links_carry_configured_facts_with_meanings_in_the_legend(self):
+        data = view(self.load(), "topic.a", ViewOptions(link_facts={"note": ("status",)}))
+        self.assertEqual(data["backlinks"][0]["links"][0]["facts"], {"status": "open"})
+        self.assertEqual(data["legend"], {"note.status": {"open": "Still open."}})
+
+    def test_link_qualifiers_are_named_and_not_repeated_as_links(self):
+        self.write("catalog/base/n2.yaml", "kind: note\nlabel: Second\nstatus: closed\nrates:\n  - {id: n1, score: open, via: topic.a}\n")
+        data = view(self.load(), "n2")
+        self.assertEqual([group["name"] for group in data["links"]], ["rates"])
+        self.assertEqual(data["links"][0]["links"][0]["qualifiers"], {"score": "open", "via": "topic.a"})
+        self.assertEqual(data["legend"], {"rates.score": {"open": "Still open."}})
+
+    def test_links_within_the_document_are_marked_local(self):
+        self.write("catalog/base/n3.yaml", "kind: note\nlabel: Third\nstatus: open\nabout: ['#x']\nitems:\n  x:\n    label: X\n")
+        link = view(self.load(), "n3")["links"][0]["links"][0]
+        self.assertEqual((link["id"], link["local"]), ("n3#x", True))
 
     def test_unknown_id_suggests_a_near_match(self):
         with self.assertRaises(UnknownID) as raised:

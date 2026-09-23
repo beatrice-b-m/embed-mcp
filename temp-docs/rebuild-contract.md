@@ -1,7 +1,7 @@
 # Catalog rebuild contract
 
-> **Status:** Draft. Slices 1–3 are closed. Slice 4 (query layer) is complete
-> and awaiting maintainer review; see section 7. Last updated 2026-09-23.
+> **Status:** Draft. Slices 1–4 are closed. Slice 5 (output) is complete and
+> awaiting maintainer review; see section 8. Last updated 2026-09-23.
 >
 > This is a short-lived working document (see `AGENTS.md`, "Working
 > documents"). When the rebuild is complete, its durable content moves into
@@ -1410,6 +1410,93 @@ status in the link itself.
 3. **Carried over from slice 3:** a mapping's vocabulary is shown twice, and
    qualifier values are shown without their names.
 
+## 8. Slice 5: output
+
+### 8.1 Scope
+
+Make text and JSON output compact and readable, give every kind a good
+rendering, and provide browsable review pages (D1.12).
+
+### 8.2 Decisions
+
+**D5.1 One compact view model feeds text and JSON. Accepted.**
+
+`embed_context/view.py` documents the shape:
+
+- fields keyed by type (`text`, `texts`, `value` and `meaning`, `choices`,
+  `flag`, `map`, nested `fields`);
+- nested entries under `sections`, each with its `key`;
+- links and backlinks as `{id, kind, label}` plus optional `facts`,
+  `qualifiers`, `note`, and `local`.
+
+Keys with no content are left out. Templates format the view, and `--json`
+prints it unchanged, so text and JSON carry the same facts (D1.11).
+
+**D5.2 Meanings appear once. Accepted.**
+
+Controlled values on the document's own fields, and on its entries' fields,
+show their meaning inline. Values in link qualifiers and link facts repeat on
+every link, so their meanings appear once, in the response's `legend`. For
+example, `maps.mapping: direct`.
+
+**D5.3 Links carry key facts. Accepted.**
+
+`read.link_facts` in `model/query.yaml` lists the fields shown on every link
+to a document of a given kind:
+
+- a claim's `status`;
+- a guardrail's `priority`;
+- a support document's two statuses.
+
+Search results carry the same facts. A reader can triage links without
+opening them, which covers the legacy constraint groups (D4.8).
+
+**D5.4 Qualifiers are named, and link-valued qualifiers are not repeated. Accepted.**
+
+A mapping reads `mapping direct · vocabulary <id> · category column type`.
+Its vocabulary no longer appears a second time as its own link group; it
+remains a backlink (`mappings`) on the vocabulary.
+
+**D5.5 Templates. Accepted.**
+
+- The default template renders any kind.
+- Dedicated templates cover:
+  - features (representing columns first);
+  - tables (keys, objects, and columns one line each);
+  - contexts (claims with status, caveats, and sources);
+  - guardrails (statement and priority first);
+  - profile support (the two answers side by side).
+- Named templates render search results, code lookups, and the page index.
+- A test renders every node of the real catalog.
+
+**D5.6 Review pages. Accepted.**
+
+`embed-context render` writes one Markdown page per document, plus an
+index by module and kind, into the ignored `.embed-context/pages/`. The
+pages use the same templates. Templates print every link target through
+`ref()`, which returns the plain ID in terminal output and a relative
+Markdown link on pages. Each page links back to its source YAML file. A test
+checks that every link on every page resolves.
+
+### 8.3 Result
+
+| Read | Text | JSON |
+|---|---|---|
+| Median document | — | about 1.9k |
+| `imaging.assessment` | 2.0k | 2.7k |
+| Internal MagView table (152 columns) | 24k (was 43k) | 63k (was 117k) |
+| Search, 10 results | — | 8.9k (legacy `discover`: 237k–370k) |
+
+74 tests pass.
+
+### 8.4 Open items
+
+1. **MCP response format (Q1.7).** Text, JSON, or both, to be reviewed in
+   depth with the maintainer in slice 6. Both forms exist now.
+2. **Labels were not scanned for catalog-process wording.** For example,
+   the context label "Internal history packet representation review" still
+   describes a review. The earlier scan covered prose fields only.
+
 ## Change log
 
 - 2026-09-23: Created. Rebuild-wide contract, slice plan, and slice 1
@@ -1463,3 +1550,5 @@ status in the link itself.
   guarded the converter against overwriting hand edits.
 - 2026-09-23: Slice 4. Recorded D4.1–D4.8, and added search, code lookup,
   summarized reads, and the retrieval evaluation.
+- 2026-09-23: Slice 5. Recorded D5.1–D5.6, and added the compact view model,
+  link facts and the legend, per-kind templates, and review pages.

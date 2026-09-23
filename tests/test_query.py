@@ -74,10 +74,11 @@ class ReadTests(CatalogTestCase):
     def test_summarized_entries_show_only_listed_fields_and_no_backlinks(self):
         self.write("catalog/base/n.yaml", "kind: note\nlabel: N\nstatus: open\nitems:\n  a:\n    label: A\n    next: [b]\n  b:\n    label: B\n")
         data = read(self.load(), "n")
-        item = data["entries"][0]["nodes"][0]
+        item = data["sections"][0]["entries"][0]
         self.assertTrue(item["summary"])
         self.assertEqual([f["name"] for f in item["fields"]], ["label"])
-        self.assertEqual((item["links"], item["backlinks"]), ([], []))
+        self.assertNotIn("links", item)
+        self.assertNotIn("backlinks", item)
 
 
 class CodeLookupTests(unittest.TestCase):
