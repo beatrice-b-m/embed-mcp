@@ -130,13 +130,29 @@ class Catalog:
         return [node for node in self.nodes.values() if node.parent is None]
 
 
+BUNDLED_ROOT = Path(__file__).resolve().parent / "_data"
+
+
 def find_root(start: Path | None = None) -> Path:
-    """The nearest directory at or above ``start`` holding ``model/kinds.yaml``."""
+    """The catalog root to use when none is given.
+
+    The nearest directory at or above ``start`` holding ``model/kinds.yaml``
+    comes first, so a maintainer inside a checkout works on its files. An
+    installed package falls back to the copy bundled in its wheel, and a
+    source install to the repository it was installed from."""
     here = (start or Path.cwd()).resolve()
     for candidate in (here, *here.parents):
         if (candidate / "model" / "kinds.yaml").is_file():
             return candidate
+    for candidate in (BUNDLED_ROOT, Path(__file__).resolve().parents[1]):
+        if (candidate / "model" / "kinds.yaml").is_file():
+            return candidate
     raise FileNotFoundError("no catalog root found: expected a directory containing model/kinds.yaml")
+
+
+def is_bundled(root: Path) -> bool:
+    """Whether ``root`` is the read-only copy bundled in an installed wheel."""
+    return root.resolve() == BUNDLED_ROOT
 
 
 def load_catalog(root: Path, modules: list[str] | None = None) -> Catalog:

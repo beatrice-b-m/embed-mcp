@@ -17,7 +17,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from .catalog import Catalog, find_root, load_catalog
+from .catalog import Catalog, find_root, is_bundled, load_catalog
 from .operations import ArgumentError, Interface, Session, Surface, call, choices, load_interface
 from .pages import DEFAULT_PATH as PAGES_PATH
 from .pages import write_pages
@@ -27,6 +27,11 @@ from .view import UnknownID
 from .yamlio import YamlError
 
 _DESCRIPTION = "Human-editable clinical-semantic context for EMBED data."
+# Maintainer commands work on the whole catalog; the others load the
+# default modules from model/operations.yaml unless --module is given.
+_ALL_MODULE_COMMANDS = {"check", "render", "schema"}
+# Commands that write files, which the read-only bundled copy cannot take.
+_WRITING_COMMANDS = {"render", "schema"}
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -38,8 +43,8 @@ def main(argv: list[str] | None = None) -> int:
     try:
         root = known.root or find_root()
         modules = known.modules
-        if known.command == "serve" and not modules:
-            modules = list(load_interface(root).server_modules) or None
+        if not modules and known.command not in _ALL_MODULE_COMMANDS:
+            modules = list(load_interface(root).default_modules) or None
         catalog = load_catalog(root, modules)
         interface = load_interface(root, catalog)
     except (FileNotFoundError, ValueError) as error:
@@ -57,8 +62,12 @@ def main(argv: list[str] | None = None) -> int:
     session = Session(catalog, config, interface) if config else None
     args = _parser(catalog, interface, session).parse_args(argv)
 
+    bundled = is_bundled(catalog.root)
+    if args.command in _WRITING_COMMANDS and bundled:
+        print(f"embed-context: `{args.command}` writes files, so it needs a checkout; pass --root or run it inside one", file=sys.stderr)
+        return 2
     if args.command == "check":
-        return _check(catalog, write=not args.no_schema)
+        return _check(catalog, write=not args.no_schema and not bundled)
     if args.command == "schema":
         path = write_schema(catalog, args.output)
         print(f"Wrote {path.relative_to(catalog.root)}")
@@ -95,12 +104,12 @@ def main(argv: list[str] | None = None) -> int:
 
 
 def _global_options(parser: argparse.ArgumentParser) -> None:
-    parser.add_argument("--root", type=Path, help="catalog root (default: the nearest directory holding model/kinds.yaml)")
+    parser.add_argument("--root", type=Path, help="catalog root (default: the checkout containing the current directory, otherwise the catalog installed with this package)")
     parser.add_argument(
         "--module",
         dest="modules",
         action="append",
-        help="load only this module and the modules it requires; repeatable (default: every module, or for `serve` the modules in model/operations.yaml)",
+        help="load only this module and the modules it requires; repeatable (default: default_modules in model/operations.yaml; check, render, and schema load every module)",
     )
 
 

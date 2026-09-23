@@ -28,8 +28,9 @@ from .query import QueryError
 from .view import UnknownID
 
 MCP_INSTALL_HINT = (
-    "the MCP server needs the optional `mcp` dependency; install embed-context with its `mcp` extra, "
-    "for example `uv sync --extra mcp` in a checkout"
+    "the MCP server needs the optional `mcp` dependency; reinstall with the `mcp` extra, for example "
+    "`uv tool install --reinstall 'embed-context[mcp] @ git+https://github.com/beatrice-b-m/embed-mcp.git'`, "
+    "or run `uv sync --extra mcp` in a checkout"
 )
 SERVER_NAME = "embed-context"
 

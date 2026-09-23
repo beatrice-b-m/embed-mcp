@@ -123,8 +123,9 @@ read:
 
 # The fixture uses the real operation declarations, which name no catalog
 # content, with its own server settings.
-FIXTURE_SERVER = """server:
-  modules: [base]
+FIXTURE_SERVER = """default_modules: [base]
+
+server:
   instructions:
     - when: {kind: note, status: closed}
 
@@ -133,7 +134,7 @@ FIXTURE_SERVER = """server:
 
 def fixture_operations() -> str:
     real = (REPOSITORY / "model" / "operations.yaml").read_text(encoding="utf-8")
-    start, end = real.index("\nserver:\n") + 1, real.index("\n# The `format` argument")
+    start, end = real.index("\ndefault_modules:") + 1, real.index("\n# The `format` argument")
     return real[:start] + FIXTURE_SERVER + real[end + 1 :]
 
 

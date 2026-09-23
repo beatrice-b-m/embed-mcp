@@ -4,12 +4,12 @@ title: "embed-mcp"
 authors:
   - family-names: "Brown-Mulry"
     given-names: "Beatrice"
-version: 0.10.0
+version: 0.11.0
 repository-code: "https://github.com/beatrice-b-m/embed-mcp"
 url: "https://github.com/beatrice-b-m/embed-mcp"
 abstract: >-
-  A machine-queryable clinical-semantic catalog for the
-  Emory Breast Imaging Dataset.
+  A human-editable, machine-queryable catalog of how the Emory Breast
+  Imaging Dataset represents clinical meaning.
 keywords:
   - "EMBED"
   - "breast imaging"

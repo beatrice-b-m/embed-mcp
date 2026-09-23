@@ -1,9 +1,13 @@
 import contextlib
 import io
+import tempfile
+from pathlib import Path
+from unittest import mock
 
+from embed_context.catalog import find_root
 from embed_context.cli import main
 
-from tests.helpers import CatalogTestCase
+from tests.helpers import REPOSITORY, CatalogTestCase
 
 
 class CliTests(CatalogTestCase):
@@ -75,3 +79,36 @@ class CliTests(CatalogTestCase):
         code, _, err = self.run_cli("search", "alpha", "--format", "jsn")
         self.assertEqual(code, 1)
         self.assertIn("unknown format `jsn`; did you mean `json`?", err)
+
+    def test_writing_commands_refuse_the_bundled_copy(self):
+        with mock.patch("embed_context.cli.is_bundled", return_value=True):
+            code, _, err = self.run_cli("render")
+            self.assertEqual(code, 2)
+            self.assertIn("needs a checkout", err)
+            code, out, _ = self.run_cli("check")
+        self.assertEqual(code, 0)
+        self.assertNotIn("Editor schema", out)
+        self.assertFalse((self.root / ".embed-context").exists())
+
+    def test_operations_load_the_default_modules(self):
+        self.write("catalog/extra/module.yaml", "kind: module\nlabel: Extra\nmodule_type: profile\nrequires: [base]\n")
+        self.write("catalog/extra/topic.x.yaml", "kind: topic\nlabel: Alpha extra\n")
+        self.write("catalog/base/topic.a.yaml", "kind: topic\nlabel: Alpha hub\n")
+        _, out, _ = self.run_cli("search", "alpha")
+        self.assertNotIn("topic.x", out)  # default_modules is [base] in the fixture
+        _, out, _ = self.run_cli("--module", "extra", "search", "alpha")
+        self.assertIn("topic.x", out)
+        _, out, _ = self.run_cli("check", "--no-schema")
+        self.assertIn("in 2 modules", out)
+
+
+class RootTests(CatalogTestCase):
+    def test_a_checkout_is_found_from_inside_it(self):
+        (self.root / "catalog" / "base" / "deep").mkdir()
+        self.assertEqual(find_root(self.root / "catalog" / "base" / "deep"), self.root.resolve())
+
+    def test_outside_a_checkout_the_installed_catalog_is_used(self):
+        with tempfile.TemporaryDirectory() as elsewhere:
+            # In a source install the fallback is the repository itself; a
+            # wheel falls back to its bundled copy (embed_context/_data).
+            self.assertEqual(find_root(Path(elsewhere)), REPOSITORY)

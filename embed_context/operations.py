@@ -71,7 +71,7 @@ class Operation:
 class Interface:
     operations: dict[str, Operation]
     formats: dict[str, str]
-    server_modules: tuple[str, ...]
+    default_modules: tuple[str, ...]
     instruction_conditions: tuple[Condition, ...] = field(default=())
 
 
@@ -296,7 +296,7 @@ def load_interface(root: Path, catalog: Catalog | None = None) -> Interface:
         for index, raw in enumerate(server.get("instructions", [])):
             raw = _mapping(doc, raw, ("server", "instructions", index))
             conditions.append(parse_condition(doc, raw.get("when", {}), ("server", "instructions", index, "when"), catalog))
-    modules = tuple(_list(doc, server, "modules", ("server",))) if "modules" in server else ()
+    modules = tuple(_list(doc, data, "default_modules", ())) if "default_modules" in data else ()
     return Interface(operations, formats, modules, tuple(conditions))
 
 

@@ -1,6 +1,6 @@
 [project]
 name = "embed-context"
-version = "0.11.0.dev0"
+version = "0.11.0"
 description = "Human-editable clinical-semantic context for EMBED data"
 readme = "README.md"
 authors = [
@@ -37,3 +37,13 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["embed_context"]
+
+# The catalog travels with the package, so an installed command works
+# anywhere. embed_context.catalog.find_root falls back to this copy.
+[tool.hatch.build.targets.wheel.force-include]
+"model" = "embed_context/_data/model"
+"catalog" = "embed_context/_data/catalog"
+"templates" = "embed_context/_data/templates"
+
+[tool.hatch.build.targets.sdist]
+include = ["embed_context", "model", "catalog", "templates", "tests", "README.md", "LICENSE", "CITATION.cff"]
