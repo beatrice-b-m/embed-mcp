@@ -9,3 +9,6 @@ simulations
 __pycache__
 .ipynb_checkpoints
 .venv/
+
+# generated editor schema (written by `embed-context check`)
+.embed-context/

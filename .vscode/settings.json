@@ -1,0 +1,8 @@
+{
+  "yaml.schemas": {
+    "./.embed-context/schema.json": ["catalog/**/*.yaml"]
+  },
+  "yaml.completion": true,
+  "yaml.hover": true,
+  "yaml.validate": true
+}
