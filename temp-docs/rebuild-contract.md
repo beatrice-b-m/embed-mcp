@@ -1757,7 +1757,7 @@ diagnostic, which 0.10 had and slice 4 dropped.
 
 ### 10.3 Result
 
-- 97 tests pass, and `check` reports no problems.
+- 99 tests pass, and `check` reports no problems.
 - The wheel holds the 668 data files and no legacy, migration, or test files.
 - Base-only and `mcp` installs work from outside the checkout. Every README
   command was run against the installed wheel.
