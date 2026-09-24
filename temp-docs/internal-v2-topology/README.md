@@ -256,7 +256,9 @@ line by line or withheld.
 
 ## Fieldwork observations from this preparation
 
-These limits shaped the design; they are candidates for Fieldwork issues:
+These limits shaped the design. They are filed as Fieldwork issues
+[#14](https://github.com/beatrice-b-m/fieldwork/issues/14)–[#20](https://github.com/beatrice-b-m/fieldwork/issues/20)
+(items 1–7 below, in order):
 
 1. Topology keeps context-availability and entity-pattern findings but drops
    their state. Entity patterns are emitted for all five patterns whether or not
@@ -299,3 +301,4 @@ These limits shaped the design; they are candidates for Fieldwork issues:
 
 - 2026-09-23: Gap assessment against internal-v2 and open-v2; packets M01–M11,
   V01–V06, H01–H04; runner, guards, synthetic self-test.
+- 2026-09-23: Filed the Fieldwork observations as fieldwork#14–#20.
