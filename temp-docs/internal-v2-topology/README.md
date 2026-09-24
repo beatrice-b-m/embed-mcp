@@ -283,10 +283,12 @@ Still custom, because topology does not carry the state:
 
 - Whether a column is entirely empty, and whether key components are ever
   incomplete: the per-column global `availability` finding has no
-  all/some/none state in topology (unlike context availability).
+  all/some/none state in topology (unlike context availability). Filed as
+  [fieldwork#22](https://github.com/beatrice-b-m/fieldwork/issues/22).
 - Character shapes with run lengths.
 - Cross-table checks (membership, agreement, candidate rules), since Fieldwork
-  analyzes one frame at a time.
+  analyzes one frame at a time. Requested as
+  [fieldwork#23](https://github.com/beatrice-b-m/fieldwork/issues/23).
 
 ## Decisions
 
@@ -317,3 +319,5 @@ Still custom, because topology does not carry the state:
   mixed-presence states; key uniqueness uses native roles; `safe_errors` on
   every call; `min_count` on joint counts; approximate implications reported;
   feature probe before running. Shapes stay custom (run lengths).
+- 2026-09-23: Filed fieldwork#22 (per-column availability state) and #23
+  (cross-table checks).
