@@ -31,15 +31,22 @@ def _formats(ctx: Context, name: str, frame: pd.DataFrame, table: str, columns: 
             records.extend(pr.padding(frame[column], question, column))
 
 
-def _row_structure(frame: pd.DataFrame, table: str, question: str,
-                   candidates: dict[str, list[str]]) -> list[dict]:
-    """Exact duplicate rows (all projected columns) and candidate-key repetition."""
-    records = [{"question": question, "check": "two rows equal in every column",
-                "population": f"all {table} rows",
-                "state": "repeated" if bool(frame.duplicated().any()) else "unique"}]
+def _row_structure(ctx: Context, name: str, frame: pd.DataFrame, table: str,
+                   candidates: dict[str, list[str]]) -> None:
+    """Roles of candidate history-row keys; the all-column key tests exact duplicates.
+
+    Tuple candidates need every component populated. The all-column candidate is a
+    row hash instead, so blank cells count as values and only exact duplicates repeat.
+    """
+    keys = {}
     for label, key in candidates.items():
-        records.append(pr.uniqueness(frame, key, question) | {"variant": label})
-    return records
+        if label.startswith("all columns"):
+            keys[label] = pd.util.hash_pandas_object(frame[key], index=False).astype("string")
+        else:
+            keys[label] = pr.key_column(frame, key)
+    steps.key_roles(ctx, name, keys,
+                    f"{table}: candidate key roles over complete rows (blank components make "
+                    "a key incomplete).", table)
 
 
 # -- H01 HormoneHist -------------------------------------------------------------------
@@ -52,10 +59,11 @@ def h01(ctx: Context) -> None:
     df = ctx.frame("hormone")
     t = "HormoneHist_anon"
     q = "How are HormoneHist rows, codes, ages, calendar parts, duration, and status encoded?"
-    records = _row_structure(df, t, q, {
+    records: list = []
+    _row_structure(ctx, f"{ctx.packet.id.lower()}-key-roles", df, t, {
         "(acc_anon,type,code)": ["acc_anon", "type", "code"],
         "(empi_anon,type,code)": ["empi_anon", "type", "code"],
-        "all columns except comment": [c for c in H_COLUMNS if c in df.columns]})
+        "all columns except comment (row hash)": [c for c in H_COLUMNS if c in df.columns]})
     time = ["first_age", "last_age", "duration", "mfirst", "yfirst", "mlast", "ylast"]
     _formats(ctx, "h01-shapes", df, t, time, q, records)
     for column in ("first_age", "last_age"):
@@ -124,10 +132,11 @@ def h02(ctx: Context) -> None:
     t = "ProcedureHist_anon"
     time = ["age", "pdatealt", "month", "year"]
     q = "How are ProcHist rows, codes, results, and time fields encoded and related?"
-    records = _row_structure(df, t, q, {
+    records: list = []
+    _row_structure(ctx, f"{ctx.packet.id.lower()}-key-roles", df, t, {
         "(acc_anon,type,pcode)": ["acc_anon", "type", "pcode"],
         "(empi_anon,type,pcode,side)": ["empi_anon", "type", "pcode", "side"],
-        "all columns except comment": [c for c in P_COLUMNS if c in df.columns]})
+        "all columns except comment (row hash)": [c for c in P_COLUMNS if c in df.columns]})
     _formats(ctx, "h02-shapes", df, t, time, q, records)
     records += pr.probes(df["age"], AGE_PROBES, q, "age")
     records.append(pr.outside(df["age"], 0, 110, q, "age", "[0, 110]"))
@@ -185,11 +194,12 @@ def h03(ctx: Context) -> None:
     df = ctx.frame("cancer")
     t = "CancerHist_anon"
     q = "How are CancerHist rows, subject, codes, flags, BRCA, and time fields encoded?"
-    records = _row_structure(df, t, q, {
+    records: list = []
+    _row_structure(ctx, f"{ctx.packet.id.lower()}-key-roles", df, t, {
         "(acc_anon,patient,rel)": ["acc_anon", "patient", "rel"],
         "(acc_anon,patient,rel,type,cancercode)": ["acc_anon", "patient", "rel", "type",
                                                    "cancercode"],
-        "all columns except comment": [c for c in C_COLUMNS if c in df.columns]})
+        "all columns except comment (row hash)": [c for c in C_COLUMNS if c in df.columns]})
     time = ["month", "year", "diag_age", "curr_age"]
     _formats(ctx, "h03-shapes", df, t, time, q, records)
     for column in ("diag_age", "curr_age"):

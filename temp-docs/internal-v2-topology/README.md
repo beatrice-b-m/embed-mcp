@@ -9,7 +9,7 @@ catalog, the implementation, or `docs/`.
 
 Close the structural gaps in `catalog/internal-v2/` that the data can answer
 without disclosing counts or distributions, using
-[Fieldwork](https://github.com/beatrice-b-m/fieldwork) 0.3.0 topology exports
+[Fieldwork](https://github.com/beatrice-b-m/fieldwork) topology exports (main at `50f8839` or later)
 plus a small set of custom qualitative checks. Every question follows the
 clinical-source investigation boundary in `AGENTS.md`: a stated question, only
 the columns it needs, no counts, no rows, no identifiers, no dates.
@@ -182,11 +182,13 @@ uv run --no-project --python 3.13 \
   which repeats more), M01–M11 took about 6.5 minutes in total (M08 about
   2.5 minutes) with a 2.5 GB peak resident set. Scale roughly linearly.
 - `--max-levels` (default 300) withholds value lists of columns with more
-  distinct values; `--min-count` (default 1) drops listed values and census
-  paths seen in fewer rows (joint co-occurrence cells and custom states are not
-  affected); `--approx` (default 0.95) is the approximate-dependency threshold.
-- Progress on stderr names packets only. A failed packet records the exception
-  type and script locations; messages are redacted.
+  distinct values; `--min-count` (default 1) drops listed values, census paths,
+  and co-occurrence cells seen in fewer rows, marking them as omitted (custom
+  states are not affected); `--approx` (default 0.95) is the
+  approximate-dependency threshold.
+- Progress on stderr names packets only. A failed Fieldwork call is recorded
+  with its safe `AnalysisError` message (operation, phase, column, exception
+  type); any other failure records only its type and script locations.
 
 Self-test on fabricated data (no EMBED data):
 
@@ -204,26 +206,28 @@ Per packet directory:
   settings, output list, status, and a `review` block (`pending`).
 - `*.topology.json` / `*.topology.txt`: Fieldwork exports produced only by
   `visualization_data(..., detail="topology")` and
-  `render_plaintext(..., detail="topology")`. The JSON also keeps
-  exact/approximate dependency patterns that the text omits.
+  `render_plaintext(..., detail="topology")`. Findings keep qualitative
+  `strength`, `repeated_support`, and `presence`; candidate keys keep `role`.
 - `*.states.json`: custom records, `native_fieldwork: false`. `state` is one of
   a fixed vocabulary (`all/some/none/undefined`, `present/absent`,
   `unique/repeated`, `holds/fails`, withheld markers). Other fields are column
   names or script-authored text; `probe` values come from the packet's own
   sentinel candidate list.
 - `disclosed-values.tsv`: every value label that the packet's Fieldwork exports
-  carry (codes, shapes, small sentinel numbers, context predicates).
+  carry (codes, shapes, small sentinel numbers, context predicates, and any
+  value-pattern formats).
 
 Guards enforced in `core.py`:
 
-- Value-bearing Fieldwork exports (`levels`, `census`, `joint_counts`, pair
-  absence examples, `by` contexts) are refused unless every labelled column is
+- Value-bearing Fieldwork exports (`levels`, `census`, `joint_counts`,
+  value-pattern formats, pair absence examples, `by` contexts) are refused unless every labelled column is
   declared `controlled` by the packet. Identifiers, dates, ages, measurements,
   and free text are never declared; they appear only as shapes (character
   classes with run lengths, truncated after eight runs) or qualitative states.
 - Columns with more distinct values than `--max-levels` are withheld.
+- Every Fieldwork call runs with `safe_errors=True`.
 - No counts, fractions, row positions, fingerprints, source paths, or
-  exception messages are written.
+  unsafe exception messages are written.
 
 What remains disclosive and needs review: controlled code labels (including
 rare codes), shapes, which script probes are present, and qualitative
@@ -245,8 +249,11 @@ line by line or withheld.
 
 - Observations establish what this delivery represents, recorded as
   `observed_source_values` in internal-v2; not clinical meaning or guarantees.
-- Exactness under a key needs the repeated-support state to be `present`;
-  otherwise it is trivial.
+- Exactness under a key needs `repeated_support: true` on the finding;
+  otherwise it holds only because every key group is one row (the text export
+  says so).
+- `strength: approximate` implications and dependencies hold on at least 0.9
+  (implications) or `--approx` (dependencies) of evaluated units, not all.
 - `undefined` is not negative evidence; `withheld_*` is not absence.
 - Retained availability signatures are capped (128 or 256) and chosen by frequency
   internally; an unlisted combination is not proof of absence when the cap is
@@ -254,37 +261,40 @@ line by line or withheld.
 - Script probes only test the listed candidates; `absent` says nothing about
   other sentinels.
 
-## Fieldwork observations from this preparation
+## Fieldwork requirements and remaining limits
 
-These limits shaped the design. They are filed as Fieldwork issues
+The packets need Fieldwork `main` at `50f8839` or later: the fixes for
 [#14](https://github.com/beatrice-b-m/fieldwork/issues/14)–[#20](https://github.com/beatrice-b-m/fieldwork/issues/20)
-(items 1–7 below, in order):
+landed after the 0.3.1 release commit, so the version string still reads 0.3.1.
+`run_packets.py` probes the features and refuses an older build. How each fix is
+used:
 
-1. Topology keeps context-availability and entity-pattern findings but drops
-   their state. Entity patterns are emitted for all five patterns whether or not
-   any entity matches, so in topology they carry no information. The packets
-   use condition-indicator columns and availability signatures instead.
-2. Missingness implications and similarities do not say exact or approximate
-   in topology; the packets set both thresholds to 1.
-3. Plain-text topology omits the dependency pattern (exact vs approximate); the
-   JSON keeps it.
-4. Standalone dependency and grain topology drop candidate roles and support,
-   so trivial exactness (singleton groups) is indistinguishable; the packets
-   add a repeated-support state per key and target.
-5. Value-pattern topology drops formats entirely; the packets derive
-   character-class shapes and list them through `levels`.
-6. `joint_counts` has no small-cell option (`levels` and `census` have
-   `min_count`).
-7. Exceptions from pandas inside Fieldwork can echo values; the runner redacts
-   them. A Fieldwork-level safe-error mode would help.
+| Issue | Fieldwork change | Use in the packets |
+| --- | --- | --- |
+| #14 | Context availability keeps `presence` (all/some/none); unmatched entity patterns are not findings | `conformity` exports native entity presence patterns per key (replaces the custom mixed-presence state) |
+| #15 | Implications and similarities keep `strength` | Presence tables use the default thresholds and report approximate implications, labelled |
+| #16 | "approximately determines" in every output | Plain-text exports are complete for review |
+| #17 | Dependency findings keep `strength` and `repeated_support`; candidates and grain keys keep `role` | Replaces the custom repeated-support state; key uniqueness (including exact duplicate rows, via a row-hash key) comes from native candidate roles |
+| #18 | Value-pattern topology keeps string formats | Not used: formats collapse run lengths (`9-9-9`), and these questions need them (`9{4}-9{2}-9{2}`, two- vs four-digit years), so shapes stay custom. The guard treats value-pattern formats as value labels |
+| #19 | `joint_counts(min_count=...)` | `--min-count` now also omits rare co-occurrence cells, marked as omitted |
+| #20 | `safe_errors=True`, `AnalysisError` | Every Fieldwork call uses it; the manifest records the safe message (operation, phase, column, exception type) |
+
+Still custom, because topology does not carry the state:
+
+- Whether a column is entirely empty, and whether key components are ever
+  incomplete: the per-column global `availability` finding has no
+  all/some/none state in topology (unlike context availability).
+- Character shapes with run lengths.
+- Cross-table checks (membership, agreement, candidate rules), since Fieldwork
+  analyzes one frame at a time.
 
 ## Decisions
 
 - Working location: `temp-docs/internal-v2-topology/`, as short-lived
   investigation tooling; delete it when the round's findings are in the catalog.
 - One packet per question cluster, loading only its columns.
-- Custom checks only where Fieldwork topology loses the needed state; every
-  custom output is labelled `native_fieldwork: false`.
+- Custom checks only where Fieldwork topology lacks the needed state (see
+  "Remaining limits"); every custom output is labelled `native_fieldwork: false`.
 - Blank strings count as missing for presence and grain tests (structural
   convention only); value domains keep blanks visible.
 - Candidate rules (finding totals, duration units, laterality derivation, date
@@ -302,3 +312,8 @@ These limits shaped the design. They are filed as Fieldwork issues
 - 2026-09-23: Gap assessment against internal-v2 and open-v2; packets M01–M11,
   V01–V06, H01–H04; runner, guards, synthetic self-test.
 - 2026-09-23: Filed the Fieldwork observations as fieldwork#14–#20.
+- 2026-09-23: Adopted the fixes (Fieldwork main `50f8839`): native strength,
+  repeated support, roles, and entity presence replace the custom support and
+  mixed-presence states; key uniqueness uses native roles; `safe_errors` on
+  every call; `min_count` on joint counts; approximate implications reported;
+  feature probe before running. Shapes stay custom (run lengths).

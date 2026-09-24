@@ -105,21 +105,22 @@ def m01(ctx: Context) -> None:
     q = "Which MagView row, finding, procedure, and specimen tuples repeat or are incomplete?"
     records = []
     hashes, presence = ctx.scan("magview")
-    records.append({"question": q, "check": "two rows equal in every column (hash-equal)",
-                    "population": "all rows",
-                    "state": "repeated" if bool(hashes.duplicated().any()) else "unique"})
     for column, state in presence.items():
         records.append({"question": "Which source columns are entirely empty?",
                         "check": "column populated (blank strings count as missing)",
                         "population": "all rows", "variant": column, "state": state})
     numfind = pr.numeric(df["numfind"])
-    for label, key in {**F, **P, "specimen-row-locator": SPECIMEN,
-                       "F+side": ["acc_anon", "numfind", "side"]}.items():
-        records.append(pr.uniqueness(df, key, q) | {"variant": label})
+    candidates = {**F, **P, "specimen-row-locator": SPECIMEN,
+                  "F+side": ["acc_anon", "numfind", "side"]}
+    keys = {"row hash (all columns)": hashes.astype("string").set_axis(df.index)}
+    for label, key in candidates.items():
+        keys[label] = pr.key_column(df, key)
         records.append(pr.incomplete_keys(df, key, q) | {"variant": label})
+    keys["F, numfind > 0"] = pr.key_column(df, F["F=(acc_anon,numfind)"]).where(numfind > 0)
+    steps.key_roles(ctx, "m01-key-roles", keys,
+                    "Candidate key roles over complete rows: unique identifier (never repeats) "
+                    "or repeated grouping. The row hash repeats only for exact duplicate rows.", T)
     positive = df[numfind > 0]
-    records.append(pr.uniqueness(positive, F["F=(acc_anon,numfind)"], q,
-                                 "complete rows with numfind > 0") | {"variant": "F, numfind>0"})
     # Reserved -9: once per accession? on one side? opposite a positive finding?
     minus9 = df[numfind.eq(-9)]
     per_acc = minus9.groupby("acc_anon")
@@ -165,7 +166,7 @@ def m01(ctx: Context) -> None:
 M01 = Packet(
     id="M01", title="MagView row, finding, procedure, and specimen key structure",
     questions=[
-        "Are there exact duplicate rows, and which source columns are entirely empty?",
+        "Are there exact duplicate rows (row-hash role), and which columns are entirely empty?",
         "Do F, P, the specimen row locator, and F+side repeat on complete rows?",
         "Which non-positive numfind values occur, and how is -9 placed relative to sides?",
         "Which fields are present on rows without a finding number?",
@@ -539,7 +540,7 @@ def m08(ctx: Context) -> None:
     long = pd.concat(long_parts, ignore_index=True)
     census = fw.census(long, ["column", "token"], max_levels=None, max_nodes=None,
                        min_count=ctx.min_count, min_retained_fraction=0.0, table_id=T,
-                       timeout=ctx.timeout)
+                       **ctx.run)
     ctx.fieldwork("m08-token-domains", census,
                   "Per coded column: trimmed, upper-cased tokens (comma-split where the "
                   "catalog declares comma delimiting). Blank values are excluded.")
@@ -594,7 +595,7 @@ def m09(ctx: Context) -> None:
     ctx.fieldwork("m09-negative-values",
                   fw.census(long, ["column", "negative value"], max_levels=None,
                             max_nodes=None, min_count=ctx.min_count, min_retained_fraction=0.0,
-                            table_id=T, timeout=ctx.timeout),
+                            table_id=T, **ctx.run),
                   "Distinct negative values per numeric column (non-negative values are not "
                   "listed).")
     ctx.shapes("m09-calcnumber-shapes", df, ["calcnumber"], "Shapes of calcnumber text.",

@@ -27,7 +27,8 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
-from core import PacketError, Source, check_output_root, git_root, run_packet  # noqa: E402
+from core import (PacketError, Source, check_output_root, git_root, require_fieldwork,  # noqa: E402
+                  run_packet)
 
 SOURCES = {
     "magview": "magview_all_cohorts_PACS_v2_anon",
@@ -120,6 +121,7 @@ def main(argv: list[str] | None = None) -> int:
             parser.error("choose --all or --packet with IDs from --list")
         chosen = [packets[p.upper()] for p in args.packet]
     try:
+        require_fieldwork()
         check_output_root(args.output, git_root(HERE))
     except PacketError as error:
         parser.error(str(error))

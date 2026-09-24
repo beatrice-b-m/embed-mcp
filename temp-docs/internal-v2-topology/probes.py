@@ -26,17 +26,6 @@ def complete(frame: pd.DataFrame, columns: Sequence[str]) -> pd.Series:
     return mask
 
 
-def uniqueness(frame: pd.DataFrame, key: Sequence[str], question: str,
-               population: str = "rows with every key component populated") -> dict[str, Any]:
-    """Whether complete key tuples ever repeat."""
-    rows = frame.loc[complete(frame, key), list(key)]
-    if rows.empty:
-        state = "undefined"
-    else:
-        state = "repeated" if bool(rows.duplicated().any()) else "unique"
-    return {"question": question, "keys": list(key), "population": population, "state": state}
-
-
 def incomplete_keys(frame: pd.DataFrame, key: Sequence[str], question: str) -> dict[str, Any]:
     """Whether some rows lack a key component (all/some/none of rows are incomplete)."""
     return {"question": question, "keys": list(key), "population": "all rows",
@@ -218,39 +207,6 @@ def key_column(frame: pd.DataFrame, columns: Sequence[str]) -> pd.Series:
     for column in parts.columns[1:]:
         joined = joined + "\x1f" + parts[column]
     return joined.where(mask)
-
-
-def repeated_support(frame: pd.DataFrame, key: Sequence[str], targets: Sequence[str],
-                     question: str) -> list[dict[str, Any]]:
-    """Per target: does some key group hold two or more rows with the target populated?
-
-    Exactness under a key whose groups are singletons is trivial; this flags it.
-    """
-    keys = key_column(frame, key)
-    records = []
-    for target in targets:
-        mask = keys.notna() & populated(frame[target])
-        sizes = keys[mask].value_counts()
-        state = "undefined" if sizes.empty else ("present" if bool((sizes > 1).any()) else "absent")
-        records.append({"question": question, "keys": list(key), "columns": target,
-                        "check": "some key group has two or more rows with the target populated",
-                        "state": state})
-    return records
-
-
-def mixed_presence(frame: pd.DataFrame, key: Sequence[str], targets: Sequence[str],
-                   question: str) -> list[dict[str, Any]]:
-    """Per target: across key groups, all/some/none mix populated and missing rows."""
-    keys = key_column(frame, key)
-    records = []
-    for target in targets:
-        present = populated(frame[target])[keys.notna()]
-        grouped = present.groupby(keys[keys.notna()])
-        mixed = grouped.any() & ~grouped.all()
-        records.append({"question": question, "keys": list(key), "columns": target,
-                        "check": "key group mixes rows with and without the target",
-                        "state": quantify(mixed)})
-    return records
 
 
 def varies_within(frame: pd.DataFrame, key: Sequence[str], target: str) -> pd.Series:

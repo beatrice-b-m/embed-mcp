@@ -127,7 +127,7 @@ def _presence_census(ctx: Context, v: pd.DataFrame, columns: list[str]):
         columns=["Manufacturer", "FinalImageType", "column", "state"])
     return fw.census(frame, ["Manufacturer", "FinalImageType", "column", "state"],
                      max_levels=None, max_nodes=None, min_retained_fraction=0.0, table_id=T,
-                     timeout=ctx.timeout)
+                     **ctx.run)
 
 
 def _text(series: pd.Series) -> pd.Series:
@@ -142,18 +142,21 @@ def v01(ctx: Context) -> None:
     m = ctx.frame("magview")
     q = "How do V1c image rows key and link to MagView exams and patients?"
     hashes, presence = ctx.scan("v1c")
-    records = [{"question": q, "check": "two rows equal in every column (hash-equal)",
-                "state": "repeated" if bool(hashes.duplicated().any()) else "unique"}]
+    records = []
     for column, state in presence.items():
         records.append({"question": "Which V1c columns are entirely empty?",
                         "check": "column populated (blank strings count as missing)",
                         "variant": column, "state": state})
+    keys = {"row hash (all columns)": hashes.astype("string").set_axis(v.index)}
     for label, key in {"anon_dicom_path": ["anon_dicom_path"],
                        "dicom-position": ["acc_anon", "SeriesNumber", "InstanceNumber"],
                        "acquisition_group_id": ["acquisition_group_id"],
                        "png_filename": ["png_filename"]}.items():
-        records.append(pr.uniqueness(v, key, q) | {"variant": label})
+        keys[label] = pr.key_column(v, key)
         records.append(pr.incomplete_keys(v, key, q) | {"variant": label})
+    steps.key_roles(ctx, "v01-key-roles", keys,
+                    "Candidate key roles over complete rows; the row hash repeats only for "
+                    "exact duplicate rows.", T)
     records.append(pr.membership(v["acc_anon"], m["acc_anon"], q, "acc_anon", "acc_anon")
                    | {"variant": "left V1c, right MagView"})
     records.append(pr.membership(m["acc_anon"], v["acc_anon"], q, "acc_anon", "acc_anon")
@@ -241,7 +244,7 @@ def v02(ctx: Context) -> None:
         ctx.fieldwork(f"v02-census-{name}",
                       fw.census(v[dims], dims, max_levels=None, max_nodes=None,
                                 min_count=ctx.min_count, min_retained_fraction=0.0,
-                                table_id=T, timeout=ctx.timeout),
+                                table_id=T, **ctx.run),
                       f"Observed value paths through {', '.join(dims)} (no counts).")
     final, image, lat = (_text(v[c]).str.upper() for c in
                          ("ImageLateralityFinal", "ImageLaterality", "Laterality"))

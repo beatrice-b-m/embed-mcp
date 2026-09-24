@@ -159,6 +159,8 @@ class Context:
                  timeout: float, max_levels: int, min_count: int, approx: float) -> None:
         self.packet = packet
         self.approx = approx
+        # Every Fieldwork call: cooperative timeout, and failures without source values.
+        self.run = {"timeout": timeout, "safe_errors": True}
         self.sources = sources
         self.out = out
         self.timeout = timeout
@@ -262,8 +264,9 @@ class Context:
     def _check_value_labels(self, result: Any) -> None:
         """Refuse exports whose topology would carry labels of undeclared columns.
 
-        Levels, census and joint counts list values; ``by`` and pair contexts name
-        value predicates; pair absence examples list value pairs. Only columns the
+        Levels, census and joint counts list values; value-pattern topology lists
+        string formats; ``by`` and pair contexts name value predicates; pair
+        absence examples list value pairs. Only columns the
         packet declares as controlled (or derived shape columns) may appear there.
         """
         params = result.get("parameters", {})
@@ -279,9 +282,14 @@ class Context:
                 labelled += params.get("dimensions") or []
             for context in params.get("pair_contexts") or []:
                 labelled += list(context.keys())
+        if kind == "value_patterns":
+            labelled += params.get("features") or []
         if kind == "overview":
-            for section in result.get("sections", {}).values():
-                labelled += (section.get("parameters") or {}).get("by") or []
+            for name, section in result.get("sections", {}).items():
+                section_params = section.get("parameters") or {}
+                labelled += section_params.get("by") or []
+                if name == "value_patterns" and section.get("status") != "not_requested":
+                    labelled += section_params.get("features") or []
         labelled += params.get("by") or []
         allowed = set(self.packet.controlled)
         refused = [c for c in labelled if c not in allowed and not str(c).endswith(" (shape)")]
@@ -340,7 +348,7 @@ class Context:
         if listed:
             result = fw.levels(frame, listed, max_levels=None, min_count=self.min_count,
                                missing=missing, scope=scope, table_id=table_id,
-                               timeout=self.timeout)
+                               **self.run)
             self.fieldwork(name, result, note)
         if withheld:
             self.states(f"{name}-withheld", [
@@ -366,7 +374,7 @@ class Context:
             positions = None if scope is None else list(scope.positions)
             data = derived if positions is None else derived.iloc[positions].reset_index(drop=True)
             result = fw.levels(data, listed, max_levels=None, min_count=self.min_count,
-                               table_id=table_id, timeout=self.timeout)
+                               table_id=table_id, **self.run)
             self.fieldwork(name, result, note)
         if withheld:
             self.states(f"{name}-withheld", [
@@ -401,9 +409,11 @@ def value_labels(data: Mapping[str, Any]) -> list[tuple[str, str]]:
         for section in data.get("sections", {}).values():
             found += value_labels(section)
     for finding in data.get("findings", []):
-        context = (finding.get("structure") or {}).get("context")
-        if context:
-            found.append(("(context predicate)", json.dumps(context, sort_keys=True)))
+        structure = finding.get("structure") or {}
+        if structure.get("context"):
+            found.append(("(context predicate)", json.dumps(structure["context"], sort_keys=True)))
+        for fmt in structure.get("formats", []):
+            found.append((finding["features"][0]["column"], f"format {fmt}"))
     return list(dict.fromkeys(found))
 
 
@@ -456,6 +466,7 @@ def run_packet(packet: Packet, sources: Mapping[str, Source], root: Path, *, tim
         "catalog_gaps": packet.gaps,
         "notes": packet.notes,
         "fieldwork_version": fw.__version__,
+        "fieldwork_features": list(REQUIRED_FIELDWORK),
         "detail": "topology",
         "settings": {"max_levels": max_levels, "min_count": min_count,
                      "approx_threshold": approx, "timeout_seconds": timeout},
@@ -474,6 +485,10 @@ def run_packet(packet: Packet, sources: Mapping[str, Source], root: Path, *, tim
     except PacketError as error:
         status = "failed"
         manifest["error"] = {"type": "PacketError", "message": str(error)}
+    except fw.AnalysisError as error:
+        # safe_errors=True: the message names operation, phase, column, and type only.
+        status = "failed"
+        manifest["error"] = {"type": "AnalysisError", "message": str(error)}
     except Exception as error:  # noqa: BLE001 - messages may contain values
         status = "failed"
         frames = traceback.extract_tb(error.__traceback__)
@@ -498,6 +513,36 @@ def run_packet(packet: Packet, sources: Mapping[str, Source], root: Path, *, tim
     (out / "disclosed-values.tsv").write_text("\n".join(rows) + "\n", encoding="utf-8")
     (out / "manifest.json").write_text(json.dumps(manifest, indent=1), encoding="utf-8")
     return status
+
+
+REQUIRED_FIELDWORK = (
+    "safe_errors runtime control and AnalysisError",
+    "joint_counts min_count",
+    "topology strength, repeated_support, presence, and roles",
+)
+
+
+def require_fieldwork() -> None:
+    """Refuse a Fieldwork without the topology fixes these packets rely on.
+
+    The fixes (fieldwork#14-#20) landed after the 0.3.1 release commit, so the
+    version string alone cannot tell; probe the features instead.
+    """
+    import inspect
+
+    import fieldwork as fw
+
+    ok = hasattr(fw, "AnalysisError") and "min_count" in inspect.signature(fw.joint_counts).parameters
+    if ok:
+        frame = pd.DataFrame({"k": [1, 1, 2], "t": ["a", "a", "b"]})
+        result = fw.discover_dependencies(frame, features=["k", "t"], max_key_size=1,
+                                          include_grain=False, limits={"max_candidates": 1})
+        projected = fw.visualization_data(result, detail="topology")
+        structure = projected["findings"][0]["structure"] if projected["findings"] else {}
+        ok = "repeated_support" in structure and "candidates" in projected
+    if not ok:
+        raise PacketError("This Fieldwork lacks the topology fixes from fieldwork#14-#20; "
+                          "install Fieldwork from main at 50f8839 or later.")
 
 
 def main_error(message: str) -> None:

@@ -82,6 +82,16 @@ class PacketRun(unittest.TestCase):
                 for needle in needles:
                     self.assertNotIn(needle, text, path.name)
 
+    def test_conformity_keeps_strength_support_and_roles(self):
+        data = json.loads((self.out / "m02" / "m02-exam-e-acc-anon.topology.json").read_text())
+        self.assertTrue(data["findings"])
+        for finding in data["findings"]:
+            self.assertIn(finding["structure"]["strength"], {"exact", "approximate"})
+            self.assertIn("repeated_support", finding["structure"])
+        self.assertEqual([c["columns"] for c in data["candidates"]], [["E=(acc_anon)"]])
+        roles = json.loads((self.out / "m01" / "m01-key-roles.topology.json").read_text())
+        self.assertIn("row hash (all columns)", {c["columns"][0] for c in roles["candidates"]})
+
     def test_manifests_pending_review(self):
         for path in self.out.glob("*/manifest.json"):
             manifest = json.loads(path.read_text())
@@ -112,6 +122,44 @@ class Guards(unittest.TestCase):
         result = fw.missingness(pd.DataFrame({"a": [1, None], "d": ["x", "y"]}), by=["d"])
         with self.assertRaises(core.PacketError):
             ctx.fieldwork("x", result, "n")
+
+    def test_value_patterns_refuse_undeclared_column(self):
+        import fieldwork as fw
+
+        ctx = self._context()
+        result = fw.value_patterns(pd.DataFrame({"note": ["a1", "b2"]}))
+        with self.assertRaises(core.PacketError):
+            ctx.fieldwork("x", result, "n")
+
+    def test_joint_counts_omit_small_cells(self):
+        import steps
+
+        ctx = self._context(controlled=["a", "b"])
+        ctx.min_count = 2
+        steps.cooccur(ctx, "j", pd.DataFrame({"a": ["x", "x", "y"], "b": ["p", "p", "q"]}),
+                      "a", "b", "n", "t")
+        data = json.loads((ctx.out / "j.topology.json").read_text())
+        self.assertTrue(data["omitted"])
+        self.assertEqual(data["a"], ["x"])
+
+    def test_fieldwork_failure_is_reported_without_values(self):
+        import fieldwork as fw
+
+        def run(ctx):
+            fw.joint_counts(pd.DataFrame({"a": ["secret-value"], "b": [1]}), ["a", "b"],
+                            max_cells=0, **ctx.run)
+
+        packet = core.Packet(id="T1", title="t", questions=[], gaps=[], needs={}, run=run)
+        root = Path(tempfile.mkdtemp())
+        status = core.run_packet(packet, {}, root, timeout=60, max_levels=5, min_count=1,
+                                 approx=0.95)
+        manifest = json.loads((root / "t1" / "manifest.json").read_text())
+        self.assertEqual(status, "failed")
+        self.assertEqual(manifest["error"]["type"], "AnalysisError")
+        self.assertNotIn("secret-value", json.dumps(manifest))
+
+    def test_required_fieldwork_features_present(self):
+        core.require_fieldwork()
 
     def test_states_refuse_unknown_state_and_probe(self):
         ctx = self._context(probes=[0])
