@@ -273,7 +273,9 @@ Everything that shapes search and reads, with comments for each setting:
   guardrail's `priority` or a claim's `status`;
 - the field names `code` lookup uses, and `delimited_parsing`: the
   vocabulary parsing values whose represented values are delimited codes,
-  with the delimiter `code` splits them at.
+  with the delimiter `code` splits them at;
+- `suggest`: how `read` and `code` rank near matches for an unknown ID (see
+  [Architecture](architecture.md#suggestions-for-an-unknown-id)).
 
 `tests/retrieval_cases.yaml` checks that search stays useful; rerun it after
 editing this file.

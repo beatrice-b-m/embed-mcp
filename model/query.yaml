@@ -114,6 +114,38 @@ search:
   topic_link: topics
   topic_parent_link: topic_broader
 
+suggest:
+  # Near-match suggestions for an unknown ID in `read` and `code`. An ID
+  # inside a known document (`document#entry`) is compared only with that
+  # document's entries, by entry key; any other ID with every document.
+  # Keys and labels are compared as words: case, camelCase, and separators
+  # are ignored.
+  #
+  # A candidate's names are its key, its label, and the labels of the
+  # documents it links to. Its spelling score (0 to 1) is the best of: the
+  # similarity of the unknown key to a name; the share of the key's words
+  # found among the names' words, each weighted by how rare it is among the
+  # candidates, so `finding_side` favors `side` over other finding columns (a
+  # word matches a name's word when equal, when it abbreviates it, when they
+  # share a stem of five letters or more, or at `word_match` similarity); and
+  # `abbreviation` when the key reads as prefixes of a name's words in order
+  # (`calcmorph` for "Calcification morphology"). Its score is that plus
+  # `meaning_weight` times its meaning match: the unknown key is searched
+  # as words, and a candidate that is one of the top `search_limit` results,
+  # or links to one, counts that result's score relative to the best. So
+  # `#finding_number` finds the column that maps to "Finding number" even
+  # though the column's own name is spelled differently. A meaning match
+  # counts only when the spelling score is at least `meaning_floor`. When no
+  # entry of a known document qualifies, the document itself is suggested.
+  limit: 3
+  cutoff: 0.6          # candidates scoring below this are never suggested
+  abbreviation: 0.85
+  word_match: 0.8
+  margin: 0.25         # further suggestions must score within this of the best
+  meaning_weight: 0.5
+  meaning_floor: 0.6
+  search_limit: 10
+
 read:
   # Entry kinds shown in summary form when their parent document is read:
   # only these fields and links, without backlinks. Read the entry's own

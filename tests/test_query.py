@@ -2,6 +2,7 @@ import unittest
 
 from embed_context.catalog import load_catalog
 from embed_context.query import QueryError, Searcher, load_query_config, lookup_code, read, tokenize
+from embed_context.view import UnknownID
 from embed_context.yamlio import YamlError
 
 from embed_context.render import render_named
@@ -87,6 +88,76 @@ class ReadTests(CatalogTestCase):
         self.assertEqual([f["name"] for f in item["fields"]], ["label"])
         self.assertNotIn("links", item)
         self.assertNotIn("backlinks", item)
+
+
+class SuggestTests(CatalogTestCase):
+    """Near matches for an unknown ID, as `read` and `code` report them."""
+
+    def setUp(self):
+        super().setUp()
+        for name, label in [("number", "Finding number"), ("residual", "Residual tumor"), ("ultra", "Ultrasound finding"),
+                            ("morph", "Calcification morphology"), ("presence", "Calcification presence")]:
+            self.write(f"catalog/base/measure.{name}.yaml", f"kind: measure\nlabel: {label}\n")
+        self.write("catalog/base/density.yaml", "kind: note\nlabel: Breast density\nstatus: open\n")
+        self.write("catalog/base/note.dens-a.yaml", "kind: note\nlabel: Density\nstatus: open\n")
+        self.write("catalog/base/note.dens-b.yaml", "kind: note\nlabel: Density\nstatus: open\ntags: [dens]\n")
+        self.write("catalog/base/sheet.yaml", """
+            kind: sheet
+            label: Sheet
+            cells:
+              numfind:
+                records: [{id: measure.number, status: open}]
+              tnmr:
+                records: [{id: measure.residual, status: open}]
+              USFinding:
+                records: [{id: measure.ultra, status: open}]
+              calc:
+                records: [{id: measure.presence, status: open}]
+              calcfind:
+                records: [{id: measure.morph, status: open}]
+            """)
+
+    def unknown(self, address, searcher=True):
+        catalog = self.load()
+        self.assertEqual(self.messages(catalog), [])
+        with self.assertRaises(UnknownID) as raised:
+            read(catalog, address, searcher=Searcher(catalog) if searcher else None)
+        return raised.exception.message
+
+    def test_an_entry_is_found_by_what_it_records_not_only_its_key(self):
+        message = self.unknown("sheet#finding_number")
+        self.assertIn("did you mean `sheet#numfind` (Finding number)", message)
+        self.assertNotIn("tnmr", message)
+
+    def test_a_key_that_abbreviates_a_linked_label_matches_it(self):
+        self.assertIn("did you mean `sheet#calcfind`", self.unknown("sheet#calcmorph"))
+        self.assertIn("did you mean `sheet#numfind`", self.unknown("sheet#f_num"))
+
+    def test_searching_the_key_breaks_a_spelling_tie(self):
+        self.assertIn("did you mean `note.dens-a`", self.unknown("note.dens", searcher=False))
+        self.assertIn("did you mean `note.dens-b`", self.unknown("note.dens"))
+
+    def test_an_entry_guess_is_compared_only_with_that_documents_entries(self):
+        self.assertNotIn("`density`", self.unknown("sheet#density"))
+
+    def test_with_no_close_entry_the_document_itself_is_suggested(self):
+        self.assertTrue(self.unknown("sheet#zzzz").endswith("did you mean `sheet`?"))
+
+    def test_close_alternatives_are_listed_together(self):
+        self.assertRegex(self.unknown("sheet#calcium"), r"did you mean `sheet#calc\w*` \(Calcification \w+\) or `sheet#calc\w*`")
+
+    def test_code_lookup_reports_the_same_suggestions(self):
+        catalog = self.load()
+        with self.assertRaises(UnknownID) as raised:
+            lookup_code(catalog, "sheet#finding_number", "1", searcher=Searcher(catalog))
+        self.assertIn("`sheet#numfind` (Finding number)", raised.exception.message)
+
+    def test_unknown_settings_are_rejected(self):
+        with open(self.root / "model" / "query.yaml", "a") as query:
+            query.write("suggest:\n  limt: 3\n")
+        with self.assertRaises(YamlError) as raised:
+            load_query_config(self.load())
+        self.assertIn("unknown suggest setting `limt`", str(raised.exception))
 
 
 class FixtureCodeLookupTests(CatalogTestCase):

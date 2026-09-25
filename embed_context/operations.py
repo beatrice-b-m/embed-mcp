@@ -122,11 +122,11 @@ def _search(session: Session, query: str, kinds=None, topics=None, modules=None,
 
 
 def _read(session: Session, id: str) -> dict[str, Any]:
-    return read(session.catalog, id, session.config)
+    return read(session.catalog, id, session.config, session.searcher)
 
 
 def _code(session: Session, id: str, value: str) -> dict[str, Any]:
-    return lookup_code(session.catalog, id, value, session.config)
+    return lookup_code(session.catalog, id, value, session.config, session.searcher)
 
 
 # operation -> (handler, named template, or None for the node's kind template)

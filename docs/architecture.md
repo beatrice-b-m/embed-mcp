@@ -161,6 +161,30 @@ states for it.
   describes values without listing them ("represented identifier") may
   still cover it.
 
+### Suggestions for an unknown ID
+
+`read` and `code` answer an unknown ID with up to three near matches, best
+first, each with a short note naming what it is. The settings are in the
+`suggest` section of `model/query.yaml`.
+
+- An ID inside a known document (`document#entry`) is compared only with
+  that document's entries at the same depth, by entry key, so the shared
+  document prefix does not decide the ranking. Any other ID is compared
+  with every document.
+- Keys and names are compared as words, ignoring case, camelCase, and
+  separators. A candidate's names are its key, its label, and the labels of
+  the documents it links to, such as the features a column maps to. Its
+  spelling score is the best of whole-name similarity; the share of the
+  key's words found among its names' words, each weighted by rarity among
+  the candidates; and a fixed score when the key abbreviates a name
+  (`calcmorph` for "Calcification morphology").
+- The unknown key is also searched as words. A candidate that is one of the
+  top results, or links to one, gains that result's score relative to the
+  best, but only when its spelling is already plausible, so a stray search
+  result cannot promote an unrelated entry.
+- When no entry qualifies, the document itself is suggested, since reading
+  it lists its entries.
+
 ## Operations
 
 `model/operations.yaml` declares the shared operations (`search`, `read`,

@@ -11,15 +11,19 @@ model/query.yaml; this module only implements the mechanics:
   (see ``view``), showing configured entry kinds in summary form.
 - ``lookup_code`` explains a represented value through the code lists,
   column interpretations, and missing states that apply to it.
+- ``suggest`` ranks near matches for an unknown ID by spelling and by
+  meaning, so a guessed column name finds the column that records it.
 """
 
 from __future__ import annotations
 
 import difflib
 import math
+import os
 import re
 from collections import defaultdict
 from dataclasses import dataclass, field
+from functools import lru_cache
 from typing import Any
 
 from .catalog import Catalog, Link, Node
@@ -68,6 +72,18 @@ class Boost:
 
 
 @dataclass(frozen=True)
+class SuggestConfig:
+    limit: int = 3
+    cutoff: float = 0.6
+    abbreviation: float = 0.85
+    word_match: float = 0.8
+    margin: float = 0.25
+    meaning_weight: float = 0.5
+    meaning_floor: float = 0.6
+    search_limit: int = 10
+
+
+@dataclass(frozen=True)
 class QueryConfig:
     stopwords: frozenset[str]
     field_weights: dict[str, float]
@@ -90,6 +106,7 @@ class QueryConfig:
     summaries: dict[str, tuple[str, ...]]
     link_facts: dict[str, tuple[str, ...]] = field(default_factory=dict)
     codes: dict[str, Any] = field(default_factory=dict)
+    suggest: SuggestConfig = field(default_factory=SuggestConfig)
 
     @property
     def view_options(self) -> ViewOptions:
@@ -150,6 +167,15 @@ def load_query_config(catalog: Catalog) -> QueryConfig:
         if not isinstance(delimiter, str) or not delimiter:
             raise _error(doc, ("codes", "delimited_parsing", name), "expected a delimiter")
     codes["delimited_parsing"] = dict(delimiters)
+    suggest_raw = _mapping(doc, data.get("suggest", {}), ("suggest",))
+    defaults = SuggestConfig()
+    for name in suggest_raw:
+        if not hasattr(defaults, name):
+            raise _error(doc, ("suggest", name), f"unknown suggest setting `{name}`")
+    suggest = SuggestConfig(**{
+        name: type(default)(_number(doc, suggest_raw.get(name, default), ("suggest", name)))
+        for name, default in vars(defaults).items()
+    })
     return QueryConfig(
         stopwords=stopwords,
         field_weights=weights,
@@ -172,6 +198,7 @@ def load_query_config(catalog: Catalog) -> QueryConfig:
         summaries=summaries,
         link_facts=link_facts,
         codes=codes,
+        suggest=suggest,
     )
 
 
@@ -413,12 +440,162 @@ class Searcher:
 # Read and code lookup ----------------------------------------------------------------
 
 
-def read(catalog: Catalog, address: str, config: QueryConfig | None = None) -> dict[str, Any]:
+def read(catalog: Catalog, address: str, config: QueryConfig | None = None, searcher: Searcher | None = None) -> dict[str, Any]:
     config = config or load_query_config(catalog)
+    if address not in catalog.nodes:
+        raise UnknownID(address, suggest(catalog, address, config, searcher))
     return view(catalog, address, config.view_options)
 
 
-def lookup_code(catalog: Catalog, address: str, value: str, config: QueryConfig | None = None) -> dict[str, Any]:
+def suggest(catalog: Catalog, address: str, config: QueryConfig, searcher: Searcher | None = None) -> list[tuple[str, str | None]]:
+    """Near matches for an unknown ``address``, best first, each with a short
+    note naming what it matched, under the `suggest` settings.
+
+    An address inside a known document is compared only with that
+    document's entries, by entry key, and also with the labels of the
+    documents each entry links to (a column's features, a binding's object).
+    Any other address is compared with every document. A key that reads as
+    prefixes of a name's words, in order (`calcmorph`, `f_num`), counts as an
+    abbreviation of that name. With a ``searcher``, the unknown key is also
+    searched as words, and a candidate that is a top result or links to one
+    gains that result's relative score. When no entry of a known document
+    qualifies, the document itself is suggested, since reading it lists its
+    entries."""
+    settings = config.suggest
+    document, separator, rest = address.partition("#")
+    if separator and document not in catalog.nodes:
+        return suggest(catalog, document, config, searcher)
+    if separator:
+        # Entries at the guess's depth: `doc#a` is compared with `doc#b`, not `doc#b/c`.
+        depth = rest.count("/")
+        candidates = [e for e in _descendants(catalog, document) if e.address.split("#", 1)[1].count("/") == depth]
+        guess = rest
+    else:
+        candidates = catalog.documents
+        guess = address
+    words = _words(guess)
+    if not words:
+        return []
+    compact = words.replace(" ", "")
+    if len(compact) < 3:
+        compact = ""  # too short to read as an abbreviation
+    meaning: dict[str, tuple[float, str]] = {}
+    if searcher is not None:
+        query = words if separator else _words(guess.rsplit(".", 1)[-1])
+        results = searcher.search(query, limit=settings.search_limit)["results"] if query else []
+        if results:
+            best = results[0]["score"]
+            meaning = {r["id"]: (r["score"] / best, r["label"]) for r in results}
+    prepared = []
+    for node in candidates:
+        key = node.address.split("#", 1)[1] if separator else node.address
+        linked = [catalog.nodes[link.target] for link in catalog.outgoing(node.address)] if separator else []
+        own = node.data.get("label")
+        labels = [t.label for t in linked if t.parent is None]
+        names = [_words(name) for name in (key, *([own] if isinstance(own, str) else []), *labels)]
+        prepared.append((node, key, linked, own, names, labels, {token for name in names for token in name.split()}))
+    # Guess words are weighted by rarity among the candidates, so `side` counts for more than `finding`.
+    guess_words = list(dict.fromkeys(words.split()))
+    rarity = {}
+    for word in guess_words:
+        frequency = sum(1 for *_, tokens in prepared if _word_match(word, tokens) >= settings.word_match)
+        rarity[word] = math.log(1 + len(prepared) / (1 + frequency))
+    total_rarity = sum(rarity.values()) or 1.0
+    scored = []
+    for node, key, linked, own, names, labels, tokens in prepared:
+        similarity = [difflib.SequenceMatcher(None, words, name).ratio() for name in names]
+        spelling = max(similarity)
+        by_word = sum(rarity[w] * m for w in guess_words if (m := _word_match(w, tokens)) >= settings.word_match) / total_rarity
+        spelling = max(spelling, by_word)
+        if any(_abbreviates(compact, name.split()) for name in names):
+            spelling = max(spelling, settings.abbreviation)
+        match = max((meaning[i] for i in (node.address, *(t.address for t in linked)) if i in meaning), default=(0.0, None))
+        score = spelling + (settings.meaning_weight * match[0] if spelling >= settings.meaning_floor else 0.0)
+        if score >= settings.cutoff:
+            # The note names what the candidate is: its own label, or, for an
+            # entry with no text of its own (a column), the linked document it matched.
+            if isinstance(own, str) and own != key:
+                note = own
+            elif node.label == key.rsplit("/", 1)[-1] and (match[0] or labels):
+                # The matched search result, or the linked label spelled most like the key.
+                linked_scores = similarity[len(names) - len(labels):]
+                note = match[1] if match[0] else labels[linked_scores.index(max(linked_scores))]
+            else:
+                note = None
+            if note and note.lower() in (node.address.lower(), re.split(r"[.#/]", node.address)[-1].lower()):
+                note = None  # a note that only repeats the ID says nothing
+            scored.append((score, node.address, _clip(note)))
+    scored.sort(key=lambda item: (-item[0], item[1]))
+    if not scored:
+        return [(document, None)] if separator else []
+    floor = scored[0][0] - settings.margin
+    return [(found, note) for score, found, note in scored[:settings.limit] if score >= floor]
+
+
+def _descendants(catalog: Catalog, address: str) -> list[Node]:
+    found = []
+    for entry in catalog.entries_of(address):
+        found.append(entry)
+        found.extend(_descendants(catalog, entry.address))
+    return found
+
+
+def _word_match(word: str, tokens: set[str]) -> float:
+    """How well one guessed word matches its best token: 1 if equal after
+    folding plurals; 0.9 if the word abbreviates the token (`num`, `number`)
+    or the two share a stem of five letters or more (`attachment`,
+    `attached`); else their spelling similarity."""
+    word = _stem(word)
+    best = 0.0
+    for token in tokens:
+        token = _stem(token)
+        if token == word:
+            return 1.0
+        shared = len(os.path.commonprefix([word, token]))
+        if (len(word) >= 3 and token.startswith(word)) or (shared >= 5 and shared >= 0.6 * min(len(word), len(token))):
+            best = max(best, 0.9)
+        else:
+            best = max(best, difflib.SequenceMatcher(None, word, token).ratio())
+    return best
+
+
+def _abbreviates(guess: str, words: list[str]) -> bool:
+    """Whether ``guess`` reads as non-empty prefixes of ``words``, taken in order (words may be skipped)."""
+    if not guess:
+        return False
+
+    @lru_cache(maxsize=None)
+    def rest(start: int, first_word: int) -> bool:
+        if start == len(guess):
+            return True
+        for index in range(first_word, len(words)):
+            word = words[index]
+            length = 0
+            while length < len(word) and start + length < len(guess) and guess[start + length] == word[length]:
+                length += 1
+                if rest(start + length, index + 1):
+                    return True
+        return False
+
+    return rest(0, 0)
+
+
+_CAMEL = re.compile(r"(?<=[a-z0-9])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])")
+_NON_WORD = re.compile(r"[^0-9a-z]+")
+
+
+def _words(text: str) -> str:
+    """Lowercase words of an ID or label: `ROI_count`, `roi-count`, and `RoiCount` are all `roi count`."""
+    return _NON_WORD.sub(" ", _CAMEL.sub(" ", text).lower()).strip()
+
+
+def _clip(text: str | None, limit: int = 60) -> str | None:
+    if text is None or len(text) <= limit:
+        return text
+    return text[: limit - 1].rstrip() + "…"
+
+
+def lookup_code(catalog: Catalog, address: str, value: str, config: QueryConfig | None = None, searcher: Searcher | None = None) -> dict[str, Any]:
     """What a represented value means where ``address`` (a vocabulary, a
     column, or a feature) is used.
 
@@ -437,8 +614,7 @@ def lookup_code(catalog: Catalog, address: str, value: str, config: QueryConfig 
     names = config.codes
     node = catalog.nodes.get(address)
     if node is None:
-        view(catalog, address)  # raises UnknownID with a suggestion
-        raise UnknownID(address, None)
+        raise UnknownID(address, suggest(catalog, address, config, searcher))
     feature_link = names.get("column_feature_link")
     vocabulary_spec = next((link for link in catalog.model.all_links if link.name == names.get("column_vocabulary_link")), None)
     legend: dict[str, dict[str, str]] = {}

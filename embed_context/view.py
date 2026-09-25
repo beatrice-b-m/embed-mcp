@@ -42,8 +42,18 @@ _LINK_LABEL_LIMIT = 120
 
 
 class UnknownID(KeyError):
-    def __init__(self, address: str, suggestion: str | None) -> None:
-        hint = f"; did you mean `{suggestion}`?" if suggestion else ""
+    """An unknown ID, with near matches: IDs, or (ID, note) pairs, best first."""
+
+    def __init__(self, address: str, suggestions: str | list[str | tuple[str, str | None]] | None) -> None:
+        if isinstance(suggestions, str):
+            suggestions = [suggestions]
+        names = []
+        for suggestion in suggestions or []:
+            found, note = (suggestion, None) if isinstance(suggestion, str) else suggestion
+            names.append(f"`{found}` ({note})" if note else f"`{found}`")
+        if len(names) > 2:
+            names = [", ".join(names[:-1]) + ",", names[-1]]
+        hint = f"; did you mean {' or '.join(names)}?" if names else ""
         super().__init__(f"unknown ID `{address}`{hint}")
         self.message = f"unknown ID `{address}`{hint}"
 

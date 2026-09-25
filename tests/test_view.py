@@ -84,6 +84,12 @@ class ViewTests(CatalogTestCase):
             view(self.load(), "topic.b")
         self.assertIn("did you mean `topic.a`?", raised.exception.message)
 
+    def test_unknown_id_lists_several_suggestions_with_their_notes(self):
+        two = UnknownID("x", [("a", None), ("b", "Bee")]).message
+        three = UnknownID("x", [("a", None), ("b", "Bee"), ("c", None)]).message
+        self.assertEqual(two, "unknown ID `x`; did you mean `a` or `b` (Bee)?")
+        self.assertEqual(three, "unknown ID `x`; did you mean `a`, `b` (Bee), or `c`?")
+
 
 class RenderTests(CatalogTestCase):
     def setUp(self):

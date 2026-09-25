@@ -83,7 +83,7 @@ class McpServerTests(ServerFixture):
     def test_errors_are_tool_results_with_the_cli_message(self):
         result = self.run_client(lambda client: client.call_tool("read", {"id": "topic.b"}))
         self.assertTrue(result.is_error)
-        self.assertIn("unknown ID `topic.b`; did you mean `topic.a`?", result.content[0].text)
+        self.assertIn("unknown ID `topic.b`; did you mean `topic.a` (Alpha hub)?", result.content[0].text)
         result = self.run_client(lambda client: client.call_tool("search", {"query": "alpha", "kinds": ["nte"]}))
         self.assertTrue(result.is_error)
         self.assertIn("did you mean `note`?", result.content[0].text)
@@ -121,7 +121,7 @@ class McpServerTests(ServerFixture):
         records = [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines()]
         self.assertEqual([r["event"] for r in records], ["start", "call", "call"])
         self.assertEqual(records[1]["returned"], ["n1"])
-        self.assertIn("did you mean `topic.a`?", records[2]["error"])
+        self.assertIn("did you mean `topic.a` (Alpha hub)?", records[2]["error"])
 
     def test_serve_refuses_a_catalog_with_errors_on_stderr_only(self):
         from embed_context.mcp_server import serve
