@@ -1,0 +1,13 @@
+kind: profile_support
+evidence_status: supported
+evidence_summary: >-
+  The breast-side-to-image relationship is physically bound between the internal MagView finding
+  side and the internal V1c derived final image laterality on the same accession, with bilateral
+  finding sides projected to both left and right.
+evidence_caveats:
+  - Coverage is that of internal V1c, which is narrower than clinical V2.
+  - An image without a derived final laterality has no side projection.
+subject: clinical.side-image
+evidence_cites:
+  - internal-v2.v1c-metadata-context#side-level-image-linkage
+  - internal-v2.magview-coded-values-context#laterality-roles

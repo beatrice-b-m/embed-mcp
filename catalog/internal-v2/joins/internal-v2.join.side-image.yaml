@@ -1,0 +1,37 @@
+kind: join
+join_type: hierarchy
+source_completeness: optional
+cardinality:
+  targets_per_source: zero_or_more
+  sources_per_target: zero_or_more
+evidence: [maintainer_confirmed, observed_source_values]
+hazards:
+  - >-
+    Finding side B and null each project to both left and right; expand each bilateral finding
+    row into left and right rows with otherwise identical finding values before merging, or its
+    images on one or both sides stay unlinked.
+  - >-
+    Both endpoints repeat the accession and side, so the merge multiplies clinical association
+    rows against image rows; declare a grouping and de-duplication policy before joining.
+  - >-
+    A missing ImageLateralityFinal is not bilateral; that image row has no side projection and
+    links only at exam level.
+caveats:
+  - >-
+    The image side is ImageLateralityFinal, the breast the image represents; the clinical side is
+    the finding side, not the biopsy side.
+  - >-
+    Coverage is that of internal V1c, so an unmatched exam side is not evidence that the breast
+    was not imaged.
+cites:
+  - internal-v2.v1c-metadata-context#side-level-image-linkage
+  - internal-v2.v1c-metadata-context#laterality-roles
+  - internal-v2.magview-coded-values-context#laterality-roles
+  - internal-v2.v1c-metadata-context#coverage-is-not-image-absence
+relationships: [clinical.side-image]
+source_columns:
+  - internal-v2.magview_all_cohorts_pacs_v2_anon#acc_anon
+  - internal-v2.magview_all_cohorts_pacs_v2_anon#side
+target_columns:
+  - internal-v2.metadata_all_cohorts_v1c#acc_anon
+  - internal-v2.metadata_all_cohorts_v1c#ImageLateralityFinal

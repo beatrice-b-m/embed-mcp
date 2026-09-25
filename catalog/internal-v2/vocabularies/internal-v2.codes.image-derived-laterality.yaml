@@ -8,7 +8,7 @@ caveats:
     Only left and right are represented; a bilateral source laterality yields no derived value
     and a missing value is not bilateral.
   - The code set is scoped to the current internal V1c extraction.
-  - This is image laterality, not imaging-finding or procedure side.
+  - This is the breast the image represents, not the procedure side.
 codes:
   L: Left
   R: Right

@@ -1,0 +1,23 @@
+kind: relationship
+label: Breast side has image
+relationship_type: hierarchy
+definition: An image can represent one breast side of an imaging exam.
+cardinality:
+  targets_per_source: unknown
+  sources_per_target: unknown
+optionality:
+  source: unknown
+  target: unknown
+attribution_limitations:
+  - >-
+    Side-level linkage associates an image with every finding on that exam side; it does not
+    attribute the image, or a region of interest on it, to one finding.
+temporal_qualification: >-
+  The image and the breast side belong to the same imaging-exam event.
+search_terms: [image laterality, images of a breast side, side-level image linkage]
+caveats:
+  - Cardinality and physical linkage remain profile-specific.
+source_object: breast_side
+target_object: image
+topics: [topic.breast_side, topic.imaging]
+temporal: [time.exam-event]

@@ -6,7 +6,7 @@ locator: maintainer-confirmed:internal-v1c-image-metadata-identity-and-availabil
 version_scope: >-
   Internal EMBED V1c extraction coverage, patient, accession, and image identity, anonymization,
   legacy image fields, acquisition grouping, DBT frame-count interpretation, reliable final
-  laterality, DICOM interpretation, and locator expectations within the internal-v2 working
+  laterality, side-level linkage to clinical findings, DICOM interpretation, and locator expectations within the internal-v2 working
   profile.
 notes:
   - >-
@@ -46,6 +46,10 @@ notes:
   - >-
     ImageLateralityFinal is the reliable image breast-laterality attribute even though its
     derivation rule and LateralityDeriveFlag meanings remain unresolved.
+  - >-
+    A general merge of clinical findings with image metadata uses acc_anon and
+    ImageLateralityFinal matched to finding side, after bilateral findings are coded as explicit
+    left and right row equivalents.
   - >-
     PatientAge is top-coded to 89, PatientSex is unchanged, and sensitive
     non-identifier/non-date attributes were dropped during anonymization.

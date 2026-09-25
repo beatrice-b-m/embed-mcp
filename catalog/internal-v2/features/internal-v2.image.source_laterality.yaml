@@ -12,7 +12,7 @@ caveats:
   - >-
     A bilateral source value is represented and is not resolved into the derived final image
     laterality.
-  - Image laterality is not the imaging-finding or procedure side.
+  - The derived final image laterality, not this source attribute, is the image's breast side.
 topics: [topic.imaging, topic.breast_side]
 cites:
   - internal-v2.v1c-metadata-context#laterality-roles

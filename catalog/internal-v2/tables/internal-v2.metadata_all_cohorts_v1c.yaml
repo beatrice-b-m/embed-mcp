@@ -307,7 +307,7 @@ objects:
     caveats:
       - >-
         ImageLateralityFinal is the reliable attribute for the breast represented by the image;
-        it is not automatically the imaging-finding or procedure side.
+        it matches finding side through side-level linkage and is not the procedure side.
       - >-
         Only left and right are represented; a missing derived laterality is not bilateral and
         prevents a side projection for that row.

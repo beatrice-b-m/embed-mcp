@@ -14,8 +14,8 @@ hazards:
     check rather than as an exam-identity component; a cross-patient accession association is
     invalid and must not be retained as a valid linkage.
   - >-
-    Image laterality may be used only as a consistency check; it is not the imaging-finding or
-    procedure side and must not be made a join-identity component.
+    This join is exam level and image laterality is not part of exam identity; linking images to
+    the findings on one breast side also matches ImageLateralityFinal to finding side.
   - >-
     Do not derive an image-availability flag, a no-image cohort, or an exclusion rule from join
     outcomes.

@@ -171,7 +171,9 @@ claims:
       and LateralityDeriveFlag meanings remain unknown.
     status: verified
     caveats:
-      - Image laterality is not automatically the imaging-finding side or the procedure side.
+      - >-
+        Image laterality is the breast the image represents; it matches finding side through
+        side-level linkage and is not the procedure side.
       - A missing derived image laterality is not bilateral.
       - >-
         The source ImageLaterality and Laterality attributes remain standard DICOM occurrences;
@@ -179,6 +181,19 @@ claims:
     sources:
       - internal-v2.v1c-metadata-structure-observation
       - internal-v2.public-embed-structure
+      - internal-v2.v1c-metadata-maintainer-clarifications
+  side-level-image-linkage:
+    statement: >-
+      Images link to clinical findings at breast-side level on the accession and
+      ImageLateralityFinal matched to finding side, after each bilateral finding-side occurrence
+      is expressed as equivalent left and right rows.
+    status: verified
+    caveats:
+      - >-
+        Side-level linkage associates an image with every finding on that exam side; it is not
+        finding-level or region-of-interest attribution.
+      - An image without a derived final laterality has no side projection.
+    sources:
       - internal-v2.v1c-metadata-maintainer-clarifications
   patient-and-exam-projection:
     statement: >-
