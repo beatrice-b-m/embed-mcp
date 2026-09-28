@@ -33,8 +33,6 @@
   --canvas: #f5f6f8;
   --field: #fbfbfc;
   --paper: #ffffff;
-  --blue: #1071e5;
-  --red: #e81313;
   --red-wash: #fff0f0;
   --status-positive: #008a0e;
   --status-negative: #e81313;
@@ -72,8 +70,6 @@
     --canvas: #262626;
     --field: #191919;
     --paper: #313131;
-    --blue: #61a5ff;
-    --red: #ff6d5d;
     --red-wash: #3f2825;
     --status-positive: #69bb65;
     --status-negative: #ff6d5d;
@@ -112,8 +108,6 @@
   --canvas: #f5f6f8;
   --field: #fbfbfc;
   --paper: #ffffff;
-  --blue: #1071e5;
-  --red: #e81313;
   --red-wash: #fff0f0;
   --status-positive: #008a0e;
   --status-negative: #e81313;
@@ -151,8 +145,6 @@
   --canvas: #262626;
   --field: #191919;
   --paper: #313131;
-  --blue: #61a5ff;
-  --red: #ff6d5d;
   --red-wash: #3f2825;
   --status-positive: #69bb65;
   --status-negative: #ff6d5d;
@@ -179,14 +171,18 @@
   --elev-overlay: 0 8px 20px rgba(0,0,0,0.7), inset 1px 1px 0 rgba(255,255,255,0.24);
 }
 
-/* Module colour slots. Slot 0, the shared module the others require, is neutral; the two modules
-   that require it are Bea's default pair, blue and red. Any further module is a lighter neutral. */
+/* Module colour slots: slot 0 is the module the others require. These are the atlas's own
+   softer map colours, kept instead of Bea's concept hues, which read too intense at this density. */
 :root {
-  --m0: var(--ink);
-  --m1: var(--blue);
-  --m2: var(--red);
-  --m-other: var(--subtle);
+  --m0: #2a78d6;
+  --m1: #eb6834;
+  --m2: #1baf7a;
+  --m-other: #9a9fa6;
 }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --m0: #3987e5; --m1: #d95926; --m2: #199e70; --m-other: #6f757d; }
+}
+:root[data-theme="dark"] { --m0: #3987e5; --m1: #d95926; --m2: #199e70; --m-other: #6f757d; }
 
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
