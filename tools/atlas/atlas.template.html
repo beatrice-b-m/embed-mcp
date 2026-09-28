@@ -35,10 +35,7 @@
   --paper: #ffffff;
   --blue: #1071e5;
   --red: #e81313;
-  --red-text: #a3100f;
   --red-wash: #fff0f0;
-  --green: #008a0e;
-  --orange: #cc4e00;
   --status-positive: #008a0e;
   --status-negative: #e81313;
   --focus-ring: #1071e5;
@@ -77,10 +74,7 @@
     --paper: #313131;
     --blue: #61a5ff;
     --red: #ff6d5d;
-    --red-text: #ff9f91;
     --red-wash: #3f2825;
-    --green: #69bb65;
-    --orange: #ec855a;
     --status-positive: #69bb65;
     --status-negative: #ff6d5d;
     --focus-ring: #61a5ff;
@@ -120,10 +114,7 @@
   --paper: #ffffff;
   --blue: #1071e5;
   --red: #e81313;
-  --red-text: #a3100f;
   --red-wash: #fff0f0;
-  --green: #008a0e;
-  --orange: #cc4e00;
   --status-positive: #008a0e;
   --status-negative: #e81313;
   --focus-ring: #1071e5;
@@ -162,10 +153,7 @@
   --paper: #313131;
   --blue: #61a5ff;
   --red: #ff6d5d;
-  --red-text: #ff9f91;
   --red-wash: #3f2825;
-  --green: #69bb65;
-  --orange: #ec855a;
   --status-positive: #69bb65;
   --status-negative: #ff6d5d;
   --focus-ring: #61a5ff;
@@ -191,12 +179,13 @@
   --elev-overlay: 0 8px 20px rgba(0,0,0,0.7), inset 1px 1px 0 rgba(255,255,255,0.24);
 }
 
-/* Module colour slots: slot 0 is the module the others require. */
+/* Module colour slots. Slot 0, the shared module the others require, is neutral; the two modules
+   that require it are Bea's default pair, blue and red. Any further module is a lighter neutral. */
 :root {
-  --m0: var(--blue);
-  --m1: var(--orange);
-  --m2: var(--green);
-  --m-other: var(--muted);
+  --m0: var(--ink);
+  --m1: var(--blue);
+  --m2: var(--red);
+  --m-other: var(--subtle);
 }
 
 * { box-sizing: border-box; }
@@ -308,6 +297,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 }
 .sw { display: inline-block; width: 10px; height: 10px; border-radius: 50%; vertical-align: -1px; margin-right: 6px; }
 .sw.ring { background: none; border: 1.2px solid var(--ink); }
+.sw.ring.strong { border-width: 2.4px; }
 .sw.dash { width: 16px; height: 0; border-radius: 0; border-top: 1.2px dashed var(--ink); vertical-align: 3px; }
 .sw.line { width: 16px; height: 0; border-radius: 0; border-top: 1.2px solid var(--ink); vertical-align: 3px; }
 .busy { position: absolute; inset: 0; display: grid; place-items: center; color: var(--ink-muted); font-size: 12px; }
@@ -317,7 +307,9 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 .edges-hi { fill: none; stroke: var(--ink); stroke-width: var(--fig-stroke); }
 .node { stroke: var(--paper); stroke-width: var(--fig-stroke-subtle); cursor: pointer; }
 .node.m0 { fill: var(--m0); } .node.m1 { fill: var(--m1); } .node.m2 { fill: var(--m2); } .node.mx { fill: var(--m-other); }
-.node.guard { stroke: var(--ink); stroke-width: var(--fig-stroke); }
+/* Guardrails are hollow rings in their module's colour, so the ring shows on every module. */
+.node.guard { fill: var(--paper) !important; stroke-width: var(--fig-stroke-strong); }
+.node.guard.m0 { stroke: var(--m0); } .node.guard.m1 { stroke: var(--m1); } .node.guard.m2 { stroke: var(--m2); } .node.guard.mx { stroke: var(--m-other); }
 .node.topic { fill: var(--muted); }
 svg.has-sel .node { opacity: 0.12; }
 svg.has-sel .node.nb, svg.has-sel .node.sel { opacity: 1; }
@@ -403,7 +395,7 @@ svg.k-dim .k-node:not(.hi) { opacity: 0.35; }
 .steps .what { min-width: 0; overflow-wrap: anywhere; font-size: 13px; }
 .steps .tool { font: 600 11px var(--font-mono); color: var(--ink-muted); margin-right: 6px; }
 .steps .chars { font-size: 12px; color: var(--ink-muted); font-variant-numeric: tabular-nums; text-align: right; }
-.steps .err { display: block; font-size: 12px; color: var(--red-text); }
+.steps .err { display: block; font-size: 12px; color: var(--ink-muted); }
 .steps .flags { grid-column: 2 / 4; display: flex; flex-wrap: wrap; gap: 4px; }
 .flag {
   display: inline-flex; align-items: center; gap: 4px; padding: 0 6px; font-size: 11px; line-height: 18px; font-weight: 600;
@@ -543,7 +535,7 @@ const CONFIG = {
   // The hub kind, the target of query.yaml's `topic_link`. Hubs are placed at
   // the centre of their members instead of shaping the layout.
   hubKind: "topic",
-  // Documents of this kind get a dark ring on the map.
+  // Documents of this kind are drawn as hollow rings on the map.
   ringKind: "guardrail",
   // A response longer than this many characters is flagged as large.
   largeResponse: 10000,
@@ -824,7 +816,7 @@ function renderChips(G) {
 
 function renderLegend(G) {
   const mods = G.moduleOrder.map(m => `<span><span class="sw" style="background:var(--${G.moduleSlot.get(m.id) === "mx" ? "m-other" : G.moduleSlot.get(m.id)})"></span><code>${esc(m.id)}</code></span>`).join("");
-  $("#map-legend").innerHTML = `${mods}<span><span class="sw ring"></span>${esc(CONFIG.ringKind)}</span><span>size = linked documents</span>`;
+  $("#map-legend").innerHTML = `${mods}<span><span class="sw ring strong"></span>${esc(CONFIG.ringKind)} (ring)</span><span>size = linked documents</span>`;
 }
 
 function linkGroups(G, id) {
@@ -891,7 +883,7 @@ function renderMapIntro(G) {
   $("#map-panel").innerHTML = `
     <div><h2>Reading the map</h2></div>
     <p>Each dot is a document. Profiles sit on the flanks, and the shared <code>${esc(G.moduleOrder[0]?.id || "")}</code> layer sits between them. A line means at least one typed link between two documents or their entries.</p>
-    <p>Hubs are hidden by default because they would pull everything toward them. Turn on the <code>${esc(HUB_KIND)}</code> chip to place them at the centre of their members. The ${guards} <code>${esc(CONFIG.ringKind)}</code> documents have a dark ring.</p>
+    <p>Hubs are hidden by default because they would pull everything toward them. Turn on the <code>${esc(HUB_KIND)}</code> chip to place them at the centre of their members. The ${guards} <code>${esc(CONFIG.ringKind)}</code> documents are hollow rings in their module's colour.</p>
     <div class="group"><h3>Most-linked documents</h3>
       <ul class="linklist">${hubs.map(h => `<li><button type="button" data-go="${esc(h.id)}"><span class="lbl">${esc(h.label)}<span class="sub">${esc(h.id)} · ${G.degree.get(h.id)} linked</span></span></button></li>`).join("")}</ul>
     </div>
@@ -1073,24 +1065,32 @@ function renderJourneys() {
       <div class="tile"><div class="k">Shown, never read</div><div class="v">${sum.shownUnread}</div><div class="s">documents offered but not opened</div></div>
     </div>
     ${heat ? heatListHtml(G) : `<div class="group"><h3>Steps</h3><ol class="steps">${s.calls.map((c, i) => stepHtml(c, i, s)).join("")}</ol></div>`}
-    <p class="note">Flags: <span class="flag error"><i></i>error</span> the call failed · <span class="flag large"><i></i>large</span> more than ${fmt(LARGE_RESPONSE)} characters · <span class="flag research"><i></i>searched again</span> two searches in a row · <span class="flag jump"><i></i>jumped</span> an ID no earlier response showed.</p>`;
+    <p class="note">Flags: ${FLAG.error} the call failed · ${FLAG.large} more than ${fmt(LARGE_RESPONSE)} characters · ${FLAG.research} two searches in a row · <span class="flag jump"><i></i>jumped</span> an ID no earlier response showed.</p>`;
   $("#session-select").addEventListener("change", e => { currentSession = +e.target.value; currentStep = null; renderJourneys(); });
   panel.querySelectorAll("[data-step]").forEach(b => b.addEventListener("click", () => { currentStep = currentStep === +b.dataset.step ? null : +b.dataset.step; renderJourneys(); }));
   panel.querySelectorAll("[data-go]").forEach(b => b.addEventListener("click", () => journeyView.focus(b.dataset.go)));
   drawJourneyOverlay(G, sessions, heat);
 }
+// Flags: only a failure carries a status hue (negative: ×, dashed red); the rest are neutral with an icon.
+const FLAG_ICON = '<svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">';
+const FLAG = {
+  error: `<span class="flag error">${FLAG_ICON}<path d="M5 5l6 6M11 5l-6 6"/></svg>error</span>`,
+  large: `<span class="flag large">${FLAG_ICON}<path d="M3 4h10M3 8h10M3 12h6"/></svg>large</span>`,
+  research: `<span class="flag research">${FLAG_ICON}<circle cx="7" cy="7" r="4"/><path d="M10 10l3.5 3.5"/></svg>searched again</span>`,
+};
+
 function stepHtml(c, i, s) {
   const max = d3.max(s.calls, x => x.chars || 0) || 1;
   const a = c.arguments || {};
   const what = c.tool === "search" ? `“${esc(a.query || "")}”` : c.tool === "code" ? `<code>${esc(a.id || "")}</code> = <code>${esc(a.value ?? "")}</code>` : `<code>${esc(a.id || JSON.stringify(a))}</code>`;
   const flags = [];
-  if (c.error) flags.push(`<span class="flag error"><i></i>error</span>`);
-  if (c.flags.includes("large")) flags.push(`<span class="flag large"><i></i>large</span>`);
-  if (c.flags.includes("research")) flags.push(`<span class="flag research"><i></i>searched again</span>`);
+  if (c.error) flags.push(`${FLAG.error}`);
+  if (c.flags.includes("large")) flags.push(`${FLAG.large}`);
+  if (c.flags.includes("research")) flags.push(`${FLAG.research}`);
   if (c.how === "jump") flags.push(`<span class="flag jump"><i></i>jumped</span>`);
   if (c.how === "follow") flags.push(`<span class="flag follow"><i></i>followed</span>`);
   if (c.tool === "search" && c.returned) flags.push(`<span class="flag">${c.returned.length} results</span>`);
-  const err = c.error ? `<span class="sub" style="display:block;font-size:11.5px;color:var(--ink-muted)">${esc(c.error)}</span>` : "";
+  const err = c.error ? `<span class="err">${esc(c.error)}</span>` : "";
   return `<li><button type="button" data-step="${i}" aria-current="${currentStep === i}">
     <span class="seq">${c.seq}</span><span class="what"><span class="tool">${esc(c.tool)}</span>${what}${err}</span><span class="chars">${fmt(c.chars || 0)}</span>
     <span class="sizebar"><span style="width:${((c.chars || 0) / max * 100).toFixed(1)}%"></span></span>
