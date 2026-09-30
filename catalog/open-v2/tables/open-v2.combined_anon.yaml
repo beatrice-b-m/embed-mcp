@@ -213,7 +213,7 @@ columns:
     type: string
     nullable: true
     maps:
-      - {id: exam.location, mapping: derived, vocabulary: open-v2.codes.exam-location}
+      - {id: exam.location, mapping: derived}
   mg_exam_type:
     type: string
     nullable: true

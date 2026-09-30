@@ -1,12 +1,15 @@
 kind: feature
 label: Anonymized exam location
-definition: Anonymized exam location code.
-value_type: coded
-evidence: [release_schema, release_legend, inference, unresolved]
-search_terms: [anonymized exam location]
+definition: Anonymized identifier for the location where the exam was performed.
+value_type: identifier
+evidence: [release_schema, release_legend, inference]
+search_terms: [anonymized exam location, exam site, loc_num]
 caveats:
   - >-
-    The mapping to the legend's unsuffixed loc_num header is inferred, and the listed sites are
-    not guaranteed exhaustive.
+    Treat values as opaque identifiers; they do not denote named sites and must not be decoded
+    to underlying source locations.
+  - >-
+    The meaning is inferred from the legend's unsuffixed loc_num header rather than an exact
+    header match.
 topics: [topic.exam, topic.workflow]
 objects: [imaging_exam]
