@@ -32,3 +32,6 @@ notes:
   - >-
     Accepts a shared provisional grouping of CancerHist breast codes, a breast-type-not-recorded
     state for blank, and a biopsy-technique grouping.
+  - >-
+    Confirms the Georgia cancer-registry table's linkage, diagnosis-date, coverage, and receptor
+    semantics, and accepts the ICD-O-3 severity crosswalk exceptions.

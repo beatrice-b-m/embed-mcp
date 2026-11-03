@@ -1,0 +1,97 @@
+kind: context
+label: Internal V2 Georgia cancer-registry table
+context_type: data_representation
+definition: >-
+  The separate Georgia cancer-registry-derived table holds one row per registry tumor record,
+  with the patient, a patient-local registry identifier, the diagnosis date, laterality,
+  ICD-O-3 histology and behavior, primary site, stage, ER, PR, and HER2, and vital status.
+  Its rows are patient-scoped cancer events whether or not a MagView row points to them.
+search_terms:
+  - cancer registry
+  - Georgia cancer registry
+  - registry diagnosis date
+  - ICD-O-3 histology behavior
+  - registry receptors ER PR HER2
+  - registry coverage end
+caveats:
+  - >-
+    The table is described here but not yet physically bound; binding needs its complete
+    column inventory.
+  - >-
+    Registry dates are not always reliable; analyses should keep the date source on every
+    event.
+topics: [topic.pathology, topic.temporal, topic.workflow]
+about:
+  - internal-v2.technical.cancer_registry_record_identifier
+  - pathology.severity
+  - aggregation.pathology-severity-to-patient
+claims:
+  registry-rows-are-events:
+    statement: >-
+      Every registry row is a patient-scoped cancer event. The MagView pointer is the tuple
+      (empi_anon, cancer_outcome_registry_id); the identifier is null on many registry rows, and
+      some values match no MagView row. Such rows are registry diagnoses never linked to an
+      imaging accession.
+    status: verified
+    caveats:
+      - A missing pointer must not gate outcome ascertainment.
+      - The registry can represent Georgia diagnoses made outside Emory.
+    sources:
+      - internal-v2.cohort-labeling-maintainer-confirmation
+      - internal-v2.magview-maintainer-clarifications
+  registry-diagnosis-date:
+    statement: >-
+      The registry diagnosis date is day-precise but may record the cancer surgery date rather
+      than an earlier positive biopsy, so it can fall after the first pathology evidence.
+    status: verified
+    caveats:
+      - It is not a universal diagnosis date and does not fill a missing pathology date.
+    sources:
+      - internal-v2.cohort-labeling-maintainer-confirmation
+  registry-coverage-and-lag:
+    statement: >-
+      Registry rows arrive with a reporting lag of unknown length, and each extraction has its
+      own coverage end; the current internal extraction ends in 2024 and is being updated.
+    status: verified
+    caveats:
+      - A recent MagView cancer with no registry row is expected, not a linkage failure.
+      - >-
+        Analyses that rely on registry-only ascertainment should censor at the registry's
+        coverage end, which is approximate because of the patient date shift.
+    sources:
+      - internal-v2.cohort-labeling-maintainer-confirmation
+  icdo3-severity-crosswalk:
+    statement: >-
+      ICD-O-3 behavior scores registry rows onto the pathology severity groups as a
+      near-complete fallback for primary site C50, with named exceptions: LCIS and pleomorphic LCIS (8520/2,
+      8519/2) are not in situ cancer, 8046/3 is reviewed as non-breast, and non-epithelial
+      malignancies such as 9020/3, 9180/3, and 8714/3 are flagged.
+    status: reconciled
+    caveats:
+      - >-
+        The crosswalk is analyst-maintained; record which revision an analysis used and keep
+        unmapped histologies visible.
+    sources:
+      - internal-v2.cohort-labeling-maintainer-confirmation
+  registry-receptors:
+    statement: >-
+      Registry ER and PR codes are 0 negative, 1 positive, 7 test ordered with the result
+      unavailable, and 9 undocumented or unavailable. HER2 uses the same codes except that 0
+      means negative or equivocal; HER2 also carries 30, observed with no known meaning.
+    status: verified
+    caveats:
+      - HER2 code 30 is unresolved.
+      - >-
+        Receptors describe the registry tumor record; they are outcome annotations, not
+        index-time inputs.
+    sources:
+      - internal-v2.cohort-labeling-maintainer-confirmation
+  receptor-testing-by-disease:
+    statement: >-
+      Receptor testing differs by disease: ER is commonly tested in DCIS while HER2 generally is
+      not, so a receptor not documented for in situ disease is expected rather than missing.
+    status: unverified
+    caveats:
+      - Tentative until a breast radiologist confirms it.
+    sources:
+      - internal-v2.cohort-labeling-maintainer-confirmation
