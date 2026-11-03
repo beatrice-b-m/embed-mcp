@@ -11,3 +11,17 @@ notes:
     Confirms that a chart review of internal V2 screening exams found assessment X recorded for
     patients with a known cancer of one specific kind, and that the group is not yet
     understood.
+  - >-
+    Confirms that the MagView mass, asymmetry, arch_distortion, and calc columns were
+    pre-computed by a legacy labeling rule rather than recorded by radiologists.
+  - >-
+    Confirms that MagView acc_anon 999 is an invalid-accession sentinel and that non_magview
+    rows lack structured finding, assessment, and pathology content.
+  - >-
+    Confirms that MagView height and weight are unreliable and mostly missing, and that the
+    separate body-measurement table is canonical.
+  - Confirms that MagView livebirths 0 is an explicit no and null is not reported.
+  - Confirms that internal V2 race and ethnicity are patient self-reported.
+  - >-
+    Confirms that the patient date shift is about plus or minus one year, with the exact bound
+    kept confidential.

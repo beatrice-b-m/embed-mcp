@@ -70,9 +70,15 @@ claims:
       - >-
         The shift does not establish event meaning for an otherwise undocumented date-like
         column.
+      - >-
+        The shift is about plus or minus one year, and the exact bound is confidential. Years,
+        and cross-patient summaries of shifted dates such as a source's latest date, are usable
+        as represented but approximate to that degree; analyses that need true calendar years
+        require true-date inputs.
     sources:
       - internal-v2.magview-maintainer-clarifications
       - internal-v2.v1c-metadata-maintainer-clarifications
+      - internal-v2.cohort-labeling-maintainer-confirmation
   age-at-study-derivation:
     statement: >-
       Internal V2 age_at_study_anon is derived from the consistently shifted patient birth and

@@ -1,0 +1,16 @@
+kind: feature
+label: Reported live-birth count
+definition: The number of live births the patient reported.
+value_type: numeric
+evidence: [release_schema, maintainer_confirmed]
+search_terms: [live births, parity, number of children]
+caveats:
+  - A reported value is known as of the report, not as of later exams.
+missing_states:
+  not_reported:
+    representation: "null"
+    meaning: The patient did not report live births on this record.
+    caveats:
+      - Null is not zero live births.
+topics: [topic.demographics]
+objects: [patient, imaging_exam]
