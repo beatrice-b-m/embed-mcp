@@ -143,6 +143,15 @@ claims:
       - Values repeat on every MagView row and can differ within a patient.
     sources:
       - internal-v2.cohort-labeling-maintainer-confirmation
+  biopsy-technique-groups:
+    statement: >-
+      Biopsy-technique codes group as tissue biopsy (CB, EB, MR, MRX, SB, TB, UB, with surgery
+      codes E and I) or aspiration (CA, FNA, MA, SA, UA).
+    status: reconciled
+    caveats:
+      - The grouping describes the procedure, not its pathology result.
+    sources:
+      - internal-v2.cohort-labeling-maintainer-confirmation
   laterality-roles:
     statement: >-
       Finding side and biopsy side both represent left, right, and bilateral codes; in the

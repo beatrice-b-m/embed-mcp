@@ -31,6 +31,7 @@ about:
   - internal-v2.procedure_history.reported_result
   - internal-v2.hormonehist_anon
   - internal-v2.procedurehist_anon
+  - internal-v2.cancerhist_anon
 claims:
   patient-and-accession-context:
     statement: >-
@@ -49,6 +50,20 @@ claims:
     sources:
       - internal-v2.patient-history-maintainer-confirmation
       - internal-v2.magview-maintainer-clarifications
+  intake-capture-as-of-time:
+    statement: >-
+      HormoneHist, ProcHist, and CancerHist entries are captured at the intake of their
+      associated imaging exam, so each entry was known by that exam's date.
+    status: verified
+    caveats:
+      - >-
+        The exam date may serve as the entry's as-of time for features computed at or after
+        that exam; it does not date the exposure, procedure, or diagnosis itself.
+      - >-
+        A personal breast-history entry may serve as self-reported prior-cancer evidence from
+        that date onward, kept distinct from pathology evidence.
+    sources:
+      - internal-v2.cohort-labeling-maintainer-confirmation
   reported-history-not-current-care:
     statement: >-
       HormoneHist and ProcHist record reported or previously documented patient history rather

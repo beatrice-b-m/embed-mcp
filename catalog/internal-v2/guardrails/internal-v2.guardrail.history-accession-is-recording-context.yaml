@@ -19,9 +19,13 @@ caveats:
   - >-
     Candidate sentinel value 999 remains uninterpreted and must not be treated as a valid
     accession or a governed missing sentinel without further evidence.
+  - >-
+    The associated exam's date may serve as the entry's as-of time, meaning the entry was known
+    by then, for features computed at or after that exam; it is still not the event time.
 topics: [topic.exam, topic.procedure, topic.temporal, topic.workflow]
 cites:
   - internal-v2.patient-history-context#patient-and-accession-context
+  - internal-v2.patient-history-context#intake-capture-as-of-time
 applies_to:
   - imaging_exam
   - internal-v2.hormone_history_entry

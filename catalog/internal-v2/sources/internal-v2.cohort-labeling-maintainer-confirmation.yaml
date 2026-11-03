@@ -25,3 +25,10 @@ notes:
   - >-
     Confirms that the patient date shift is about plus or minus one year, with the exact bound
     kept confidential.
+  - >-
+    Confirms that HormoneHist, ProcHist, and CancerHist entries are captured at the intake of
+    their associated exam.
+  - Confirms that the CancerHist relative relationship-code expansions are reliable.
+  - >-
+    Accepts a shared provisional grouping of CancerHist breast codes, a breast-type-not-recorded
+    state for blank, and a biopsy-technique grouping.

@@ -1,0 +1,42 @@
+kind: pattern
+label: Patient risk factors as of an exam
+pattern_status: example
+definition: >-
+  One way the lab has reduced reported patient history and intake fields to risk-factor values
+  known as of an index exam.
+steps: >-
+  1. Reduce intake fields that repeat on every row of an exam to one value per exam, under a
+  declared reduction such as the first non-null value, and count the exams where rows disagree.
+  2. Use intake data recorded on or before the index exam date; use performed procedures only
+  when they occurred strictly before it.
+  3. Carry the latest value within a declared lookback, and count values skipped by the
+  lookback or by declared plausibility ranges.
+  4. Record menopausal status with its basis: reported, surgical, or an age proxy. A recorded
+  menopause age implies a reported post-menopausal state as of its exam; reports below a
+  declared floor are unused.
+  5. Group prior biopsies by technique, tissue biopsy or aspiration, from the represented
+  procedure codes.
+limits:
+  - >-
+    The reduction, lookback, floor, and plausibility ranges are analyst choices, not catalog
+    defaults.
+  - >-
+    A reported history value is known as of its report; it does not date the exposure,
+    procedure, or diagnosis it describes.
+  - >-
+    No entry is not a reported negative; keep not reported apart from an explicit none.
+search_terms:
+  - risk factors as of exam
+  - menopausal status
+  - reported history as of index exam
+  - parity
+  - prior biopsy
+topics: [topic.demographics, topic.risk, topic.temporal, topic.workflow]
+uses:
+  - demographics.age_at_menarche
+  - demographics.age_at_menopause
+  - demographics.age_at_pregnancy
+  - demographics.live_birth_count
+  - demographics.height
+  - demographics.weight
+  - exam.study_date

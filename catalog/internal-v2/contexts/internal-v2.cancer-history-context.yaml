@@ -91,6 +91,46 @@ claims:
         genetic result.
     sources:
       - internal-v2.cancer-history-maintainer-clarification
+  breast-code-groups:
+    statement: >-
+      Provisional groups for type B breast-history codes, from the candidate meanings. Breast
+      carcinoma, invasive or in situ: I, ID, IDC, II, IL, INC, DC, DCL, DCH, DCC, CI, PD, IPC,
+      ICP, CC, MC, TC, ADC, ADE, SQ, CS, CMT, CM, CCH, CEB. Non-epithelial breast malignancy:
+      AS, LY, PTM. Metastatic or other malignancy: MB, MIM, MDN, ANM. High-risk or benign: ADH,
+      ALH, LS, RS, PA, PT. Unresolved: B, DCG, DCS, XX, BVI. A blank cancercode on a type B
+      entry is breast, type not recorded.
+    status: unverified
+    caveats:
+      - >-
+        The grouping inherits the provisional status of the candidate meanings; revise it when
+        the dictionary changes and record which revision an analysis used.
+      - >-
+        Breast, type not recorded is not asserted malignant and stays apart from the carcinoma
+        and other groups.
+      - Unresolved codes stay unresolved; they are not counted as carcinoma or as benign.
+      - A grouping is not a severity, an outcome label, or a diagnosis date.
+    sources:
+      - internal-v2.cancer-history-draft-dictionaries
+      - internal-v2.cohort-labeling-maintainer-confirmation
+  relationship-expansions:
+    statement: >-
+      Relative relationship codes: M mother, F father, S sister, B brother, D daughter, SO son,
+      G and GM grandmother, MG maternal grandmother, PG paternal grandmother, MF maternal
+      grandfather, PF paternal grandfather, A and AU aunt, MA maternal aunt, PA paternal aunt,
+      U maternal uncle, PU paternal uncle, N niece, NW nephew, HB half brother, HS half sister,
+      MB maternal half brother, MS maternal half sister, PB paternal half brother, PS paternal
+      half sister, C cousin of unknown gender, CF female cousin, CM male cousin, 1C first
+      cousin once removed, 2C second cousin, GA great aunt, GG great grandmother.
+    status: verified
+    caveats:
+      - >-
+        Degree grouping: first degree is M, F, S, B, D, SO; second degree is grandparents,
+        aunts and uncles, nieces and nephews, and half-siblings; third or further is cousins,
+        great-aunts, and great-grandparents.
+      - Blank on a relative entry means relationship unknown.
+      - A relationship code is a category, not a unique relative.
+    sources:
+      - internal-v2.cohort-labeling-maintainer-confirmation
   provisional-code-meanings:
     statement: >-
       The supplied draft interprets type B as breast and O as other, with category-specific

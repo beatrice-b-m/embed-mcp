@@ -14,6 +14,9 @@ caveats:
     Applies only under type B.
     B, blank, DCG, DCS, and XX have no assigned meaning; a broader pathology dictionary does not
     resolve their CancerHist occurrences.
+  - >-
+    Provisional malignancy groups, and the breast-type-not-recorded state for blank, are in
+    internal-v2.cancer-history-context#breast-code-groups.
 codes:
   I: Invasive mammary carcinoma
   DC: Ductal carcinoma in situ

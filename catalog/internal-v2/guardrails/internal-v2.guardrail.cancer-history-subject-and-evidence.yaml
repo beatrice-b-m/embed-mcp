@@ -17,12 +17,21 @@ caveats:
   - >-
     Blank is not generic cancer or a negative result; code lists do not establish complete
     history capture.
+  - >-
+    A personal breast-history entry may serve as self-reported prior-cancer evidence from its
+    associated exam's date onward, kept distinct from pathology and from a diagnosis date.
+  - >-
+    A use of CancerHist as cancer history should apply the shared provisional breast-code
+    groups rather than a study-specific code set.
 topics: [topic.identity, topic.pathology, topic.risk, topic.workflow]
 cites:
   - internal-v2.cancer-history-context#subject-and-relationship
   - internal-v2.cancer-history-context#relative-grouping-not-identity
   - internal-v2.cancer-history-context#provisional-code-meanings
   - internal-v2.cancer-history-context#clinical-and-temporal-meaning
+  - internal-v2.cancer-history-context#breast-code-groups
+  - internal-v2.cancer-history-context#relationship-expansions
+  - internal-v2.patient-history-context#intake-capture-as-of-time
 applies_to:
   - internal-v2.cancer_history_entry
   - internal-v2.cancer_history.subject_category
