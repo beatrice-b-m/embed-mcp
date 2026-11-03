@@ -12,6 +12,9 @@ scope: embed_general
 search_terms: [temporal leakage, post index information, known at prediction time]
 caveats:
   - The appropriate availability boundary is analysis specific.
+  - >-
+    Downstream pathology used as an outcome label is not leakage; the same information used as
+    an input at the index time is.
 topics: [topic.imaging, topic.pathology, topic.procedure, topic.temporal]
 applies_to:
   - imaging_exam

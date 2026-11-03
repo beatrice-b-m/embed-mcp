@@ -1,0 +1,49 @@
+kind: pattern
+label: Longitudinal breast-cancer timeline
+pattern_status: example
+definition: >-
+  One way the lab has built a patient's breast-cancer timeline from represented pathology and
+  registry records, so that each exam can carry prior history and time to the next represented
+  cancer.
+steps: >-
+  1. Collect breast-severity events at patient scope from procedure-associated pathology and from
+  every cancer-registry record, whether or not the record links to an imaging accession.
+  2. Attribute each event to its own recorded side; when no side is recorded, keep it at exam and
+  patient grain with side unknown rather than dropping it or filling it from finding side.
+  3. Date each event by its own source, such as the procedure date or the registry diagnosis
+  date, and keep that source on the event.
+  4. Declare a same-day rule and a tie-break, then compute time from each exam to the first later
+  event and prior history before it.
+  5. Report prior history at both imaged-side and patient grain.
+  6. Name any follow-up measure as an observation proxy.
+  7. Optionally derive an ever-represented breast cancer label: a union over registry records,
+  procedure-associated pathology, and self-reported personal history, with each source kept as
+  its own indicator and an unresolved state for unresolved history codes.
+limits:
+  - >-
+    Time to the first represented cancer is a composite endpoint dated by each event's source;
+    it is not a diagnosis date, and no date substitutes for a missing one of the same event.
+  - >-
+    Features computed only on the sides an exam imaged omit the other breast, so a contralateral
+    prior cancer is invisible at side grain; keep imaged-side and patient-level history
+    distinct.
+  - >-
+    The same cancer can appear as both a pathology event and a registry event on nearby dates;
+    a link window between them is analyst policy.
+  - >-
+    An ever-represented label is a represented-event endpoint, not proof of absence, and a
+    timeline-wide label that must not be used as an index-time input.
+  - The same-day rule, tie-break, windows, and source priority are analyst policy.
+search_terms:
+  - cancer timeline
+  - time to cancer
+  - prior breast cancer
+  - ever breast cancer
+  - registry only cancer
+  - patient level outcome
+topics: [topic.identity, topic.pathology, topic.temporal]
+uses:
+  - pathology.severity
+  - pathology.procedure_date
+  - breast.side
+  - aggregation.pathology-severity-to-patient

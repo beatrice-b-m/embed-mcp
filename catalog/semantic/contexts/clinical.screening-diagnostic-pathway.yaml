@@ -17,7 +17,11 @@ caveats:
     complete or deterministic event sequence.
   - >-
     No follow-up interval, interval-cancer policy, outcome definition, or modality-inclusion
-    rule is established.
+    rule is established; the screening outcome classification pattern is one example with its
+    limits.
+  - >-
+    Supplemental and high-risk screening ultrasound or MRI follow separate pathways and are not
+    diagnostic follow-up of a screening mammogram.
 topics: [topic.imaging, topic.mammography, topic.pathology, topic.procedure, topic.workflow]
 about:
   - exam.mammography_type

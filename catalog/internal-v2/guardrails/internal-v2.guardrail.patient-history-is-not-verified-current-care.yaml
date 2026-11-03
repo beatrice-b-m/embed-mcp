@@ -17,6 +17,11 @@ search_terms:
   - patient history attribution
 caveats:
   - NONE means no reported historical result and must not be normalized to negative pathology.
+  - >-
+    The constraint forbids merging entries into one event.
+    It does not forbid a patient-level any-evidence risk factor that keeps documented and
+    reported evidence as separately named parts, never treats a reported entry as verified
+    pathology, and never deduplicates across the two.
 topics: [topic.imaging, topic.pathology, topic.procedure, topic.workflow]
 cites:
   - internal-v2.patient-history-context#reported-history-not-current-care

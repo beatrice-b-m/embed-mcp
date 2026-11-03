@@ -28,6 +28,12 @@ caveats:
   - >-
     A cancer-associated imaging exam remains a valid anchor when that is the explicitly named
     estimand; it is not a replacement for a different clinical event.
+  - >-
+    A time-to-first-represented-cancer endpoint may date each event by its own source, such as
+    the procedure date for procedure-associated pathology and the registry diagnosis date for a
+    registry record, when every event carries its date source.
+    It is a composite endpoint, not a diagnosis date, and no date substitutes for a missing one
+    of the same event.
 topics: [topic.exam, topic.procedure, topic.pathology, topic.report, topic.temporal]
 applies_to:
   - imaging_exam
