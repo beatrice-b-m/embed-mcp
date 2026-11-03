@@ -6,9 +6,12 @@ value_type: coded
 evidence: [maintainer_confirmed]
 search_terms: [CancerHist relative_relationship_code, Reported relative relationship category]
 caveats:
-  - Individual relationship-code expansions are unresolved; blank can occur on a relative entry.
+  - >-
+    Expansions and a degree grouping are in the relationship-expansions claim; blank on a
+    relative entry means relationship unknown.
 topics: [topic.identity, topic.pathology, topic.workflow]
 cites:
   - internal-v2.cancer-history-context#subject-and-relationship
   - internal-v2.cancer-history-context#relative-grouping-not-identity
+  - internal-v2.cancer-history-context#relationship-expansions
 objects: [internal-v2.cancer_history_entry]

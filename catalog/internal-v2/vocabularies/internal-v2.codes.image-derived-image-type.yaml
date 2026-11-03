@@ -12,6 +12,11 @@ caveats:
     also occur under the residual class.
   - Every non-mammographic source modality falls into the residual class.
   - >-
+    The 3D class holds both tomosynthesis projection images and reconstructed volumes; no
+    governed attribute separating them is established, and series-description wording differs
+    by manufacturer, so a projection-or-reconstruction form is a derived value with an unknown
+    state.
+  - >-
     ROI_SS and ROI_SSC are secondary screen-capture annotation-transfer artifacts retained
     solely for ROI extraction and are not intended for other use.
 codes:

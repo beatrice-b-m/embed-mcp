@@ -26,6 +26,15 @@ topics:
 about:
   - imaging.assessment
   - imaging.recommendation
+  - mammography.mass_present
+  - mammography.asymmetry_present
+  - mammography.architectural_distortion_present
+  - mammography.calcification_present
+  - demographics.live_birth_count
+  - demographics.height
+  - demographics.weight
+  - demographics.race
+  - demographics.ethnicity
   - pathology.diagnosis_code_slot
   - pathology.severity
   - breast.side
@@ -74,6 +83,104 @@ claims:
       - internal-v2.v1-open-dictionary-comparison
       - internal-v2.v2-open-legend-comparison
       - internal-v2.magview-coded-value-observation
+  assessment-x-under-investigation:
+    statement: >-
+      Internal V2 assessment X is recorded for some screening exams of patients with a known
+      cancer of one specific kind; what the group represents is not yet understood.
+    status: unresolved
+    caveats:
+      - >-
+        Keep X as No Assessment; do not recode it to known biopsy-proven malignancy (K) or to
+        any other assessment.
+      - Analyses that reduce assessments should flag exams carrying X as uncertain.
+    sources:
+      - internal-v2.cohort-labeling-maintainer-confirmation
+  legacy-characteristic-flags:
+    statement: >-
+      The internal V2 mass, asymmetry, arch_distortion, and calc columns were pre-computed from
+      the descriptor columns by a legacy labeling rule of unknown version; they are not
+      radiologist-recorded flags.
+    status: verified
+    caveats:
+      - >-
+        Analyses that need these characteristics should re-derive them from the descriptor
+        columns with a declared rule.
+    sources:
+      - internal-v2.cohort-labeling-maintainer-confirmation
+  accession-sentinels:
+    statement: >-
+      MagView acc_anon value 999 is an invalid-accession sentinel, and rows whose accession
+      source type is non_magview lack structured MagView finding, assessment, and pathology
+      content.
+    status: verified
+    caveats:
+      - Report parsing for non_magview rows is planned but not represented.
+    sources:
+      - internal-v2.cohort-labeling-maintainer-confirmation
+  intake-body-measures:
+    statement: >-
+      MagView height and weight are unreliable and mostly missing; the separate body-measurement
+      table, with patient, collection date, height in inches, weight in pounds, and a supplied
+      BMI, is the canonical source.
+    status: verified
+    caveats:
+      - The body-measurement table is not yet bound in this catalog.
+      - How the supplied BMI was computed is not documented.
+    sources:
+      - internal-v2.cohort-labeling-maintainer-confirmation
+  intake-live-births:
+    statement: >-
+      MagView livebirths is intake data repeated on every row of an exam; 0 is an explicit
+      report of no live births and null means not reported.
+    status: verified
+    caveats:
+      - Whether pregnancyage_anon is age at first live birth is not established.
+    sources:
+      - internal-v2.cohort-labeling-maintainer-confirmation
+  self-reported-race-ethnicity:
+    statement: Internal V2 race and ethnicity are patient self-reported.
+    status: verified
+    caveats:
+      - >-
+        Category completeness and the distinction between null and an explicit unknown
+        remain unresolved.
+      - Values repeat on every MagView row and can differ within a patient.
+    sources:
+      - internal-v2.cohort-labeling-maintainer-confirmation
+  biopsy-technique-groups:
+    statement: >-
+      Biopsy-technique codes group as tissue biopsy (CB, EB, MR, MRX, SB, TB, UB, with surgery
+      codes E and I) or aspiration (CA, FNA, MA, SA, UA).
+    status: reconciled
+    caveats:
+      - The grouping describes the procedure, not its pathology result.
+    sources:
+      - internal-v2.cohort-labeling-maintainer-confirmation
+  characteristic-code-sources:
+    statement: >-
+      Mammographic mass, asymmetry, architectural distortion, and calcification evidence is
+      spread across several MagView columns. otherfind carries asymmetry (4, I, Q, Y, and 5, a
+      density in the MLO projection) and architectural distortion (D) as comma-separated
+      tokens, so a characteristic rule that reads only the mass and calcification columns
+      misses these findings.
+    status: reconciled
+    caveats:
+      - >-
+        massshape N (intramammary lymph node) and Y (lymph node) are lymph nodes, not masses;
+        the otherfind lymph-node tokens 2 (prominent), V (normal), Z (abnormal), and A
+        (axillary adenopathy) belong with them, with normal and abnormal kept apart.
+      - >-
+        massshape T is an asymmetric tubular structure or solitary dilated duct, not an
+        asymmetry.
+      - >-
+        Suspicious calcification morphologies are amorphous (A), coarse heterogeneous (H),
+        fine pleomorphic (I), pleomorphic (K), and fine-linear or branching (B, F); suspicious
+        distributions are linear (L) and segmental (S).
+      - otherfind % (calcified oil cyst) is a benign calcification.
+      - A characteristic derivation belongs to analysis code; these notes document code meaning.
+    sources:
+      - internal-v2.cohort-labeling-maintainer-confirmation
+      - internal-v2.v1-open-dictionary-comparison
   laterality-roles:
     statement: >-
       Finding side and biopsy side both represent left, right, and bilateral codes; in the

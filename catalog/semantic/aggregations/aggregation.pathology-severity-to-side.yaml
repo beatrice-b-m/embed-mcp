@@ -6,6 +6,11 @@ definition: >-
 ordering: "Inverse severity ordering: minimum means most severe."
 search_terms: [side pathology aggregate, minimum severity by breast]
 caveats:
+  - >-
+    The non-breast-cancer state is not on the breast-severity axis: a minimum taken across it
+    hides non-breast cancer behind borderline or benign results.
+    Reduce over the breast-severity states and carry non-breast cancer as a separate
+    indicator.
   - The physical grouping and attachment limitations still apply.
   - Null does not become benign during aggregation.
 source_object: pathology_diagnosis

@@ -1,0 +1,32 @@
+kind: aggregation
+label: Imaging assessment to breast side
+aggregation_status: analyst_defined
+definition: >-
+  No supplied side-level assessment is defined.
+  An analyst may reduce the assessments attributed to a breast side to the most severe one by a
+  declared precedence specific to the exam purpose.
+ordering: >-
+  One precedence the lab has used: for screening exams A over B over N; for diagnostic
+  mammography, ultrasound, and MRI exams K over M over S over P over B over N over A.
+  The precedence is a reduction convention, not an ordinal or probability scale.
+search_terms:
+  - side BI-RADS
+  - most severe assessment by breast
+  - assessment precedence
+  - worst BI-RADS
+caveats:
+  - >-
+    Screening and diagnostic exams use different precedences, so the reduction must declare
+    which exam purposes it covers.
+  - >-
+    No Assessment (X) and any code outside the declared precedence must be declared as
+    excluded, flagged, or placed; they must not be ranked silently.
+  - >-
+    A finding whose side is bilateral contributes to both breast sides; the side's attribution
+    limitations still apply.
+  - An assessment reduction is not a pathology outcome.
+source_object: imaging_interpretation
+target_object: breast_side
+input_feature: imaging.assessment
+topics: [topic.breast_side, topic.imaging]
+via: [clinical.finding-interpretation, clinical.side-finding]

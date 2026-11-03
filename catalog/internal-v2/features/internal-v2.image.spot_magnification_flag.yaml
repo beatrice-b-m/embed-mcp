@@ -12,5 +12,8 @@ caveats:
     tomosynthesis-classified rows.
   - A missing value is not a negative determination.
   - The flag does not distinguish spot compression from magnification.
+  - >-
+    A spot, magnification, or otherwise modified view does not satisfy standard CC or MLO view
+    coverage even when its view position reads CC or MLO.
 topics: [topic.imaging, topic.mammography]
 objects: [image]

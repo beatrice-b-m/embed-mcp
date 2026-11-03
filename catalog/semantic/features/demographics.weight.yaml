@@ -1,0 +1,11 @@
+kind: feature
+label: Patient weight
+definition: Patient weight as represented in the release.
+value_type: numeric
+evidence: [release_schema, maintainer_confirmed]
+search_terms: [patient weight, body measurement, weight in pounds, BMI]
+caveats:
+  - Units, measurement time, and reliability depend on the source column; read its caveats.
+  - Implausible values occur; range checks are analyst parameters, not catalog rules.
+topics: [topic.demographics]
+objects: [patient]

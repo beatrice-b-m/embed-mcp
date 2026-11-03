@@ -7,6 +7,10 @@ legend_role: comparison_legend
 evidence: [observed_source_values, release_legend]
 caveats:
   - >-
+    Asymmetry tokens are 4, 5, I, Q, and Y; architectural distortion is D; lymph-node tokens
+    are 2, V, Z, and A, with normal (V) and abnormal (Z) kept apart; % is a benign
+    calcification. See internal-v2.magview-coded-values-context#characteristic-code-sources.
+  - >-
     Parse comma-delimited tokens; ordering and repetition do not change meaning, and preserve
     unexplained component codes.
 codes:

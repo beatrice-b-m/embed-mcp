@@ -1,0 +1,49 @@
+kind: pattern
+label: Screening outcome classification
+pattern_status: example
+definition: >-
+  One way the lab has classified the local outcome of a screening mammogram from the represented
+  recall, diagnostic work-up, and pathology that follow it.
+steps: >-
+  1. Take the screening exam's side- and exam-level assessment reductions under a declared
+  precedence.
+  2. For a recalled screen, search the patient's timeline for the diagnostic work-up and any
+  pathology within a declared recall window, such as six months.
+  3. Classify pathology-backed outcomes by breast-severity group, keeping non-breast cancer as a
+  separate indicator.
+  4. For a negative or benign screen, record whether a represented breast cancer occurs before a
+  declared interval boundary, such as twelve months or the next screen, and call such a cancer an
+  interval cancer.
+  5. Name a negative screen as no represented breast cancer through that interval; record
+  unresolved recalls and missing work-up as their own states.
+limits:
+  - >-
+    The windows are analyst policy, not catalog defaults; the outcome is local to the screen and
+    does not require later negative confirmation.
+  - >-
+    Whether a study also requires later negative imaging, and over what window, is study policy
+    built from the represented contacts.
+  - >-
+    A negative outcome is a represented-event endpoint; it must not be called cancer-free or
+    proof of complete follow-up.
+  - >-
+    Cancer here means invasive or in situ breast cancer on an imaged breast; a unilateral screen
+    takes no evidence from the other breast.
+  - >-
+    Supplemental and high-risk screening ultrasound or MRI are separate pathways, not follow-up
+    of the mammogram.
+search_terms:
+  - screening outcome
+  - screen detected cancer
+  - interval cancer
+  - screening negative
+  - recall window
+  - outcome classification
+topics: [topic.imaging, topic.mammography, topic.pathology, topic.workflow]
+uses:
+  - imaging.assessment
+  - exam.mammography_type
+  - pathology.severity
+  - aggregation.assessment-to-side
+  - aggregation.assessment-to-exam
+  - aggregation.pathology-severity-to-side

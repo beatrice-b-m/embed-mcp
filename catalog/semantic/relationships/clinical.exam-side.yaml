@@ -13,6 +13,9 @@ attribution_limitations:
 temporal_qualification: The side is part of the same exam event.
 search_terms: [exam breast sides, left right exam]
 caveats:
+  - >-
+    History, prior-cancer, and censoring features computed only on the sides an exam imaged
+    omit the other breast; imaged-side and patient-level versions answer different questions.
   - Finding laterality and procedure laterality have different null semantics.
 source_object: imaging_exam
 target_object: breast_side

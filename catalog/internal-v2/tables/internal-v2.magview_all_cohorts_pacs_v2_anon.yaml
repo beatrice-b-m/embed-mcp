@@ -313,6 +313,15 @@ columns:
     nullable: true
     maps:
       - {id: exam.accession_identifier, mapping: direct}
+    interpretations:
+      invalid-accession:
+        representation: "999"
+        meaning: Invalid-accession sentinel; it does not identify an exam
+        status: verified
+        caveats:
+          - Rows carrying it must not be joined or grouped by accession.
+        cites:
+          - internal-v2.magview-coded-values-context#accession-sentinels
   linkedaccession_anon:
     type: int64
     nullable: true
@@ -347,6 +356,19 @@ columns:
         mapping: direct
         vocabulary: internal-v2.codes.exam-accession-source-type
         accession_role: current
+    interpretations:
+      non-magview:
+        representation: non_magview
+        meaning: >-
+          The exam did not come from MagView, so the row lacks structured MagView finding,
+          assessment, and pathology content
+        status: verified
+        caveats:
+          - >-
+            Missing structured content on these rows is not a negative finding, assessment, or
+            pathology result.
+        cites:
+          - internal-v2.magview-coded-values-context#accession-sentinels
   linkedaccession_type:
     type: string
     nullable: true
@@ -451,6 +473,14 @@ columns:
         status: reconciled
         cites:
           - internal-v2.magview-coded-values-context#code-normalization
+      X:
+        representation: X
+        meaning: No Assessment, recorded for a group of screening exams that is not yet understood
+        status: unresolved
+        caveats:
+          - Do not recode X to known biopsy-proven malignancy or to any other assessment.
+        cites:
+          - internal-v2.magview-coded-values-context#assessment-x-under-investigation
   total_L_find:
     type: int8
     nullable: true
@@ -508,8 +538,18 @@ columns:
   mass:
     type: int8
     nullable: true
+    caveats:
+      - >-
+        Pre-computed from the descriptor columns by a legacy labeling rule of unknown version;
+        it is not a radiologist-recorded flag.
+      - Prefer re-deriving the characteristic from the descriptor columns with a declared rule.
     maps:
-      - {id: mammography.mass_present, mapping: direct}
+      - id: mammography.mass_present
+        mapping: derived
+        notes:
+          - >-
+            Derived by a legacy rule; cite
+            internal-v2.magview-coded-values-context#legacy-characteristic-flags.
     interpretations:
       "0":
         representation: "0"
@@ -526,8 +566,18 @@ columns:
   asymmetry:
     type: int8
     nullable: true
+    caveats:
+      - >-
+        Pre-computed from the descriptor columns by a legacy labeling rule of unknown version;
+        it is not a radiologist-recorded flag.
+      - Prefer re-deriving the characteristic from the descriptor columns with a declared rule.
     maps:
-      - {id: mammography.asymmetry_present, mapping: direct}
+      - id: mammography.asymmetry_present
+        mapping: derived
+        notes:
+          - >-
+            Derived by a legacy rule; cite
+            internal-v2.magview-coded-values-context#legacy-characteristic-flags.
     interpretations:
       "0":
         representation: "0"
@@ -544,8 +594,18 @@ columns:
   arch_distortion:
     type: int8
     nullable: true
+    caveats:
+      - >-
+        Pre-computed from the descriptor columns by a legacy labeling rule of unknown version;
+        it is not a radiologist-recorded flag.
+      - Prefer re-deriving the characteristic from the descriptor columns with a declared rule.
     maps:
-      - {id: mammography.architectural_distortion_present, mapping: direct}
+      - id: mammography.architectural_distortion_present
+        mapping: derived
+        notes:
+          - >-
+            Derived by a legacy rule; cite
+            internal-v2.magview-coded-values-context#legacy-characteristic-flags.
     interpretations:
       "0":
         representation: "0"
@@ -562,8 +622,18 @@ columns:
   calc:
     type: int8
     nullable: true
+    caveats:
+      - >-
+        Pre-computed from the descriptor columns by a legacy labeling rule of unknown version;
+        it is not a radiologist-recorded flag.
+      - Prefer re-deriving the characteristic from the descriptor columns with a declared rule.
     maps:
-      - {id: mammography.calcification_present, mapping: direct}
+      - id: mammography.calcification_present
+        mapping: derived
+        notes:
+          - >-
+            Derived by a legacy rule; cite
+            internal-v2.magview-coded-values-context#legacy-characteristic-flags.
     interpretations:
       "0":
         representation: "0"
@@ -714,6 +784,26 @@ columns:
   livebirths:
     type: int8
     nullable: true
+    maps:
+      - id: demographics.live_birth_count
+        mapping: direct
+        notes:
+          - >-
+            Intake data repeated on every row of the exam; cite
+            internal-v2.magview-coded-values-context#intake-live-births.
+    interpretations:
+      none-reported:
+        representation: "0"
+        meaning: An explicit report of no live births
+        status: verified
+        cites:
+          - internal-v2.magview-coded-values-context#intake-live-births
+      "null":
+        representation: "null"
+        meaning: Live births were not reported
+        status: verified
+        cites:
+          - internal-v2.magview-coded-values-context#intake-live-births
   modality:
     type: string
     nullable: true
@@ -1009,6 +1099,11 @@ columns:
   bside:
     type: string
     nullable: true
+    caveats:
+      - >-
+        Pathology on a procedure with null bside remains exam- and patient-attributed evidence:
+        keep it at exam or patient grain with side unknown, and do not drop it from
+        patient-scoped searches.
     maps:
       - id: pathology.biopsy_side
         mapping: direct
@@ -1420,9 +1515,29 @@ columns:
   height:
     type: int16
     nullable: true
+    caveats:
+      - >-
+        Unreliable and mostly missing; the separate body-measurement table is the canonical
+        source of height.
+      - Implausible values occur; range checks are analyst parameters, not catalog rules.
+    maps:
+      - id: demographics.height
+        mapping: direct
+        notes:
+          - Cite internal-v2.magview-coded-values-context#intake-body-measures.
   weight:
     type: int16
     nullable: true
+    caveats:
+      - >-
+        Unreliable and mostly missing; the separate body-measurement table is the canonical
+        source of weight.
+      - Implausible values occur; range checks are analyst parameters, not catalog rules.
+    maps:
+      - id: demographics.weight
+        mapping: direct
+        notes:
+          - Cite internal-v2.magview-coded-values-context#intake-body-measures.
   GENDER_DESC:
     type: string
     nullable: true
@@ -1431,11 +1546,19 @@ columns:
   race:
     type: string
     nullable: true
+    caveats:
+      - >-
+        Patient self-reported; repeats on every MagView row and can differ within a patient.
+        Cite internal-v2.magview-coded-values-context#self-reported-race-ethnicity.
     maps:
       - {id: demographics.race, mapping: direct}
   ethnicity:
     type: string
     nullable: true
+    caveats:
+      - >-
+        Patient self-reported; repeats on every MagView row and can differ within a patient.
+        Cite internal-v2.magview-coded-values-context#self-reported-race-ethnicity.
     maps:
       - {id: demographics.ethnicity, mapping: direct}
   patient_language:

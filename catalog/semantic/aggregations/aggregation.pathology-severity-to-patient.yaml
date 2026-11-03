@@ -15,6 +15,9 @@ caveats:
   - >-
     No single definition of incident, prevalent, earliest, or ever-positive patient outcomes is
     authoritative.
+  - >-
+    The longitudinal breast-cancer timeline pattern is one example of a declared patient-level
+    policy, with its limits.
 source_object: pathology_diagnosis
 target_object: patient
 input_feature: pathology.severity
