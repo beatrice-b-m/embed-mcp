@@ -6,5 +6,8 @@ evidence: [release_schema, release_legend, unresolved]
 search_terms: [calcification presence]
 caveats:
   - The legend describes presence but does not explicitly define the numeric flag encoding.
+  - >-
+    Evidence for the characteristic can sit in several descriptor columns, including
+    other-finding tokens; a profile's pre-computed flag may come from a legacy rule.
 topics: [topic.imaging, topic.mammography]
 objects: [imaging_finding]

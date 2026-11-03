@@ -5,6 +5,11 @@ null_meaning: [undocumented, occurrence_specific]
 parsing: atomic
 legend_role: comparison_legend
 evidence: [observed_source_values, release_legend]
+caveats:
+  - >-
+    N and Y are lymph nodes, not masses; T is an asymmetric tubular structure or solitary
+    dilated duct, not an asymmetry. See internal-v2.magview-coded-values-
+    context#characteristic-code-sources.
 codes:
   A: Architectural distortion
   B: Global asymmetry

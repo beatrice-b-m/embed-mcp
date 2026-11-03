@@ -5,6 +5,10 @@ null_meaning: [undocumented, occurrence_specific]
 parsing: atomic
 legend_role: comparison_legend
 evidence: [observed_source_values, release_legend]
+caveats:
+  - >-
+    Suspicious distributions are L and S. See internal-v2.magview-coded-values-
+    context#characteristic-code-sources.
 codes:
   C: Clustered
   D: Diffuse/scattered
