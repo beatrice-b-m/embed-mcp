@@ -670,6 +670,8 @@ columns:
   SeriesDescription:
     type: string
     nullable: true
+    maps:
+      - {id: internal-v2.image.series_description, mapping: direct}
   SeriesNumber:
     type: int64
     nullable: true

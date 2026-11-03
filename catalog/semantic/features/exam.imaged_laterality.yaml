@@ -1,0 +1,32 @@
+kind: feature
+label: Imaged laterality
+definition: >-
+  Which breasts an imaging exam imaged: left, right, or both.
+  No release records it as a source column; it is derived from the procedure description or
+  from image laterality.
+value_type: categorical
+evidence: [inference]
+search_terms:
+  - imaged laterality
+  - exam laterality
+  - which breast was imaged
+  - unilateral exam
+  - bilateral exam
+caveats:
+  - >-
+    Finding sides list the breasts with a finding, not the breasts imaged; a finding-free breast
+    of a bilateral exam has no finding row of its own unless the release adds one.
+  - >-
+    Parsing the procedure description is best-effort, and image metadata may cover only part of
+    an exam's images.
+missing_states:
+  unknown:
+    representation: unknown
+    meaning: The derivation could not establish which breasts were imaged.
+    caveats:
+      - Unknown must not default to left, right, or bilateral.
+topics: [topic.exam, topic.breast_side]
+objects: [imaging_exam]
+related:
+  - exam.procedure_description
+  - breast.side

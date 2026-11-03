@@ -1,0 +1,30 @@
+kind: feature
+label: Image series description
+definition: >-
+  Free-text series description written by the acquiring modality for one internal V1c image
+  row.
+value_type: text
+evidence: [observed_source_values]
+search_terms:
+  - series description
+  - SeriesDescription
+  - tomosynthesis projection
+  - side and view text
+caveats:
+  - >-
+    The text often names the side, view, and acquisition form, for example a left MLO
+    tomosynthesis image, but it is not a controlled vocabulary: wording varies by manufacturer,
+    and side or view cannot always be parsed.
+  - >-
+    It is a useful fallback when ImageLateralityFinal and ViewPosition are both null; a value
+    parsed from it is recovered rather than recorded, an unparseable description leaves side
+    and view unknown, and it never overrides a populated tag.
+  - >-
+    Its wording is the working way to tell tomosynthesis projections from reconstructions, and
+    that distinction is not reliable across manufacturers.
+topics: [topic.imaging, topic.mammography]
+objects: [image]
+related:
+  - internal-v2.image.view_position
+  - internal-v2.image.derived_laterality
+  - internal-v2.image.derived_image_type

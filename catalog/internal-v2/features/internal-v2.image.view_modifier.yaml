@@ -8,6 +8,9 @@ search_terms: [view modifier, spot compression, magnification view, implant disp
 caveats:
   - Represented as a source code meaning rather than a governed internal code list.
   - Only one modifier occurrence is inventoried; a source sequence may carry more.
+  - >-
+    A spot, magnification, or otherwise modified view does not satisfy standard CC or MLO view
+    coverage even when its view position reads CC or MLO.
 topics: [topic.imaging, topic.mammography]
 cites:
   - internal-v2.v1c-metadata-context#parsed-dicom-element-semantics

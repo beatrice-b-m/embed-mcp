@@ -14,6 +14,11 @@ caveats:
   - >-
     Use anon_dicom_path for current DICOM availability, treating its absence as an anonymization
     data-quality error rather than intended optionality.
+  - >-
+    An image-availability feature may be derived when it is named as availability in the
+    current extraction and each exam carries a state for whether V1c has any rows for it.
+    Restricting a study to extracted exams is an extraction-coverage criterion, not evidence
+    that no images were acquired.
 topics: [topic.imaging, topic.exam]
 cites:
   - internal-v2.v1c-metadata-context#coverage-is-not-image-absence
