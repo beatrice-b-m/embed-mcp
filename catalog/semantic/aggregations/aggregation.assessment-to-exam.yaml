@@ -1,0 +1,28 @@
+kind: aggregation
+label: Imaging assessment to imaging exam
+aggregation_status: analyst_defined
+definition: >-
+  No supplied exam-level assessment is defined.
+  An analyst may reduce an exam's assessments to the most severe one by the same declared,
+  exam-purpose-specific precedence used for breast sides, or take the more severe of the two
+  side-level reductions.
+ordering: >-
+  The precedence declared for the side-level reduction; it is a reduction convention, not an
+  ordinal or probability scale.
+search_terms:
+  - exam BI-RADS
+  - most severe assessment by exam
+  - exam-level assessment
+caveats:
+  - >-
+    An exam-level reduction hides which breast carried the assessment; keep the side-level
+    values where side matters.
+  - >-
+    No Assessment (X) and any code outside the declared precedence must be declared as
+    excluded, flagged, or placed.
+  - An assessment reduction is not a pathology outcome.
+source_object: imaging_interpretation
+target_object: imaging_exam
+input_feature: imaging.assessment
+topics: [topic.exam, topic.imaging]
+via: [clinical.finding-interpretation, clinical.exam-finding]

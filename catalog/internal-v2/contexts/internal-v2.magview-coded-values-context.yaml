@@ -74,6 +74,18 @@ claims:
       - internal-v2.v1-open-dictionary-comparison
       - internal-v2.v2-open-legend-comparison
       - internal-v2.magview-coded-value-observation
+  assessment-x-under-investigation:
+    statement: >-
+      Internal V2 assessment X is recorded for some screening exams of patients with a known
+      cancer of one specific kind; what the group represents is not yet understood.
+    status: unresolved
+    caveats:
+      - >-
+        Keep X as No Assessment; do not recode it to known biopsy-proven malignancy (K) or to
+        any other assessment.
+      - Analyses that reduce assessments should flag exams carrying X as uncertain.
+    sources:
+      - internal-v2.cohort-labeling-maintainer-confirmation
   laterality-roles:
     statement: >-
       Finding side and biopsy side both represent left, right, and bilateral codes; in the

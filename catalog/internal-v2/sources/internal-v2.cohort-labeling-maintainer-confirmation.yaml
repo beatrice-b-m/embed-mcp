@@ -1,0 +1,13 @@
+kind: source
+label: Internal V2 cohort-labeling maintainer confirmations
+source_type: maintainer_confirmed
+locator_type: logical_artifact
+locator: maintainer-confirmed:internal-v2-cohort-labeling
+version_scope: >-
+  Internal EMBED V2 assessment, pathology, registry, image-metadata, history, and demographic
+  semantics confirmed while preparing labeled research cohorts.
+notes:
+  - >-
+    Confirms that a chart review of internal V2 screening exams found assessment X recorded for
+    patients with a known cancer of one specific kind, and that the group is not yet
+    understood.

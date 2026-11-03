@@ -5,6 +5,11 @@ definition: Take the minimum represented pathology-severity value in the applica
 ordering: "Inverse severity ordering: minimum means most severe."
 search_terms: [exam pathology aggregate, minimum severity by exam]
 caveats:
+  - >-
+    The non-breast-cancer state is not on the breast-severity axis: a minimum taken across it
+    hides non-breast cancer behind borderline or benign results.
+    Reduce over the breast-severity states and carry non-breast cancer as a separate
+    indicator.
   - An exam aggregate does not establish that pathology was available at imaging time.
   - Null does not establish a negative outcome.
 source_object: pathology_diagnosis

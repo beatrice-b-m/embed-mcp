@@ -6,5 +6,9 @@ evidence: [release_schema, release_legend]
 search_terms: [imaging assessment, birads, bi-rads]
 caveats:
   - Do not impose a simple ordinal scale across assessment states.
+  - >-
+    Reducing several assessments to the most severe one by a declared, exam-purpose-specific
+    precedence is a reduction convention, not an ordinal scale; see the side and exam
+    assessment aggregations.
 topics: [topic.imaging]
 objects: [imaging_interpretation]

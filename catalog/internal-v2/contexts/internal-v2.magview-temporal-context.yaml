@@ -16,6 +16,10 @@ caveats:
     Different date meanings must remain separate; missingness is not repaired through
     coalescing.
   - No date is designated as a universal diagnosis date.
+  - >-
+    A composite pathology or cancer date is a separately named analyst endpoint when each value
+    carries its source column and its offset from the index exam; it must not be called a
+    diagnosis date, and no date fills a missing value of another endpoint.
 topics:
   - topic.exam
   - topic.procedure

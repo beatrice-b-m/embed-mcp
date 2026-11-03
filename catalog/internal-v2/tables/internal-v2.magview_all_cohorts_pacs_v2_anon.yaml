@@ -451,6 +451,14 @@ columns:
         status: reconciled
         cites:
           - internal-v2.magview-coded-values-context#code-normalization
+      X:
+        representation: X
+        meaning: No Assessment, recorded for a group of screening exams that is not yet understood
+        status: unresolved
+        caveats:
+          - Do not recode X to known biopsy-proven malignancy or to any other assessment.
+        cites:
+          - internal-v2.magview-coded-values-context#assessment-x-under-investigation
   total_L_find:
     type: int8
     nullable: true
